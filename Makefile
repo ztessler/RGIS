@@ -1,7 +1,7 @@
 include ./common.mk
 all: rgis_target rcommands_target rserver_target nccommands_target rgisPlot_target tfcommands_target
 
-install: $(INSTALLDIR)/bin $(INSTALLDIR)/XResources/bitmaps $(INSTALLDIR)/Messages $(INSTALLDIR)/html $(INSTALLDIR)/Scripts $(INSTALLDIR)/f
+install: $(INSTALLDIR)/bin $(INSTALLDIR)/XResources/bitmaps $(INSTALLDIR)/Messages $(INSTALLDIR)/html $(INSTALLDIR)/Scripts $(INSTALLDIR)/f $(INSTALLDIR)/lib
 	$(UNIXMAKE) -C rGIS       install
 	$(UNIXMAKE) -C rCommands  install
 	$(UNIXMAKE) -C rServer    install
@@ -13,9 +13,11 @@ install: $(INSTALLDIR)/bin $(INSTALLDIR)/XResources/bitmaps $(INSTALLDIR)/Messag
 	cp Messages/*.*         $(INSTALLDIR)/Messages/
 	cp Scripts/*.sh         $(INSTALLDIR)/Scripts/
 	cp f/*                  $(INSTALLDIR)/f/
+	cp CMlib/lib/*.a        $(INSTALLDIR)/lib/
+	cp MFlib/lib/*.a        $(INSTALLDIR)/lib/
 	ln -s $(INSTALLDIR)/Scripts/rgis.sh $(INSTALLDIR)/bin/rgis
 
-reinstall: $(INSTALLDIR)/bin $(INSTALLDIR)/XResources/bitmaps $(INSTALLDIR)/Messages $(INSTALLDIR)/html $(INSTALLDIR)/Scripts $(INSTALLDIR)/f
+reinstall: $(INSTALLDIR)/bin $(INSTALLDIR)/XResources/bitmaps $(INSTALLDIR)/Messages $(INSTALLDIR)/html $(INSTALLDIR)/Scripts $(INSTALLDIR)/f $(INSTALLDIR)/lib
 	$(UNIXMAKE) -C rGIS       install
 	$(UNIXMAKE) -C rCommands  install
 	$(UNIXMAKE) -C rServer    install
@@ -27,6 +29,8 @@ reinstall: $(INSTALLDIR)/bin $(INSTALLDIR)/XResources/bitmaps $(INSTALLDIR)/Mess
 	cp Messages/*.*         $(INSTALLDIR)/Messages/
 	cp Scripts/*.sh         $(INSTALLDIR)/Scripts/
 	cp f/*                  $(INSTALLDIR)/f/
+	cp CMlib/lib/*.a        $(INSTALLDIR)/lib/
+	cp MFlib/lib/*.a        $(INSTALLDIR)/lib/
 
 uninstall:
 	$(UNIXMAKE) -C rGIS       uninstall
@@ -67,6 +71,8 @@ $(INSTALLDIR)/html:
 	mkdir -p $(INSTALLDIR)/html
 $(INSTALLDIR)/Scripts:
 	mkdir -p $(INSTALLDIR)/Scripts
+$(INSTALLDIR)/lib:
+	mkdir -p $(INSTALLDIR)/lib
 $(INSTALLDIR)/f:
 	mkdir -p $(INSTALLDIR)/f
 
