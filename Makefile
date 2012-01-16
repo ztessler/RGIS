@@ -23,7 +23,7 @@ reinstall: $(INSTALLDIR)/bin $(INSTALLDIR)/XResources/bitmaps $(INSTALLDIR)/Mess
 	cp Messages/*.*         $(INSTALLDIR)/Messages/
 	cp Scripts/*.sh         $(INSTALLDIR)/Scripts/
 	cp f/*                  $(INSTALLDIR)/f/
-	chmod ugo+rX            $(INSTALLDIR)
+	chmod -R ugo+rX         $(INSTALLDIR)
 
 uninstall:
 	$(UNIXMAKE) -C rGIS       uninstall
