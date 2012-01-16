@@ -6,6 +6,7 @@ LIB    = ../lib
 CPP    = $(UNIXCPP) $(UNIXCPPOPS) -I$(INC) -I../../CMlib/include -I../../DBlib/include
 TARGET = $(LIB)/libUI22.a
 
+IPREF    = UI
 INCLUDES = $(INC)/UI.H
 
 OBJS = $(OBJ)/UIInit.o\
@@ -43,6 +44,13 @@ OBJS = $(OBJ)/UIInit.o\
 
 all: $(TARGET)
 
+install:
+	cp $(INC)/$(IPREF)*.H $(INSTALLDIR)/include/
+	cp $(TARGET)          $(INSTALLDIR)/lib/
+
+uninstall:
+	rm $(INSTALLDIR)/lib/$(TARGET)
+	rm $(INSTALLDIR)/include/$(IPREF)*.H
 clean:
 	rm $(TARGET) $(OBJS)
 
@@ -50,5 +58,5 @@ $(TARGET): $(OBJS) $(SRC)/Makefile
 	$(UNIXAR) $(TARGET) $(OBJS)
 	$(UNIXRL) $(TARGET)
 
-$(OBJ)/%.o: $(SRC)/%.C $(INCLUDES)
+$(OBJ)/%.o: $(SRC)/%.c $(INCLUDES)
 	$(CPP) -o $(OBJ)/$*.o -c $(SRC)/$*.C

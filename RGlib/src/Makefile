@@ -6,6 +6,7 @@ LIB    = ../lib
 CPP    = $(UNIXCPP) $(UNIXCPPOPS) -I$(INC) -I../../DBlib/include -I../../CMlib/include -I../../MFlib/include
 TARGET = $(LIB)/libRG22.a
 
+IPREF    = RG
 INCLUDES = $(INC)/RG.H
 
 OBJS = $(OBJ)/RGlibPoint.o\
@@ -18,6 +19,13 @@ OBJS = $(OBJ)/RGlibPoint.o\
 
 all: $(TARGET)
 
+install:
+	cp $(INC)/$(IPREF)*.H $(INSTALLDIR)/include/
+	cp $(TARGET)          $(INSTALLDIR)/lib/
+
+uninstall:
+	rm $(INSTALLDIR)/lib/$(TARGET)
+	rm $(INSTALLDIR)/include/$(IPREF)*.H
 clean:
 	rm $(TARGET) $(OBJS)
 
@@ -25,5 +33,5 @@ $(TARGET): $(OBJS) $(SRC)/Makefile
 	$(UNIXAR) $(TARGET) $(OBJS)
 	$(UNIXRL) $(TARGET)
 
-$(OBJ)/%.o: $(SRC)/%.C $(INCLUDES)
+$(OBJ)/%.o: $(SRC)/%.c $(INCLUDES)
 	$(CPP) -o $(OBJ)/$*.o -c $(SRC)/$*.C

@@ -6,7 +6,9 @@ LIB    = ../lib
 CPP    = $(UNIXCPP) $(UNIXCPPOPS) -I$(INC) -I../../CMlib/include
 TARGET = $(LIB)/libDB22.a
 
-INCLUDES = $(INC)/DB.H $(INC)/DBif.H
+IPREF    = DB
+INCLUDES = $(INC)/DB.H\
+           $(INC)/DBif.H
 
 OBJS = $(OBJ)/DBDataset.o\
        $(OBJ)/DBObjData.o\
@@ -46,6 +48,13 @@ OBJS = $(OBJ)/DBDataset.o\
 
 all: $(TARGET)
 
+install:
+	cp $(INC)/$(IPREF)*.H $(INSTALLDIR)/include/
+	cp $(TARGET)          $(INSTALLDIR)/lib/
+
+uninstall:
+	rm $(INSTALLDIR)/lib/$(TARGET)
+	rm $(INSTALLDIR)/include/$(IPREF)*.H
 clean:
 	rm $(TARGET) $(OBJS)
 
@@ -53,5 +62,5 @@ $(TARGET): $(OBJS) $(SRC)/Makefile
 	$(UNIXAR) $(TARGET) $(OBJS)
 	$(UNIXRL) $(TARGET)
 
-$(OBJ)/%.o: $(SRC)/%.C $(INCLUDES)
+$(OBJ)/%.o: $(SRC)/%.c $(INCLUDES)
 	$(CPP) -o $(OBJ)/$*.o -c $(SRC)/$*.C

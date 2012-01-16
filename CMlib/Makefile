@@ -4,6 +4,12 @@ LIB = ./lib
 
 all: $(OBJ) $(LIB) source
 
+install:
+	$(UNIXMAKE) -C src install
+
+uninstall:
+	$(UNIXMAKE) -C src uninstall
+
 clean:
 	$(UNIXMAKE) -C src clean
 

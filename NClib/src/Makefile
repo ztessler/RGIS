@@ -6,6 +6,7 @@ LIB    = ../lib
 CC     = $(UNIXCC) $(UNIXCCOPS) -I$(INC) -I../../CMlib/include
 TARGET = $(LIB)/libNC10.a
 
+IPREFIX  = NC
 INCLUDES = $(INC)/NC.h\
            $(INC)/NCcore.h\
            $(INC)/NCdsHandle.h\
@@ -42,9 +43,16 @@ OBJS =  $(OBJ)/NCcoordinate.o\
 
 all: $(TARGET)
 
+install:
+	cp $(INC)/$(IPREF)*.h $(INSTALLDIR)/include/
+	cp $(TARGET)          $(INSTALLDIR)/lib/
+
+uninstall:
+	rm $(INSTALLDIR)/lib/$(TARGET)
+	rm $(INSTALLDIR)/include/$(IPREF)*.h
 clean:
 	rm $(TARGET) $(OBJS)
-	
+
 $(TARGET): $(OBJS) $(SRC)/Makefile
 	$(UNIXAR) $(TARGET) $(OBJS)
 	$(UNIXRL) $(TARGET)

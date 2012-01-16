@@ -7,6 +7,7 @@ CC     = $(UNIXCC) $(UNIXCCOPS) -I$(INC) -I../../CMlib/include
 LINK   = $(UNIXCC)
 TARGET = $(LIB)/libMF10.a
 
+IPREF    = MF
 INCLUDES = $(INC)/MF.h
 
 OBJS = $(OBJ)/MFConfig.o\
@@ -22,6 +23,13 @@ OBJS = $(OBJ)/MFConfig.o\
 
 all: $(TARGET)
 
+install:
+	cp $(INC)/$(IPREF)*.h $(INSTALLDIR)/include/
+	cp $(TARGET)          $(INSTALLDIR)/lib/
+
+uninstall:
+	rm $(INSTALLDIR)/lib/$(TARGET)
+	rm $(INSTALLDIR)/include/$(IPREF)*.h
 clean:
 	rm $(TARGET) $(OBJS)
 
