@@ -34,4 +34,5 @@ $(TARGET): $(OBJS) $(SRC)/Makefile
 	$(UNIXRL) $(TARGET)
 
 $(OBJ)/%.o: $(SRC)/%.c $(INCLUDES)
+$(OBJ)/%.o: $(SRC)/%.C $(INCLUDES)
 	$(CPP) -o $(OBJ)/$*.o -c $(SRC)/$*.C
