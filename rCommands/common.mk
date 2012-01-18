@@ -2,18 +2,10 @@ UNIX=$(shell uname)
 
 ifeq ($(UNIX),Darwin)
 ifndef ($(CUSTOM_INC))
-	CUSTOM_INC=-I/sw/lib/pgplot
+	CUSTOM_INC=-I/sw/include
 endif
 ifndef ($(CUSTOM_LIB))
 	CUSTOM_LIB=-L/sw/lib
-endif
-endif
-ifeq ($(UNIX),SunOS)
-ifndef ($(CUSTOM_INC))
-	CUSTOM_INC=
-endif
-ifndef ($(CUSTOM_LIB))
-	CUSTOM_LIB=-L/usr/local/netcdf/lib -L/usr/local/udunits/lib
 endif
 endif
 

@@ -9,12 +9,6 @@ ifndef ($(CUSTOM_LIB))
 endif
 endif
 
-ifeq ($(UNIX),SunOS)
-ifndef ($(CUSTOM_LIB))
-	CUSTOM_LIB=-L/usr/local/netcdf/lib -L/usr/local/udunits/lib
-endif
-endif
-
 export UNIXCC=gcc
 export UNIXCCOPS=-g -Wall -fsigned-char -D_GNU_SOURCE $(CUSTOM_INC)
 export UNIXLIBS=$(CUSTOM_LIB) -ludunits2 -lnetcdf -lm

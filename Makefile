@@ -46,19 +46,19 @@ uninstall:
 	rmdir  $(INSTALLDIR)
 
 clean:
-	$(UNIXMAKE) -C rGIS       clean
-	$(UNIXMAKE) -C rgisPlot   clean
-	$(UNIXMAKE) -C ncCommands clean
-	$(UNIXMAKE) -C rCommands  clean
-	$(UNIXMAKE) -C rServer    clean
-	$(UNIXMAKE) -C tfCommands clean
-	$(UNIXMAKE) -C CMlib      clean
-	$(UNIXMAKE) -C DBlib      clean
-	$(UNIXMAKE) -C NClib      clean
-	$(UNIXMAKE) -C RGlib      clean
-	$(UNIXMAKE) -C UIlib      clean
-	$(UNIXMAKE) -C MFlib      clean
-	$(UNIXMAKE) -C Flib       clean
+	$(UNIXMAKE) -i -C rGIS       clean
+	$(UNIXMAKE) -i -C rgisPlot   clean
+	$(UNIXMAKE) -i -C ncCommands clean
+	$(UNIXMAKE) -i -C rCommands  clean
+	$(UNIXMAKE) -i -C rServer    clean
+	$(UNIXMAKE) -i -C tfCommands clean
+	$(UNIXMAKE) -i -C CMlib      clean
+	$(UNIXMAKE) -i -C DBlib      clean
+	$(UNIXMAKE) -i -C NClib      clean
+	$(UNIXMAKE) -i -C RGlib      clean
+	$(UNIXMAKE) -i -C UIlib      clean
+	$(UNIXMAKE) -i -C MFlib      clean
+	$(UNIXMAKE) -i -C Flib       clean
 
 $(INSTALLDIR)/bin:
 	mkdir -p $(INSTALLDIR)/bin

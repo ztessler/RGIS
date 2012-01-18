@@ -14,10 +14,6 @@ endif
 export UNIXLIBS=$(CUSTOM_LIB) -Wl,-framework -Wl,Foundation -lcpgplot -lpgplot -lgfortran -lz -laquaterm -lpng -lX11 -lm
 endif
 
-ifeq ($(UNIX),SunOS)
-export UNIXLIBS=-lcpgplot -lpgplot -lgfortran -lX11 -lm
-endif
-
 export UNIXCPP=g++
 export UNIXCPPOPS=-g -Wall -fsigned-char -D_GNU_SOURCE $(CUSTOM_INC)
 export UNIXMAKE=make
