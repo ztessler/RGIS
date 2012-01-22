@@ -230,7 +230,7 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*conf) ()) {
 		}
 		if (CMargTest (argv [argPos],"-h","--help")) {
 			help = true;
-			CMmsgPrint (CMmsgInfo,"%s [options] <domain>\n",CMprgName (argv [0]));
+			CMmsgPrint (CMmsgInfo,"%s [options] <domain>\n",CMfileName (argv [0]));
 			CMmsgPrint (CMmsgInfo,"     -s,  --start      [start date in the form of \"yyyy-mm-dd\"]\n");
 			CMmsgPrint (CMmsgInfo,"     -n,  --end        [end date in the form of \"yyyy-mm-dd\"]\n");
 			CMmsgPrint (CMmsgInfo,"     -i,  --input      [variable=source]\n");
