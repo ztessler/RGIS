@@ -41,7 +41,7 @@ int main (int argc,char *argv [])
 			}
 		if (CMargTest (argv [argPos],"-h","--help"))
 			{
-			CMmsgPrint (CMmsgInfo,"%s [options] <input rgisdata> <output domain>",CMprgName(argv[0]));
+			CMmsgPrint (CMmsgInfo,"%s [options] <input rgisdata> <output domain>",CMfileName(argv[0]));
 			CMmsgPrint (CMmsgInfo,"     -l,--lengthcorrection");
 			CMmsgPrint (CMmsgInfo,"     -h,--help");
 			return (DBSuccess);
@@ -55,7 +55,7 @@ int main (int argc,char *argv [])
 
 	outFile = (argNum > 2) && (strcmp (argv [2],"-") != 0) ? fopen (argv [2],"w") : stdout;
 	if (outFile == (FILE *) NULL)
-		{ CMmsgPrint (CMmsgUsrError,"Output file Opening error in: %s",CMprgName(argv[0])); exit (DBFault); }
+		{ CMmsgPrint (CMmsgUsrError,"Output file Opening error in: %s",CMfileName(argv[0])); exit (DBFault); }
 
 	data = new DBObjData ();
 	ret = (argNum > 1) && (strcmp (argv [1],"-") != 0) ? data->Read (argv [1]) : data->Read (stdin);

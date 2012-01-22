@@ -93,7 +93,7 @@ int main (int argc,char *argv [])
 			}
 		if (CMargTest (argv [argPos],"-h","--help"))
 			{
-			CMmsgPrint (CMmsgInfo, "%s [options] <data stream file> <rgis file>",CMprgName(argv[0]));
+			CMmsgPrint (CMmsgInfo, "%s [options] <data stream file> <rgis file>",CMfileName(argv[0]));
 			CMmsgPrint (CMmsgInfo, "     -m,--template  [template coverage]");
 			CMmsgPrint (CMmsgInfo, "     -t,--title     [dataset title]");
 			CMmsgPrint (CMmsgInfo, "     -u,--subject   [subject]");

@@ -103,7 +103,7 @@ int main(int argc, char* argv[])
 			}
 		if (CMargTest (argv [argPos],"-h","--help"))
 			{
-			CMmsgPrint (CMmsgInfo,"%s [options] <input grid> <output grid>",CMprgName(argv[0]));
+			CMmsgPrint (CMmsgInfo,"%s [options] <input grid> <output grid>",CMfileName(argv[0]));
 			CMmsgPrint (CMmsgInfo,"     -r,--rename    [layerID layerName]");
 			CMmsgPrint (CMmsgInfo,"     -s,--shadeset  [standard|grey|blue|blue-to-red|elevation]");
 			CMmsgPrint (CMmsgInfo,"     -V,--verbose");

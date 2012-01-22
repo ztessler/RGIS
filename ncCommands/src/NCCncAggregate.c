@@ -80,17 +80,17 @@ int main(int argc, char* argv[])
 	int argPos = 0, argNum = argc, interval = NONE, ncid = 0, *dimIDs = (int *) NULL;
 	NCdsHandle_t *dsHandle;
 
-	if(argNum == 1) { doHelp(CMprgName(argv[0])); return (NCsucceeded); }
+	if(argNum == 1) { doHelp(CMfileName(argv[0])); return (NCsucceeded); }
 	if ((argNum == 2) && (argv[1][0] == '-'))
 	{
 		if (CMargTest (argv[1],"-d","--debug")) SetDebug();
-		doHelp(CMprgName(argv[0])); return (NCsucceeded);
+		doHelp(CMfileName(argv[0])); return (NCsucceeded);
 	}
 	initMemInfo();
 	for(argPos = 1; argPos < argNum;)
 	{
 		if (CMargTest(argv[argPos],"-d","--debug")) { SetDebug(); CMargShiftLeft(argPos,argv,argc); argNum--; continue; }
-		if (CMargTest(argv[argPos],"-h","--help"))  { doHelp(CMprgName(argv[0])); cleanup(NCsucceeded); }
+		if (CMargTest(argv[argPos],"-h","--help"))  { doHelp(CMfileName(argv[0])); cleanup(NCsucceeded); }
 		if (CMargTest(argv[argPos],"-f","--file"))
 		{
 			if ((argNum = CMargShiftLeft(argPos,argv,argc)) <= argPos)
@@ -138,7 +138,7 @@ int main(int argc, char* argv[])
 			{ CMmsgPrint (CMmsgAppError, "Error opening file: %s!",filename); return (NCfailed); }
 	} else if ((argNum > 1) && (strcmp(argv[1],"-") != 0)) {
 		if(nc_open(argv[1],NC_WRITE,&ncid) != NC_NOERR) { CMmsgPrint (CMmsgUsrError, "Error opening file: %s!",argv[1]); return (NCfailed); }
-	} else doHelp(CMprgName(argv[0]));
+	} else doHelp(CMfileName(argv[0]));
 
 	dsHandle = NCdsHandleOpenById (ncid);
 /*	if((nc_inq_varid(ncid,varname,&inVar)) != NC_NOERR) { CMmsgPrint (CMmsgUsrError, "NC: Error getting varID!"); cleanup(NCfailed); }

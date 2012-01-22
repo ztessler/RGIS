@@ -92,8 +92,8 @@ int main(int argc, char* argv[])
 	int argPos = 0, argNum = argc;
 	double output = 0.0;
 
-	if(argNum == 1) { doHelp(CMprgName(argv[0])); return (NCsucceeded); }
-	if ((argNum == 2) && (argv[1][0] == '-')) { if (CMargTest(argv[1],"-d","--debug")) SetDebug(); doHelp(CMprgName(argv[0])); return (NCsucceeded); }
+	if(argNum == 1) { doHelp(CMfileName(argv[0])); return (NCsucceeded); }
+	if ((argNum == 2) && (argv[1][0] == '-')) { if (CMargTest(argv[1],"-d","--debug")) SetDebug(); doHelp(CMfileName(argv[0])); return (NCsucceeded); }
 	inFile.fname = (char *) NULL;
 	inFile.ncTYPE = false;
 	inFile.file = (FILE *) NULL;
@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
 	{
 		if (CMargTest(argv[argPos],"-d","--debug")) { SetDebug(); if ((argNum = CMargShiftLeft(argPos,argv,argc)) <= argPos) break; else continue; }
 		if (CMargTest(argv[argPos],"-l","--lisp"))  { setLisp();  if ((argNum = CMargShiftLeft(argPos,argv,argc)) <= argPos) break; else continue; }
-		if (CMargTest(argv[argPos],"-h","--help"))  { doHelp(CMprgName(argv[0])); cleanup (CMsucceeded); }
+		if (CMargTest(argv[argPos],"-h","--help"))  { doHelp(CMfileName(argv[0])); cleanup (CMsucceeded); }
 		if (CMargTest(argv[argPos],"-t","--table"))
 			{
 			if ((argNum = CMargShiftLeft(argPos,argv,argc)) <= argPos)
@@ -219,7 +219,7 @@ int main(int argc, char* argv[])
 	if(input == (char *) NULL)
 	{
 		CMmsgPrint (CMmsgUsrError, "Missing <expression>");
-		doHelp(CMprgName(argv[0]));
+		doHelp(CMfileName(argv[0]));
 		cleanup(CMfailed);
 /*		CMmsgPrint (CMmsgUsrError, "<expression> =? ");
 		CMbufGetLine(&input,&inLen,stdin);

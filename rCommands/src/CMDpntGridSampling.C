@@ -96,7 +96,7 @@ int main (int argc,char *argv [])
 			}
 		if (CMargTest (argv [argPos],"-h","--help"))
 			{
-			CMmsgPrint (CMmsgInfo,"%s [options] <input grid> <output table>",CMprgName(argv[0]));
+			CMmsgPrint (CMmsgInfo,"%s [options] <input grid> <output table>",CMfileName(argv[0]));
 			CMmsgPrint (CMmsgInfo,"     -s,--sample    [sampling points or network]");
 			CMmsgPrint (CMmsgInfo,"     -m,--mode      [table|attrib]");
 			CMmsgPrint (CMmsgInfo,"     -n,--netmode   [from|to]");

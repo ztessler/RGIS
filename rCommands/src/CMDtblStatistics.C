@@ -123,7 +123,7 @@ void doHelp(bool extended, char *arg0)
 	{
 	if(extended)
 		{
-		CMmsgPrint (CMmsgInfo,"%s [options] [field] ... <input file> ...",CMprgName(arg0));
+		CMmsgPrint (CMmsgInfo,"%s [options] [field] ... <input file> ...",CMfileName(arg0));
 		CMmsgPrint (CMmsgInfo,"**fieldnames must match fieldnames in first line of datafile.**Valid flags:");
 		CMmsgPrint (CMmsgInfo,"  -a,--table   [name]              => Set the name of the table to use.");
 		CMmsgPrint (CMmsgInfo,"  -c,--ascii                       => Output as ASCII");
@@ -154,7 +154,7 @@ void doHelp(bool extended, char *arg0)
 		}
 	else
 		{
-		CMmsgPrint (CMmsgInfo,"%s [options] [field] ... <input file> ...",CMprgName(arg0));
+		CMmsgPrint (CMmsgInfo,"%s [options] [field] ... <input file> ...",CMfileName(arg0));
 		CMmsgPrint (CMmsgInfo,"  -a,--table   [name]");
 		CMmsgPrint (CMmsgInfo,"  -c,--ascii");
 		CMmsgPrint (CMmsgInfo,"  -d,--domain  [domain]");

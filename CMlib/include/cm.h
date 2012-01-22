@@ -29,7 +29,7 @@ typedef enum { CMsucceeded = 0,  CMfailed  = -1 } CMreturn;
 
 typedef enum { CMmsgSysError = 0, CMmsgAppError = 1, CMmsgUsrError = 2, CMmsgDebug = 3, CMmsgWarning = 4, CMmsgInfo = 5} CMmsgType;
 
-const char *CMprgName (const char *);
+const char *CMfileName (const char *);
 int   CMargShiftLeft  (int, char **, int);
 int   CMoptLookup     (const char **, const char *, bool);
 void  CMoptPrintList  (CMmsgType, const char *, const char *[]);

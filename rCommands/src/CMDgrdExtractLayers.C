@@ -84,7 +84,7 @@ int main (int argc,char *argv [])
 			}
 		if (CMargTest (argv [argPos],"-h","--help"))
 			{
-			CMmsgPrint (CMmsgInfo,"%s [options] <input grid> <output grid>",CMprgName (argv [0]));
+			CMmsgPrint (CMmsgInfo,"%s [options] <input grid> <output grid>",CMfileName (argv [0]));
 			CMmsgPrint (CMmsgInfo,"     -f,--first     [layername]");
 			CMmsgPrint (CMmsgInfo,"     -l,--last      [layername]");
 			CMmsgPrint (CMmsgInfo,"     -t,--title     [dataset title]");

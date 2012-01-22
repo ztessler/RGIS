@@ -111,7 +111,7 @@ int main (int argc,char *argv [])
 			}
 		if (CMargTest (argv [argPos],"-h","--help"))
 			{
-			CMmsgPrint (CMmsgInfo,"%s [options] <input grid> <output grid>",CMprgName(argv[0]));
+			CMmsgPrint (CMmsgInfo,"%s [options] <input grid> <output grid>",CMfileName(argv[0]));
 			CMmsgPrint (CMmsgInfo,"     -a,--aggregate [avg|max|min|sum]");
 			CMmsgPrint (CMmsgInfo,"     -e,--step      [year|month|day|hour]");
 			CMmsgPrint (CMmsgInfo,"     -t,--title     [dataset title]");

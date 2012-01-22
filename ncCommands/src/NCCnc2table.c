@@ -46,8 +46,8 @@ int main(int argc, char* argv[])
                     continue;
                     }
 		if (CMargTest(argv[argPos],"-h","--help")) {
-			if((argPos + 1 < argNum) && (argv[argPos+1][0] == 'e')) doHelp (CMprgName(argv[0]),true);
-			else doHelp (CMprgName (argv[0]),false);
+			if((argPos + 1 < argNum) && (argv[argPos+1][0] == 'e')) doHelp (CMfileName(argv[0]),true);
+			else doHelp (CMfileName (argv[0]),false);
 			cleanup(NCsucceeded);
 		}
 		if (CMargTest(argv[argPos],"-t","--table"))

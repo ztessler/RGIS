@@ -51,7 +51,7 @@ int main (int argc,char *argv [])
 			}
 		if (CMargTest (argv [argPos],"-h","--help"))
 			{
-			CMmsgPrint (CMmsgInfo,"%s [options] <dm file> <rgis file>",CMprgName(argv[0]));
+			CMmsgPrint (CMmsgInfo,"%s [options] <dm file> <rgis file>",CMfileName(argv[0]));
 			CMmsgPrint (CMmsgInfo,"     -a,--all");
 			CMmsgPrint (CMmsgInfo,"     -l,--layer [layername]");
 			CMmsgPrint (CMmsgInfo,"     -i,--list");

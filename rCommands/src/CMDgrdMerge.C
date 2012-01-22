@@ -94,7 +94,7 @@ int main (int argc,char *argv [])
 			}
 		if (CMargTest (argv [argPos],"-h","--help"))
 			{
-			CMmsgPrint (CMmsgInfo,"%s [options] <input grid0> <input grid1> ... <input gridN>",CMprgName(argv[0]));
+			CMmsgPrint (CMmsgInfo,"%s [options] <input grid0> <input grid1> ... <input gridN>",CMfileName(argv[0]));
 			CMmsgPrint (CMmsgInfo,"     -o,--output    [merged grid]");
 			CMmsgPrint (CMmsgInfo,"     -t,--title     [dataset title]");
 			CMmsgPrint (CMmsgInfo,"     -u,--subject   [subject]");

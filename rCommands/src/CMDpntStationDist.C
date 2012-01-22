@@ -98,7 +98,7 @@ int main (int argc,char *argv [])
 			}
 		if (CMargTest (argv [argPos],"-h","--help"))
 			{
-			CMmsgPrint (CMmsgInfo,"%s [options] <input point> <output grid>",CMprgName(argv[0]));
+			CMmsgPrint (CMmsgInfo,"%s [options] <input point> <output grid>",CMfileName(argv[0]));
 			CMmsgPrint (CMmsgInfo,"     -e,--template  [grid or network coverage]");
 			CMmsgPrint (CMmsgInfo,"     -m,--mode      [dist|ids]");
 			CMmsgPrint (CMmsgInfo,"     -f,--factor    [value]");

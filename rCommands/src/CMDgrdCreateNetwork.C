@@ -95,7 +95,7 @@ int main (int argc,char *argv [])
 			}
 		if (CMargTest (argv [argPos],"-h","--help"))
 			{
-			CMmsgPrint (CMmsgInfo,"%s [options] <input file> <output file>",CMprgName(argv[0]));
+			CMmsgPrint (CMmsgInfo,"%s [options] <input file> <output file>",CMfileName(argv[0]));
 			CMmsgPrint (CMmsgInfo,"     -b,--basin_pack [basin pack file]");
 			CMmsgPrint (CMmsgInfo,"     -g,--gradient   [down|up]");
 			CMmsgPrint (CMmsgInfo,"     -t,--title      [dataset title]");

@@ -66,7 +66,7 @@ int main (int argc,char *argv [])
 			}
 		if (CMargTest (argv [argPos],"-h","--help"))
 			{
-			CMmsgPrint (CMmsgInfo,"%s [options] <input network> <output network>",CMprgName(argv[0]));
+			CMmsgPrint (CMmsgInfo,"%s [options] <input network> <output network>",CMfileName(argv[0]));
 			CMmsgPrint (CMmsgInfo,"     -t,--title       [dataset title]");
 			CMmsgPrint (CMmsgInfo,"     -u,--subject     [subject]");
 			CMmsgPrint (CMmsgInfo,"     -d,--domain      [domain]");

@@ -74,7 +74,7 @@ int main (int argc,char *argv [])
 			}
 		if (CMargTest (argv [argPos],"-h","--help"))
 			{
-			CMmsgPrint (CMmsgInfo,"%s [options] <input point> <output grid>",CMprgName(argv[0]));
+			CMmsgPrint (CMmsgInfo,"%s [options] <input point> <output grid>",CMfileName(argv[0]));
 			CMmsgPrint (CMmsgInfo,"     -n,--network   [network coverage]");
 			CMmsgPrint (CMmsgInfo,"     -t,--title     [dataset title]");
 			CMmsgPrint (CMmsgInfo,"     -u,--subject   [subject]");

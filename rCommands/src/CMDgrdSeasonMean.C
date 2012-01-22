@@ -97,7 +97,7 @@ int main (int argc,char *argv [])
 			}
 		if (CMargTest (argv [argPos],"-h","--help"))
 			{
-			CMmsgPrint (CMmsgSysError,"%s [options] <input grid> <output grid>",CMprgName(argv[0]));
+			CMmsgPrint (CMmsgSysError,"%s [options] <input grid> <output grid>",CMfileName(argv[0]));
 			CMmsgPrint (CMmsgSysError,"     -a,--aggregate [avg|sum]");
 			CMmsgPrint (CMmsgSysError,"     -o,--offset    [offset]");
 			CMmsgPrint (CMmsgSysError,"     -e,--step      [number of steps]");

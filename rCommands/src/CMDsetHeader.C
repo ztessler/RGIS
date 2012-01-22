@@ -57,7 +57,7 @@ void CMDgetInfoInteractive(char **in, char *prompt, bool useMultipleLines)
 
 void CMDshowUsage(char *arg0)
 {
-	CMmsgPrint (CMmsgInfo,"%s [options] <RiverGIS file>",CMprgName(arg0));
+	CMmsgPrint (CMmsgInfo,"%s [options] <RiverGIS file>",CMfileName(arg0));
 	CMmsgPrint (CMmsgInfo,"       => Sets RiverGIS file header informations.");
 	CMmsgPrint (CMmsgInfo,"       -a,--all");
 	CMmsgPrint (CMmsgInfo,"       -c,--comment");

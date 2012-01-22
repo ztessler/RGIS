@@ -41,7 +41,7 @@ int main (int argc,char *argv [])
 			}
 		if (CMargTest (argv [argPos],"-h","--help"))
 			{
-			CMmsgPrint (CMmsgInfo,"%s [options] <rgis file> <ascii table>",CMprgName(argv[0]));
+			CMmsgPrint (CMmsgInfo,"%s [options] <rgis file> <ascii table>",CMfileName(argv[0]));
 			CMmsgPrint (CMmsgInfo,"     -a,--table");
 			CMmsgPrint (CMmsgInfo,"     -V,--verbose");
 			CMmsgPrint (CMmsgInfo,"     -h,--help");

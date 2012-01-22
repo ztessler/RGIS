@@ -77,7 +77,7 @@ int main (int argc,char *argv [])
 	DBObjTableField *field;
 	DBObjRecord *relateRecord, *joinRecord;
 
-	if(argc <= 2) { doHelp(false,CMprgName(argv[0])); return(DBSuccess); }
+	if(argc <= 2) { doHelp(false,CMfileName(argv[0])); return(DBSuccess); }
 
 	groups = (Groups **) malloc(sizeof(Groups *));
 	fields = (Fields **) malloc(sizeof(Fields *));
@@ -91,11 +91,11 @@ int main (int argc,char *argv [])
 			argNum = CMargShiftLeft (argPos,argv,argNum);
 			if(CMargTest(argv[argPos],"e","extend"))
 				{
-				doHelp(true,CMprgName(argv[0]));
+				doHelp(true,CMfileName(argv[0]));
 				argNum = CMargShiftLeft (argPos,argv,argNum);
 				}
 			else
-				doHelp(false,CMprgName(argv[0]));
+				doHelp(false,CMfileName(argv[0]));
 			return(DBSuccess);
 			}
 		if (CMargTest(argv[argPos],"-b","--table"))
