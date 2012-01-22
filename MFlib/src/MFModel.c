@@ -277,7 +277,7 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*conf) ()) {
 	if ((argNum) < 2) { CMmsgPrint (CMmsgUsrError,"Missing Template Coverage!"); return (CMfailed); }
 
 	if ((inFile = strcmp (argv [1],"-") != 0 ? fopen (argv [1],"r") : stdin) == (FILE *) NULL) {
-		CMmsgPrint (CMmsgAppError,"%s: Template Coverage [%s] Opening error!",CMprgName (argv [0]),argv [1]);
+		CMmsgPrint (CMmsgAppError,"%s: Template Coverage [%s] Opening error!",CMfileName (argv [0]),argv [1]);
 		return (CMfailed);
 	}
 	if ((_MFDomain = MFDomainGet (inFile)) == (MFDomain_t *) NULL)	return (CMfailed);
