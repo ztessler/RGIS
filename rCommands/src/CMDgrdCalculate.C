@@ -312,7 +312,7 @@ int main (int argc,char *argv [])
 			}
 		if (CMargTest (argv [argPos],"-h","--help"))
 			{
-			CMmsgPrint (CMmsgInfo,"%s [options] <output file>",CMprgName(argv[0]));
+			CMmsgPrint (CMmsgInfo,"%s [options] <output file>",CMfileName(argv[0]));
 			CMmsgPrint (CMmsgInfo,"     -c,--calculate   [expression]");
 			CMmsgPrint (CMmsgInfo,"     -r,--variable    [variable expression]");
 			CMmsgPrint (CMmsgInfo,"     -n,--interpolate [surface|flat]");

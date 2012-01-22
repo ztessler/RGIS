@@ -132,7 +132,7 @@ int main (int argc,char *argv [])
 			}
 		if (CMargTest (argv [argPos],"-h","--help"))
 			{
-			CMmsgPrint (CMmsgInfo,"%s [options] <continuous grid>",CMprgName(argv[0]));
+			CMmsgPrint (CMmsgInfo,"%s [options] <continuous grid>",CMfileName(argv[0]));
 			CMmsgPrint (CMmsgInfo,"     -o,--operation [+|-|*|/|^]");
 			CMmsgPrint (CMmsgInfo,"     -g,--grid      [grid name]");
 			CMmsgPrint (CMmsgInfo,"     -c,--constant  [constant value]");

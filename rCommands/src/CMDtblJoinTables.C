@@ -110,7 +110,7 @@ int main (int argc,char *argv [])
 			}
 		if (CMargTest (argv [argPos],"-h","--help"))
 			{
-			CMmsgPrint (CMmsgInfo,"%s [options] <input file> <output file>",CMprgName(argv[0]));
+			CMmsgPrint (CMmsgInfo,"%s [options] <input file> <output file>",CMfileName(argv[0]));
 			CMmsgPrint (CMmsgInfo,"     -a,--dataset   [join dataset]");
 			CMmsgPrint (CMmsgInfo,"     -e,--relate    [relate table]");
 			CMmsgPrint (CMmsgInfo,"     -o,--join      [join table]");

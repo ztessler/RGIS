@@ -43,7 +43,7 @@ int main (int argc,char *argv [])
 			}
 		if (CMargTest (argv [argPos],"-h","--help"))
 			{
-			CMmsgPrint (CMmsgInfo,"%s [options] <input grid> <output datastream>",CMprgName(argv[0]));
+			CMmsgPrint (CMmsgInfo,"%s [options] <input grid> <output datastream>",CMfileName(argv[0]));
 			CMmsgPrint (CMmsgInfo,"     -m,--template     [template coverage]");
 			CMmsgPrint (CMmsgInfo,"     -f,--field        [fieldname]");
 			CMmsgPrint (CMmsgInfo,"     -h,--help");

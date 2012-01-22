@@ -118,7 +118,7 @@ int main (int argc,char *argv [])
 			}
 		if (CMargTest (argv [argPos],"-h","--help"))
 			{
-			CMmsgPrint (CMmsgInfo,"%s [options] <input file> <output file>",CMprgName(argv[0]));
+			CMmsgPrint (CMmsgInfo,"%s [options] <input file> <output file>",CMfileName(argv[0]));
 			CMmsgPrint (CMmsgInfo,"     -z,--size      [box size]");
 			CMmsgPrint (CMmsgInfo,"     -m,--method    [average|minimum|maximum|sum]");
 			CMmsgPrint (CMmsgInfo,"     -t,--title     [dataset title]");

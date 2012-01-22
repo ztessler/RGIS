@@ -83,7 +83,7 @@ int main (int argc,char *argv [])
 			}
 		if (CMargTest (argv [argPos],"-h","--help"))
 			{
-			CMmsgPrint (CMmsgInfo,"%s [options] <input netcdf> <output data>",CMprgName(argv[0]));
+			CMmsgPrint (CMmsgInfo,"%s [options] <input netcdf> <output data>",CMfileName(argv[0]));
 			CMmsgPrint (CMmsgInfo,"     -t,--title     [dataset title]");
 			CMmsgPrint (CMmsgInfo,"     -u,--subject   [subject]");
 			CMmsgPrint (CMmsgInfo,"     -d,--domain    [domain]");

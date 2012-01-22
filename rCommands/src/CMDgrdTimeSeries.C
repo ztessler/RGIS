@@ -127,7 +127,7 @@ int main (int argc,char *argv [])
 			}
 		if (CMargTest (argv [argPos],"-h","--help"))
 			{
-			CMmsgPrint (CMmsgInfo,"%s [options] <input table> <output grid>",CMprgName(argv[0]));
+			CMmsgPrint (CMmsgInfo,"%s [options] <input table> <output grid>",CMfileName(argv[0]));
 			CMmsgPrint (CMmsgInfo,"     -g,--grid      [discrete grid coverage]");
 			CMmsgPrint (CMmsgInfo,"     -r,--relate    [relate field]");
 			CMmsgPrint (CMmsgInfo,"     -j,--join      [join field]");

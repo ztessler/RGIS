@@ -104,7 +104,7 @@ int main (int argc,char *argv [])
 			}
 		if (CMargTest (argv [argPos],"-h","--help"))
 			{
-			CMmsgPrint (CMmsgInfo,"%s [options] <input grid> <output grid>",CMprgName(argv[0]));
+			CMmsgPrint (CMmsgInfo,"%s [options] <input grid> <output grid>",CMfileName(argv[0]));
 			CMmsgPrint (CMmsgInfo,"     -g,--grid       [continuous grid coverage]");
 			CMmsgPrint (CMmsgInfo,"     -i,--difference	[absolute|relative]");
 			CMmsgPrint (CMmsgInfo,"     -t,--title      [dataset title]");

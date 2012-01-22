@@ -62,7 +62,7 @@ int main(int argc,char *argv []) {
 			}
 		if (CMargTest(argv[argPos],"-h","--help")) {
 			if ((argNum = CMargShiftLeft(argPos,argv,argNum)) < argPos) break;
-Help:		CMmsgPrint (CMmsgUsrError,"%s [options] <out datastream>",CMprgName(argv[0]));
+Help:		CMmsgPrint (CMmsgUsrError,"%s [options] <out datastream>",CMfileName(argv[0]));
 			CMmsgPrint (CMmsgUsrError,"  -i, --input [input datastream]");
 			CMmsgPrint (CMmsgUsrError,"  -b, --bins  [# of bins]");
 			CMmsgPrint (CMmsgUsrError,"  -m, --mode  [percent|value]");

@@ -116,8 +116,10 @@ int    MFModelGetDownLink  (int, size_t);
 float  MFModelGetArea      (int);
 float  MFModelGetLength    (int);
 float  MFModelGet_dt       ();
-void   MFDefEntering       (char *,char *);
-void   MFDefLeaving        (char *,char *);
+void   _MFDefEntering      (const char *,const char *);
+void   _MFDefLeaving       (const char *,const char *);
+#define MFDefEntering(msg) _MFDefEntering(msg,__FILE__)
+#define MFDefLeaving(msg)  _MFDefLeaving(msg,__FILE__)
 
 int    MFVarItemSize (int);
 bool   MFVarReadHeader  (MFVarHeader_t *,FILE *);

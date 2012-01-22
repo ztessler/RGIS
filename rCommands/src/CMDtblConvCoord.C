@@ -66,7 +66,7 @@ int main (int argc,char *argv [])
 			}
 		if (CMargTest (argv [argPos],"-h","--help"))
 			{
-			CMmsgPrint (CMmsgInfo,"%s [options] <input file> <output file>",CMprgName(argv[0]));
+			CMmsgPrint (CMmsgInfo,"%s [options] <input file> <output file>",CMfileName(argv[0]));
 			CMmsgPrint (CMmsgInfo,"     -a,--table     [table name]");
 			CMmsgPrint (CMmsgInfo,"     -f,--field     [coord field name]");
 			CMmsgPrint (CMmsgInfo,"     -r,--rename    [output field]");

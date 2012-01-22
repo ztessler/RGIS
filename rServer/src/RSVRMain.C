@@ -37,7 +37,7 @@ int main (int argc, char *argv [])
 		}
 Help:	if (CMargTest(argv[argPos],"-h","--help")) {
 			if ((argNum = CMargShiftLeft(argPos,argv,argNum)) < argPos) break;
-			CMmsgPrint (CMmsgUsrError,"%s [options]",CMprgName(argv[0]));
+			CMmsgPrint (CMmsgUsrError,"%s [options]",CMfileName(argv[0]));
 			CMmsgPrint (CMmsgUsrError,"  -p, --port");
 			CMmsgPrint (CMmsgUsrError,"  -s, --socket");
 			CMmsgPrint (CMmsgUsrError,"  -h,--help");

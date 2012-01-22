@@ -74,7 +74,7 @@ int main (int argc,char *argv [])
 			}
 		if (CMargTest (argv [argPos],"-h","--help"))
 			{
-			CMmsgPrint (CMmsgInfo,"%s [options] <append grid0> ..... <append gridN>",CMprgName(argv[0]));
+			CMmsgPrint (CMmsgInfo,"%s [options] <append grid0> ..... <append gridN>",CMfileName(argv[0]));
 			CMmsgPrint (CMmsgInfo,"     -o,--output    [ouptput grid]");
 			CMmsgPrint (CMmsgInfo,"     -t,--title     [dataset title]");
 			CMmsgPrint (CMmsgInfo,"     -u,--subject   [subject]");

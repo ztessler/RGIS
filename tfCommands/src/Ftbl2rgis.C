@@ -25,7 +25,7 @@ void showUsage( char *arg0 )
 {
 	CMmsgPrint (CMmsgInfo, "This function will read any ascii table from stdin, and");
 	CMmsgPrint (CMmsgInfo, "output the RGIS table equivalent to stdout.");
-	CMmsgPrint (CMmsgInfo, "Usage:%s [-o] <inputFileName>",CMprgName(arg0));
+	CMmsgPrint (CMmsgInfo, "Usage:%s [-o] <inputFileName>",CMfileName(arg0));
 	CMmsgPrint (CMmsgInfo, "  -o,--output    = Output to specified file instead of stdout");
 	CMmsgPrint (CMmsgInfo, "  -D,--descFile  = Read column types from this file");
 	CMmsgPrint (CMmsgInfo, "  -p,--printDT   = Print out column types before writing output");

@@ -25,7 +25,7 @@ int main (int argc,char *argv [])
 		{
 		if (CMargTest (argv [argPos],"-h","--help"))
 			{
-			CMmsgPrint (CMmsgInfo,"%s [options] <input data> <output netcdf>",CMprgName(argv[0]));
+			CMmsgPrint (CMmsgInfo,"%s [options] <input data> <output netcdf>",CMfileName(argv[0]));
 			CMmsgPrint (CMmsgInfo,"     -h,--help");
 			return (DBSuccess);
 			}

@@ -16,18 +16,18 @@ balazs.fekete@unh.edu
 
 static int _MFDefLevel = 0;
 
-void MFDefEntering (char *text, char * srcFileStr) {
+void _MFDefEntering (const char *text,const char *path) {
 	char formatStr [MFNameLength];
 
-	sprintf (formatStr,"%c%ds %cs %cs",'%',_MFDefLevel * 3 + (int) strlen ("Entering"),'%','%');
-	CMmsgPrint (CMmsgInfo,formatStr,"Entering:",text, srcFileStr);
+	sprintf (formatStr,"%c%ds %cs (%s)",'%',_MFDefLevel * 3 + (int) strlen ("Entering"),'%',CMfileName(path));
+	CMmsgPrint (CMmsgInfo,formatStr,"Entering:",text);
 	_MFDefLevel++;
 }
 
-void MFDefLeaving (char *text, char *srcFileStr) {
+void _MFDefLeaving (const char *text, const char *path) {
 	char formatStr [MFNameLength];
 
 	_MFDefLevel--;
-	sprintf (formatStr,  "%c%ds %cs %cs",'%',_MFDefLevel * 3 + (int) strlen ("Entering"),'%', '%');
-	CMmsgPrint (CMmsgInfo,formatStr,"Leaving:",text, srcFileStr);
+	sprintf (formatStr,  "%c%ds %cs (%s)",'%',_MFDefLevel * 3 + (int) strlen ("Entering"),'%',CMfileName (path));
+	CMmsgPrint (CMmsgInfo,formatStr,"Leaving:",text);
 }

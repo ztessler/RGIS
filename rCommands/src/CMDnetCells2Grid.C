@@ -108,7 +108,7 @@ int main (int argc,char *argv [])
 			}
 		if (CMargTest (argv [argPos],"-h","--help"))
 			{
-			CMmsgPrint (CMmsgInfo,"%s [options] <input network> <output grid>",CMprgName(argv[0]));
+			CMmsgPrint (CMmsgInfo,"%s [options] <input network> <output grid>",CMfileName(argv[0]));
 			CMmsgPrint (CMmsgInfo,"     -f,--fieldname   [field name]");
 			CMmsgPrint (CMmsgInfo,"     -g,--gridtype    [continuous|discrete]");
 			CMmsgPrint (CMmsgInfo,"     -t,--title       [dataset title]");

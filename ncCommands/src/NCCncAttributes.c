@@ -64,11 +64,11 @@ int main (int argc,char *argv [])
 		{
 			if ((argNum = CMargShiftLeft(argPos,argv,argc)) <= argPos)
                             {
-                            doHelp(CMprgName(argv[0]),0);
+                            doHelp(CMfileName(argv[0]),0);
                             break;
                             }
                         else
-                            doHelp(CMprgName(argv[0]),(strcmp(argv[argPos],"extend") == 0) ||
+                            doHelp(CMfileName(argv[0]),(strcmp(argv[argPos],"extend") == 0) ||
                                                       (strcmp(argv[argPos],"e")      == 0));
 			continue;
 		}
@@ -243,7 +243,7 @@ int main (int argc,char *argv [])
 	last->next = (VarNode_t *) NULL;
 	if ((argNum > 1) && (strcmp(argv[1],"-") != 0)) {
 		if(nc_open(argv[1],NC_WRITE,&ncid) != NC_NOERR) { CMmsgPrint (CMmsgUsrError, "Error opening file: %s!",argv[1]); return (NCfailed); }
-	} else doHelp(CMprgName(argv[0]),1);
+	} else doHelp(CMfileName(argv[0]),1);
 	if(nc_redef(ncid) != NC_NOERR) { CMmsgPrint (CMmsgUsrError, "Cannot place into redef mode!"); return (NCfailed); }
 
 	last = head;

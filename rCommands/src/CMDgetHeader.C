@@ -160,7 +160,7 @@ int main(int argc, char* argv[]){
 }
 
 void Show_Usage(char *arg0) {
-	CMmsgPrint (CMmsgInfo,"%s [options] <RiverGIS file>",CMprgName(arg0));
+	CMmsgPrint (CMmsgInfo,"%s [options] <RiverGIS file>",CMfileName(arg0));
 	CMmsgPrint (CMmsgInfo,"       => Gets RiverGIS file header informations.");
 	CMmsgPrint (CMmsgInfo,"       -a,--all");
 	CMmsgPrint (CMmsgInfo,"       -c,--comment");

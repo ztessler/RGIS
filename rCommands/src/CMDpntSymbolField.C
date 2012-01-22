@@ -74,7 +74,7 @@ int main (int argc,char *argv [])
 			}
 		if (CMargTest (argv [argPos],"-h","--help"))
 			{
-			CMmsgPrint (CMmsgInfo,"%s [options] <input symbol cover> <output symbol cover>",CMprgName(argv[0]));
+			CMmsgPrint (CMmsgInfo,"%s [options] <input symbol cover> <output symbol cover>",CMfileName(argv[0]));
 			CMmsgPrint (CMmsgInfo,"     -f,--fiedl     [field]");
 			CMmsgPrint (CMmsgInfo,"     -t,--title     [dataset title]");
 			CMmsgPrint (CMmsgInfo,"     -u,--subject   [subject]");

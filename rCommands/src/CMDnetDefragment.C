@@ -126,7 +126,7 @@ int main (int argc,char *argv [])
 			}
 		if (CMargTest (argv [argPos],"-h","--help"))
 			{
-			CMmsgPrint (CMmsgInfo,"%s [options] <input network> <output network>",CMprgName(argv[0]));
+			CMmsgPrint (CMmsgInfo,"%s [options] <input network> <output network>",CMfileName(argv[0]));
 			CMmsgPrint (CMmsgInfo,"     -e,--elevation   [elevation coverage]");
 			CMmsgPrint (CMmsgInfo,"     -c,--climb       [climb coefficient]");
 			CMmsgPrint (CMmsgInfo,"     -a,--maximum_basin [maximum basin size]");
