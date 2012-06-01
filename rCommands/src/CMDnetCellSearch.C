@@ -40,7 +40,7 @@ int main (int argc,char *argv [])
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos) break;
 			continue;
 		}
-		if (CMargTest(argv[argPos],"-m","--method")) {
+		if (CMargTest(argv[argPos],"-d","--direction")) {
 			if ((argNum = CMargShiftLeft(argPos,argv,argNum)) <= argPos)
 				{ CMmsgPrint (CMmsgUsrError, "Missing aggregate method!"); return (CMfailed); }
 			else {
@@ -72,7 +72,7 @@ int main (int argc,char *argv [])
 	ret = (argNum > 1) && (strcmp (argv [1],"-") != 0) ? data->Read (argv [1]) : data->Read (stdin);
 	
   
-   if (data->Type () == DBTypeGridDiscrete) {
+   if (data->Type () == DBTypeNetwork) {
       DBNetworkIF *netIF = new DBNetworkIF (data);   
       DBObjRecord *cellRec = netIF->Cell (coord);
       
