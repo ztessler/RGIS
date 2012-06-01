@@ -18,7 +18,7 @@ balazs.fekete@unh.edu
 #include <Xm/DrawingA.h>
 #include <UI.H>
 
-#define UICopyRightText "[Copyright (1994-2011) UNH - CCNY/CUNY]"
+#define UICopyRightText "[Copyright (1994-2012) UNH - CCNY/CUNY]"
 
 static Widget _UITopLevel;
 static UIMenuItem	*_UIMainMenu;
