@@ -467,6 +467,7 @@
           <ccTool>
             <incDir>
               <pElem>/sw/include</pElem>
+              <pElem>/sw/lib/pgplot</pElem>
               <pElem>CMlib/include</pElem>
               <pElem>DBlib/include</pElem>
               <pElem>MFlib/include</pElem>
