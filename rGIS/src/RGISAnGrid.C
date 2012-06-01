@@ -403,11 +403,11 @@ static DBFloat _RGISAnGContPourElev;
 static DBGridIF *_RGISAnnGContPourGridIF;
 
 
-static DBInt _RGISAnnGContFindBasinMinCrest (void *ptr,DBObjRecord *cellRec)
+static bool _RGISAnnGContFindBasinMinCrest (DBNetworkIF *netIF,DBObjRecord *cellRec, void *dataPtr)
 
 	{
 	DBFloat elev;
-	DBNetworkIF *netIF = (DBNetworkIF *) ptr;
+	dataPtr = dataPtr;
 
 	if (netIF->CellBasinCells (cellRec) > 1) return (false);
 	printf ("Itt Jartam: %d %d\n",cellRec->RowID (),netIF->CellBasinCells (cellRec));
@@ -445,7 +445,7 @@ void RGISAnGContPourCBK (Widget widget,RGISWorkspace *workspace,XmAnyCallbackStr
 		basinRec = netIF->Basin (basinID);
 		_RGISAnGContPourCellID = DBFault;
 		_RGISAnGContPourElev = DBHugeVal;
-		netIF->UpStreamSearch (netIF->MouthCell (basinRec),(DBNetworkACTION) _RGISAnnGContFindBasinMinCrest);
+		netIF->UpStreamSearch (netIF->MouthCell (basinRec), _RGISAnnGContFindBasinMinCrest);
 		if (_RGISAnGContPourCellID != DBFault)
 			{
 			coord = netIF->Center (netIF->Cell(_RGISAnGContPourCellID));

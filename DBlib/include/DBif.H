@@ -385,9 +385,9 @@ class DBGridIF
 
 class DBNetworkIF;
 
-typedef DBInt (*DBNetworkACTION) (DBNetworkIF *,DBObjRecord *,void *);
-DBInt DBNetworkSelect   (DBNetworkIF *,DBObjRecord *);
-DBInt DBNetworkUnselect (DBNetworkIF *,DBObjRecord *);
+typedef bool (*DBNetworkACTION) (DBNetworkIF *,DBObjRecord *,void *);
+bool DBNetworkSelect   (DBNetworkIF *,DBObjRecord *, void *);
+bool DBNetworkUnselect (DBNetworkIF *,DBObjRecord *, void *);
 
 class DBNetworkIF
 	{

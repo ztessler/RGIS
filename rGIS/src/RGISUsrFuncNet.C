@@ -71,8 +71,8 @@ void _RGISUserFuncionNetwork (DBObjData *data,UI2DView *view,XEvent *event)
 			cellRec = netIF->Cell (coord);
 			switch (data->Flags () & DBDataFlagSelectMode)
 				{
-				case DBDataFlagSelectMode:	netIF->DownStreamSearch	(cellRec,(DBNetworkACTION) DBNetworkSelect);	break;
-				default:							netIF->UpStreamSearch	(cellRec,(DBNetworkACTION) DBNetworkSelect);	break;
+				case DBDataFlagSelectMode:	netIF->DownStreamSearch	(cellRec, DBNetworkSelect);	break;
+				default:							netIF->UpStreamSearch	(cellRec, DBNetworkSelect);	break;
 				}
 			extent.Initialize ();
 			for (cellID = 0;cellID < netIF->CellNum ();++cellID)

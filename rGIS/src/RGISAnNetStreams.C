@@ -26,10 +26,11 @@ static DBInt			_RGISAnNetVertexNum = 0;
 static DBCoordinate *_RGISAnNetCoord = (DBCoordinate *) NULL;
 static DBFloat  		_RGISAnNetArea;
 
-static int _RGISAnNetworkUpStreamAction (DBNetworkIF *netIF,DBObjRecord *cellRec)
+static bool _RGISAnNetworkUpStreamAction (DBNetworkIF *netIF,DBObjRecord *cellRec, void *dataPtr)
 
 	{
 	DBInt nextOrder [2];
+	dataPtr = dataPtr;
 
 	if (_RGISAnNetVertex < 1)
 		{
@@ -52,9 +53,10 @@ static int _RGISAnNetworkUpStreamAction (DBNetworkIF *netIF,DBObjRecord *cellRec
 	return (false);
 	}
 
-static int _RGISAnNetworkDownStreamAction (DBNetworkIF *netIF,DBObjRecord *cellRec)
+static bool _RGISAnNetworkDownStreamAction (DBNetworkIF *netIF,DBObjRecord *cellRec, void *dataPtr)
 
 	{
+	dataPtr = dataPtr;
 	if (_RGISAnNetStreamIDFLD->Int (cellRec) != _RGISAnNetStreamID) return (false);
 	_RGISAnNetArea += netIF->CellArea (cellRec);
 	_RGISAnNetCoord [_RGISAnNetVertex++] = netIF->Center (cellRec);
@@ -136,7 +138,7 @@ void RGISAnNetworkStreamLinesCBK (Widget widget,RGISWorkspace *workspace,XmAnyCa
 				fieldFLD->Int (lineRec,_RGISAnNetOrderField->Int (cellRec));
 
 				_RGISAnNetVertex = 0;
-				netIF->UpStreamSearch (_RGISAnNetworkCellRec = cellRec,(DBNetworkACTION) _RGISAnNetworkUpStreamAction);
+				netIF->UpStreamSearch (_RGISAnNetworkCellRec = cellRec, _RGISAnNetworkUpStreamAction);
 				lineIF->FromNode (lineRec,lineIF->Node (netIF->Center (_RGISAnNetworkCellRec),true));
 				lineIF->ToNode (lineRec,lineIF->Node (netIF->Center (cellRec) + netIF->Delta (cellRec),true));
 
@@ -150,7 +152,7 @@ void RGISAnNetworkStreamLinesCBK (Widget widget,RGISWorkspace *workspace,XmAnyCa
 							{ CMmsgPrint (CMmsgSysError, "Memory Allocation Error in: %s %d",__FILE__,__LINE__); return; }
 						}
 					_RGISAnNetVertex = 0;
-					netIF->DownStreamSearch (netIF->ToCell (_RGISAnNetworkCellRec),(DBNetworkACTION) _RGISAnNetworkDownStreamAction);
+					netIF->DownStreamSearch (netIF->ToCell (_RGISAnNetworkCellRec), _RGISAnNetworkDownStreamAction);
 					}
 				else	_RGISAnNetVertex = 0;
 				lineIF->Vertexes (lineRec,_RGISAnNetCoord,_RGISAnNetVertex);

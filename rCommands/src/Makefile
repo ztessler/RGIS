@@ -58,6 +58,7 @@ UTILS = $(BIN)/dsAggregate\
         $(BIN)/netTrim\
         $(BIN)/netDefragment\
         $(BIN)/netCells2Grid\
+        $(BIN)/netCellSearch\
         $(BIN)/netConfluence\
         $(BIN)/netCreatePnts\
         $(BIN)/pntGridSampling\
