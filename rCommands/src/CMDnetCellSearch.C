@@ -19,7 +19,7 @@ static bool _CMDnetCellSearchPrintID (DBNetworkIF *netIF, DBObjRecord *cellRec,v
 	dataPtr = dataPtr;
 	netIF   = netIF;
 	
-	printf ("%d\n",cellRec->RowID ());
+	printf ("%d\n",cellRec->RowID () + 1);
 	return (true);
 	}
 
