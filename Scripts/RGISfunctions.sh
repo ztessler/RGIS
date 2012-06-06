@@ -167,6 +167,54 @@ function RGISlookupSubject ()
 		(wind_speed)                                # 53
 			echo "WindSpeed"
 		;;
+		(relief_max)                                # 54
+			echo "Relief-Max"
+		;;
+		(ice_cover)                                # 55
+			echo "Ice-Cover"
+		;;
+		(time_steps)                                # 56
+			echo "Time-Steps"
+		;;
+		(temperature_accumulation)                  # 57
+			echo "Temperature-Accumlation"
+		;;
+		(discharge_accumulation)                     # 58
+			echo "Discharge-Accumulation"
+		;;
+		(bqart_gnp)                                # 59
+			echo "BQART-GNP"
+		;;
+		(bqart_lithology)                           # 60
+			echo "BQART-Lithology"
+		;;
+		(slope_min)                                # 61
+			echo "Slope-Min"
+		;;
+		(bankfull_q2)                                # 62
+			echo "Bankfull-Q2"
+		;;
+		(bankfull_q5)                                # 63
+			echo "Bankfull-Q5"
+		;;
+		(bankfull_q10)                                # 64
+			echo "Bankfull-Q10"
+		;;
+		(bankfull_q25)                                # 65
+			echo "Bankfull-Q25"
+		;;
+		(bankfull_q50)                                # 66
+			echo "Bankfull-Q50"
+		;;
+		(bankfull_q100)                                # 67
+			echo "Bankfull-Q100"
+		;;
+		(bankfull_q200)                                # 68
+			echo "Bankfull-Q200"
+		;;
+		(bankfull_q)                                # 69
+			echo "Bankfull-Q"
+		;;
 		(*)
 			echo "${variable}"
 			echo "Defaulting directory: ${variable}" > /dev/stderr
