@@ -114,6 +114,7 @@ int MFDateGetCurrentDay   () { return (_MFCurrentDate.Day); }
 int MFDateGetCurrentMonth () { return (_MFCurrentDate.Month); }
 int MFDateGetCurrentYear  () { return (_MFCurrentDate.Year); }
 int MFDateGetDayOfYear    () { return (_MFCurrentDate.DayOfYear); }
+int MFDateGetYearLength   () { return (365 + _MFDateLeapYear(_MFCurrentDate.Year)); }
 int MFDateGetMonthLength  () { return (_MFDateMonthLength (_MFCurrentDate.Year,_MFCurrentDate.Month)); }
 
 bool MFDateSetStart   (char *startDate)   { return (_MFDateSet (&_MFStartDate,  startDate)); } 
