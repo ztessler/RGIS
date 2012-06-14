@@ -148,6 +148,7 @@ char *MFDateGetCurrent ();
 int   MFDateGetDayOfYear    ();
 int   MFDateGetDayOfMonth   ();
 int   MFDateGetMonthLength  ();
+int   MFDateGetYearLength  ();
 int   MFDateGetCurrentDay   ();
 int   MFDateGetCurrentMonth ();
 int   MFDateGetCurrentYear  ();
