@@ -272,6 +272,30 @@ double MFVarGetFloat (int id,int itemID,double missingVal) {
 	}
  	return (var->Flux ? val = val / (double) var->NStep : val);
 }
+double MFVarGetFloat2 (char *file, int line, int id,int itemID,double missingVal) {
+	double val;
+	MFVariable_t *var;
+
+	if (((var = MFVarGetByID (id)) == (MFVariable_t *) NULL) || (itemID < 0) || (itemID >= var->Header.ItemNum)) {
+		CMmsgPrint (CMmsgAppError,"Error: Invalid variable [%d,%d] in: MFVarGetFloat ()\n",id,itemID);
+		CMmsgPrint (CMmsgAppError,"Called from %s:%d\n",file,line);
+		return (MFDefaultMissingFloat);
+	}
+	if ((itemID == 0) && (var->Set != true)) CMmsgPrint (CMmsgWarning,"Warning: Unset variable [%s]!\n",var->Name);
+	if (_MFVarTestMissingVal (var,itemID)) return (missingVal);
+
+	switch (var->Header.DataType) {
+		case MFByte:	val = (double) (((char *)   var->Data) [itemID]); break;
+		case MFShort:	val = (double) (((short *)  var->Data) [itemID]); break;
+		case MFInt:		val = (double) (((int *)    var->Data) [itemID]); break;
+		case MFFloat:	val = (double) (((float *)  var->Data) [itemID]); break;
+		case MFDouble:	val = (double) (((double *) var->Data) [itemID]); break;
+		default:
+			CMmsgPrint (CMmsgAppError,"Error: Invalid variable [%s,%d] type [%d] in %s:%d\n",var->Name, itemID, var->Header.DataType,__FILE__,__LINE__);
+			return (MFDefaultMissingFloat);
+	}
+ 	return (var->Flux ? val = val / (double) var->NStep : val);
+}
 
 void MFVarSetInt (int id,int itemID,int val) {
 	MFVariable_t *var;
