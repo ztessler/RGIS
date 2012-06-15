@@ -96,6 +96,7 @@ void   MFVarSetInt (int,int,int);
 int    MFVarGetInt (int,int,int);
 void   MFVarSetFloat (int,int,double);
 double MFVarGetFloat (int,int,double);
+double MFVarGetFloat2 (char*, int, int,int,double);
 int    MFVarGetTStep (int);
 bool   MFVarTestMissingVal (int, int);
 void   MFVarSetMissingVal  (int, int);
