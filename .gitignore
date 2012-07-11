@@ -252,6 +252,7 @@
 /rCommands/obj/CMDnetBasinProf.o
 /rCommands/obj/CMDnetBasinStats.o
 /rCommands/obj/CMDnetBuild.o
+/rCommands/obj/CMDnetCellSearch.o
 /rCommands/obj/CMDnetCellSlopes.o
 /rCommands/obj/CMDnetCells2Grid.o
 /rCommands/obj/CMDnetConfluence.o
