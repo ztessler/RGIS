@@ -284,7 +284,8 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*conf) ()) {
 
 	for (var = MFVarGetByID (varID = 1);var != (MFVariable_t *) NULL;var = MFVarGetByID (++varID)) {
 		if (var->InStream == (MFDataStream_t *) NULL) var->TStep = MFTimeStepDay;
-		else if (!MFDateSetCurrent (var->Header.Date)) CMmsgPrint (CMmsgWarning,"Warning: Invalid date in input (%s)",var->Name);
+		else if ((var->Initial == false) && (MFDateSetCurrent (var->Header.Date) == false))
+			CMmsgPrint (CMmsgWarning,"Warning: Invalid date in input (%s)",var->Name);
 		if (var->Flux) sprintf (var->Unit + strlen (var->Unit),"/%s",MFDateTimeStepUnit (var->TStep));
 	}
 	MFDateRewind ();
