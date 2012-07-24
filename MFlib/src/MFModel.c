@@ -377,7 +377,7 @@ static bool _MFModelReadInput (char *time)
 		if (var->InStream == (MFDataStream_t *) NULL) var->Set = var->Initial;
 		else {
 			var->Set = true;
-			if (MFDateCompare (time,var->Header.Date)) continue;
+			if (MFDateCompare (time,var->Header.Date,var->Initial)) continue;
 			do	{
 				switch (MFDataStreamRead (var)) {
 					case CMfailed:
@@ -397,7 +397,7 @@ static bool _MFModelReadInput (char *time)
 						}
 					default: break;
 				}
-			} while (!MFDateCompare (time,var->Header.Date));
+			} while (!MFDateCompare (time,var->Header.Date,var->Initial));
 			switch (var->TStep) {
 				default:	var->NStep = 1; break;
 				case MFTimeStepMonth: var->NStep = MFDateGetMonthLength (); break;
