@@ -157,7 +157,7 @@ int main (int argc,char *argv [])
 		delete netData;
 		return (CMfailed);
 		}
-	else if ((gridType == DBTypeGridDiscrete) && !DBTableFieldIsNumeric  (field))
+	else if ((gridType == DBTypeGridContinuous) && !DBTableFieldIsNumeric  (field))
 		{
 		CMmsgPrint (CMmsgUsrError,"Non-numeric field");
 		delete netData;
