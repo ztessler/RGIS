@@ -45,8 +45,8 @@ void CMoptPrintList (CMmsgType msgType, const char *optName, const char *choices
 	CMmsgPrint (msgType,"\n");
 }
 
-const char *CMfileName (const char *arg0) {
+const char *CMfileName (const char *fullPath) {
 	int i;
-	for (i = strlen (arg0) - 1;i > 0;i--) if (arg0 [i] == '/') {i++; break; }
-	return (arg0 + i);
+	for (i = strlen (fullPath) - 1;i > 0;i--) if (fullPath [i] == '/') {i++; break; }
+	return (fullPath + i);
 }

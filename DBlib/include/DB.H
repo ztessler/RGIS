@@ -1473,6 +1473,7 @@ class DBDataset
 #define DBMathOperandVar    0x0020
 #define DBMathOperandExpr   0x0030
 #define DBMathOperandCond   0x0040
+#define DBMathOperandRowID  0x0050
 
 #define DBMathOperatorArgs  0x0800
 #define DBMathOperatorCond  0x0400
