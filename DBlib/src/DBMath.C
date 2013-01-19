@@ -739,6 +739,17 @@ DBInt DBMathOperand::Expand (DBObjectLIST<DBObject> *variables)
 		return (DBSuccess);
 		}
 
+	if (strcmp (expression,"rowID") == 0)
+		{
+		OprTypeVAR = DBMathOperandRowID;
+		VarTypeVAR = DBVariableInt;
+
+		Var.Int = 1;
+//		CMmsgPrint (CMmsgDebug,"True");
+		free (expression);
+		return (DBSuccess);
+		}
+
 	if (strcmp (expression,"false") == 0)
 		{
 		OprTypeVAR = DBMathOperandConst;
@@ -813,6 +824,7 @@ DBInt DBMathOperand::Int (DBObjRecord *record)
 		case DBMathOperandVar:			return (Var.FldPTR->Int (record));
 		case DBMathOperandExpr:
 		case DBMathOperandCond:			return (Var.ExpPTR->Int (record));
+		case DBMathOperandRowID:      return (record->RowID ());
 		default:	break;
 		}
 	return (DBDefaultMissingIntVal);
@@ -834,6 +846,7 @@ DBFloat DBMathOperand::Float (DBObjRecord *record)
 		case DBMathOperandVar:			return (Var.FldPTR->Float (record));
 		case DBMathOperandExpr:
 		case DBMathOperandCond:			return (Var.ExpPTR->Float (record));
+		case DBMathOperandRowID:      return ((DBFloat) record->RowID ());
 		default:	break;
 		}
 	return (DBDefaultMissingFloatVal);
