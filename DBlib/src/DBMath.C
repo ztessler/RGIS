@@ -824,7 +824,7 @@ DBInt DBMathOperand::Int (DBObjRecord *record)
 		case DBMathOperandVar:			return (Var.FldPTR->Int (record));
 		case DBMathOperandExpr:
 		case DBMathOperandCond:			return (Var.ExpPTR->Int (record));
-		case DBMathOperandRowID:      return (record->RowID ());
+		case DBMathOperandRowID:      return (record->RowID () + 1);
 		default:	break;
 		}
 	return (DBDefaultMissingIntVal);
@@ -846,7 +846,7 @@ DBFloat DBMathOperand::Float (DBObjRecord *record)
 		case DBMathOperandVar:			return (Var.FldPTR->Float (record));
 		case DBMathOperandExpr:
 		case DBMathOperandCond:			return (Var.ExpPTR->Float (record));
-		case DBMathOperandRowID:      return ((DBFloat) record->RowID ());
+		case DBMathOperandRowID:      return ((DBFloat) record->RowID () + 1);
 		default:	break;
 		}
 	return (DBDefaultMissingFloatVal);
