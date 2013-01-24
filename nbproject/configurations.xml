@@ -270,6 +270,7 @@
           <in>CMDtblMergeDate.C</in>
           <in>CMDtblRedefField.C</in>
           <in>CMDtblSelectRec.C</in>
+          <in>CMDtblSortRec.C</in>
           <in>CMDtblSplitDate.C</in>
           <in>CMDtblStatistics.C</in>
           <in>CMDtblTopoCalc.C</in>

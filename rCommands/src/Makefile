@@ -85,6 +85,7 @@ UTILS = $(BIN)/dsAggregate\
         $(BIN)/tblMergeCoord\
         $(BIN)/tblDecimalDate\
         $(BIN)/tblMergeDate\
+        $(BIN)/tblSortRec\
         $(BIN)/tblSplitDate\
         $(BIN)/tblStatistics\
         $(BIN)/getHeader\
