@@ -151,6 +151,9 @@ int main (int argc,char *argv [])
 				free (fields);
 				return (CMfailed);
 				}
+			if (fields [fieldID].Ascending())
+				  fieldPTR->Flags (DBObjectFlagSortReversed, DBClear);
+			else fieldPTR->Flags (DBObjectFlagSortReversed, DBSet);
 			fieldList->Add (fieldPTR);
 			}
 		table->ListSort (fieldList);
