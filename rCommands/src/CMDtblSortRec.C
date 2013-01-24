@@ -32,7 +32,7 @@ int main (int argc,char *argv [])
 	{
 	int argPos, argNum = argc, ret, fieldNum = 0, verbose = false;
 	char *tableName = (char *) NULL;
-	DBObjData *data;
+	DBObjData   *data;
 	DBObjectLIST<DBObjTableField> *fieldList;
 	DBObjTable  *table;
 	DBObjTableField *fieldPTR;
