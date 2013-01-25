@@ -22,7 +22,7 @@ extern "C" {
 #endif
 
 /*maximum size allocated for each cell*/
-#define CELL_SIZE 500
+#define CELL_SIZE 50 // TODO "This is arbitrary!"
 /************************************************
  * FLib header file
  * Shared resource of functions for all of the "F"
