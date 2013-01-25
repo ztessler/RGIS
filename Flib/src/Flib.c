@@ -86,12 +86,10 @@ char** readRowOne( FILE* fp, int* numCols )
 //=============================================================
 //this is just whet I normally use for reading a row from a file.
 //==============================================================
-char* getRow( FILE* inFile )
+char* getRow( FILE *fp )
 {
-  char* buffer = (char *) NULL;
-  int size = 0;
-  buffer = FGetLine(buffer, &size, inFile);
-  return (buffer);
+  char* row = (char*)malloc (1000); // TODO "This might be too low in some cases!
+  if( fgets(row,1000,fp) == NULL ) return (char *) NULL; return row;
 }
 
 //==========================================================
