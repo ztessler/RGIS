@@ -32,6 +32,8 @@ int main (int argc,char *argv [])
 	{
 	int argPos, argNum = argc, ret, fieldNum = 0, verbose = false;
 	char *tableName = (char *) NULL;
+	char *title  = (char *) NULL, *subject = (char *) NULL;
+	char *domain = (char *) NULL, *version = (char *) NULL;
 	DBObjData   *data;
 	DBObjectLIST<DBObjTableField> *fieldList;
 	DBObjTable  *table;
@@ -90,6 +92,38 @@ int main (int argc,char *argv [])
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos) break;
 			continue;
 			}
+		if (CMargTest (argv [argPos],"-t","--title"))
+			{
+			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos)
+				{ CMmsgPrint (CMmsgUsrError,"Missing title!");        return (CMfailed); }
+			title = argv [argPos];
+			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos) break;
+			continue;
+			}
+		if (CMargTest (argv [argPos],"-u","--subject"))
+			{
+			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos)
+				{ CMmsgPrint (CMmsgUsrError,"Missing subject!");      return (CMfailed); }
+			subject = argv [argPos];
+			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos) break;
+			continue;
+			}
+		if (CMargTest (argv [argPos],"-d","--domain"))
+			{
+			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos)
+				{ CMmsgPrint (CMmsgUsrError,"Missing domain!");       return (CMfailed); }
+			domain  = argv [argPos];
+			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos) break;
+			continue;
+			}
+		if (CMargTest (argv [argPos],"-v","--version"))
+			{
+			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos)
+				{ CMmsgPrint (CMmsgUsrError,"Missing version!");      return (CMfailed); }
+			version  = argv [argPos];
+			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos) break;
+			continue;
+			}
 		if (CMargTest (argv [argPos],"-V","--verbose"))
 			{
 			verbose = true;
@@ -100,9 +134,12 @@ int main (int argc,char *argv [])
 			{
 			CMmsgPrint (CMmsgInfo,"%s [options] <input file> <output file>",CMfileName(argv[0]));
 			CMmsgPrint (CMmsgInfo,"     -a,--table      [ table name ]");
-			CMmsgPrint (CMmsgInfo,"     -c,--condition  [ fieldname expression ]");
 			CMmsgPrint (CMmsgInfo,"     -A,--ascending  [ fieldname ]");
 			CMmsgPrint (CMmsgInfo,"     -D,--descending [ fieldname ]");
+			CMmsgPrint (CMmsgInfo,"     -t,--title      [dataset title]");
+			CMmsgPrint (CMmsgInfo,"     -u,--subject    [subject]");
+			CMmsgPrint (CMmsgInfo,"     -d,--domain     [domain]");
+			CMmsgPrint (CMmsgInfo,"     -v,--version    [version]");
 			CMmsgPrint (CMmsgInfo,"     -V,--verbose");
 			CMmsgPrint (CMmsgInfo,"     -h,--help");
 			if (fields != (CMDtblSortField *) NULL) free (fields);
@@ -128,6 +165,11 @@ int main (int argc,char *argv [])
 	data = new DBObjData ();
 	if (((argNum > 1) && (strcmp (argv [1],"-") != 0) ? data->Read (argv [1]) : data->Read (stdin)) == DBFault)
 		{ if (fields != (CMDtblSortField *) NULL) free (fields); delete data; return (CMfailed); }
+
+	if (title	!= (char *) NULL) data->Name (title);
+	if (subject != (char *) NULL) data->Document (DBDocSubject,subject);
+	if (domain	!= (char *) NULL)	data->Document (DBDocGeoDomain,domain);
+	if (version != (char *) NULL) data->Document (DBDocVersion,version);	
 
 	if (tableName == (char *) NULL) tableName = DBrNItems;
 
