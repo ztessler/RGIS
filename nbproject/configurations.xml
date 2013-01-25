@@ -462,11 +462,13 @@
           <cTool>
             <incDir>
               <pElem>/usr/local/share/ghaas/include</pElem>
+              <pElem>/sw/lib/pgplot</pElem>
             </incDir>
           </cTool>
           <ccTool>
             <incDir>
               <pElem>/usr/local/share/ghaas/include</pElem>
+              <pElem>/sw/lib/pgplot</pElem>
             </incDir>
           </ccTool>
         </makeTool>
