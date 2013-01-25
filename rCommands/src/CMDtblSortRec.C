@@ -196,7 +196,7 @@ int main (int argc,char *argv [])
 			if (fields [fieldID].Ascending())
 				  fieldPTR->Flags (DBObjectFlagSortReversed, DBClear);
 			else fieldPTR->Flags (DBObjectFlagSortReversed, DBSet);
-			fieldList->Add (fieldPTR);
+			fieldList->Add (new DBObjTableField (*fieldPTR));
 			}
 		table->ListSort (fieldList);
 		table->ItemSort ();
