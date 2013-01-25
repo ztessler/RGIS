@@ -17,7 +17,7 @@ Unknown
 //----------------------------------------
 char* formatString( const fDataType t )
 {
-  char* ret = (char*)malloc(100);
+  static char ret [32]; // TODO "This is dangerous!"
 
   switch(t.type)
     {
@@ -56,28 +56,28 @@ int findFieldNum( const char* key, const char** args )
 fDataType readDataType(char* line)
 {
   fDataType t;
-  char* val = (char*)malloc(50);
+  char val [50];
   char* c = line;
   int i = 0;
   t = newFDataType();
   while( (*c != '\t') && (*c != '\n') && (*c != '\0') ) c++;
   if(*c=='\n' || *c=='\0') return t; c++; c++;
   
-  if(*c=='s'){ t.type = STRING; free(val); return t; }
+  if(*c=='s'){ t.type = STRING; return t; }
 
   while(*c >= '0' && *c <= '9')  val[i++] = *(c++); val[i] = '\0';
   t.sigDigits = atoi(val);
   
-  if(*c != '.'){ t.type = INT; free(val); return t; } c++; i = 0;
+  if(*c != '.'){ t.type = INT;  return t; } c++; i = 0;
   
   while(*c >= '0' && *c <= '9')  val[i++] = *(c++); val[i] = '\0';
   t.inSigDigits = atoi(val);
-  t.type = FLOAT; free(val); return t;
+  t.type = FLOAT; return t;
 }
 //=======================================================
 fData* readDataTypes( FILE* typesFP )
 {
-  char* currentLine = (char*)malloc(1000);
+  char currentLine [1000]; // TODO "This is dangerous!"
   fData* data = (fData*)malloc(sizeof(fData));
   int i=0,j=0;
   char* c;
@@ -98,7 +98,6 @@ fData* readDataTypes( FILE* typesFP )
       data->fieldNames[i][j] = '\0';
       data->types[i++] = readDataType( c );
     }
-  free(currentLine);
   return data;
 }
 //=======================================================
