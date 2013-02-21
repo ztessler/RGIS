@@ -69,24 +69,24 @@ void DBObjData::Initialize ()
 	{
 	TablesPTR = new DBObjectLIST<DBObjTable>  ("Data Tables");
 	DocsPTR   = new DBObjectLIST<DBObjRecord> ("Doc Records");
-	ArraysPTR   = new DBObjectLIST<DBObjRecord> ("Data Records");
-	DispPTR = new DBObjectLIST<DBObject> ("Data Display");
+	ArraysPTR = new DBObjectLIST<DBObjRecord> ("Data Records");
+	DispPTR   = new DBObjectLIST<DBObject>    ("Data Display");
 	LinkedDataPTR = (DBObjData *)  NULL;
 	strcpy (FileNameSTR,"");
 	}
 
-DBObjTable *_DBCreateDataBlockSymbols ();
-DBObjTable *_DBCreateDataBlockPoints	 ();
-DBObjTable *_DBCreateDataBlockNodes	 ();
-DBObjTable *_DBCreateDataBlockLines	 ();
-DBObjTable *_DBCreateDataBlockContours();
-DBObjTable *_DBCreateDataBlockPolygons();
-DBObjTable *_DBCreateDataBlockNetBasins();
-DBObjTable *_DBCreateDataBlockNetCells ();
-DBObjTable *_DBCreateDataBlockGridLayers ();
+DBObjTable *_DBCreateDataBlockSymbols           ();
+DBObjTable *_DBCreateDataBlockPoints	         ();
+DBObjTable *_DBCreateDataBlockNodes	            ();
+DBObjTable *_DBCreateDataBlockLines	            ();
+DBObjTable *_DBCreateDataBlockContours          ();
+DBObjTable *_DBCreateDataBlockPolygons          ();
+DBObjTable *_DBCreateDataBlockNetBasins         ();
+DBObjTable *_DBCreateDataBlockNetCells          ();
+DBObjTable *_DBCreateDataBlockGridLayers        ();
 DBObjTable *_DBCreateDataBlockGridVariableStats ();
 DBObjTable *_DBCreateDataBlockGridCategoryTable ();
-DBObjTable *_DBCreateDataBlockRelateTable ();
+DBObjTable *_DBCreateDataBlockRelateTable       ();
 
 DBObjData::DBObjData (DBObjData &data) : DBObject (data), DBDataHeader (data._Header ())
 	{

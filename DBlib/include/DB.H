@@ -1610,6 +1610,8 @@ DBInt      DBInfoGetFields      (DBObjTable *,const char *);
 DBInt      DBInfoGetTable       ( DBObjTable *,const char *);
 DBInt      DBImportARCVector    (DBObjData *,const char *,const char *,const char *);
 DBInt      DBImportASCIINet     (DBObjData *,const char *);
+DBInt      DBImportASCIITable   (DBObjTable *,const char *);
+DBInt      DBImportASCIITable   (DBObjTable *,FILE *);
 DBInt      DBImportDMGrid       (DBObjData *,FILE *);
 DBInt      DBImportDMGrid       (DBObjData *,const char *);
 DBInt      DBImportNetCDF       (DBObjData *,const char *);

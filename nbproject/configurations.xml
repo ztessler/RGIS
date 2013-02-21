@@ -36,7 +36,6 @@
           <in>DBExpARCGrd.C</in>
           <in>DBExpARCNet.C</in>
           <in>DBExpARCPnt.C</in>
-          <in>DBExpASCII.C</in>
           <in>DBFile.C</in>
           <in>DBGCont2Net.C</in>
           <in>DBGrid2Grid.C</in>
@@ -46,6 +45,7 @@
           <in>DBImpARCPoint.C</in>
           <in>DBImpARCPoly.C</in>
           <in>DBImpASCIINet.C</in>
+          <in>DBImpExpASCII.C</in>
           <in>DBImpExpDMGrd.C</in>
           <in>DBImpExpNetCDF.C</in>
           <in>DBInfoDB.C</in>
@@ -256,6 +256,7 @@
           <in>CMDrgis2table.C</in>
           <in>CMDrgisMetadb.C</in>
           <in>CMDsetHeader.C</in>
+          <in>CMDtable2rgis.C</in>
           <in>CMDtblAddField.C</in>
           <in>CMDtblCalculate.C</in>
           <in>CMDtblConv2Point.C</in>

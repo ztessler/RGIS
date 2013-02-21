@@ -93,6 +93,7 @@ UTILS = $(BIN)/dsAggregate\
         $(BIN)/rgis2asciigrid\
         $(BIN)/rgis2domain\
         $(BIN)/rgis2table\
+        $(BIN)/table2rgis\
         $(BIN)/rgis2dm\
         $(BIN)/dm2rgis\
         $(BIN)/rgis2ds\

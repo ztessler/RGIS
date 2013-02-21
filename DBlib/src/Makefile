@@ -24,7 +24,7 @@ OBJS = $(OBJ)/DBDataset.o\
        $(OBJ)/DBImpExpDMGrd.o\
        $(OBJ)/DBImpExpNetCDF.o\
        $(OBJ)/DBInfoDB.o\
-       $(OBJ)/DBExpASCII.o\
+       $(OBJ)/DBImpExpASCII.o\
        $(OBJ)/DBExpARCPnt.o\
        $(OBJ)/DBExpARCGrd.o\
        $(OBJ)/DBExpARCNet.o\
