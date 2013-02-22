@@ -265,6 +265,7 @@ DBInt DBImportASCIITable (DBObjTable *table, FILE *fp)
 				ret = DBFault;
 				goto Stop;		
 				}
+			if (records[recordID]->Field(fieldID) == (char *) NULL) continue;
 			switch (header->Type(fieldID))
 				{
 				default:
