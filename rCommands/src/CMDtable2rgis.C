@@ -102,7 +102,7 @@ int main (int argc,char *argv [])
 		{
 		if (((argNum > 2) && (strcmp (argv [2],"-") != 0) ? data->Write (argv [2]) : data->Write (stdout)) == DBFault)
 			{ delete data; return (CMfailed); }
-		}	
+		}
 	delete data;
 	if (verbose) RGlibPauseClose ();
 	return (ret);
