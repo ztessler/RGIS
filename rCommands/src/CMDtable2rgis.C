@@ -93,18 +93,17 @@ int main (int argc,char *argv [])
 	data->Document (DBDocGeoDomain,domain);
 	data->Document (DBDocVersion,  version);
 
-	if ((argNum > 2) && (strcmp (argv [1],"-") != 0))
+	if ((argNum > 1) && (strcmp (argv [1],"-") != 0))
 		ret = DBImportASCIITable (data->Table (DBrNItems),argv [1]);
 	else
 		ret = DBImportASCIITable (data->Table (DBrNItems),stdin);
 
 	if (ret == CMsucceeded)
 		{
-		if (((argNum > 1) && (strcmp (argv [2],"-") != 0) ? data->Write (argv [2]) : data->Write (stdin)) == DBFault)
+		if (((argNum > 2) && (strcmp (argv [2],"-") != 0) ? data->Write (argv [2]) : data->Write (stdout)) == DBFault)
 			{ delete data; return (CMfailed); }
-		}	
+		}
 	delete data;
 	if (verbose) RGlibPauseClose ();
 	return (ret);
 	}
-
