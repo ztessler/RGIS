@@ -22,9 +22,7 @@ INCLUDES =
 UTILS = $(BIN)/FAccumulate\
         $(BIN)/FCut\
         $(BIN)/FSort\
-        $(BIN)/FStat\
-        $(BIN)/Ftbl2rgis\
-        $(BIN)/FPrintDataTypes
+        $(BIN)/FStat
 
 all: $(UTILS)
 

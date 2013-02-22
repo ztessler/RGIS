@@ -379,11 +379,9 @@
         <df name="src">
           <in>FAccumulate.c</in>
           <in>FCut.c</in>
-          <in>FPrintDataTypes.c</in>
           <in>FReg.c</in>
           <in>FSort.c</in>
           <in>FStat.c</in>
-          <in>Ftbl2rgis.C</in>
         </df>
       </df>
       <df name="UIlib">
@@ -953,8 +951,6 @@
             <pElem>rGIS/include</pElem>
           </incDir>
         </cTool>
-      </item>
-      <item path="tfCommands/src/Ftbl2rgis.C" ex="true" tool="1" flavor2="0">
       </item>
     </conf>
   </confs>
