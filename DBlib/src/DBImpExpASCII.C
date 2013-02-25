@@ -221,13 +221,14 @@ DBInt DBImportASCIITable (DBObjTable *table, FILE *fp)
 						}
 					else header->Type (fieldID,DBVariableString);
 					}
+				if ((header->Type (fieldID) == DBVariableInt) && (fieldSTR [0] == '0')) header->Type (fieldID,DBVariableString);
 				}
-			if ((header->Type (fieldID) == DBVariableInt) && (fieldSTR [0] == '0')) header->Type (fieldID,DBVariableString);
 			}
 		}
 	for (fieldID = 0; fieldID < header->FieldNum(); fieldID++)
 		{
 		format [0] = '%';
+		if (header->Length(fieldID) == 0) continue;
 		switch (header->Type (fieldID))
 			{
 			default:
@@ -259,12 +260,7 @@ DBInt DBImportASCIITable (DBObjTable *table, FILE *fp)
 			}
 		for (fieldID = 0; fieldID < header->FieldNum(); fieldID++)
 			{
-			if ((fieldFLD = table->Field(fieldID)) == (DBObjTableField *) NULL)
-				{
-				CMmsgPrint (CMmsgAppError, "Invalid field in: %s %d",__FILE__,__LINE__);
-				ret = DBFault;
-				goto Stop;		
-				}
+			if ((fieldFLD = table->Field(header->Field (fieldID))) == (DBObjTableField *) NULL) continue;
 			if (records[recordID]->Field(fieldID) == (char *) NULL) continue;
 			switch (header->Type(fieldID))
 				{
