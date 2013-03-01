@@ -158,6 +158,7 @@ void UI2DView::Clear ()
 
 	{
 	short x,y,width,height;
+	XPoint winPos;
 	DBCoordinate lowerLeft = ActiveEXT.LowerLeft, upperRight = ActiveEXT.UpperRight;
 
 	Map2Window (lowerLeft.X, upperRight.Y,&x,&y);
@@ -165,6 +166,8 @@ void UI2DView::Clear ()
 	width  -= x;
 	height -= y;
 
+	for (winPos.y = y;winPos.y < y + height;++winPos.y)
+		for (winPos.x = x;winPos.x < x + width;++winPos.x) XPutPixel (Image, winPos.x, winPos.y, 0);
 	XAddPixel (Image,UIColor (UIColorStandard,0));
 	XClearArea (XtDisplay (DrawingAreaW),XtWindow (DrawingAreaW),x,y,width,height,false);
 	}
