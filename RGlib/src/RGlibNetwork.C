@@ -63,6 +63,7 @@ DBInt RGlibNetworkToGrid (DBObjData *netData,DBObjTableField *field, DBObjData *
 		case DBTypeGridDiscrete:
 			{
 			char nameStr [DBStringLength];
+			static char *strPtr;
 			DBObjRecord *itemRec;
 			DBObjRecord *symRec = (grdData->Table (DBrNSymbols))->Item ();
 			DBObjTable *itemTable	 = grdData->Table (DBrNItems);
@@ -87,20 +88,39 @@ DBInt RGlibNetworkToGrid (DBObjData *netData,DBObjTableField *field, DBObjData *
 				if (DBPause (cellID * 100 / netIF->CellNum ())) goto Stop;
 				cellRec = netIF->Cell (cellID);
 				if ((cellRec->Flags () & DBObjectFlagIdle) == DBObjectFlagIdle) continue;
-				if ((intVal = field->Int (cellRec)) == field->IntNoData ())
-					gridIF->Value (netIF->CellPosition (cellRec),DBFault);
+				if (DBTableFieldIsNumeric  (field))
+					{
+					if ((intVal = field->Int (cellRec)) == field->IntNoData ())
+						gridIF->Value (netIF->CellPosition (cellRec),DBFault);
+					else
+						{
+						sprintf (nameStr,"Category%04d",intVal);
+						if ((itemRec = itemTable->Item (nameStr)) == (DBObjRecord *) NULL)
+							{
+							if ((itemRec = itemTable->Add (nameStr)) == (DBObjRecord *) NULL)
+								{ CMmsgPrint (CMmsgAppError, "Item Object Creation Error in: %s %d",__FILE__,__LINE__); return (DBFault); }
+							gridValueFLD->Int (itemRec,intVal);
+							gridSymbolFLD->Record (itemRec,symRec);
+							}
+						gridIF->Value (netIF->CellPosition (cellRec),itemRec->RowID ());
+						}
+					}
 				else
 					{
-					sprintf (nameStr,"Category%04d",intVal);
-					if ((itemRec = itemTable->Item (nameStr)) == (DBObjRecord *) NULL)
+					if ((strPtr = field->String(cellRec)) == (char *) NULL)
+						gridIF->Value (netIF->CellPosition (cellRec),DBFault);
+					else
 						{
-						if ((itemRec = itemTable->Add (nameStr)) == (DBObjRecord *) NULL)
-							{ CMmsgPrint (CMmsgAppError, "Item Object Creation Error in: %s %d",__FILE__,__LINE__); return (DBFault); }
-						gridValueFLD->Int (itemRec,intVal);
-						gridSymbolFLD->Record (itemRec,symRec);
+						if ((itemRec = itemTable->Item (strPtr)) == (DBObjRecord *) NULL)
+							{
+							if ((itemRec = itemTable->Add (strPtr)) == (DBObjRecord *) NULL)
+								{ CMmsgPrint (CMmsgAppError, "Item Object Creation Error in: %s %d",__FILE__,__LINE__); return (DBFault); }
+							gridValueFLD->Int (itemRec,itemRec->RowID ());
+							gridSymbolFLD->Record (itemRec,symRec);
+							}
+						gridIF->Value (netIF->CellPosition (cellRec),itemRec->RowID ());
 						}
-					gridIF->Value (netIF->CellPosition (cellRec),itemRec->RowID ());
-					}
+					}	
 				}
 			itemTable->ListSort (gridValueFLD);
 			itemTable->ItemSort ();

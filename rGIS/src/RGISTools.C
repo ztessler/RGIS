@@ -25,38 +25,15 @@ static void _RGISToolsImportASCIITableCBK (Widget widget,RGISWorkspace *workspac
 	if (UIDataHeaderForm (data))
 		{
 		char *fileName;
-		char buffer [2048], *fieldToken;
-		DBInt bufferLength, i;
-		DBObjTable *table = data->Table (DBrNItems);
-		DBObjTableField *field;
-		FILE *inFile;
-		DBTableIF *tableIF;
-		if ((fileName = UIFileSelection (fileSelect,true)) == NULL) { delete data; return; }
-		if ((inFile = fopen (fileName,"r")) == (FILE *) NULL)
-			{ CMmsgPrint (CMmsgSysError, "File Openning Error in: %s %d",__FILE__,__LINE__); delete data; return; }
-		if (fgets (buffer,sizeof (buffer) - 1,inFile) == NULL)
-			{ CMmsgPrint (CMmsgSysError, "File Reading Error in: %s %d",__FILE__,__LINE__); fclose (inFile); delete data; return; }
 
-		bufferLength = strlen (buffer);
-		while ((buffer [bufferLength - 1] == '\n') || (buffer [bufferLength - 1] == '\r'))
-			{ buffer [bufferLength - 1] = '\0'; bufferLength = strlen (buffer); }
-		fieldToken = buffer;
-		do	{
-			for (i = 0;fieldToken + i < buffer + bufferLength;++i) if (fieldToken [i] == DBASCIISeparator)	break;
-			fieldToken [i] = '\0';
-			if (fieldToken [0] == '\"' || fieldToken [0] == '\'')
-				{ fieldToken [--i] = '\0'; fieldToken++;}
-			field = new DBObjTableField (fieldToken,DBTableFieldInt,"%8d",sizeof (DBInt),false);
-			table->AddField (field);
-			fieldToken = fieldToken + i + 1;
-			} while (buffer + bufferLength > fieldToken );
-		fclose (inFile);
-		if (UITableRedefineFields (table) != true)	{ delete data;  return; }
-		tableIF  = new DBTableIF (data);
-		if (tableIF->AppendASCII (fileName) == DBFault)
-				delete data;
-		else 	workspace->CurrentData  (data);
-		delete tableIF;
+		if ((fileName = UIFileSelection (fileSelect,true)) == NULL) { delete data; return; }
+
+		if (DBImportASCIITable (data->Table (DBrNItems),fileName) == DBFault)
+			{ UIMessage ((char *) "Import failed!"); delete data; return; }
+
+		if (UITableRedefineFields (data->Table (DBrNItems)) != true)	{ delete data;  return; }
+
+		workspace->CurrentData  (data);
 		}
 	else delete data;
 	}

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="80">
+<configurationDescriptor version="84">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <df name="RGIS" root=".">
       <df name="CMlib">
@@ -36,7 +36,6 @@
           <in>DBExpARCGrd.C</in>
           <in>DBExpARCNet.C</in>
           <in>DBExpARCPnt.C</in>
-          <in>DBExpASCII.C</in>
           <in>DBFile.C</in>
           <in>DBGCont2Net.C</in>
           <in>DBGrid2Grid.C</in>
@@ -46,6 +45,7 @@
           <in>DBImpARCPoint.C</in>
           <in>DBImpARCPoly.C</in>
           <in>DBImpASCIINet.C</in>
+          <in>DBImpExpASCII.C</in>
           <in>DBImpExpDMGrd.C</in>
           <in>DBImpExpNetCDF.C</in>
           <in>DBInfoDB.C</in>
@@ -256,6 +256,7 @@
           <in>CMDrgis2table.C</in>
           <in>CMDrgisMetadb.C</in>
           <in>CMDsetHeader.C</in>
+          <in>CMDtable2rgis.C</in>
           <in>CMDtblAddField.C</in>
           <in>CMDtblCalculate.C</in>
           <in>CMDtblConv2Point.C</in>
@@ -270,6 +271,7 @@
           <in>CMDtblMergeDate.C</in>
           <in>CMDtblRedefField.C</in>
           <in>CMDtblSelectRec.C</in>
+          <in>CMDtblSortRec.C</in>
           <in>CMDtblSplitDate.C</in>
           <in>CMDtblStatistics.C</in>
           <in>CMDtblTopoCalc.C</in>
@@ -377,11 +379,9 @@
         <df name="src">
           <in>FAccumulate.c</in>
           <in>FCut.c</in>
-          <in>FPrintDataTypes.c</in>
           <in>FReg.c</in>
           <in>FSort.c</in>
           <in>FStat.c</in>
-          <in>Ftbl2rgis.C</in>
         </df>
       </df>
       <df name="UIlib">
@@ -450,6 +450,8 @@
         <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
         <compilerSet>default</compilerSet>
       </toolsSet>
+      <codeAssistance>
+      </codeAssistance>
       <makefileType>
         <makeTool>
           <buildCommandWorkingDir>.</buildCommandWorkingDir>
@@ -458,90 +460,82 @@
           <executablePath></executablePath>
           <cTool>
             <incDir>
-              <pElem>/sw/include</pElem>
-              <pElem>CMlib/include</pElem>
-              <pElem>MFlib/include</pElem>
-              <pElem>NClib/include</pElem>
+              <pElem>/usr/local/share/ghaas/include</pElem>
+              <pElem>/sw/lib/pgplot</pElem>
             </incDir>
           </cTool>
           <ccTool>
             <incDir>
-              <pElem>/sw/include</pElem>
+              <pElem>/usr/local/share/ghaas/include</pElem>
               <pElem>/sw/lib/pgplot</pElem>
-              <pElem>CMlib/include</pElem>
-              <pElem>DBlib/include</pElem>
-              <pElem>MFlib/include</pElem>
-              <pElem>NClib/include</pElem>
-              <pElem>RGlib/include</pElem>
-              <pElem>UIlib/include</pElem>
             </incDir>
           </ccTool>
         </makeTool>
       </makefileType>
-      <item path="CMlib/include/cm.h" ex="true" tool="3" flavor="0">
+      <item path="CMlib/include/cm.h" ex="true" tool="3" flavor2="0">
       </item>
-      <item path="DBlib/include/DBtf.h" ex="true" tool="3" flavor="0">
+      <item path="DBlib/include/DBtf.h" ex="true" tool="3" flavor2="0">
       </item>
-      <item path="Flib/include/Flib.h" ex="true" tool="3" flavor="0">
+      <item path="Flib/include/Flib.h" ex="true" tool="3" flavor2="0">
       </item>
-      <item path="MFlib/include/MF.h" ex="true" tool="3" flavor="0">
+      <item path="MFlib/include/MF.h" ex="true" tool="3" flavor2="0">
       </item>
-      <item path="NClib/include/NC.h" ex="true" tool="3" flavor="0">
+      <item path="NClib/include/NC.h" ex="true" tool="3" flavor2="0">
       </item>
-      <item path="NClib/include/NCcore.h" ex="true" tool="3" flavor="0">
+      <item path="NClib/include/NCcore.h" ex="true" tool="3" flavor2="0">
       </item>
-      <item path="NClib/include/NCdsHandle.h" ex="true" tool="3" flavor="0">
+      <item path="NClib/include/NCdsHandle.h" ex="true" tool="3" flavor2="0">
       </item>
-      <item path="NClib/include/NCmath.h" ex="true" tool="3" flavor="0">
+      <item path="NClib/include/NCmath.h" ex="true" tool="3" flavor2="0">
       </item>
-      <item path="NClib/include/NCmathEqtn.h" ex="true" tool="3" flavor="0">
+      <item path="NClib/include/NCmathEqtn.h" ex="true" tool="3" flavor2="0">
       </item>
-      <item path="NClib/include/NCnames.h" ex="true" tool="3" flavor="0">
+      <item path="NClib/include/NCnames.h" ex="true" tool="3" flavor2="0">
       </item>
-      <item path="NClib/include/NCstdlib.h" ex="true" tool="3" flavor="0">
+      <item path="NClib/include/NCstdlib.h" ex="true" tool="3" flavor2="0">
       </item>
-      <item path="NClib/include/NCstring.h" ex="true" tool="3" flavor="0">
+      <item path="NClib/include/NCstring.h" ex="true" tool="3" flavor2="0">
       </item>
-      <item path="NClib/include/NCtable.h" ex="true" tool="3" flavor="0">
+      <item path="NClib/include/NCtable.h" ex="true" tool="3" flavor2="0">
       </item>
-      <item path="NClib/include/NCtime.h" ex="true" tool="3" flavor="0">
+      <item path="NClib/include/NCtime.h" ex="true" tool="3" flavor2="0">
       </item>
-      <item path="NClib/src/NCcoordinate.c" ex="true" tool="0" flavor="0">
+      <item path="NClib/src/NCcoordinate.c" ex="true" tool="0" flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCdata.c" ex="true" tool="0" flavor="0">
+      <item path="NClib/src/NCdata.c" ex="true" tool="0" flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCdate.c" ex="true" tool="0" flavor="0">
+      <item path="NClib/src/NCdate.c" ex="true" tool="0" flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCdsHandle.c" ex="true" tool="0" flavor="0">
+      <item path="NClib/src/NCdsHandle.c" ex="true" tool="0" flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCdsHandleGCont.c" ex="true" tool="0" flavor="0">
+      <item path="NClib/src/NCdsHandleGCont.c" ex="true" tool="0" flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCdsHandleGDisc.c" ex="true" tool="0" flavor="0">
+      <item path="NClib/src/NCdsHandleGDisc.c" ex="true" tool="0" flavor2="0">
         <cTool>
           <incDir>
             <pElem>/sw/include</pElem>
@@ -558,70 +552,70 @@
           </incDir>
         </cTool>
       </item>
-      <item path="NClib/src/NCdsHandleGLayout.c" ex="true" tool="0" flavor="0">
+      <item path="NClib/src/NCdsHandleGLayout.c" ex="true" tool="0" flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCdsHandleGeo.c" ex="true" tool="0" flavor="0">
+      <item path="NClib/src/NCdsHandleGeo.c" ex="true" tool="0" flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCdsHandleGrid.c" ex="true" tool="0" flavor="0">
+      <item path="NClib/src/NCdsHandleGrid.c" ex="true" tool="0" flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCdsHandleNet.c" ex="true" tool="0" flavor="0">
+      <item path="NClib/src/NCdsHandleNet.c" ex="true" tool="0" flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCdsHandleVecPnt.c" ex="true" tool="0" flavor="0">
+      <item path="NClib/src/NCdsHandleVecPnt.c" ex="true" tool="0" flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCdsHandleVector.c" ex="true" tool="0" flavor="0">
+      <item path="NClib/src/NCdsHandleVector.c" ex="true" tool="0" flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCfileCreate.c" ex="true" tool="0" flavor="0">
+      <item path="NClib/src/NCfileCreate.c" ex="true" tool="0" flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCfileList.c" ex="true" tool="0" flavor="0">
+      <item path="NClib/src/NCfileList.c" ex="true" tool="0" flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCgridSampling.c" ex="true" tool="0" flavor="0">
+      <item path="NClib/src/NCgridSampling.c" ex="true" tool="0" flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCify.c" ex="true" tool="0" flavor="0">
+      <item path="NClib/src/NCify.c" ex="true" tool="0" flavor2="0">
         <cTool>
           <incDir>
             <pElem>/sw/include</pElem>
@@ -638,63 +632,63 @@
           </incDir>
         </cTool>
       </item>
-      <item path="NClib/src/NCmath.c" ex="true" tool="0" flavor="0">
+      <item path="NClib/src/NCmath.c" ex="true" tool="0" flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCmathEqtn.c" ex="true" tool="0" flavor="0">
+      <item path="NClib/src/NCmathEqtn.c" ex="true" tool="0" flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCnames.c" ex="true" tool="0" flavor="0">
+      <item path="NClib/src/NCnames.c" ex="true" tool="0" flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCreference.c" ex="true" tool="0" flavor="0">
+      <item path="NClib/src/NCreference.c" ex="true" tool="0" flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCregion.c" ex="true" tool="0" flavor="0">
+      <item path="NClib/src/NCregion.c" ex="true" tool="0" flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCstdlib.c" ex="true" tool="0" flavor="0">
+      <item path="NClib/src/NCstdlib.c" ex="true" tool="0" flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCstring.c" ex="true" tool="0" flavor="0">
+      <item path="NClib/src/NCstring.c" ex="true" tool="0" flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCtable.c" ex="true" tool="0" flavor="0">
+      <item path="NClib/src/NCtable.c" ex="true" tool="0" flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="RGlib/include/RG.H" ex="true" tool="3" flavor="0">
+      <item path="RGlib/include/RG.H" ex="true" tool="3" flavor2="0">
       </item>
       <folder path="RGIS/CMlib">
         <cTool>
@@ -920,7 +914,7 @@
           <inheritPreValues>false</inheritPreValues>
         </cTool>
       </folder>
-      <item path="ncCommands/src/NCCtemplate.c" ex="true" tool="0" flavor="0">
+      <item path="ncCommands/src/NCCtemplate.c" ex="true" tool="0" flavor2="0">
         <cTool>
           <incDir>
             <pElem>/sw/include</pElem>
@@ -936,13 +930,13 @@
           </incDir>
         </cTool>
       </item>
-      <item path="rGIS/src/RGISAnPoly.C" ex="true" tool="1" flavor="0">
+      <item path="rGIS/src/RGISAnPoly.C" ex="true" tool="1" flavor2="0">
       </item>
-      <item path="rServer/include/rServer.H" ex="true" tool="3" flavor="0">
+      <item path="rServer/include/rServer.H" ex="true" tool="3" flavor2="0">
       </item>
-      <item path="rgisPlot/include/rgisPlot.H" ex="true" tool="3" flavor="0">
+      <item path="rgisPlot/include/rgisPlot.H" ex="true" tool="3" flavor2="0">
       </item>
-      <item path="tfCommands/src/FReg.c" ex="true" tool="0" flavor="0">
+      <item path="tfCommands/src/FReg.c" ex="true" tool="0" flavor2="0">
         <cTool>
           <incDir>
             <pElem>/sw/include</pElem>
@@ -957,8 +951,6 @@
             <pElem>rGIS/include</pElem>
           </incDir>
         </cTool>
-      </item>
-      <item path="tfCommands/src/Ftbl2rgis.C" ex="true" tool="1" flavor="0">
       </item>
     </conf>
   </confs>

@@ -1473,6 +1473,7 @@ class DBDataset
 #define DBMathOperandVar    0x0020
 #define DBMathOperandExpr   0x0030
 #define DBMathOperandCond   0x0040
+#define DBMathOperandRowID  0x0050
 
 #define DBMathOperatorArgs  0x0800
 #define DBMathOperatorCond  0x0400
@@ -1609,6 +1610,8 @@ DBInt      DBInfoGetFields      (DBObjTable *,const char *);
 DBInt      DBInfoGetTable       ( DBObjTable *,const char *);
 DBInt      DBImportARCVector    (DBObjData *,const char *,const char *,const char *);
 DBInt      DBImportASCIINet     (DBObjData *,const char *);
+DBInt      DBImportASCIITable   (DBObjTable *,const char *);
+DBInt      DBImportASCIITable   (DBObjTable *,FILE *);
 DBInt      DBImportDMGrid       (DBObjData *,FILE *);
 DBInt      DBImportDMGrid       (DBObjData *,const char *);
 DBInt      DBImportNetCDF       (DBObjData *,const char *);

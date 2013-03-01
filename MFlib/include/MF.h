@@ -143,7 +143,7 @@ MFDomain_t *MFDomainGet (FILE *);
 int  MFDomainWrite (MFDomain_t *,FILE *);
 void MFDomainFree  (MFDomain_t *);
 
-bool  MFDateCompare (char *,char *);
+bool  MFDateCompare (char *,char *,bool);
 char *MFDateGetCurrent ();
 int   MFDateGetDayOfYear    ();
 int   MFDateGetDayOfMonth   ();

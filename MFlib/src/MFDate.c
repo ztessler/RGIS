@@ -164,9 +164,10 @@ char *MFDateGetCurrent () {
 	return (time);
 }
 
-bool MFDateCompare (char *time0,char *time1) {
+bool MFDateCompare (char *time0,char *time1,bool initial) {
 	int pos, len;
-	pos = (strncmp (time0,MFDateClimatologyStr,strlen (MFDateClimatologyStr)) == 0) ||
+	pos = initial ||
+		   (strncmp (time0,MFDateClimatologyStr,strlen (MFDateClimatologyStr)) == 0) ||
 	      (strncmp (time1,MFDateClimatologyStr,strlen (MFDateClimatologyStr)) == 0) ? 4 : 0;
 	len = strlen (time0 + pos) < strlen (time1 + pos) ? strlen (time0 + pos) : strlen (time1 + pos);
 	if ((strcmp (time0 + pos, "-02-29") == 0) && (strcmp (time1 + pos, "-02-28") == 0)) return (true);

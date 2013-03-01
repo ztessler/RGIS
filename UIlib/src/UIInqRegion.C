@@ -53,28 +53,37 @@ int UIInquireRegion (Widget widget,XEvent *event,int *x,int *y,int *width,int *h
 	else switch (event->type)
 			{
 			case ButtonPress:
-				switch (event->xbutton.button)
-					{
-					case 1:
-						XDrawRectangle (XtDisplay (widget),XtWindow (widget), gc, *x,*y, *width,*height); 
-						buttonPressed = true;
-						*x = event->xbutton.x; *y = event->xbutton.y; *width = *height = 0;
-						xswa.cursor = cursor [dir = 0];
-						XChangeWindowAttributes (XtDisplay (widget),XtWindow (widget),CWCursor,&xswa);
-						XDrawRectangle (XtDisplay (widget),XtWindow (widget), gc, *x,*y, *width,*height); 
-						break;
-					case 2: ret = true;	cont = false; break;
-					case 3: ret = true;	cont = false; break;
-					}
+				XDrawRectangle (XtDisplay (widget),XtWindow (widget), gc, *x,*y, *width,*height); 
+				buttonPressed = true;
+				*x = event->xbutton.x; *y = event->xbutton.y; *width = *height = 0;
+				xswa.cursor = cursor [dir = 0];
+				XChangeWindowAttributes (XtDisplay (widget),XtWindow (widget),CWCursor,&xswa);
+				XDrawRectangle (XtDisplay (widget),XtWindow (widget), gc, *x,*y, *width,*height); 
 				break;
 			case ButtonRelease:
 				buttonPressed = false;
 				xswa.cursor = cursor [4];
 				XChangeWindowAttributes (XtDisplay (widget),XtWindow (widget),CWCursor,&xswa);
+				ret  = true;
+				cont = false;
 				break;
 			case MotionNotify:
 				if (buttonPressed == false) break;
-				XDrawRectangle (XtDisplay (widget),XtWindow (widget),gc,*x,*y,*width,*height);
+				switch (dir)
+					{
+					default:
+						XDrawRectangle (XtDisplay (widget),XtWindow (widget),gc,*x,*y,*width,*height);
+						break;
+					case 1:
+						XDrawRectangle (XtDisplay (widget),XtWindow (widget),gc,*x,*y + *height,*width,- *height);
+						break;
+					case 2:
+						XDrawRectangle (XtDisplay (widget),XtWindow (widget),gc,*x + *width,*y,- *width,*height);
+						break;
+					case 3:
+						XDrawRectangle (XtDisplay (widget),XtWindow (widget),gc,*x + *width,*y + *height,- *width,- *height);
+						break;
+					}
 				*width  = event->xmotion.x - *x;
 				*height = event->xmotion.y - *y;
 				if (dir != (((*width < 0 ? 1 : 0) << 0x01) | (*height < 0 ? 1 : 0)))
@@ -83,7 +92,21 @@ int UIInquireRegion (Widget widget,XEvent *event,int *x,int *y,int *width,int *h
 					xswa.cursor = cursor [dir];
 					XChangeWindowAttributes(XtDisplay(widget),XtWindow (widget),CWCursor,&xswa);
 					}
-				XDrawRectangle (XtDisplay (widget),XtWindow (widget),gc,*x,*y,*width,*height);
+				switch (dir)
+					{
+					default:
+						XDrawRectangle (XtDisplay (widget),XtWindow (widget),gc,*x,*y,*width,*height);
+						break;
+					case 1:
+						XDrawRectangle (XtDisplay (widget),XtWindow (widget),gc,*x,*y + *height,*width,- *height);
+						break;
+					case 2:
+						XDrawRectangle (XtDisplay (widget),XtWindow (widget),gc,*x + *width,*y,- *width,*height);
+						break;
+					case 3:
+						XDrawRectangle (XtDisplay (widget),XtWindow (widget),gc,*x + *width,*y + *height,- *width,- *height);
+						break;
+					}
 				break;
 			case LeaveNotify:
 				ret  = false;

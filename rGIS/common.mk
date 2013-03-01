@@ -2,7 +2,7 @@ UNIX=$(shell uname)
 
 ifeq ($(UNIX),Darwin)
 ifndef ($(CUSTOM_INC))
-	CUSTOM_INC=-I/sw/include
+	CUSTOM_INC=-I/opt/X11/include -I/sw/include
 endif
 ifndef ($(CUSTOM_LIB))
 	CUSTOM_LIB=-L/usr/X11R6/lib -L/sw/lib
