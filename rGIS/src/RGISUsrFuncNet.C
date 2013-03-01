@@ -102,19 +102,14 @@ void _RGISUserFuncionNetwork (DBObjData *data,UI2DView *view,XEvent *event)
 
 			if (cellRec != (DBObjRecord *) NULL)
 				{
-				switch (event->xbutton.button)
+				switch (netIF->CellDirection (cellRec))
 					{
-					case Button1:	netIF->CellRotate (cellRec,DBForward);		break;
-					case Button2:
-						if (netIF->CellDirection (cellRec) == DBNull)
-								netIF->CellDirection (cellRec,DBNetDirN);
-						else	netIF->CellDirection (cellRec,DBNull);
-						break;
-					case Button3:	netIF->CellRotate (cellRec,DBBackward);	break;
+					case DBNull:     netIF->CellDirection (cellRec,DBNetDirN); break;
+					case DBNetDirNW: netIF->CellDirection (cellRec,DBNull);    break;
+					default:         netIF->CellRotate    (cellRec,DBForward); break;
 					}
 				redraw = true;
 				}
-			else	UIMessage ((char *) "Cell Does not Exists!");
 			} break;
 		default: printf ("Unknown Mode %lX",data->Flags () & DBDataFlagUserModeFlags); break;
 		}
