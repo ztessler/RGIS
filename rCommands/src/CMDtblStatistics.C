@@ -148,7 +148,7 @@ void doHelp(bool extended, char *arg0)
 		CMmsgPrint (CMmsgInfo,"  -h,--help                        => Print this usage information.");
 		CMmsgPrint (CMmsgInfo,"  -o,--output  [filename]          => Specify output filename, else use STDOUT");
 		CMmsgPrint (CMmsgInfo,"  -r,--rename  [name]              => Set the name of the operation column.");
-		CMmsgPrint (CMmsgInfo,"  -s,--subject [subject]           => Specify subject of output table.");
+		CMmsgPrint (CMmsgInfo,"  -u,--subject [subject]           => Specify subject of output table.");
 		CMmsgPrint (CMmsgInfo,"  -t,--title   [title]             => Specify title of output table.");
 		CMmsgPrint (CMmsgInfo,"  -v,--version [version]           => Specify version of output table.");
 		}
@@ -163,7 +163,7 @@ void doHelp(bool extended, char *arg0)
 		CMmsgPrint (CMmsgInfo,"  -h,--help    => for more help type -h e, or --help extend.");
 		CMmsgPrint (CMmsgInfo,"  -o,--output  [filename]");
 		CMmsgPrint (CMmsgInfo,"  -r,--rename  [name]");
-		CMmsgPrint (CMmsgInfo,"  -s,--subject [subject]");
+		CMmsgPrint (CMmsgInfo,"  -u,--subject [subject]");
 		CMmsgPrint (CMmsgInfo,"  -t,--title   [title]");
 		CMmsgPrint (CMmsgInfo,"  -v,--version [version]");
 		}
@@ -433,7 +433,7 @@ int main (int argc,char *argv [])
 			if ((argNum = CMargShiftLeft(argPos,argv,argNum)) <= argPos) break;
 			continue;
 			}
-		if (CMargTest(argv[argPos],"-s","--subject"))
+		if (CMargTest(argv[argPos],"-u","--subject"))
 			{
 			if ((argNum = CMargShiftLeft(argPos,argv,argNum)) <= argPos)
 				{ CMmsgPrint (CMmsgUsrError,"Missing subject!"); return (CMfailed); }
