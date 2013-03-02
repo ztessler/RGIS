@@ -227,7 +227,8 @@ DBInt DBImportASCIITable (DBObjTable *table, FILE *fp)
 						break;
 						}
 					}
-				if ((header->Type (fieldID) == DBVariableInt) && (fieldSTR [0] == '0')) header->Type (fieldID,DBVariableString);
+				if ((header->Type (fieldID) == DBVariableInt) && (i > 1) && (fieldSTR [0] == '0'))
+					header->Type (fieldID,DBVariableString);
 				}
 			}
 		}
