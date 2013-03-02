@@ -19,7 +19,7 @@ reinstall: $(INSTALLDIR)/bin $(INSTALLDIR)/XResources/bitmaps $(INSTALLDIR)/Mess
 	$(UNIXMAKE) -C UIlib      install
 	cp XResources/bitmaps/* $(INSTALLDIR)/XResources/bitmaps/
 	cp XResources/ghaas     $(INSTALLDIR)/XResources/
-	cp -rp html/*.*         $(INSTALLDIR)/html/
+	cp -rp html/*           $(INSTALLDIR)/html/
 	cp Messages/*.*         $(INSTALLDIR)/Messages/
 	cp Scripts/*.sh         $(INSTALLDIR)/Scripts/
 	cp f/*                  $(INSTALLDIR)/f/
