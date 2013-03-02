@@ -93,7 +93,6 @@
 /tfCommands/bin/FAccumulate
 /tfCommands/bin/FStat
 /tfCommands/bin/FPrintDataTypes
-/tfCommands/bin/Ftbl2rgis
 /tfCommands/bin/FSort
 /tfCommands/bin/FCut
 /CMlib/obj/cmArgParse.o
@@ -120,6 +119,7 @@
 /DBlib/obj/DBImpASCIINet.o
 /DBlib/obj/DBImpExpDMGrd.o
 /DBlib/obj/DBImpExpNetCDF.o
+/DBlib/obj/DBImpExpASCII.o
 /DBlib/obj/DBInfoDB.o
 /DBlib/obj/DBMath.o
 /DBlib/obj/DBMisc.o
@@ -283,6 +283,7 @@
 /rCommands/obj/CMDrgis2table.o
 /rCommands/obj/CMDrgisMetadb.o
 /rCommands/obj/CMDsetHeader.o
+/rCommands/obj/CMDtable2rgis.o
 /rCommands/obj/CMDtblAddField.o
 /rCommands/obj/CMDtblCalculate.o
 /rCommands/obj/CMDtblConv2Point.o
@@ -297,6 +298,7 @@
 /rCommands/obj/CMDtblMergeDate.o
 /rCommands/obj/CMDtblRedefField.o
 /rCommands/obj/CMDtblSelectRec.o
+/rCommands/obj/CMDtblSortRec.o
 /rCommands/obj/CMDtblSplitDate.o
 /rCommands/obj/CMDtblStatistics.o
 /rCommands/obj/CMDtblTopoCalc.o
@@ -343,10 +345,8 @@
 /rgisPlot/obj/RGPMain.o
 /tfCommands/obj/FAccumulate.o
 /tfCommands/obj/FCut.o
-/tfCommands/obj/FPrintDataTypes.o
 /tfCommands/obj/FSort.o
 /tfCommands/obj/FStat.o
-/tfCommands/obj/Ftbl2rgis.o
 /CMlib/lib/libCM10.a
 /DBlib/lib/libDB22.a
 /Flib/lib/libF10.a
