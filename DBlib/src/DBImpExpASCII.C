@@ -204,22 +204,28 @@ DBInt DBImportASCIITable (DBObjTable *table, FILE *fp)
 					if ((fieldSTR [i] >= '0') && (fieldSTR [i] <= '9')) continue;
 					if (fieldSTR [i] == '.')
 						{
-						if ((header->Type (fieldID) == DBVariableFloat) && (nDecimals != 0))
-							header->Type (fieldID,DBVariableString);
-						else
+						if (sscanf (fieldSTR,"%lf",&floatVal) == 1)
 							{
 							header->Type (fieldID,DBVariableFloat);
 							nDecimals = strlen (fieldSTR + i + 1);
 							if (nDecimals > header->Decimals(fieldID)) header->Decimals(fieldID, nDecimals);
 							}
-						continue;
+						else header->Type (fieldID,DBVariableString);
+						break;
 						}
 					if (fieldSTR [i] == '-')
 						{
-						if (i > 0) header->Type (fieldID,DBVariableString);
-						continue;
+						if (i > 0)
+							{
+							header->Type (fieldID,DBVariableString);
+							break;
+							}
 						}
-					else header->Type (fieldID,DBVariableString);
+					else
+						{
+						header->Type (fieldID,DBVariableString);
+						break;
+						}
 					}
 				if ((header->Type (fieldID) == DBVariableInt) && (fieldSTR [0] == '0')) header->Type (fieldID,DBVariableString);
 				}
