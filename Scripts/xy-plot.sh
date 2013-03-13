@@ -17,7 +17,7 @@ fi
 echo set title \"GHAAS Table Field Comparison\" >> ${PLOTF}
 echo set xlabel `awk '(1==NR) { print $4 "\n" $5 }' $1 | head -1` >> ${PLOTF}
 echo set ylabel `awk '(1==NR) { print $4 "\n" $5 }' $1 | tail -1` >> ${PLOTF}
-echo ${LNUM1} ${LNUM2}
+
 if (( ${LNUM1} > 0 && ${LNUM2} > 0 )); then
   echo plot \"$TEMP1\" title \"Unselected\", \"$TEMP2\" title \"Selected\" >> ${PLOTF}
 else
