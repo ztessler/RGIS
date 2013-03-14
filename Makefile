@@ -1,5 +1,5 @@
 include ./common.mk
-all: rgis_target rcommands_target rserver_target nccommands_target rgisPlot_target gfcommands_target
+all: rgis_target rcommands_target rserver_target nccommands_target rgisPlot_target tfcommands_target
 
 install: reinstall
 	ln -s $(INSTALLDIR)/Scripts/rgis.sh $(INSTALLDIR)/bin/rgis
