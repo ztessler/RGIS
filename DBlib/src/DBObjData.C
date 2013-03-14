@@ -2,11 +2,11 @@
 
 GHAAS Database library V2.1
 Global Hydrologic Archive and Analysis System
-Copyright 1994-2012, UNH - CCNY/CUNY
+Copyright 1994-2013, UNH - CCNY/CUNY
 
 DBObjData.C
 
-balazs.fekete@unh.edu
+bfekete@ccny.cuny.edu
 
 *******************************************************************************/
 

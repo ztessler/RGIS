@@ -2,11 +2,11 @@
 
 GHAAS Database library V2.1
 Global Hydrologic Archive and Analysis System
-Copyright 1994-2012, UNH - CCNY/CUNY
+Copyright 1994-2013, UNH - CCNY/CUNY
 
 DBExpASCII.C
 
-balazs.fekete@unh.edu
+bfekete@ccny.cuny.edu
 
 *******************************************************************************/
 
@@ -227,7 +227,8 @@ DBInt DBImportASCIITable (DBObjTable *table, FILE *fp)
 						break;
 						}
 					}
-				if ((header->Type (fieldID) == DBVariableInt) && (fieldSTR [0] == '0')) header->Type (fieldID,DBVariableString);
+				if ((header->Type (fieldID) == DBVariableInt) && (i > 1) && (fieldSTR [0] == '0'))
+					header->Type (fieldID,DBVariableString);
 				}
 			}
 		}

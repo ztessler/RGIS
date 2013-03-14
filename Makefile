@@ -5,36 +5,36 @@ install: reinstall
 	ln -s $(INSTALLDIR)/Scripts/rgis.sh $(INSTALLDIR)/bin/rgis
 
 reinstall: $(INSTALLDIR)/bin $(INSTALLDIR)/XResources/bitmaps $(INSTALLDIR)/Messages $(INSTALLDIR)/html $(INSTALLDIR)/Scripts $(INSTALLDIR)/f $(INSTALLDIR)/include $(INSTALLDIR)/lib
-	$(UNIXMAKE) -C rGIS       install
-	$(UNIXMAKE) -C rCommands  install
-	$(UNIXMAKE) -C rServer    install
-	$(UNIXMAKE) -C rgisPlot   install
-	$(UNIXMAKE) -C tfCommands install
-	$(UNIXMAKE) -C CMlib      install
-	$(UNIXMAKE) -C DBlib      install
-	$(UNIXMAKE) -C Flib       install
-	$(UNIXMAKE) -C MFlib      install
-	$(UNIXMAKE) -C NClib      install
-	$(UNIXMAKE) -C RGlib      install
-	$(UNIXMAKE) -C UIlib      install
+	$(UNIXMAKE) -i -C rGIS       install
+	$(UNIXMAKE) -i -C rCommands  install
+	$(UNIXMAKE) -i -C rServer    install
+	$(UNIXMAKE) -i -C rgisPlot   install
+	$(UNIXMAKE) -i -C tfCommands install
+	$(UNIXMAKE) -i -C CMlib      install
+	$(UNIXMAKE) -i -C DBlib      install
+	$(UNIXMAKE) -i -C Flib       install
+	$(UNIXMAKE) -i -C MFlib      install
+	$(UNIXMAKE) -i -C NClib      install
+	$(UNIXMAKE) -i -C RGlib      install
+	$(UNIXMAKE) -i -C UIlib      install
 	cp XResources/bitmaps/* $(INSTALLDIR)/XResources/bitmaps/
 	cp XResources/ghaas     $(INSTALLDIR)/XResources/
-	cp -rp html/*.*         $(INSTALLDIR)/html/
+	cp -rp html/*           $(INSTALLDIR)/html/
 	cp Messages/*.*         $(INSTALLDIR)/Messages/
 	cp Scripts/*.sh         $(INSTALLDIR)/Scripts/
 	cp f/*                  $(INSTALLDIR)/f/
 	chmod -R ugo+rX         $(INSTALLDIR)
 
 uninstall:
-	$(UNIXMAKE) -C rGIS       uninstall
-	$(UNIXMAKE) -C rCommands  uninstall
-	$(UNIXMAKE) -C CMlib      uninstall
-	$(UNIXMAKE) -C DBlib      uninstall
-	$(UNIXMAKE) -C Flib       uninstall
-	$(UNIXMAKE) -C MFlib      uninstall
-	$(UNIXMAKE) -C NClib      uninstall
-	$(UNIXMAKE) -C RGlib      uninstall
-	$(UNIXMAKE) -C UIlib      uninstall
+	$(UNIXMAKE) -i -C rGIS       uninstall
+	$(UNIXMAKE) -i -C rCommands  uninstall
+	$(UNIXMAKE) -i -C CMlib      uninstall
+	$(UNIXMAKE) -i -C DBlib      uninstall
+	$(UNIXMAKE) -i -C Flib       uninstall
+	$(UNIXMAKE) -i -C MFlib      uninstall
+	$(UNIXMAKE) -i -C NClib      uninstall
+	$(UNIXMAKE) -i -C RGlib      uninstall
+	$(UNIXMAKE) -i -C UIlib      uninstall
 	rm -rf $(INSTALLDIR)/XResources
 	rm -rf $(INSTALLDIR)/Messages
 	rm -rf $(INSTALLDIR)/html
@@ -78,17 +78,17 @@ $(INSTALLDIR)/f:
 	mkdir -p $(INSTALLDIR)/f
 
 rgis_target: cmlib_target dblib_target rglib_target uilib_target
-	$(UNIXMAKE) -C rGIS all
+	$(UNIXMAKE) -i -C rGIS all
 rcommands_target: cmlib_target rglib_target mflib_target
-	$(UNIXMAKE) -C rCommands all
+	$(UNIXMAKE) -i -C rCommands all
 rserver_target: cmlib_target rglib_target mflib_target
-	$(UNIXMAKE) -C rServer  all
+	$(UNIXMAKE) -i -C rServer  all
 nccommands_target: cmlib_target nclib_target
-	$(UNIXMAKE) -C ncCommands all
+	$(UNIXMAKE) -i -C ncCommands all
 tfcommands_target: cmlib_target dblib_target flib_target
-	$(UNIXMAKE) -C tfCommands all
+	$(UNIXMAKE) -i -C tfCommands all
 rgisPlot_target: cmlib_target dblib_target
-	$(UNIXMAKE) -C rgisPlot all
+	$(UNIXMAKE) -i -C rgisPlot all
 
 cmlib_target:
 	$(UNIXMAKE) -C CMlib all
