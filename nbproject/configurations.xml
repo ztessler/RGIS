@@ -7,7 +7,6 @@
           <in>cm.h</in>
         </df>
         <df name="src">
-          <in>Makefile</in>
           <in>cmArgParse.c</in>
           <in>cmBuffer.c</in>
           <in>cmMath.c</in>
@@ -15,8 +14,6 @@
           <in>cmString.c</in>
           <in>cmThreads.c</in>
         </df>
-        <in>Makefile</in>
-        <in>common.mk</in>
       </df>
       <df name="DBlib">
         <df name="include">
@@ -60,47 +57,9 @@
           <in>DBVPoint2Grid.C</in>
           <in>DBVPolyMisc.C</in>
           <in>DBVectorMisc.C</in>
-          <in>Makefile</in>
         </df>
-        <in>Makefile</in>
-        <in>common.mk</in>
       </df>
       <df name="f">
-        <in>accumulatef</in>
-        <in>barChart</in>
-        <in>barGraph</in>
-        <in>boxplot</in>
-        <in>boxplot2</in>
-        <in>calcf</in>
-        <in>calcfpp</in>
-        <in>chkf</in>
-        <in>col2f</in>
-        <in>cutf</in>
-        <in>cutfpp</in>
-        <in>decimalDatef</in>
-        <in>doc.txt</in>
-        <in>f2html</in>
-        <in>f2sql</in>
-        <in>f2templ</in>
-        <in>f2tex</in>
-        <in>f2time</in>
-        <in>formatf</in>
-        <in>freqf</in>
-        <in>grepf</in>
-        <in>guessf</in>
-        <in>helpf</in>
-        <in>matrixf</in>
-        <in>mergeDatef</in>
-        <in>mergef</in>
-        <in>rGUI.pl</in>
-        <in>rankf</in>
-        <in>regf</in>
-        <in>sedf</in>
-        <in>selectf</in>
-        <in>sortf</in>
-        <in>splitDatef</in>
-        <in>statf</in>
-        <in>transposef</in>
       </df>
       <df name="Flib">
         <df name="include">
@@ -110,85 +69,29 @@
           <in>FData.c</in>
           <in>FTableRead.c</in>
           <in>Flib.c</in>
-          <in>Makefile</in>
         </df>
-        <in>Makefile</in>
-        <in>common.mk</in>
       </df>
       <df name="html">
         <df name="da">
-          <in>DAMain.html</in>
-          <in>DATableOfContents.html</in>
         </df>
         <df name="dm">
-          <in>DMMain.html</in>
-          <in>DMTableOfContents.html</in>
         </df>
         <df name="Images">
-          <in>Background.gif</in>
-          <in>GHAASLogo.gif</in>
-          <in>GHAASLogo.jpg</in>
-          <in>GHAASLogo2.gif</in>
-          <in>GHAASLogoT.gif</in>
-          <in>ghspinloop.gif</in>
         </df>
         <df name="rCommands">
-          <in>Commands.html</in>
         </df>
         <df name="rgis">
           <df name="Images">
-            <in>21ControlPanel.gif</in>
-            <in>2215aGridImport.gif</in>
-            <in>221aOpenData.gif</in>
-            <in>221bSaveAs.gif</in>
-            <in>221cHeaderInfo.gif</in>
-            <in>221dGeoProperties.gif</in>
-            <in>221eVectorProperties.gif</in>
-            <in>221fCGridProperties.gif</in>
-            <in>221gDGridProperties.gif</in>
-            <in>221hNetworkProperties.gif</in>
-            <in>231aDisplayWindow.gif</in>
-            <in>231bDraw.gif</in>
-            <in>231cFullExtent.gif</in>
-            <in>231dLayerExtent.gif</in>
-            <in>231eScreenGrab.gif</in>
-            <in>231fMagnifyGlass.gif</in>
-            <in>231gPosition.gif</in>
-            <in>231hWand.gif</in>
-            <in>231iMesh.gif</in>
-            <in>232aTableWindow.gif</in>
-            <in>232bTBVLoad.gif</in>
-            <in>232cTBVSave.gif</in>
-            <in>232dTBVClear.gif</in>
-            <in>232eTBVReverse.gif</in>
-            <in>232fTBVSetIdle.gif</in>
-            <in>232gTBVReverseIdle.gif</in>
-            <in>233aGraphWindow.gif</in>
           </df>
-          <in>RGIS00Intro.html</in>
-          <in>RGIS10BasicConcepts.html</in>
-          <in>RGIS20UserInterface.html</in>
-          <in>RGIS21ControlPanel.html</in>
-          <in>RGIS22MenuSystem.html</in>
-          <in>RGIS23DataVisualization.html</in>
-          <in>RGIS30Processes.html</in>
-          <in>RGISMain.html</in>
-          <in>RGISTableOfContents.html</in>
-          <in>RGISTitle.html</in>
         </df>
-        <in>GHAASMain.html</in>
       </df>
       <df name="Messages">
-        <in>RGIS.history</in>
-        <in>RGIS.msg</in>
       </df>
       <df name="MFlib">
         <df name="include">
           <in>MF.h</in>
         </df>
         <df name="Scripts">
-          <in>fwFunctions.sh</in>
-          <in>fwFunctions20.sh</in>
         </df>
         <df name="src">
           <in>MFConfig.c</in>
@@ -201,14 +104,10 @@
           <in>MFRungeKutta.c</in>
           <in>MFSwap.c</in>
           <in>MFVariables.c</in>
-          <in>Makefile</in>
         </df>
-        <in>Makefile</in>
-        <in>common.mk</in>
       </df>
       <df name="ncCommands">
         <df name="src">
-          <in>Makefile</in>
           <in>NCCnc2table.c</in>
           <in>NCCncAggregate.c</in>
           <in>NCCncAttributes.c</in>
@@ -217,8 +116,6 @@
           <in>NCCncTblCalculate.c</in>
           <in>NCCtemplate.c</in>
         </df>
-        <in>Makefile</in>
-        <in>common.mk</in>
       </df>
       <df name="NClib">
         <df name="include">
@@ -234,7 +131,6 @@
           <in>NCtime.h</in>
         </df>
         <df name="src">
-          <in>Makefile</in>
           <in>NCcoordinate.c</in>
           <in>NCdata.c</in>
           <in>NCdate.c</in>
@@ -260,8 +156,6 @@
           <in>NCstring.c</in>
           <in>NCtable.c</in>
         </df>
-        <in>Makefile</in>
-        <in>common.mk</in>
       </df>
       <df name="rCommands">
         <df name="include">
@@ -353,17 +247,13 @@
           <in>CMDtblSplitDate.C</in>
           <in>CMDtblStatistics.C</in>
           <in>CMDtblTopoCalc.C</in>
-          <in>Makefile</in>
         </df>
-        <in>Makefile</in>
-        <in>common.mk</in>
       </df>
       <df name="rGIS">
         <df name="include">
           <in>rgis.H</in>
         </df>
         <df name="src">
-          <in>Makefile</in>
           <in>RGISAnField.C</in>
           <in>RGISAnGNUXYPlot.C</in>
           <in>RGISAnGrid.C</in>
@@ -399,15 +289,12 @@
           <in>RGISUsrFuncVec.C</in>
           <in>RGISWorkspace.C</in>
         </df>
-        <in>Makefile</in>
-        <in>common.mk</in>
       </df>
       <df name="rgisPlot">
         <df name="include">
           <in>rgisPlot.H</in>
         </df>
         <df name="src">
-          <in>Makefile</in>
           <in>RGPColorMaps.C</in>
           <in>RGPDrawGridCont.C</in>
           <in>RGPDrawNetwork.C</in>
@@ -415,15 +302,12 @@
           <in>RGPDrawVecPoint.C</in>
           <in>RGPMain.C</in>
         </df>
-        <in>Makefile</in>
-        <in>common.mk</in>
       </df>
       <df name="RGlib">
         <df name="include">
           <in>RG.H</in>
         </df>
         <df name="src">
-          <in>Makefile</in>
           <in>RGlibDataStream.C</in>
           <in>RGlibGenFuncs.C</in>
           <in>RGlibGrid.C</in>
@@ -432,24 +316,16 @@
           <in>RGlibPoint.C</in>
           <in>RGlibTable.C</in>
         </df>
-        <in>Makefile</in>
-        <in>common.mk</in>
       </df>
       <df name="rServer">
         <df name="include">
           <in>rServer.H</in>
         </df>
         <df name="src">
-          <in>Makefile</in>
           <in>RSVRMain.C</in>
         </df>
-        <in>Makefile</in>
-        <in>common.mk</in>
       </df>
       <df name="Scripts">
-        <in>RGISfunctions.sh</in>
-        <in>rgis.sh</in>
-        <in>xy-plot.sh</in>
       </df>
       <df name="tfCommands">
         <df name="src">
@@ -458,17 +334,13 @@
           <in>FReg.c</in>
           <in>FSort.c</in>
           <in>FStat.c</in>
-          <in>Makefile</in>
         </df>
-        <in>Makefile</in>
-        <in>common.mk</in>
       </df>
       <df name="UIlib">
         <df name="include">
           <in>UI.H</in>
         </df>
         <df name="src">
-          <in>Makefile</in>
           <in>UI2DView.C</in>
           <in>UI2DViewAux.C</in>
           <in>UI2DViewDisp.C</in>
@@ -502,38 +374,11 @@
           <in>UIXYGraph.C</in>
           <in>UIXYGraphSh.C</in>
         </df>
-        <in>Makefile</in>
-        <in>common.mk</in>
       </df>
       <df name="XResources">
         <df name="bitmaps">
-          <in>GHAAS2Dview.bmp</in>
-          <in>GHAAScapture.bmp</in>
-          <in>GHAASccny.xpm</in>
-          <in>GHAASclear.bmp</in>
-          <in>GHAASextent.bmp</in>
-          <in>GHAASfull.bmp</in>
-          <in>GHAASgetIdle.bmp</in>
-          <in>GHAASinvert.bmp</in>
-          <in>GHAASkill.bmp</in>
-          <in>GHAASload.bmp</in>
-          <in>GHAASlogo.xpm</in>
-          <in>GHAASmesh.bmp</in>
-          <in>GHAASpane.bmp</in>
-          <in>GHAASredraw.bmp</in>
-          <in>GHAASrgis.bmp</in>
-          <in>GHAASsave.bmp</in>
-          <in>GHAASsetIdle.bmp</in>
-          <in>GHAAStable.bmp</in>
-          <in>GHAASunh.xpm</in>
-          <in>GHAASuser.bmp</in>
-          <in>GHAASvwtm.bmp</in>
-          <in>GHAASzoom.bmp</in>
         </df>
-        <in>ghaas</in>
       </df>
-      <in>Makefile</in>
-      <in>common.mk</in>
     </df>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -574,70 +419,130 @@
           </ccTool>
         </makeTool>
       </makefileType>
-      <item path="CMlib/include/cm.h" ex="true" tool="3" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/CMlib/include/cm.h"
+            ex="true"
+            tool="3"
+            flavor2="0">
       </item>
-      <item path="DBlib/include/DBtf.h" ex="true" tool="3" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/DBlib/include/DBtf.h"
+            ex="true"
+            tool="3"
+            flavor2="0">
       </item>
-      <item path="Flib/include/Flib.h" ex="true" tool="3" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/Flib/include/Flib.h"
+            ex="true"
+            tool="3"
+            flavor2="0">
       </item>
-      <item path="MFlib/include/MF.h" ex="true" tool="3" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/MFlib/include/MF.h"
+            ex="true"
+            tool="3"
+            flavor2="0">
       </item>
-      <item path="NClib/include/NC.h" ex="true" tool="3" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/include/NC.h"
+            ex="true"
+            tool="3"
+            flavor2="0">
       </item>
-      <item path="NClib/include/NCcore.h" ex="true" tool="3" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/include/NCcore.h"
+            ex="true"
+            tool="3"
+            flavor2="0">
       </item>
-      <item path="NClib/include/NCdsHandle.h" ex="true" tool="3" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/include/NCdsHandle.h"
+            ex="true"
+            tool="3"
+            flavor2="0">
       </item>
-      <item path="NClib/include/NCmath.h" ex="true" tool="3" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/include/NCmath.h"
+            ex="true"
+            tool="3"
+            flavor2="0">
       </item>
-      <item path="NClib/include/NCmathEqtn.h" ex="true" tool="3" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/include/NCmathEqtn.h"
+            ex="true"
+            tool="3"
+            flavor2="0">
       </item>
-      <item path="NClib/include/NCnames.h" ex="true" tool="3" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/include/NCnames.h"
+            ex="true"
+            tool="3"
+            flavor2="0">
       </item>
-      <item path="NClib/include/NCstdlib.h" ex="true" tool="3" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/include/NCstdlib.h"
+            ex="true"
+            tool="3"
+            flavor2="0">
       </item>
-      <item path="NClib/include/NCstring.h" ex="true" tool="3" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/include/NCstring.h"
+            ex="true"
+            tool="3"
+            flavor2="0">
       </item>
-      <item path="NClib/include/NCtable.h" ex="true" tool="3" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/include/NCtable.h"
+            ex="true"
+            tool="3"
+            flavor2="0">
       </item>
-      <item path="NClib/include/NCtime.h" ex="true" tool="3" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/include/NCtime.h"
+            ex="true"
+            tool="3"
+            flavor2="0">
       </item>
-      <item path="NClib/src/NCcoordinate.c" ex="true" tool="0" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/src/NCcoordinate.c"
+            ex="true"
+            tool="0"
+            flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCdata.c" ex="true" tool="0" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/src/NCdata.c"
+            ex="true"
+            tool="0"
+            flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCdate.c" ex="true" tool="0" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/src/NCdate.c"
+            ex="true"
+            tool="0"
+            flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCdsHandle.c" ex="true" tool="0" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/src/NCdsHandle.c"
+            ex="true"
+            tool="0"
+            flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCdsHandleGCont.c" ex="true" tool="0" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/src/NCdsHandleGCont.c"
+            ex="true"
+            tool="0"
+            flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCdsHandleGDisc.c" ex="true" tool="0" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/src/NCdsHandleGDisc.c"
+            ex="true"
+            tool="0"
+            flavor2="0">
         <cTool>
           <incDir>
             <pElem>/sw/include</pElem>
@@ -654,70 +559,100 @@
           </incDir>
         </cTool>
       </item>
-      <item path="NClib/src/NCdsHandleGLayout.c" ex="true" tool="0" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/src/NCdsHandleGLayout.c"
+            ex="true"
+            tool="0"
+            flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCdsHandleGeo.c" ex="true" tool="0" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/src/NCdsHandleGeo.c"
+            ex="true"
+            tool="0"
+            flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCdsHandleGrid.c" ex="true" tool="0" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/src/NCdsHandleGrid.c"
+            ex="true"
+            tool="0"
+            flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCdsHandleNet.c" ex="true" tool="0" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/src/NCdsHandleNet.c"
+            ex="true"
+            tool="0"
+            flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCdsHandleVecPnt.c" ex="true" tool="0" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/src/NCdsHandleVecPnt.c"
+            ex="true"
+            tool="0"
+            flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCdsHandleVector.c" ex="true" tool="0" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/src/NCdsHandleVector.c"
+            ex="true"
+            tool="0"
+            flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCfileCreate.c" ex="true" tool="0" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/src/NCfileCreate.c"
+            ex="true"
+            tool="0"
+            flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCfileList.c" ex="true" tool="0" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/src/NCfileList.c"
+            ex="true"
+            tool="0"
+            flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCgridSampling.c" ex="true" tool="0" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/src/NCgridSampling.c"
+            ex="true"
+            tool="0"
+            flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCify.c" ex="true" tool="0" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/src/NCify.c"
+            ex="true"
+            tool="0"
+            flavor2="0">
         <cTool>
           <incDir>
             <pElem>/sw/include</pElem>
@@ -734,63 +669,143 @@
           </incDir>
         </cTool>
       </item>
-      <item path="NClib/src/NCmath.c" ex="true" tool="0" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/src/NCmath.c"
+            ex="true"
+            tool="0"
+            flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCmathEqtn.c" ex="true" tool="0" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/src/NCmathEqtn.c"
+            ex="true"
+            tool="0"
+            flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCnames.c" ex="true" tool="0" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/src/NCnames.c"
+            ex="true"
+            tool="0"
+            flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCreference.c" ex="true" tool="0" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/src/NCreference.c"
+            ex="true"
+            tool="0"
+            flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCregion.c" ex="true" tool="0" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/src/NCregion.c"
+            ex="true"
+            tool="0"
+            flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCstdlib.c" ex="true" tool="0" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/src/NCstdlib.c"
+            ex="true"
+            tool="0"
+            flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCstring.c" ex="true" tool="0" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/src/NCstring.c"
+            ex="true"
+            tool="0"
+            flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="NClib/src/NCtable.c" ex="true" tool="0" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/NClib/src/NCtable.c"
+            ex="true"
+            tool="0"
+            flavor2="0">
         <cTool>
           <preprocessorList>
             <Elem>_GNU_SOURCE</Elem>
           </preprocessorList>
         </cTool>
       </item>
-      <item path="RGlib/include/RG.H" ex="true" tool="3" flavor2="0">
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/RGlib/include/RG.H"
+            ex="true"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/ncCommands/src/NCCtemplate.c"
+            ex="true"
+            tool="0"
+            flavor2="0">
+        <cTool>
+          <incDir>
+            <pElem>/sw/include</pElem>
+            <pElem>rgisPlot/include</pElem>
+            <pElem>RGlib/include</pElem>
+            <pElem>rCommands/include</pElem>
+            <pElem>/sw/lib/pgplot</pElem>
+            <pElem>MFlib/include</pElem>
+            <pElem>Flib/include</pElem>
+            <pElem>UIlib/include</pElem>
+            <pElem>rGIS/include</pElem>
+            <pElem>DBlib/include</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/rGIS/src/RGISAnPoly.C"
+            ex="true"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/rServer/include/rServer.H"
+            ex="true"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/rgisPlot/include/rgisPlot.H"
+            ex="true"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/fekete/balazs/NetBeans/RGIS/tfCommands/src/FReg.c"
+            ex="true"
+            tool="0"
+            flavor2="0">
+        <cTool>
+          <incDir>
+            <pElem>/sw/include</pElem>
+            <pElem>rgisPlot/include</pElem>
+            <pElem>RGlib/include</pElem>
+            <pElem>ncCommands/include</pElem>
+            <pElem>rCommands/include</pElem>
+            <pElem>/sw/lib/pgplot</pElem>
+            <pElem>MFlib/include</pElem>
+            <pElem>UIlib/include</pElem>
+            <pElem>NClib/include</pElem>
+            <pElem>rGIS/include</pElem>
+          </incDir>
+        </cTool>
       </item>
       <folder path="RGIS/CMlib">
         <cTool>
@@ -1016,44 +1031,6 @@
           <inheritPreValues>false</inheritPreValues>
         </cTool>
       </folder>
-      <item path="ncCommands/src/NCCtemplate.c" ex="true" tool="0" flavor2="0">
-        <cTool>
-          <incDir>
-            <pElem>/sw/include</pElem>
-            <pElem>rgisPlot/include</pElem>
-            <pElem>RGlib/include</pElem>
-            <pElem>rCommands/include</pElem>
-            <pElem>/sw/lib/pgplot</pElem>
-            <pElem>MFlib/include</pElem>
-            <pElem>Flib/include</pElem>
-            <pElem>UIlib/include</pElem>
-            <pElem>rGIS/include</pElem>
-            <pElem>DBlib/include</pElem>
-          </incDir>
-        </cTool>
-      </item>
-      <item path="rGIS/src/RGISAnPoly.C" ex="true" tool="1" flavor2="0">
-      </item>
-      <item path="rServer/include/rServer.H" ex="true" tool="3" flavor2="0">
-      </item>
-      <item path="rgisPlot/include/rgisPlot.H" ex="true" tool="3" flavor2="0">
-      </item>
-      <item path="tfCommands/src/FReg.c" ex="true" tool="0" flavor2="0">
-        <cTool>
-          <incDir>
-            <pElem>/sw/include</pElem>
-            <pElem>rgisPlot/include</pElem>
-            <pElem>RGlib/include</pElem>
-            <pElem>ncCommands/include</pElem>
-            <pElem>rCommands/include</pElem>
-            <pElem>/sw/lib/pgplot</pElem>
-            <pElem>MFlib/include</pElem>
-            <pElem>UIlib/include</pElem>
-            <pElem>NClib/include</pElem>
-            <pElem>rGIS/include</pElem>
-          </incDir>
-        </cTool>
-      </item>
     </conf>
   </confs>
 </configurationDescriptor>
