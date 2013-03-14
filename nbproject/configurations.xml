@@ -544,7 +544,7 @@
   </logicalFolder>
   <sourceFolderFilter>^(nbproject)$</sourceFolderFilter>
   <sourceRootList>
-    <Elem>.</Elem>
+    <Elem>/Users/fekete/balazs/NetBeans/RGIS</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -564,6 +564,7 @@
           <cTool>
             <incDir>
               <pElem>/usr/local/share/ghaas/include</pElem>
+              <pElem>/sw/lib/pgplot</pElem>
             </incDir>
           </cTool>
           <ccTool>
