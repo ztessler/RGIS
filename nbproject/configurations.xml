@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configurationDescriptor version="84">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
-    <df name="RGIS" root=".">
+    <df name="RGIS" root="/Users/fekete/balazs/NetBeans/RGIS">
       <df name="CMlib">
         <df name="include">
           <in>cm.h</in>
         </df>
-        <df name="lib">
-        </df>
-        <df name="obj">
-        </df>
         <df name="src">
+          <in>Makefile</in>
           <in>cmArgParse.c</in>
           <in>cmBuffer.c</in>
           <in>cmMath.c</in>
@@ -18,16 +15,14 @@
           <in>cmString.c</in>
           <in>cmThreads.c</in>
         </df>
+        <in>Makefile</in>
+        <in>common.mk</in>
       </df>
       <df name="DBlib">
         <df name="include">
           <in>DB.H</in>
           <in>DBif.H</in>
           <in>DBtf.h</in>
-        </df>
-        <df name="lib">
-        </df>
-        <df name="obj">
         </df>
         <df name="src">
           <in>DBByteOrder.C</in>
@@ -65,49 +60,135 @@
           <in>DBVPoint2Grid.C</in>
           <in>DBVPolyMisc.C</in>
           <in>DBVectorMisc.C</in>
+          <in>Makefile</in>
         </df>
+        <in>Makefile</in>
+        <in>common.mk</in>
       </df>
       <df name="f">
+        <in>accumulatef</in>
+        <in>barChart</in>
+        <in>barGraph</in>
+        <in>boxplot</in>
+        <in>boxplot2</in>
+        <in>calcf</in>
+        <in>calcfpp</in>
+        <in>chkf</in>
+        <in>col2f</in>
+        <in>cutf</in>
+        <in>cutfpp</in>
+        <in>decimalDatef</in>
+        <in>doc.txt</in>
+        <in>f2html</in>
+        <in>f2sql</in>
+        <in>f2templ</in>
+        <in>f2tex</in>
+        <in>f2time</in>
+        <in>formatf</in>
+        <in>freqf</in>
+        <in>grepf</in>
+        <in>guessf</in>
+        <in>helpf</in>
+        <in>matrixf</in>
+        <in>mergeDatef</in>
+        <in>mergef</in>
+        <in>rGUI.pl</in>
+        <in>rankf</in>
+        <in>regf</in>
+        <in>sedf</in>
+        <in>selectf</in>
+        <in>sortf</in>
+        <in>splitDatef</in>
+        <in>statf</in>
+        <in>transposef</in>
       </df>
       <df name="Flib">
         <df name="include">
           <in>Flib.h</in>
         </df>
-        <df name="lib">
-        </df>
-        <df name="obj">
-        </df>
         <df name="src">
           <in>FData.c</in>
           <in>FTableRead.c</in>
           <in>Flib.c</in>
+          <in>Makefile</in>
         </df>
+        <in>Makefile</in>
+        <in>common.mk</in>
       </df>
       <df name="html">
         <df name="da">
+          <in>DAMain.html</in>
+          <in>DATableOfContents.html</in>
         </df>
         <df name="dm">
+          <in>DMMain.html</in>
+          <in>DMTableOfContents.html</in>
         </df>
         <df name="Images">
+          <in>Background.gif</in>
+          <in>GHAASLogo.gif</in>
+          <in>GHAASLogo.jpg</in>
+          <in>GHAASLogo2.gif</in>
+          <in>GHAASLogoT.gif</in>
+          <in>ghspinloop.gif</in>
         </df>
         <df name="rCommands">
+          <in>Commands.html</in>
         </df>
         <df name="rgis">
           <df name="Images">
+            <in>21ControlPanel.gif</in>
+            <in>2215aGridImport.gif</in>
+            <in>221aOpenData.gif</in>
+            <in>221bSaveAs.gif</in>
+            <in>221cHeaderInfo.gif</in>
+            <in>221dGeoProperties.gif</in>
+            <in>221eVectorProperties.gif</in>
+            <in>221fCGridProperties.gif</in>
+            <in>221gDGridProperties.gif</in>
+            <in>221hNetworkProperties.gif</in>
+            <in>231aDisplayWindow.gif</in>
+            <in>231bDraw.gif</in>
+            <in>231cFullExtent.gif</in>
+            <in>231dLayerExtent.gif</in>
+            <in>231eScreenGrab.gif</in>
+            <in>231fMagnifyGlass.gif</in>
+            <in>231gPosition.gif</in>
+            <in>231hWand.gif</in>
+            <in>231iMesh.gif</in>
+            <in>232aTableWindow.gif</in>
+            <in>232bTBVLoad.gif</in>
+            <in>232cTBVSave.gif</in>
+            <in>232dTBVClear.gif</in>
+            <in>232eTBVReverse.gif</in>
+            <in>232fTBVSetIdle.gif</in>
+            <in>232gTBVReverseIdle.gif</in>
+            <in>233aGraphWindow.gif</in>
           </df>
+          <in>RGIS00Intro.html</in>
+          <in>RGIS10BasicConcepts.html</in>
+          <in>RGIS20UserInterface.html</in>
+          <in>RGIS21ControlPanel.html</in>
+          <in>RGIS22MenuSystem.html</in>
+          <in>RGIS23DataVisualization.html</in>
+          <in>RGIS30Processes.html</in>
+          <in>RGISMain.html</in>
+          <in>RGISTableOfContents.html</in>
+          <in>RGISTitle.html</in>
         </df>
+        <in>GHAASMain.html</in>
       </df>
       <df name="Messages">
+        <in>RGIS.history</in>
+        <in>RGIS.msg</in>
       </df>
       <df name="MFlib">
         <df name="include">
           <in>MF.h</in>
         </df>
-        <df name="lib">
-        </df>
-        <df name="obj">
-        </df>
         <df name="Scripts">
+          <in>fwFunctions.sh</in>
+          <in>fwFunctions20.sh</in>
         </df>
         <df name="src">
           <in>MFConfig.c</in>
@@ -120,14 +201,14 @@
           <in>MFRungeKutta.c</in>
           <in>MFSwap.c</in>
           <in>MFVariables.c</in>
+          <in>Makefile</in>
         </df>
+        <in>Makefile</in>
+        <in>common.mk</in>
       </df>
       <df name="ncCommands">
-        <df name="bin">
-        </df>
-        <df name="obj">
-        </df>
         <df name="src">
+          <in>Makefile</in>
           <in>NCCnc2table.c</in>
           <in>NCCncAggregate.c</in>
           <in>NCCncAttributes.c</in>
@@ -136,6 +217,8 @@
           <in>NCCncTblCalculate.c</in>
           <in>NCCtemplate.c</in>
         </df>
+        <in>Makefile</in>
+        <in>common.mk</in>
       </df>
       <df name="NClib">
         <df name="include">
@@ -150,11 +233,8 @@
           <in>NCtable.h</in>
           <in>NCtime.h</in>
         </df>
-        <df name="lib">
-        </df>
-        <df name="obj">
-        </df>
         <df name="src">
+          <in>Makefile</in>
           <in>NCcoordinate.c</in>
           <in>NCdata.c</in>
           <in>NCdate.c</in>
@@ -180,14 +260,12 @@
           <in>NCstring.c</in>
           <in>NCtable.c</in>
         </df>
+        <in>Makefile</in>
+        <in>common.mk</in>
       </df>
       <df name="rCommands">
-        <df name="bin">
-        </df>
         <df name="include">
           <in>CMDexp.H</in>
-        </df>
-        <df name="obj">
         </df>
         <df name="src">
           <in>CMDdm2rgis.C</in>
@@ -275,17 +353,17 @@
           <in>CMDtblSplitDate.C</in>
           <in>CMDtblStatistics.C</in>
           <in>CMDtblTopoCalc.C</in>
+          <in>Makefile</in>
         </df>
+        <in>Makefile</in>
+        <in>common.mk</in>
       </df>
       <df name="rGIS">
-        <df name="bin">
-        </df>
         <df name="include">
           <in>rgis.H</in>
         </df>
-        <df name="obj">
-        </df>
         <df name="src">
+          <in>Makefile</in>
           <in>RGISAnField.C</in>
           <in>RGISAnGNUXYPlot.C</in>
           <in>RGISAnGrid.C</in>
@@ -321,16 +399,15 @@
           <in>RGISUsrFuncVec.C</in>
           <in>RGISWorkspace.C</in>
         </df>
+        <in>Makefile</in>
+        <in>common.mk</in>
       </df>
       <df name="rgisPlot">
-        <df name="bin">
-        </df>
         <df name="include">
           <in>rgisPlot.H</in>
         </df>
-        <df name="obj">
-        </df>
         <df name="src">
+          <in>Makefile</in>
           <in>RGPColorMaps.C</in>
           <in>RGPDrawGridCont.C</in>
           <in>RGPDrawNetwork.C</in>
@@ -338,16 +415,15 @@
           <in>RGPDrawVecPoint.C</in>
           <in>RGPMain.C</in>
         </df>
+        <in>Makefile</in>
+        <in>common.mk</in>
       </df>
       <df name="RGlib">
         <df name="include">
           <in>RG.H</in>
         </df>
-        <df name="lib">
-        </df>
-        <df name="obj">
-        </df>
         <df name="src">
+          <in>Makefile</in>
           <in>RGlibDataStream.C</in>
           <in>RGlibGenFuncs.C</in>
           <in>RGlibGrid.C</in>
@@ -356,43 +432,43 @@
           <in>RGlibPoint.C</in>
           <in>RGlibTable.C</in>
         </df>
+        <in>Makefile</in>
+        <in>common.mk</in>
       </df>
       <df name="rServer">
-        <df name="bin">
-        </df>
         <df name="include">
           <in>rServer.H</in>
         </df>
-        <df name="obj">
-        </df>
         <df name="src">
+          <in>Makefile</in>
           <in>RSVRMain.C</in>
         </df>
+        <in>Makefile</in>
+        <in>common.mk</in>
       </df>
       <df name="Scripts">
+        <in>RGISfunctions.sh</in>
+        <in>rgis.sh</in>
+        <in>xy-plot.sh</in>
       </df>
       <df name="tfCommands">
-        <df name="bin">
-        </df>
-        <df name="obj">
-        </df>
         <df name="src">
           <in>FAccumulate.c</in>
           <in>FCut.c</in>
           <in>FReg.c</in>
           <in>FSort.c</in>
           <in>FStat.c</in>
+          <in>Makefile</in>
         </df>
+        <in>Makefile</in>
+        <in>common.mk</in>
       </df>
       <df name="UIlib">
         <df name="include">
           <in>UI.H</in>
         </df>
-        <df name="lib">
-        </df>
-        <df name="obj">
-        </df>
         <df name="src">
+          <in>Makefile</in>
           <in>UI2DView.C</in>
           <in>UI2DViewAux.C</in>
           <in>UI2DViewDisp.C</in>
@@ -426,11 +502,38 @@
           <in>UIXYGraph.C</in>
           <in>UIXYGraphSh.C</in>
         </df>
+        <in>Makefile</in>
+        <in>common.mk</in>
       </df>
       <df name="XResources">
         <df name="bitmaps">
+          <in>GHAAS2Dview.bmp</in>
+          <in>GHAAScapture.bmp</in>
+          <in>GHAASccny.xpm</in>
+          <in>GHAASclear.bmp</in>
+          <in>GHAASextent.bmp</in>
+          <in>GHAASfull.bmp</in>
+          <in>GHAASgetIdle.bmp</in>
+          <in>GHAASinvert.bmp</in>
+          <in>GHAASkill.bmp</in>
+          <in>GHAASload.bmp</in>
+          <in>GHAASlogo.xpm</in>
+          <in>GHAASmesh.bmp</in>
+          <in>GHAASpane.bmp</in>
+          <in>GHAASredraw.bmp</in>
+          <in>GHAASrgis.bmp</in>
+          <in>GHAASsave.bmp</in>
+          <in>GHAASsetIdle.bmp</in>
+          <in>GHAAStable.bmp</in>
+          <in>GHAASunh.xpm</in>
+          <in>GHAASuser.bmp</in>
+          <in>GHAASvwtm.bmp</in>
+          <in>GHAASzoom.bmp</in>
         </df>
+        <in>ghaas</in>
       </df>
+      <in>Makefile</in>
+      <in>common.mk</in>
     </df>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -461,7 +564,6 @@
           <cTool>
             <incDir>
               <pElem>/usr/local/share/ghaas/include</pElem>
-              <pElem>/sw/lib/pgplot</pElem>
             </incDir>
           </cTool>
           <ccTool>
