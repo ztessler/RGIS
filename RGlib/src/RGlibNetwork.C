@@ -17,7 +17,7 @@ bfekete@ccny.cuny.edu
 DBInt RGlibNetworkToGrid (DBObjData *netData,DBObjTableField *field, DBObjData *grdData)
 
 	{
-	DBInt cellID, intVal;
+	DBInt cellID, intVal, ret = DBSuccess;
 	DBFloat floatVal;
 	DBPosition pos;
 	DBObjRecord *cellRec, *layerRec;
@@ -131,10 +131,10 @@ DBInt RGlibNetworkToGrid (DBObjData *netData,DBObjTableField *field, DBObjData *
 			break;
 		}
 Stop:
+	if (cellID != netIF->CellNum ()) ret = DBFault;
 	delete netIF;
-	if (cellID == netIF->CellNum ()) { delete gridIF; return (DBSuccess); }
 	delete gridIF;
-	return (DBFault);
+	return (ret);
 	}
 
 DBInt RGlibNetworkBasinGrid (DBObjData *netData, DBObjData *grdData)

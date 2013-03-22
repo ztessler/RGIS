@@ -5,4 +5,11 @@
         <activeConfIndexElem>0</activeConfIndexElem>
     </data>
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <preferences xmlns="http://www.netbeans.org/ns/auxiliary-configuration-preferences/1">
+        <module name="org-netbeans-modules-cnd-discovery">
+            <property name="rootFolder" value="/Users/fekete/balazs/NetBeans/RGIS"/>
+            <property name="libraries" value=""/>
+            <property name="executable" value="/Users/fekete/balazs/NetBeans/RGIS"/>
+        </module>
+    </preferences>
 </project-private>
