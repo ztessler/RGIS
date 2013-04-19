@@ -374,7 +374,7 @@ DBInt DBGridIF::Value (DBObjRecord *layerRec,DBCoordinate coord,DBFloat *value) 
 	Pos2Coord (cellPos,cellCoord);
 	if (Flat ||
 	    ((fabs (coord.X - cellCoord.X) < precision) &&
-		 (fabs (coord.Y - cellCoord.Y) < precision)))
+		  (fabs (coord.Y - cellCoord.Y) < precision)))
 		{
 		j = DimensionVAR.Col * (DimensionVAR.Row - cellPos.Row - 1) + cellPos.Col;
 		switch (ValueTypeVAR)
