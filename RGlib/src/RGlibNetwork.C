@@ -141,7 +141,7 @@ DBInt RGlibNetworkBasinGrid (DBObjData *netData, DBObjData *grdData)
 
 	{
 	char symbolName [DBStringLength];
-	DBInt cellID, basinID, inFieldID, symbol, symMax = 0;
+	DBInt cellID, basinID, inFieldID, symbol, symMax = 0, ret = DBSuccess;
 	DBPosition pos;
 	DBObjRecord *cellRec, *basinRec, *itemRec, *symRec;
 	DBObjTable *grdTable		= grdData->Table (DBrNItems);
@@ -224,11 +224,12 @@ DBInt RGlibNetworkBasinGrid (DBObjData *netData, DBObjData *grdData)
 		gridIF->Value (netIF->CellPosition (cellRec),basinFLD->Int (cellRec) - 1);
 		}
 Stop:
+	if (cellID == netIF->CellNum ()) gridIF->DiscreteStats ();
+	else ret = DBFault;
+
 	delete netIF;
-	if (cellID == netIF->CellNum ())
-		{ gridIF->DiscreteStats (); delete gridIF; return (DBSuccess); }
 	delete gridIF;
-	return (DBFault);
+	return (ret);
 	}
 
 DBInt RGlibNetworkStations (DBObjData *netData,DBFloat area, DBFloat tolerance,DBObjData *pntData)
