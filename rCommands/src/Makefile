@@ -97,6 +97,7 @@ UTILS = $(BIN)/dsAggregate\
         $(BIN)/rgis2dm\
         $(BIN)/dm2rgis\
         $(BIN)/rgis2ds\
+        $(BIN)/netcdf2ds\
         $(BIN)/ds2rgis\
         $(BIN)/rgisMetadb \
         $(BIN)/rgis2netcdf\
