@@ -381,10 +381,12 @@ static DBInt _DBExportNetCDFGridDefine (DBObjData *dbData,int ncid, int dimids [
 
 static DBInt _DBExportNetCDFTimeDefine (DBObjData *dbData,int ncid,int dimids [])
 	{
+
 	char *str, timeStr [DBStringLength], unitStr [NC_MAX_NAME];
 	int status, timeid, i;
 	int year, month, day, hour, minute;
 	ut_system    *utSystem     = (ut_system *) NULL;
+	ut_set_error_message_handler(ut_ignore);
 	ut_unit      *utUnit       = (ut_unit *)   NULL;
 	ut_unit      *baseTimeUnit = (ut_unit *)   NULL;
 	cv_converter *cvConverter  = (cv_converter *) NULL;
@@ -1153,6 +1155,7 @@ DBInt DBExportNetCDF (DBObjData *dbData,const char *fileName)
 DBInt DBImportNetCDF (DBObjData *data,const char *filename)
 
 	{
+
 	char name [NC_MAX_NAME], varname [NC_MAX_NAME], timeString [NC_MAX_NAME], /* varUnit [NC_MAX_NAME], */ longName [NC_MAX_NAME], layerName [DBStringLength];
 	size_t attlen;
 	int ncid, status, id, i;
@@ -1166,6 +1169,7 @@ DBInt DBImportNetCDF (DBObjData *data,const char *filename)
 	int year, month, day, hour, minute;
 	double second, resolution;
 	ut_system  *utSystem      = (ut_system *) NULL;
+	ut_set_error_message_handler(ut_ignore);
 	ut_unit    *baseTimeUnit  = (ut_unit *)   NULL;
 	ut_unit    *timeUnit      = (ut_unit *)   NULL;
 	cv_converter *cvConverter = (cv_converter *) NULL;
