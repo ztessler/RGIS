@@ -56,8 +56,8 @@ DBInt RGlibRGIS2DataStream (DBObjData *grdData,DBObjData *tmplData,char *fieldNa
 				switch (itemSize)
 					{
 					default:
-					case sizeof (DBFloat4):	varHeader.DataType = MFFloat;/*CMmsgPrint (CMmsgSysError,  "Discrete ds using Float");*/		break;
-					case sizeof (DBFloat):	varHeader.DataType = MFDouble;/*CMmsgPrint (CMmsgSysError, "Discrete ds using Double");*/	break;
+					case sizeof (DBFloat4):	varHeader.DataType = MFFloat;	break;
+					case sizeof (DBFloat):	varHeader.DataType = MFDouble;	break;
 					}
 				varHeader.Missing.Float = fieldPTR->FloatNoData ();
 				break;
@@ -81,8 +81,8 @@ DBInt RGlibRGIS2DataStream (DBObjData *grdData,DBObjData *tmplData,char *fieldNa
 			case DBVariableFloat:
 				switch (itemSize)
 					{
-					case 4:	varHeader.DataType = MFFloat;/*CMmsgPrint (CMmsgSysError,   "Cont ds using Float");*/	 	break;
-					case 8:	varHeader.DataType = MFDouble;/*CMmsgPrint (CMmsgSysError,  "Cont ds using Double");*/ 	break;
+					case 4:	varHeader.DataType = MFFloat; 	break;
+					case 8:	varHeader.DataType = MFDouble; 	break;
 					}
 				varHeader.Missing.Float = gridIF->MissingValue ();
 				break;
@@ -499,8 +499,8 @@ DBInt RGlibDataStream2RGIS (DBObjData *outData,DBObjData *tmplData, FILE *inFile
 							case MFByte:	val = (DBFloat) (((char *)   data) [pos.Row * gridIF->ColNum () + pos.Col]); break;
 							case MFShort:	val = (DBFloat) (((short *)  data) [pos.Row * gridIF->ColNum () + pos.Col]); break;
 							case MFInt:		val = (DBFloat) (((int *)    data) [pos.Row * gridIF->ColNum () + pos.Col]); break;
-							case MFFloat:	val = (DBFloat) (((float *)  data) [pos.Row * gridIF->ColNum () + pos.Col]); CMmsgPrint (CMmsgSysError,   "Desc rds using Float"); break;
-							case MFDouble:	val = (DBFloat) (((double *) data) [pos.Row * gridIF->ColNum () + pos.Col]); CMmsgPrint (CMmsgSysError,   "Desc rds using Double"); break;
+							case MFFloat:	val = (DBFloat) (((float *)  data) [pos.Row * gridIF->ColNum () + pos.Col]); break;
+							case MFDouble:	val = (DBFloat) (((double *) data) [pos.Row * gridIF->ColNum () + pos.Col]); break;
 							}
 						gridIF->Value (record,pos,val);
 						}
@@ -543,8 +543,8 @@ DBInt RGlibDataStream2RGIS (DBObjData *outData,DBObjData *tmplData, FILE *inFile
 						case MFByte:	val = (DBFloat) (((char *)   data) [cellID]); break;
 						case MFShort:	val = (DBFloat) (((short *)  data) [cellID]); break;
 						case MFInt:		val = (DBFloat) (((int *)    data) [cellID]); break;
-						case MFFloat:	val = (DBFloat) (((float *)  data) [cellID]); /*CMmsgPrint (CMmsgSysError,   "Net rds using Float");*/ break;
-						case MFDouble:	val = (DBFloat) (((double *) data) [cellID]); /*CMmsgPrint (CMmsgSysError,   "Net rds using Double");*/ break;
+						case MFFloat:	val = (DBFloat) (((float *)  data) [cellID]); break;
+						case MFDouble:	val = (DBFloat) (((double *) data) [cellID]); break;
 						}
 					gridIF->Value (record,pos,val);
 					}
