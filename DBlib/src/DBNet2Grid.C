@@ -51,7 +51,7 @@ DBObjData *DBNetworkToGrid (DBObjData *netData,DBInt type)
 		{
 		case DBTypeGridContinuous:
 			valueTypeFLD->Int (layerRec,DBTableFieldFloat);
-			valueSizeFLD->Int (layerRec,sizeof (DBFloat4));
+			valueSizeFLD->Int (layerRec,sizeof (DBFloat));
 			break;
 		case DBTypeGridDiscrete:
 			valueTypeFLD->Int (layerRec,DBTableFieldInt);
