@@ -1687,8 +1687,8 @@ DBInt DBImportNetCDF (DBObjData *data,const char *filename)
 			start [timeidx] = layerID;
 			if (doTimeUnit)
 				{
-				ut_decode_time (cv_convert_double (cvConverter, timeSteps [layerID]), &year, &month, &day, &hour, &minute, &second, &resolution);
-				if (year > 1) sprintf (layerName,"%04d",year); else sprintf (layerName,"XXXX");
+                                ut_decode_time (cv_convert_double (cvConverter, timeSteps [layerID]), &year, &month, &day, &hour, &minute, &second, &resolution);
+                                if (year > 1) sprintf (layerName,"%04d",year); else sprintf (layerName,"XXXX");
 				if (strncmp (timeString,"month",strlen ("month")) == 0)
 					sprintf (layerName + strlen (layerName),"-%02d",month + (day > 15 ? 1 : 0));
 				else if (strncmp (timeString,"day",strlen ("day")) == 0)
