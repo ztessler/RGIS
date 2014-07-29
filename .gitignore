@@ -354,3 +354,5 @@ tfCommands/obj/FAccumulate.o
 tfCommands/obj/FCut.o
 tfCommands/obj/FSort.o
 tfCommands/obj/FStat.o
+/nbproject/private/CodeAssistancePathMapper.properties
+/nbproject/private/Default.properties
