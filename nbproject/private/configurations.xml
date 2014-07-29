@@ -238,6 +238,7 @@
           <in>CMDnetTrim.C</in>
           <in>CMDnetUnaccumulate.C</in>
           <in>CMDnetUpstreamAvg.C</in>
+          <in>CMDnetcdf2ds.C</in>
           <in>CMDnetcdf2rgis.C</in>
           <in>CMDpntGridSampling.C</in>
           <in>CMDpntGridValue.C</in>
