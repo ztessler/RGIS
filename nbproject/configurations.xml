@@ -348,16 +348,28 @@
         </makeTool>
       </makefileType>
       <item path="CMlib/src/cmArgParse.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+        </cTool>
       </item>
       <item path="CMlib/src/cmBuffer.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+        </cTool>
       </item>
       <item path="CMlib/src/cmMath.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+        </cTool>
       </item>
       <item path="CMlib/src/cmMessage.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+        </cTool>
       </item>
       <item path="CMlib/src/cmString.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+        </cTool>
       </item>
       <item path="CMlib/src/cmThreads.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+        </cTool>
       </item>
       <item path="DBlib/src/DBByteOrder.C" ex="false" tool="1" flavor2="0">
       </item>
@@ -430,30 +442,56 @@
       <item path="DBlib/src/DBVectorMisc.C" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Flib/src/FData.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+        </cTool>
       </item>
       <item path="Flib/src/FTableRead.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+        </cTool>
       </item>
       <item path="Flib/src/Flib.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+        </cTool>
       </item>
       <item path="MFlib/src/MFConfig.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+        </cTool>
       </item>
       <item path="MFlib/src/MFDataStream.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+        </cTool>
       </item>
       <item path="MFlib/src/MFDate.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+        </cTool>
       </item>
       <item path="MFlib/src/MFDefinition.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+        </cTool>
       </item>
       <item path="MFlib/src/MFDomain.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+        </cTool>
       </item>
       <item path="MFlib/src/MFModel.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+        </cTool>
       </item>
       <item path="MFlib/src/MFOptions.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+        </cTool>
       </item>
       <item path="MFlib/src/MFRungeKutta.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+        </cTool>
       </item>
       <item path="MFlib/src/MFSwap.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+        </cTool>
       </item>
       <item path="MFlib/src/MFVariables.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+        </cTool>
       </item>
       <item path="NClib/src/NCcoordinate.c" ex="false" tool="0" flavor2="0">
         <cTool>
@@ -503,6 +541,7 @@
       <item path="NClib/src/NCdsHandleGDisc.c" ex="false" tool="0" flavor2="2">
         <cTool>
           <incDir>
+            <pElem>NClib/include</pElem>
             <pElem>/usr/local/share/ghaas/include</pElem>
             <pElem>/sw/lib/pgplot</pElem>
             <pElem>/sw/include</pElem>
@@ -515,7 +554,6 @@
             <pElem>UIlib/include</pElem>
             <pElem>rGIS/include</pElem>
             <pElem>DBlib/include</pElem>
-            <pElem>NClib/include</pElem>
           </incDir>
         </cTool>
       </item>
@@ -603,6 +641,7 @@
       <item path="NClib/src/NCify.c" ex="false" tool="0" flavor2="2">
         <cTool>
           <incDir>
+            <pElem>NClib/include</pElem>
             <pElem>/usr/local/share/ghaas/include</pElem>
             <pElem>/sw/lib/pgplot</pElem>
             <pElem>/sw/include</pElem>
@@ -615,7 +654,6 @@
             <pElem>UIlib/include</pElem>
             <pElem>rGIS/include</pElem>
             <pElem>DBlib/include</pElem>
-            <pElem>NClib/include</pElem>
           </incDir>
         </cTool>
       </item>
@@ -1092,6 +1130,21 @@
       <item path="rCommands/src/CMDnetUnaccumulate.C" ex="false" tool="1" flavor2="0">
       </item>
       <item path="rCommands/src/CMDnetUpstreamAvg.C" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="rCommands/src/CMDnetcdf2ds.C" ex="false" tool="1" flavor2="0">
+        <ccTool>
+          <incDir>
+            <pElem>/sw/include</pElem>
+            <pElem>rCommands/include</pElem>
+            <pElem>CMlib/include</pElem>
+            <pElem>MFlib/include</pElem>
+            <pElem>DBlib/include</pElem>
+            <pElem>RGlib/include</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>_GNU_SOURCE</Elem>
+          </preprocessorList>
+        </ccTool>
       </item>
       <item path="rCommands/src/CMDnetcdf2rgis.C" ex="false" tool="1" flavor2="0">
       </item>

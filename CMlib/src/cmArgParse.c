@@ -50,3 +50,9 @@ const char *CMfileName (const char *fullPath) {
 	for (i = strlen (fullPath) - 1;i > 0;i--) if (fullPath [i] == '/') {i++; break; }
 	return (fullPath + i);
 }
+
+const char *CMfileExtension (const char *fullPath) {
+	int i;
+	for (i = strlen (fullPath) - 1;i > 0;i--) if (fullPath [i] == '.') {i++; break; }
+	return (fullPath + i);
+}
