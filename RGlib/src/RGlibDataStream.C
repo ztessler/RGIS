@@ -56,7 +56,7 @@ DBInt RGlibRGIS2DataStream (DBObjData *grdData,DBObjData *tmplData,char *fieldNa
 				switch (itemSize)
 					{
 					default:
-					case sizeof (DBFloat4):	varHeader.DataType = MFFloat;		break;
+					case sizeof (DBFloat4):	varHeader.DataType = MFFloat;	break;
 					case sizeof (DBFloat):	varHeader.DataType = MFDouble;	break;
 					}
 				varHeader.Missing.Float = fieldPTR->FloatNoData ();
@@ -81,7 +81,7 @@ DBInt RGlibRGIS2DataStream (DBObjData *grdData,DBObjData *tmplData,char *fieldNa
 			case DBVariableFloat:
 				switch (itemSize)
 					{
-					case 4:	varHeader.DataType = MFFloat;	 	break;
+					case 4:	varHeader.DataType = MFFloat; 	break;
 					case 8:	varHeader.DataType = MFDouble; 	break;
 					}
 				varHeader.Missing.Float = gridIF->MissingValue ();
@@ -404,6 +404,7 @@ DBInt RGlibDataStream2RGIS (DBObjData *outData,DBObjData *tmplData, FILE *inFile
 	void *data = (void *) NULL;
 	MFVarHeader_t header;
 	DBObjRecord *record;
+
 
 	switch (tmplData->Type ())
 		{

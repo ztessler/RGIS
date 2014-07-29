@@ -381,10 +381,12 @@ static DBInt _DBExportNetCDFGridDefine (DBObjData *dbData,int ncid, int dimids [
 
 static DBInt _DBExportNetCDFTimeDefine (DBObjData *dbData,int ncid,int dimids [])
 	{
+
 	char *str, timeStr [DBStringLength], unitStr [NC_MAX_NAME];
 	int status, timeid, i;
 	int year, month, day, hour, minute;
 	ut_system    *utSystem     = (ut_system *) NULL;
+	ut_set_error_message_handler(ut_ignore);
 	ut_unit      *utUnit       = (ut_unit *)   NULL;
 	ut_unit      *baseTimeUnit = (ut_unit *)   NULL;
 	cv_converter *cvConverter  = (cv_converter *) NULL;
@@ -998,8 +1000,8 @@ DBInt DBExportNetCDF (DBObjData *dbData,const char *fileName)
 			} break;
 		case DBTypeGridContinuous:
 			{
-			float *record, fillVal;
-			float extent [2], dataOffset, scaleFactor;
+			double *record, fillVal;
+			double extent [2], dataOffset, scaleFactor;
 			DBFloat gridVal;
 			DBInt layerID;
 			DBPosition pos;
@@ -1013,7 +1015,7 @@ DBInt DBExportNetCDF (DBObjData *dbData,const char *fileName)
 			/* Begin Defining Core Variable */
 			if ((status = nc_redef (ncid)) != NC_NOERR)
 				{ CMmsgPrint (CMmsgAppError, "NC Error '%s' in: %s %d", nc_strerror(status),__FILE__,__LINE__); nc_close (ncid); return (DBFault); }
-			if ((status = nc_def_var (ncid,_DBExportNetCDFRename (dbData->Document (DBDocSubject)),NC_FLOAT,(int) 3,dimids,&varid))  != NC_NOERR)
+			if ((status = nc_def_var (ncid,_DBExportNetCDFRename (dbData->Document (DBDocSubject)),NC_DOUBLE,(int) 3,dimids,&varid))  != NC_NOERR)
 				{ CMmsgPrint (CMmsgAppError, "NC Error '%s' in: %s %d", nc_strerror(status),__FILE__,__LINE__); nc_close (ncid); return (DBFault); }
 
 			str = dbData->Name ();
@@ -1032,21 +1034,21 @@ DBInt DBExportNetCDF (DBObjData *dbData,const char *fileName)
 			dataOffset  = 0.0;
 			extent [0]  = gridIF->Minimum ();
 			extent [1]  = gridIF->Maximum ();
-			if ((status = nc_put_att_float (ncid,varid,"missing_value",NC_FLOAT,1,&fillVal)) != NC_NOERR)
+			if ((status = nc_put_att_double (ncid,varid,"missing_value",NC_DOUBLE,1,&fillVal)) != NC_NOERR)
 				{ CMmsgPrint (CMmsgAppError, "NC Error '%s' in: %s %d", nc_strerror(status),__FILE__,__LINE__); nc_close (ncid); return (DBFault); }
-			if ((status = nc_put_att_float (ncid,varid,"_FillValue",   NC_FLOAT,1,&fillVal)) != NC_NOERR)
+			if ((status = nc_put_att_double (ncid,varid,"_FillValue",   NC_DOUBLE,1,&fillVal)) != NC_NOERR)
 				{ CMmsgPrint (CMmsgAppError, "NC Error '%s' in: %s %d", nc_strerror(status),__FILE__,__LINE__); nc_close (ncid); return (DBFault); }
-			if ((status = nc_put_att_float (ncid,varid,"scale_factor",NC_FLOAT,1,&scaleFactor)) != NC_NOERR)
+			if ((status = nc_put_att_double (ncid,varid,"scale_factor",NC_DOUBLE,1,&scaleFactor)) != NC_NOERR)
 				{ CMmsgPrint (CMmsgAppError, "NC Error '%s' in: %s %d", nc_strerror(status),__FILE__,__LINE__); delete gridIF; nc_close (ncid); return (DBFault); }
-			if ((status = nc_put_att_float (ncid,varid,"add_offset",  NC_FLOAT,1,&dataOffset)) != NC_NOERR)
+			if ((status = nc_put_att_double (ncid,varid,"add_offset",  NC_DOUBLE,1,&dataOffset)) != NC_NOERR)
 				{ CMmsgPrint (CMmsgAppError, "NC Error '%s' in: %s %d", nc_strerror(status),__FILE__,__LINE__); delete gridIF; nc_close (ncid); return (DBFault); }
-			if ((status = nc_put_att_float (ncid,varid,"actual_range",NC_FLOAT,2,extent)) != NC_NOERR)
+			if ((status = nc_put_att_double (ncid,varid,"actual_range",NC_DOUBLE,2,extent)) != NC_NOERR)
 				{ CMmsgPrint (CMmsgAppError, "NC Error '%s' in: %s %d", nc_strerror(status),__FILE__,__LINE__); delete gridIF; nc_close (ncid); return (DBFault); }
 			if ((status = nc_enddef (ncid)) != NC_NOERR)
 				{ CMmsgPrint (CMmsgAppError, "NC Error '%s' in: %s %d", nc_strerror(status),__FILE__,__LINE__); delete gridIF; nc_close (ncid); return (DBFault); }
 			/* End Defining Core Variable */
 
-			if ((record = (float *) calloc (gridIF->ColNum (),sizeof (float))) == (float *) NULL)
+			if ((record = (double *) calloc (gridIF->ColNum (),sizeof (double))) == (double *) NULL)
 				{
 				CMmsgPrint (CMmsgSysError, "Memory allocation error in: %s %d",__FILE__,__LINE__);
 				delete gridIF;
@@ -1063,7 +1065,7 @@ DBInt DBExportNetCDF (DBObjData *dbData,const char *fileName)
 					start [DIMLon] = 0; count [DIMLon] = gridIF->ColNum ();
 					for (pos.Col = 0;pos.Col < gridIF->ColNum ();pos.Col++)
 						record [pos.Col] = gridIF->Value (layerRec,pos,&gridVal) ? gridVal : fillVal;
-					if ((status = nc_put_vara_float (ncid,varid,start,count,record)) != NC_NOERR)
+					if ((status = nc_put_vara_double (ncid,varid,start,count,record)) != NC_NOERR)
 						{
 						CMmsgPrint (CMmsgAppError, "NC Error '%s' in: %s %d", nc_strerror(status),__FILE__,__LINE__);
 						free (record);
@@ -1153,8 +1155,11 @@ DBInt DBExportNetCDF (DBObjData *dbData,const char *fileName)
 DBInt DBImportNetCDF (DBObjData *data,const char *filename)
 
 	{
+
 	char name [NC_MAX_NAME], varname [NC_MAX_NAME], timeString [NC_MAX_NAME], /* varUnit [NC_MAX_NAME], */ longName [NC_MAX_NAME], layerName [DBStringLength];
 	size_t attlen;
+        nc_type ntype;
+        int data_type = 0;
 	int ncid, status, id, i;
 	int ndims, nvars, natts, unlimdim;
 	int latdim = -1, londim = -1, levdim = -1, timedim = -1;
@@ -1166,6 +1171,7 @@ DBInt DBImportNetCDF (DBObjData *data,const char *filename)
 	int year, month, day, hour, minute;
 	double second, resolution;
 	ut_system  *utSystem      = (ut_system *) NULL;
+	ut_set_error_message_handler(ut_ignore);
 	ut_unit    *baseTimeUnit  = (ut_unit *)   NULL;
 	ut_unit    *timeUnit      = (ut_unit *)   NULL;
 	cv_converter *cvConverter = (cv_converter *) NULL;
@@ -1616,6 +1622,9 @@ DBInt DBImportNetCDF (DBObjData *data,const char *filename)
 		return (DBFault);
 		}
 
+
+
+
 	for (id = 0;id < ndims;id++)
 		{
 		start [id] = 0;
@@ -1623,6 +1632,19 @@ DBInt DBImportNetCDF (DBObjData *data,const char *filename)
 		else if (dimids [id] == latdim)  { count [id] = 1;      latidx  = id; }
 		else if (dimids [id] == timedim) { count [id] = 1;      timeidx = id; }
 		else if (dimids [id] == levdim)  { count [id] = 1;      levidx  = id; }
+		}
+
+		int netcdfdims; int netcdfvars;int netcdfngatts;int recdim;
+		status  = nc_inq(ncid, &netcdfdims, &netcdfvars, &netcdfngatts, &recdim);
+
+		for(id=0;id <= netcdfvars;id++)
+		{
+			status = nc_inq_vartype (ncid,id,&ntype);
+
+			if (ntype == NC_FLOAT)
+                      	{
+                   		data_type = 1;
+			}
 		}
 
 	data->Extent (extent);
@@ -1665,8 +1687,8 @@ DBInt DBImportNetCDF (DBObjData *data,const char *filename)
 			start [timeidx] = layerID;
 			if (doTimeUnit)
 				{
-				ut_decode_time (cv_convert_double (cvConverter, timeSteps [layerID]), &year, &month, &day, &hour, &minute, &second, &resolution);
-				if (year != 0) sprintf (layerName,"%04d",year); else sprintf (layerName,"XXXX");
+                                ut_decode_time (cv_convert_double (cvConverter, timeSteps [layerID]), &year, &month, &day, &hour, &minute, &second, &resolution);
+                                if (year > 1) sprintf (layerName,"%04d",year); else sprintf (layerName,"XXXX");
 				if (strncmp (timeString,"month",strlen ("month")) == 0)
 					sprintf (layerName + strlen (layerName),"-%02d",month + (day > 15 ? 1 : 0));
 				else if (strncmp (timeString,"day",strlen ("day")) == 0)
@@ -1699,8 +1721,12 @@ DBInt DBImportNetCDF (DBObjData *data,const char *filename)
 		cellWidthFLD->Float (layerRec,cellSize.X);
 		cellHeightFLD->Float (layerRec,cellSize.Y);
 		valueTypeFLD->Int (layerRec,DBTableFieldFloat);
-		valueSizeFLD->Int (layerRec,sizeof (DBFloat4));
-		layerFLD->Record (layerRec,dataRec = new DBObjRecord (layerName,((size_t) colNum) * rowNum * sizeof (DBFloat4),sizeof (DBFloat4)));
+		if(data_type == 0) {
+			valueSizeFLD->Int (layerRec,sizeof (DBFloat));
+		}else {
+			valueSizeFLD->Int (layerRec,sizeof (DBFloat4));
+		}
+		layerFLD->Record (layerRec,dataRec = new DBObjRecord (layerName,((size_t) colNum) * rowNum * sizeof (DBFloat),sizeof (DBFloat)));
 		(data->Arrays ())->Add (dataRec);
 
 		for (rowID = 0;rowID < rowNum;rowID++)
@@ -1720,12 +1746,27 @@ DBInt DBImportNetCDF (DBObjData *data,const char *filename)
 				ut_free_system (utSystem);
 				return (DBFault);
 				}
-			for (colID = 0;colID < colNum;colID++)
-				vector [colID] = CMmathEqualValues (vector [colID], fillValue) ? missingValue : scaleFactor * vector [colID] + dataOffset;
-			if (longitudes [0] < longitudes [1])
-				for (colID = 0;colID < colNum;colID++) ((float *) (dataRec->Data ())) [colNum * rowID + colID] = vector [colID];
-			else
-				for (colID = 0;colID < colNum;colID++) ((float *) (dataRec->Data ())) [colNum * rowID + colID] = vector [colNum - colID - 1];
+
+
+			if(data_type == 0)
+				{
+					for (colID = 0;colID < colNum;colID++)
+						vector [colID] = CMmathEqualValues (vector [colID], fillValue) ? missingValue : scaleFactor * vector [colID] + dataOffset;
+					if (longitudes [0] < longitudes [1])
+						for (colID = 0;colID < colNum;colID++) ((double *) (dataRec->Data ())) [colNum * rowID + colID] = vector [colID];
+					else
+						for (colID = 0;colID < colNum;colID++) ((double *) (dataRec->Data ())) [colNum * rowID + colID] = vector [colNum - colID - 1];
+				} else 
+				{
+					for (colID = 0;colID < colNum;colID++)
+						vector [colID] = CMmathEqualValues (vector [colID], fillValue) ? missingValue : scaleFactor * vector [colID] + dataOffset;
+					if (longitudes [0] < longitudes [1])
+						for (colID = 0;colID < colNum;colID++) ((float *) (dataRec->Data ())) [colNum * rowID + colID] = vector [colID];
+					else
+						for (colID = 0;colID < colNum;colID++) ((float *) (dataRec->Data ())) [colNum * rowID + colID] = vector [colNum - colID - 1];
+				}
+
+
 			}
 		}
 	gridIF = new DBGridIF (data);

@@ -48,7 +48,7 @@ int DBExportARCGridLayer (DBObjData *data,DBObjRecord *layerRec,FILE *file)
 				{
 				pos.Row = row;
 				pos.Col = col;
-				if (gridIF->Value (layerRec,pos,&value))	fprintf (file," %f",value);
+				if (gridIF->Value (layerRec,pos,&value))	fprintf (file," %.15g",value);
 				else	fprintf (file," %f",gridIF->MissingValue ());
 				}
 			fprintf (file,"\n");
