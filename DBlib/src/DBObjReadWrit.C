@@ -246,12 +246,20 @@ int DBObjData::Read (const char *fileName)
 	{
 	FILE *file;
 
-	if ((file = fopen (fileName,"r")) == (FILE *) NULL)
+	if (strncmp(CMfileExtension(fileName),"nc",2) == 0)
 		{
-		CMmsgPrint (CMmsgAppError, "File (%s) Opening Error in: %s %d",fileName, __FILE__,__LINE__);
-		return (DBFault);
+		Type (DBTypeGridContinuous); // TODO: Limiting to Continuous grid
+		if (DBImportNetCDF (this,fileName) == DBFault) return (DBFault);
 		}
-	if (Read (file) == DBFault) return (DBFault);
+	else
+		{
+		if ((file = fopen (fileName,"r")) == (FILE *) NULL)
+			{
+			CMmsgPrint (CMmsgAppError, "File (%s) Opening Error in: %s %d",fileName, __FILE__,__LINE__);
+			return (DBFault);
+			}
+		if (Read (file) == DBFault) return (DBFault);
+		}
 	FileName (fileName);
 	return (DBSuccess);
 	}
@@ -297,10 +305,15 @@ int DBObjData::Write (const char *fileName)
 	DBInt ret;
 	FILE *file;
 
-	if ((file = fopen (fileName,"w")) == (FILE *) NULL)
+	if (strncmp(CMfileExtension(fileName),"nc",2) == 0)
+		ret = DBExportNetCDF (this,fileName);
+	else
+		{
+		if ((file = fopen (fileName,"w")) == (FILE *) NULL)
 		{ CMmsgPrint (CMmsgSysError, "File Opening Error in: %s %d",__FILE__,__LINE__); return (DBFault); }
-	ret = Write (file);
-	fclose (file);
+		ret = Write (file);
+		fclose (file);
+		}
 	return (ret);
 	}
 
