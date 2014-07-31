@@ -65,6 +65,7 @@ function FwArguments()
 	         FwWARNINGS="on"
 	        _fwTESTONLY="off"
 	    _fwOPTIONSPRINT="off"
+		    _fwOUTFORMAT="gdbc"
 	     _fwDAILYOUTPUT="off"
 	          FwVERBOSE="off"
 	while [ "${1}" != "" ]
@@ -116,6 +117,20 @@ function FwArguments()
 					_fwPASSNUM="${1}"
 				fi
 			;;
+			(-m|--outputformat)
+				shift
+				case ${1} in
+					(rgis)
+						_fwOUTFORMAT="gdbc"
+					;;
+					(netcdf)
+						_fwOUTFORMAT="nc"
+					;;
+					(*)
+						echo "Invalid --preprocess argument [${1}]"
+					;;
+				esac
+				;;
 			(-r|--preprocess)
 				shift
 				case ${1} in
@@ -192,16 +207,17 @@ function FwArguments()
 			(-h|--help)
 				_fwPROGNAME="${0##*/}" # I don't know how this one works.
 				echo "${_fwPROGNAME} [-s on|off] [-f on|off] [-p on|off] -W on|off -T -V"
-				echo "           -a, --restart     on|off"
-				echo "           -s, --spinup      on|off"
-				echo "           -f, --finalrun    on|off"
+				echo "           -a, --restart      on|off"
+				echo "           -s, --spinup       on|off"
+				echo "           -f, --finalrun     on|off"
 				echo "           -l, --lengthcorrection    [value]"
-				echo "           -n, --passnum     [num]"
-				echo "           -r, --preprocess  auto|forced"
-				echo "           -P, --processors  [# of processors]"
-				echo "           -p, --postprocess on|off"
-				echo "           -u, --purgefiles  on|off"
-				echo "           -W, --warnings    on|off"
+				echo "           -n, --passnum      [num]"
+				echo "           -m, --outputformat [rgis|netcdf]
+				echo "           -r, --preprocess   auto|forced"
+				echo "           -P, --processors   [# of processors]"
+				echo "           -p, --postprocess  on|off"
+				echo "           -u, --purgefiles   on|off"
+				echo "           -W, --warnings     on|off"
 				echo "           -T, --testonly"
 				echo "           -O, --optionsprint"
 				echo "           -D, --dailyoutput  on|off"
@@ -230,16 +246,13 @@ function FwInit()
 	[ "${_fwRGISDomainFILE}" == "${FwDomainRES}" ] && FwDomainRES="unset"
 	case ${_fwDomainTYPE} in
 		(gdbn)
-			_fwOutputTYPE="gdbc"
 			_fwDomainTYPE="Network"
 		;;
 		(gdbc|gdbd)
-			_fwOutputTYPE="gdbc"
 			_fwDomainTYPE="Grid"
 		;;
 		(*)
 			  FwDomainRES=""
-			_fwOutputTYPE="gdbt"
 			_fwDomainTYPE="Point"
 		;;
 	esac
@@ -416,9 +429,9 @@ function FwRGISFilename()
 	local     fwYEAR="${4}"
 	if [ "${fwYEAR}" == "" ]
 	then
-		local fwFILENAME="${_fwRGISResultsDIR}/${_fwDomainNAME}/${fwVARIABLE}/${_fwDomainNAME}_${fwVARIABLE}_${fwVERSION}_${FwDomainRES}_${fwSTEP}LT.gdbc"
+		local fwFILENAME="${_fwRGISResultsDIR}/${_fwDomainNAME}/${fwVARIABLE}/${_fwDomainNAME}_${fwVARIABLE}_${fwVERSION}_${FwDomainRES}_${fwSTEP}LT.${_fwOUTFORMAT}"
 	else
-		local fwFILENAME="${_fwRGISResultsDIR}/${_fwDomainNAME}/${fwVARIABLE}/${_fwDomainNAME}_${fwVARIABLE}_${fwVERSION}_${FwDomainRES}_${fwSTEP}TS${fwYEAR}.gdbc"
+		local fwFILENAME="${_fwRGISResultsDIR}/${_fwDomainNAME}/${fwVARIABLE}/${_fwDomainNAME}_${fwVARIABLE}_${fwVERSION}_${FwDomainRES}_${fwSTEP}TS${fwYEAR}.${_fwOUTFORMAT}"
 	fi
 	echo "${fwFILENAME}"
 }
