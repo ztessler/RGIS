@@ -212,7 +212,7 @@ function FwArguments()
 				echo "           -f, --finalrun     on|off"
 				echo "           -l, --lengthcorrection    [value]"
 				echo "           -n, --passnum      [num]"
-				echo "           -m, --outputformat [rgis|netcdf]
+				echo "           -m, --outputformat [rgis|netcdf]"
 				echo "           -r, --preprocess   auto|forced"
 				echo "           -P, --processors   [# of processors]"
 				echo "           -p, --postprocess  on|off"
