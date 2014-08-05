@@ -409,17 +409,22 @@ static bool _MFModelReadInput (char *time)
 }
 
 static void _MFUserFunc (void *commonPtr,void *threadData, size_t taskId) {
-	int iFunc, varID, dlink, objectId;
+	int iFunc, varID, link, uLink, objectId;
 	MFVariable_t *var;
+	double value;
 
 	objectId = _MFDomain->ObjNum - taskId - 1;
-	for (iFunc = 0;iFunc < _MFFunctionNum; ++iFunc) (_MFFunctions [iFunc]) (objectId);
-
+	
 	for (var = MFVarGetByID (varID = 1);var != (MFVariable_t *) NULL;var = MFVarGetByID (++varID))
-		if ((var->Route) && (_MFDomain->Objects [objectId].DLinkNum == 1)) {
-			dlink = _MFDomain->Objects [objectId].DLinks [0];
-			MFVarSetFloat (varID, dlink, MFVarGetFloat (varID,objectId,0.0) + MFVarGetFloat (varID,dlink,0.0));
+		if (var->Route) {
+			value = 0.0;
+			for (link = 0; link < _MFDomain->Objects [objectId].ULinkNum; ++link) {
+				uLink = _MFDomain->Objects [objectId].ULinks [link];
+				value += MFVarGetFloat (varID,uLink,0.0);
+			}
+			MFVarSetFloat (varID, objectId, value);
 		}
+	for (iFunc = 0;iFunc < _MFFunctionNum; ++iFunc) (_MFFunctions [iFunc]) (objectId);
 }
 
 int MFModelRun (int argc, char *argv [], int argNum, int (*conf) ()) {
@@ -456,8 +461,6 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*conf) ()) {
 		}
 		do {
 			CMmsgPrint (CMmsgDebug, "Computing: %s", timeCur);
-			for (var = MFVarGetByID (varID = 1);var != (MFVariable_t *) NULL;var = MFVarGetByID (++varID))
-				if (var->Route) { for (i = 0;i < _MFDomain->ObjNum; ++i)  MFVarSetFloat (varID, i, 0.0); }
 
 			CMthreadJobExecute (team, job);
 
@@ -470,18 +473,25 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*conf) ()) {
 	}
 	else // TODO Single CPU
 		do	{
+			int link, uLink;
+			double value;
+
 			CMmsgPrint (CMmsgDebug, "Computing: %s", timeCur);
 			for (var = MFVarGetByID (varID = 1);var != (MFVariable_t *) NULL;var = MFVarGetByID (++varID))
 				if (var->Route) { for (i = 0;i < _MFDomain->ObjNum; ++i)  MFVarSetFloat (varID, i, 0.0); }
 
 			for (i = _MFDomain->ObjNum - 1;i >= 0; --i) {
-				for (iFunc = 0;iFunc < _MFFunctionNum; ++iFunc) (_MFFunctions [iFunc]) (i);
-
-				for (var = MFVarGetByID (varID = 1);var != (MFVariable_t *) NULL;var = MFVarGetByID (++varID))
-					if ((var->Route) && (_MFDomain->Objects [i].DLinkNum == 1)) {
-						dlink = _MFDomain->Objects [i].DLinks [0];
-						MFVarSetFloat (varID, dlink, MFVarGetFloat (varID,i,0.0) + MFVarGetFloat (varID,dlink,0.0));
+				for (var = MFVarGetByID (varID = 1);var != (MFVariable_t *) NULL;var = MFVarGetByID (++varID)) {
+					if (var->Route) {
+						value = 0.0;
+						for (link = 0; link < _MFDomain->Objects [i].ULinkNum; ++link) {
+							uLink = _MFDomain->Objects [i].ULinks [link];
+							value += MFVarGetFloat (varID,uLink,0.0);
+							}
+						MFVarSetFloat (varID, i, value);
 					}
+				}
+				for (iFunc = 0;iFunc < _MFFunctionNum; ++iFunc) (_MFFunctions [iFunc]) (i);
 			}
 
 			for (var = MFVarGetByID (varID = 1);var != (MFVariable_t *) NULL;var = MFVarGetByID (++varID)) {
