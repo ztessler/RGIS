@@ -158,7 +158,7 @@ function RGISlookupSubject ()
 		(small_reservoir_coefficient)               # 50
 			echo "SmallReservoir-Coefficient"
 		;;
-		(snow_fall)       i                         # 51
+		(snow_fall)                                 # 51
 			echo "SnowFall"
 		;;
 		(soil_moisture)                             # 52
