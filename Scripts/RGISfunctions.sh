@@ -135,7 +135,7 @@ function RGISlookupSubject ()
 			echo "Radiation-ShortWave"
 		;;
 		(rain_fall)                                 # 43
-			echo "rain_fall"
+			echo "RainFall"
 		;;
 		(rain_pet)                                  # 44
 			echo "RainPET"
@@ -346,7 +346,7 @@ function _RGISlookupFullName ()
 			echo "Small-reservoir Coefficient"
 		;;
 		(snow_fall)                                 # 51
-			echo "Soil Fall"
+			echo "Snow Fall"
 		;;
 		(soil_moisture)                             # 52
 			echo "Soil Moisture"
