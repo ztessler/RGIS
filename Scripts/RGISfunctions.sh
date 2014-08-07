@@ -1,5 +1,12 @@
 #!/bin/bash
 
+if [[ "${RGIS_FUNCTIONS}" == "sourced" ]]
+then
+	return 0
+else
+	export RGIS_FUNCTIONS="sourced"
+fi
+
 function RGISlookupSubject ()
 {
 	local variable=$(echo "${1}" | tr "[A-Z]" "[a-z]")
@@ -181,7 +188,6 @@ function RGISlookupSubject ()
 		;;
 		(*)
 			echo "${variable}"
-			echo "Defaulting directory: ${variable}" > /dev/stderr
 		;;
 	esac
 }
@@ -368,7 +374,6 @@ function _RGISlookupFullName ()
 		;;
 		(*)
 			echo "${variable}"
-			echo "Defaulting Full name: ${variable}" > /dev/stderr
 		;;
 	esac
 }
@@ -542,7 +547,6 @@ function RGISlookupShadeset ()
 		;;
 		(*)
 			echo "grey"
-			echo "Defaulting shade set: ${variable}" > /dev/stderr
 		;;
 	esac
 }
@@ -693,7 +697,7 @@ function RGISlookupAggrMethod ()
 		(small_reservoir_coefficient)               # 50
 			echo "avg"
 		;;
-		(soil_fall)                                 # 51
+		(snow_fall)                                 # 51
 			echo "avg"
 		;;
 		(soil_moisture)                             # 52
@@ -1010,8 +1014,9 @@ function RGISfilePath ()
 		;;
 	esac
 
-	local rgisDirectory=$(RGISdirectoryPath "${archive}" "${domain}" "${variable}" "${product}" "${resolution}" "${tstepType}" "${tstep}")
-	local      fileName=$(_RGISresolutionDir "${archive}" "${domain}" "${variable}" "${product}" "${resolution}" | sed "s:/:_:g" )
+	local rgisDirectory=$(RGISdirectoryPath  "${archive}" "${domain}" "${variable}" "${product}" "${resolution}" "${tstepType}" "${tstep}")
+	local      fileName=$(echo ${rgisDirectory} | sed "s:/:_:g" )
+	local      fileName=${fileName%_*}
 	if [ "${rgisDirectory}" == "" ]
 	then
 		echo ""
@@ -1081,7 +1086,7 @@ function RGISfile ()
 		;;
 	esac
 
-	local rgisDirectory=$(RGISdirectory "${archive}" "${domain}" "${variable}" "${product}" "${resolution}" "${tstepType}" "${tstep}")
+	local rgisDirectory=$(RGISdirectory      "${archive}" "${domain}" "${variable}" "${product}" "${resolution}" "${tstepType}" "${tstep}")
 	local      fileName=$(_RGISresolutionDir "${archive}" "${domain}" "${variable}" "${product}" "${resolution}" | sed "s:/:_:g" )
 	if [ "${rgisDirectory}" == "" ]
 	then
