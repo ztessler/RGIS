@@ -211,7 +211,7 @@ int DBObjTable::Write (FILE *file)
 				{
 				case DBTableFieldTableRec:
 				case DBTableFieldDataRec:
-					if ((obj = field->Record (record)) != NULL) field->Record (record,(DBObjRecord *) obj->RowID ());
+					if ((obj = field->Record (record)) != (DBObjRecord *) NULL) field->Record (record, (DBObjRecord *) NULL + (obj->RowID ()));
 					else field->Record (record,(DBObjRecord *) DBFault);
 					break;
 				}
@@ -310,7 +310,7 @@ int DBObjData::Write (const char *fileName)
 	else
 		{
 		if ((file = fopen (fileName,"w")) == (FILE *) NULL)
-		{ CMmsgPrint (CMmsgSysError, "File Opening Error in: %s %d",__FILE__,__LINE__); return (DBFault); }
+		{ CMmsgPrint (CMmsgSysError, "File (%s) Opening Error in: %s %d", fileName, __FILE__,__LINE__); return (DBFault); }
 		ret = Write (file);
 		fclose (file);
 		}

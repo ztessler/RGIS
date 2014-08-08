@@ -894,7 +894,7 @@ DBInt DBExportNetCDF (DBObjData *dbData,const char *fileName)
 	size_t start [3], count [3];
 
 	if ((status = nc_create (fileName,NC_CLOBBER,&ncid)) != NC_NOERR)
-		{ CMmsgPrint (CMmsgAppError, "NC Error '%s' in: %s %d", nc_strerror(status),__FILE__,__LINE__); return (DBFault); }
+		{ CMmsgPrint (CMmsgAppError, "NC Error '%s' (%s) in: %s %d", nc_strerror(status), fileName,__FILE__,__LINE__); return (DBFault); }
 	if ((status = nc_put_att_text (ncid,NC_GLOBAL,"Conventions",strlen ("CF-1.2"),"CF-1.2")) != NC_NOERR)
 		{ CMmsgPrint (CMmsgAppError, "NC Error '%s' in: %s %d", nc_strerror(status),__FILE__,__LINE__); nc_close (ncid); return (DBFault); }
 	if ((status = nc_put_att_text (ncid,NC_GLOBAL,"title",strlen (dbData->Name ()),dbData->Name ())) != NC_NOERR)
@@ -1214,7 +1214,7 @@ DBInt DBImportNetCDF (DBObjData *data,const char *filename)
 		}
 	if ((status = nc_open(filename, NC_NOWRITE, &ncid)) != NC_NOERR)
 		{
-		CMmsgPrint (CMmsgAppError, "NC Error '%s' in: %s %d", nc_strerror(status),__FILE__,__LINE__);
+		CMmsgPrint (CMmsgAppError, "NC Error '%s' (%s) in: %s %d", filename, nc_strerror(status),__FILE__,__LINE__);
 		ut_free (baseTimeUnit);
 		ut_free_system (utSystem);
 		return (DBFault);
