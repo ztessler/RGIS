@@ -54,6 +54,7 @@ char *CMbufStripChar    (char *, char);
 
 #define CMmathEpsilon 0.01
 bool    CMmathEqualValues (double,double);
+bool    CMmathIsInteger (const char *);
 #define CMmathMinimum(a,b) (((a) < (b)) ? (a) : (b))
 #define CMmathMaximum(a,b) (((a) > (b)) ? (a) : (b))
 #define CMyesNoString(cond) (cond ? "yes" : "no")

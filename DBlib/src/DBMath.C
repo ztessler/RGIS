@@ -11,36 +11,37 @@ bfekete@ccny.cuny.edu
 *******************************************************************************/
 
 #include <cm.h>
+#include <string.h>
+#include <math.h>
 #include <DB.H>
 
 char *DBMathIntAutoFormat (DBInt maxVal)
 	{
 	static char format [12];
-	DBInt length = 1;
-	for(int i = 9; abs(maxVal) > i; i = i * 10 + 9, length++);
-	if(maxVal < 0) length++;
-	format [0] = '%';
-	sprintf (format + 1,"%dd",length);
+	DBInt length;
+	
+	if (maxVal == 0) strcpy (format,"%2d");
+	else
+		{
+		length = (DBInt) (ceil (log10 ((double) (abs (maxVal)))));
+		printf ("%d %d\n",maxVal, length);
+		if (maxVal < 0) length++;
+		format [0] = '%';
+		sprintf (format + 1,"%dd",length);
+		}
 	return (format);
 	}
 
 char *DBMathFloatAutoFormat (DBFloat maxVal)
 	{
 	static char format [12];
-	DBInt length, decimals, log10Val;
+	DBInt i, length, decimals;
 
-	maxVal = fabs (maxVal);
-	log10Val = (DBInt) (rint (log10 (maxVal)));
-	if (log10Val >= 0)
-		{
-		length = 8 > log10Val + 2 ? 8 : log10Val + 2;
-		decimals = length - log10Val - 2;
-		}
-	else
-		{
-		length = abs (log10Val) + 6;
-		decimals = length - 3;
-		}
+	i = (DBInt) (ceil (log10 (fabs(maxVal))));
+	
+	decimals = i > 0 ? (8 > i ? 8 - i - 2 : 0) : 0 - i - 3;
+	length   = i > 0 ?  i + decimals + 2         : decimals + 3;
+
 	format [0] = '%';
 	sprintf (format + 1,"%d.%df",length,decimals);
 	return (format);

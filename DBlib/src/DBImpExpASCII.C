@@ -164,8 +164,8 @@ DBInt DBImportASCIITable (DBObjTable *table, FILE *fp)
 	const char *fieldSTR;
 	int   bufferSize = 0, nDecimals, ret = DBSuccess;
 	int   recordNum  = 0, recordID, fieldID, i;
-	int    intVal;
-	double floatVal;
+	DBInt     intVal, maxInt   = -HUGE_VAL;
+	DBFloat floatVal, maxFloat = -HUGE_VAL;
 	_DBImportASCIIHeader *header;
 	_DBImportASCIIRecord **records = (_DBImportASCIIRecord **) NULL;
 	
@@ -187,6 +187,7 @@ DBInt DBImportASCIITable (DBObjTable *table, FILE *fp)
 			records [recordNum] = new _DBImportASCIIRecord (buffer);
 			recordNum++;
 			}
+		format [0] = '%';
 		for (fieldID = 0; fieldID < header->FieldNum(); fieldID++)
 			{
 			header->Type (fieldID,DBVariableInt);
@@ -198,58 +199,35 @@ DBInt DBImportASCIITable (DBObjTable *table, FILE *fp)
 				if (header->Length(fieldID) < (int) strlen (records[recordID]->Field(fieldID)))
 					header->Length(fieldID, strlen (records[recordID]->Field(fieldID)));
 				if (header->Type (fieldID) == DBVariableString) continue;
-				nDecimals = 0;
-				for (i = 0;i < (int) strlen (fieldSTR); i++)
-					{
-					if ((fieldSTR [i] >= '0') && (fieldSTR [i] <= '9')) continue;
-					if (fieldSTR [i] == '.')
-						{
-						if (sscanf (fieldSTR,"%lf",&floatVal) == 1)
-							{
-							header->Type (fieldID,DBVariableFloat);
-							nDecimals = strlen (fieldSTR + i + 1);
-							if (nDecimals > header->Decimals(fieldID)) header->Decimals(fieldID, nDecimals);
-							}
-						else header->Type (fieldID,DBVariableString);
-						break;
-						}
-					if (fieldSTR [i] == '-')
-						{
-						if (i > 0)
-							{
-							header->Type (fieldID,DBVariableString);
-							break;
-							}
-						}
-					else
-						{
-						header->Type (fieldID,DBVariableString);
-						break;
-						}
-					}
-				if ((header->Type (fieldID) == DBVariableInt) && (i > 1) && (fieldSTR [0] == '0'))
-					header->Type (fieldID,DBVariableString);
+				
+				if ((header->Type (fieldID) == DBVariableInt)   && CMmathIsInteger (fieldSTR))
+					{ sscanf (fieldSTR,"%d", &intVal); maxInt   = abs (intVal)   > maxInt   ? abs (intVal)   : maxInt; maxFloat = (double) maxInt; continue; }
+				else header->Type (fieldID,DBVariableFloat);
+				
+				if ((header->Type (fieldID) == DBVariableFloat) && (sscanf (fieldSTR,"%lg",&floatVal) == 1))
+					{ maxFloat = fabs (floatVal) > maxFloat ? fabs (floatVal) : maxFloat; continue; }
+				else	header->Type (fieldID,DBVariableString);
 				}
 			}
 		}
 	for (fieldID = 0; fieldID < header->FieldNum(); fieldID++)
 		{
-		format [0] = '%';
 		if (header->Length(fieldID) == 0) continue;
 		switch (header->Type (fieldID))
 			{
 			default:
 			case DBVariableString:
 				header->Length (fieldID,0x01 << (int) (ceil (log2 ((float) header->Length (fieldID) + 1))));
+				format [0] = '%';
 				sprintf (format + 1,"%ds",header->Length(fieldID) + 1);
 				fieldFLD = new DBObjTableField (header->Field (fieldID),header->Type (fieldID),format,header->Length (fieldID));
 				break;
 			case DBVariableInt:
-				sprintf (format + 1,"%dd",header->Length(fieldID));
+				strcpy (format, DBMathIntAutoFormat   (maxInt));
 				fieldFLD = new DBObjTableField (header->Field (fieldID),header->Type (fieldID),format,sizeof (DBInt));
 				break;
 			case DBVariableFloat:
-				sprintf (format + 1,"%d.%df",header->Length(fieldID),header->Decimals(fieldID));
+				strcpy (format, DBMathFloatAutoFormat (maxFloat));
 				fieldFLD = new DBObjTableField (header->Field (fieldID),header->Type (fieldID),format,sizeof (DBFloat));
 				break;
 			}
