@@ -1015,7 +1015,8 @@ function RGISfilePath ()
 	esac
 
 	local rgisDirectory=$(RGISdirectoryPath  "${archive}" "${domain}" "${variable}" "${product}" "${resolution}" "${tstepType}" "${tstep}")
-	local      fileName=$(echo ${rgisDirectory} | sed "s:/:_:g" )
+	local      fileName=$(RGISdirectoryPath            "" "${domain}" "${variable}" "${product}" "${resolution}" "${tstepType}" "${tstep}")
+	local      fileName=$(echo ${fileName} | sed "s:/::" | sed "s:/:_:g" )
 	local      fileName=${fileName%_*}
 	if [ "${rgisDirectory}" == "" ]
 	then
