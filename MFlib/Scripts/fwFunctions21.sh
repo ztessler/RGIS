@@ -561,10 +561,10 @@ function _fwPostprocess()
 		local fwGDSFileNAME="$(FwGDSFilename "${fwVARIABLE}" "Output" "${fwVERSION}" "${fwYEAR}" "d")"
 		[ -e "${fwGDSFileNAME}" ] || local fwGDSFileNAME="$(FwGDSFilename "${fwVARIABLE}" "State" "${fwVERSION}" "${fwYEAR}" "d")"
 		[ -e "${fwGDSFileNAME}" ] || { echo "Skipping missing variable [${fwVARIABLE}]"; echo ${fwGDSFileNAME}; continue; }
-		[ -e "${_fwRGISResultsDIR}/${_fwDomainNAME}/${fwVARIABLE}" ] || mkdir -p "${_fwRGISResultsDIR}/${_fwDomainNAME}/${fwVARIABLE}"
 		if [ "${_fwDAILYOUTPUT}" == "on" ]
 		then
 			local fwRGISFileNAME="$(FwRGISFilename "${fwVARIABLE}" "${fwVERSION}" "d" "${fwYEAR}")"
+			[ -e "${fwRGISFileNAME%/*}" ] || mkdir -p "${fwRGISFILENAME%/*}"
 			[ "${fwPROC}" -ge "${_fwMAXPROC}" ] && { wait; (( fwPROC = 0 )); }
 			${_fwRGISBIN}ds2rgis -t "${_fwDomainNAME}, ${fwVARIABLE} ${fwVERSION} (${FwDomainRES}, Daily${fwSUFFIX})"\
 			                     -m ${_fwRGISDomainFILE} -d "${_fwDomainNAME}" -u "${fwVARIABLE}" -s blue ${fwGDSFileNAME} ${fwRGISFileNAME} &
