@@ -1465,7 +1465,7 @@ DBInt DBImportNetCDF (DBObjData *data,const char *filename)
 		else if (strcmp (name,"time") == 0)
 			{
 			if (((status = nc_inq_attlen   (ncid, id, "units", &attlen))    != NC_NOERR) ||
-				((status = nc_get_att_text (ncid, id, "units", timeString)) != NC_NOERR))
+				 ((status = nc_get_att_text (ncid, id, "units", timeString)) != NC_NOERR))
 				{
 				CMmsgPrint (CMmsgAppError, "NC Error '%s' in: %s %d", nc_strerror(status),__FILE__,__LINE__);
 				free (vector);
