@@ -4,13 +4,13 @@ GHAAS Command Line Library V1.0
 Global Hydrologic Archive and Analysis System
 Copyright 1994-2014, UNH - CCNY/CUNY
 
-cmMath.c
+MDBvariableDB.c
 
 bfekete@ccny.cuny.edu
 
 *******************************************************************************/
 
-#include <cm.h>
+#include <mdb.h>
 
 static struct {
 	char *CFname;
