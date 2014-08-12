@@ -1387,7 +1387,7 @@ DBInt DBImportNetCDF (DBObjData *data,const char *filename)
 			extent.UpperRight.X = extent.UpperRight.X + cellSize.X / 2.0;
 			}
 		else if ((strcmp (name,"lat")      == 0) ||
-			     (strcmp (name,"latitude") == 0))
+			      (strcmp (name,"latitude") == 0))
 			{
 			if ((status = nc_inq_varndims (ncid,id,&ndims)) != NC_NOERR)
 				{
@@ -1464,20 +1464,9 @@ DBInt DBImportNetCDF (DBObjData *data,const char *filename)
 			}
 		else if (strcmp (name,"time") == 0)
 			{
-			if (((status = nc_inq_attlen   (ncid, id, "units", &attlen))    != NC_NOERR) ||
-				((status = nc_get_att_text (ncid, id, "units", timeString)) != NC_NOERR))
-				{
-				CMmsgPrint (CMmsgAppError, "NC Error '%s' in: %s %d", nc_strerror(status),__FILE__,__LINE__);
-				free (vector);
-				free (longitudes);
-				free (latitudes);
-				free (timeSteps);
-				nc_close (ncid);
-				ut_free (baseTimeUnit);
-				ut_free_system (utSystem);
-				return (DBFault);
-				}
-			else timeString [attlen] = '\0';
+			if (((status = nc_inq_attlen   (ncid, id, "units", &attlen))    == NC_NOERR) &&
+				 ((status = nc_get_att_text (ncid, id, "units", timeString)) == NC_NOERR))  timeString [attlen] = '\0';
+			else timeString [0] = '\0';
 			if ((status = nc_inq_varndims (ncid,id,&ndims)) != NC_NOERR)
 				{
 				CMmsgPrint (CMmsgAppError, "NC Error '%s' in: %s %d", nc_strerror(status),__FILE__,__LINE__);
@@ -1645,7 +1634,7 @@ DBInt DBImportNetCDF (DBObjData *data,const char *filename)
 			}
 
 	data->Extent (extent);
-	if (timedim != -1)
+	if ((timedim != -1) && (strlen (timeString) > 0))
 		{
 		for (i = 0; i < (int) strlen (timeString); ++i) timeString [i] = (int) tolower ((int) timeString[i]);
 		if ((timeUnit = ut_parse (utSystem, timeString, UT_ASCII)) == (ut_unit *) NULL)
