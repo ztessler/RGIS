@@ -26,7 +26,6 @@ static void _RGISARCInfoImportFileSelectCBK (Widget widget,Widget coverText,XmAn
 	{
 	static Widget fileSelect = NULL;
 	char *infoFile;
-	widget = widget; callData = callData;
 
 	if (fileSelect == NULL)
 		fileSelect = UIFileSelectionCreate ((char *) "ARC/Info Coverage",NULL,(char *) "*",XmFILE_DIRECTORY);
@@ -48,7 +47,7 @@ static void _RGISARCInfoImportFileSelectCBK (Widget widget,Widget coverText,XmAn
 
 static void _RGISARCInfoImportClearFieldCBK (Widget widget,Widget text, XmAnyCallbackStruct *callData)
 
-	{ callData = callData; if (strlen (XmTextFieldGetString (widget)) == 0) XmTextFieldSetString (text,(char *) ""); }
+	{ if (strlen (XmTextFieldGetString (widget)) == 0) XmTextFieldSetString (text,(char *) ""); }
 
 static void _RGISARCInfoImportFieldSelectCBK (Widget widget,Widget text,XmAnyCallbackStruct *callData)
 
@@ -57,7 +56,6 @@ static void _RGISARCInfoImportFieldSelectCBK (Widget widget,Widget text,XmAnyCal
 	char *field;
 	int (*condFunc) (const DBObject *);
 
-	callData = callData;
 	if (select == NULL) select = UISelectionCreate ((char *) "ARC/Info Fields");
 	XtVaGetValues (widget,XmNuserData, &condFunc, NULL);
 	if ((field = UISelectObject (select,(DBObjectLIST<DBObject> *) (_RGISARCTempTable->Fields ()),condFunc)) != NULL)

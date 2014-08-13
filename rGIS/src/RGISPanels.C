@@ -90,7 +90,7 @@ RGISVecPanel::RGISVecPanel (Widget parent, Widget leftWidget) : RGISPanel (paren
 											XmNset,						True,
 											NULL);
 		XmStringFree (string);
-		XtAddCallback (toggleB,XmNvalueChangedCallback,(XtCallbackProc) _RGISPanelFlagsToggleCBK,(void *) _RGISVectorControlCodes [toggle]);
+		XtAddCallback (toggleB,XmNvalueChangedCallback,(XtCallbackProc) _RGISPanelFlagsToggleCBK,(void *) ((char *) NULL + _RGISVectorControlCodes [toggle]));
 		}
 
 	string = XmStringCreate ((char *) "Display",UICharSetNormal);
@@ -145,7 +145,6 @@ static void _RGISGridLayerListCBK (Widget widget,void *dummy, XmListCallbackStru
 	DBObjTable *layerTable;
 	DBObjRecord *record;
 
-	dummy = dummy;
 	XtVaGetValues (widget,XmNuserData, &data, NULL);
 	layerTable = data->Table (DBrNLayers);
 	for (record = layerTable->First ();record != (DBObjRecord *) NULL;record = layerTable->Next ())
@@ -248,7 +247,6 @@ static void _RGISNetPanelColorCBK (Widget widget,void *Flags,XmAnyCallbackStruct
 	{
 	DBObjData *data;
 
-	callData = callData;
 	XtVaGetValues (widget,XmNuserData, &data, NULL);
 	data->Flags (DBDataFlagDispModeNetColors,DBClear);
 	data->Flags ((DBUnsigned) ((char *) Flags - (char *) NULL),DBSet);
@@ -271,7 +269,7 @@ class RGISNetPanelColor
 			button = XtVaCreateManagedWidget ("RGISNetworkInfoColorMenuButton",xmPushButtonGadgetClass,widget,
 														XmNlabelString,			string, NULL);
 			XmStringFree (string);
-			XtAddCallback (button,XmNactivateCallback,(XtCallbackProc) _RGISNetPanelColorCBK,(void *) FlagVAR);
+			XtAddCallback (button,XmNactivateCallback,(XtCallbackProc) _RGISNetPanelColorCBK,(void *) ((char *) NULL + FlagVAR));
 			}
 		DBInt IsColor (DBUnsigned flag) { return (FlagVAR == flag ? true : false); }
 	};
@@ -383,10 +381,7 @@ RGISTblPanel::RGISTblPanel (Widget parent, Widget leftWidget) : RGISPanel (paren
 
 Widget RGISTblPanel::Load (DBObjData *data)
 
-	{
-	data = data;
-	return (Form ());
-	}
+	{ return (Form ()); }
 
 
 
@@ -400,7 +395,6 @@ static void _RGISGrpPanelNewCBK (Widget widget,RGISGrpPanel *grpPanel,XmAnyCallb
 	DBObjTableField *group;
 	DBObjRecord *record;
 
-	widget = widget; callData = callData;
 	if ((groupName = UIGetString ((char *) "Group Name",16)) == (char *) NULL) return;
 	if (groupTable == (DBObjTable *) NULL)
 		{
@@ -434,7 +428,6 @@ static void _RGISGrpPanelDeleteCBK (Widget widget,RGISGrpPanel *grpPanel,XmAnyCa
 	DBObjTableField *group = grpPanel->Current ();
 	static Widget fieldSelect = (Widget) NULL;
 
-	widget = widget; callData = callData;
 	if (fieldSelect == (Widget) NULL) fieldSelect = UISelectionCreate ((char *) "Group Selection");
 
 	if ((groupTable == (DBObjTable *) NULL) || (group == (DBObjTableField *) NULL)) return;
@@ -461,7 +454,6 @@ static void _RGISGrpPanelLoadCBK (Widget widget,RGISGrpPanel *grpPanel,XmAnyCall
 	DBObjRecord *itemRec, *groupRec;
 	UITable *tableCLS;
 
-	widget = widget; callData = callData;
 	if (groupTable == (DBObjTable *) NULL) return;
 	group = grpPanel->Current ();
 
@@ -487,7 +479,6 @@ static void _RGISGrpPanelSaveCBK (Widget widget,RGISGrpPanel *grpPanel,XmAnyCall
 	DBObjRecord *itemRec, *groupRec;
 	UITable *tableCLS;
 
-	widget = widget; callData = callData;
 	if (groupTable == (DBObjTable *) NULL) return;
 	group = grpPanel->Current ();
 	for (rowID = 0;rowID < groupTable->ItemNum ();++rowID)

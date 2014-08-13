@@ -16,7 +16,7 @@ bfekete@ccny.cuny.edu
 #include <string.h>
 
 int main(int argc,char *argv []) {
-	int argPos, argNum = argc, ret = CMfailed, itemSize, itemID;
+	int argPos = 0, argNum = argc, ret = CMfailed, itemSize, itemID;
 	FILE *inFile = stdin, *outFile = stdout;
 	void *items    = (void *) NULL;
 	MFVarHeader_t header;

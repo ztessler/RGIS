@@ -35,7 +35,6 @@ void RGISAnalysePointSTNCharCBK (Widget widget, RGISWorkspace *workspace,XmAnyCa
 	DBObjTableField *nextStationFLD	= pointTable->Field (RGlibNextStation);
 	UITable *tableCLS = (UITable *) dbData->Display (UITableName (dbData,pointTable));
 
-	widget = widget; workspace = workspace; callData = callData;
 	UIPauseDialogOpen ((char *) "STN Characteristics");
 	if ((RGlibPointSTNCharacteristics (dbData) == DBSuccess) && (tableCLS != (UITable *) NULL))
 		{
@@ -66,7 +65,6 @@ void RGISAnalysePointSTNPointsCBK (Widget widget,RGISWorkspace *workspace,XmAnyC
 	static Widget dShell = NULL, mainForm, button;
 	static Widget srcTextF, dstTextF, cmpTextF, errTextF;
 	static Widget menu, mButton;
-	widget = widget; callData = callData;
 
 	if (dShell == (Widget) NULL)
 		{
@@ -375,7 +373,6 @@ void RGISAnalysePointSubbasinCenterCBK (Widget widget, RGISWorkspace *workspace,
 	DBObjData *netData = pntData->LinkedData ();
 	UITable *tableCLS = (UITable *) pntData->Display (UITableName (pntData,pointTable));
 
-	widget = widget;	workspace = workspace; callData = callData;
 	UIPauseDialogOpen ((char *) "Subbasin Centers");
 	if ((RGlibPointSubbasinCenter (pntData, netData) == DBSuccess) && (tableCLS != (UITable *) NULL))
 		{
@@ -399,8 +396,6 @@ void RGISAnalysePointInterStationTSCBK (Widget widget, RGISWorkspace *workspace,
 	DBObjTableField *relateFLD;
 	DBObjTableField *joinFLD;
 	static Widget selectWidget = (Widget) NULL;
-
-	widget = widget; workspace = workspace; callData = callData;
 
 	if (selectWidget == (Widget) NULL) selectWidget = UISelectionCreate ((char *) "Select Time Series");
 
@@ -434,8 +429,6 @@ void RGISAnalysePointSubbasinCBK (Widget widget, RGISWorkspace *workspace,XmAnyC
 	DBObjData *netData = pntData->LinkedData ();
 	DBObjData *grdData = DBNetworkToGrid (netData,DBTypeGridDiscrete);
 
-	widget = widget; callData = callData;
-
 	grdData->Document (DBDocGeoDomain,netData->Document (DBDocGeoDomain));
 	grdData->Document (DBDocSubject,"Subbasins");
 	if (UIDataHeaderForm (grdData))
@@ -462,8 +455,6 @@ void RGISAnalysePointSubbasinStatsCBK (Widget widget, RGISWorkspace *workspace,X
 	DBObjData *netData;
 	DBObjData *tblData;
 	static Widget selectWidget = (Widget) NULL;
-
-	widget = widget; callData = callData;
 
 	if (selectWidget == (Widget) NULL) selectWidget = UISelectionCreate ((char *) "Select Network");
 	if ((selection = UISelectObject (selectWidget,(DBObjectLIST<DBObject> *) dataset->DataList (),_RGISAnalyseTestNetwork)) == (char *) NULL) return;
@@ -494,8 +485,6 @@ void RGISAnalysePointSubbasinHistCBK (Widget widget, RGISWorkspace *workspace,Xm
 	DBObjData *netData;
 	DBObjData *tblData;
 	static Widget selectWidget = (Widget) NULL;
-
-	widget = widget; callData = callData;
 
 	if (selectWidget == (Widget) NULL) selectWidget = UISelectionCreate ((char *) "Select Network");
 	if ((selection = UISelectObject (selectWidget,(DBObjectLIST<DBObject> *) dataset->DataList (),_RGISAnalyseTestNetwork)) == (char *) NULL) return;

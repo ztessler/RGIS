@@ -62,7 +62,6 @@ static void _UIAttribViewDeleteCBK (Widget widget,UIAttribView *view,XmAnyCallba
 	{
 	DBObjData *dbData = view->Data ();
 
-	widget = widget; callData = callData;
 	dbData->DispRemove (view);
 	delete view;
 	}

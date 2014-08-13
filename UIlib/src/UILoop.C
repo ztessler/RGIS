@@ -29,6 +29,5 @@ int UILoop ()
 void UILoopStopCBK (Widget widget,void *data,XmAnyCallbackStruct *callData)
 
 	{
-	widget = widget; data = data; callData = callData;
 	_UILoopStop = true;
 	}

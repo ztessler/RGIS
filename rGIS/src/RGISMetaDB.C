@@ -20,8 +20,6 @@ static void _RGISMetaDBDeleteCBK (Widget widget,RGISWorkspace *workspace,XmAnyCa
 	DBObjMetaEntry *metaEntry;
 	DBDataset *dataset = UIDataset ();
 
-	widget = widget; callData = callData;
-
 	if ((metaEntry = UIDatasetMetaData (subjectSTR,domainSTR,DBFault)) != (DBObjMetaEntry *) NULL)
 		dataset->DeleteMetaEntry (metaEntry);
 	}

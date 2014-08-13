@@ -20,7 +20,6 @@ bfekete@ccny.cuny.edu
 void RGISAnalyseSingleSampleGridCBK (Widget widget, RGISWorkspace *workspace,XmAnyCallbackStruct *callData)
 
 	{
-	widget = widget;	workspace = workspace; callData = callData;
 
 	if (UIYesOrNo ((char *) "You are about to sample grid. Are You sure?"))
 		{
@@ -130,8 +129,6 @@ void RGISAnalyseMultiSampleGridCBK (Widget widget, RGISWorkspace *workspace,XmAn
 	DBObjData *dbData  = dataset->Data ();
 	DBObjData *grdData  = dbData->LinkedData ();
 	DBObjData *tblData;
-
-	widget = widget; callData = callData;
 
 	tblData  = new DBObjData ("",DBTypeTable);
 	tblData->Document (DBDocGeoDomain,dbData->Document (DBDocGeoDomain));

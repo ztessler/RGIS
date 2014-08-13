@@ -17,12 +17,11 @@ bfekete@ccny.cuny.edu
 static char *_UISelection = NULL;
 
 static void _UINoMatchSelectionCallback (Widget widget,void *data,XmSelectionBoxCallbackStruct *callData)
-  { widget = widget; data = data; callData = callData; UIMessage ((char *) "Must Select!"); }
+  { UIMessage ((char *) "Must Select!"); }
 
 static void _UIOkSelectionCallback (Widget widget,void *data,XmSelectionBoxCallbackStruct *callData)
 
 	{
-	widget = widget; data = data;
 	if (!XmStringGetLtoR (callData->value,XmSTRING_DEFAULT_CHARSET,&_UISelection))	_UISelection = NULL;
 	}
 
@@ -83,7 +82,7 @@ char *UISelection (Widget widget,char *items,int itemSize,int itemNum)
 	return (_UISelection);
 	}
 
-static DBInt _UISelectObjectAll (const DBObject *obj) { obj = obj; return (true); }
+static DBInt _UISelectObjectAll (const DBObject *obj) { return (true); }
 
 char *UISelectObject (Widget widget,DBObjectLIST<DBObject> *objList,DBInt (*condFunc) (const DBObject *))
 

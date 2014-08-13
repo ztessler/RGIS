@@ -44,18 +44,13 @@ static UIButtonList _UIDataTypeList [] = {
 
 static void _UIDataHeaderFormButtonCBK (Widget widget,DBInt *code,XmAnyCallbackStruct *callData)
 
-	{
-	callData = callData;
-	XtVaGetValues (widget,XmNuserData, code, NULL);
-	}
+	{ XtVaGetValues (widget,XmNuserData, code, NULL); }
 
 static void _UIDataHeaderButtonCBK (Widget widget,Widget text,XmAnyCallbackStruct *callData)
 
 	{
 	char *string;
 	char *(*function) (void);
-
-	callData = callData;
 
 	XtVaGetValues (widget,XmNuserData, (int *) (&function), NULL);
 	if ((string = (*function) ()) != NULL) XmTextFieldSetString (text,string);
@@ -66,7 +61,6 @@ static void _UIDataHeaderTextFieldCBK (Widget widget,int *changed,XmAnyCallbackS
 	{
 	char *text, *origText;
 
-	callData = callData;
 	XtVaGetValues (widget,XmNuserData, &text, NULL);
 	origText = XmTextFieldGetString (widget);
 	*changed = strcmp (origText,text) == 0 ? false : true;
@@ -78,7 +72,6 @@ static void _UIDataHeaderTextCBK (Widget widget,int *changed,XmAnyCallbackStruct
 	{
 	char *text, *origText;
 
-	callData = callData;
 	XtVaGetValues (widget,XmNuserData, &text, NULL);
 	origText = XmTextGetString (widget);
 	*changed = strcmp (origText,text) == 0 ? false : true;

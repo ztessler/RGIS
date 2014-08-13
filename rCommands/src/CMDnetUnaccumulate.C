@@ -24,7 +24,7 @@ int main (int argc,char *argv [])
 	char *domain = (char *) NULL,		*version = (char *) NULL;
 	char *netName = (char *) NULL;
 	DBInt shadeSet = DBFault;
-	bool  areaDiv = true, coeffIsSet = false;
+	int  areaDiv = true, coeffIsSet = false;
 	DBObjData *data, *netData, *grdData;
 
 	for (argPos = 1;argPos < argNum; )

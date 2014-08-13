@@ -8,7 +8,7 @@
 
 static regex_t _NCfileListRegex;
 
-static int _NCfileFilter (struct dirent *dirent)
+static int _NCfileFilter (const struct dirent *dirent)
 {
 	regmatch_t pmatch;
 	return (regexec (&_NCfileListRegex,dirent->d_name,1, &pmatch, REG_NOTBOL | REG_NOTEOL) == REG_NOMATCH ? false : true);
@@ -17,8 +17,8 @@ static int _NCfileFilter (struct dirent *dirent)
 char **NCfileList (const char *template, size_t *n)
 {
 	bool regexIsSet = false;
-	int i, j;
-	size_t strLength, ndots = 0, ndirents = 0;
+	int i, j, ndirents = 0;
+	size_t strLength, ndots = 0;
 	struct dirent **dirents = (struct dirent **) NULL;
 	char *path, *pattern, *allocPath = (char *) NULL, **fileList = (char **) NULL;
 

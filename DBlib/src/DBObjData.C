@@ -110,7 +110,7 @@ DBObjData::DBObjData (DBObjData &data) : DBObject (data), DBDataHeader (data._He
 					{
 					case DBTableFieldTableRec:
 					case DBTableFieldDataRec:
-						if ((obj = field->Record (record)) != NULL) field->Record (record,(DBObjRecord *) obj->RowID ());
+						if ((obj = field->Record (record)) != NULL) field->Record (record,(DBObjRecord *) ((char *) NULL + obj->RowID ()));
 						else field->Record (record,(DBObjRecord *) DBFault);
 						break;
 					}

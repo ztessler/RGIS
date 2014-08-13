@@ -35,6 +35,10 @@ class DMFileHeader
 		int	DataPointNumVAR;
 		int	MissingValueVAR;
 		char	FutureExpansion [32];
+		void SetExpansion (const char *str)
+			{
+			strcpy (FutureExpansion,str);
+			}
 		void Swap ()
 			{
 			DBByteOrderSwapWord (&ByteOrderVAR);
@@ -159,6 +163,19 @@ class DMDataset : public DMFileHeader
 		char *documentation;
 		void *data;
 	public:
+		void SetDocumentation (void *dataPtr, char *doc)
+			{
+			data = dataPtr;
+			documentation = doc;
+			}
+		void SetLayerHeader (DMLayerHeader *header)
+			{
+			LayerHeaders = header;
+			}
+		void SetDocLenght (int docLen)
+			{
+			doclength = docLen;
+			}
 		DBInt Read (FILE *file,DBObjData *data)
 			{
 			DBInt i, layer, swap, valueType, valueSize, docLength;

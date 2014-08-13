@@ -588,7 +588,7 @@ void DBGridIF::DiscreteStats ()
 
 	{
 	DBInt recordID, layerID;
-	DBFloat area, sumArea;
+	DBFloat area, sumArea = 0.0;
 	DBPosition pos;
 	DBObjTableField *areaFLD    = ItemTable->Field (DBrNGridArea);
 	DBObjTableField *percentFLD = ItemTable->Field (DBrNGridPercent);

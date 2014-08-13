@@ -32,7 +32,6 @@ void RGISEditPointAddXYCBK (Widget widget, RGISWorkspace *workspace,XmAnyCallbac
 	DBObjRecord *pointRec;
 	UITable *tableCLS = (UITable *) dbData->Display (UITableName (dbData,pointTable));
 
-	widget = widget; workspace = workspace; callData = callData;
 	UIPauseDialogOpen ((char *) "Adding XY Coordinates");
 	if (xCoordFLD == NULL)
 		{
@@ -67,7 +66,6 @@ static void _RGISEditPointSTNCoordsSelectCBK (Widget widget,Widget text,XmAnyCal
 	char *field;
 	DBObjectLIST<DBObjTableField> *fields;
 
-	callData = callData;
 	if (select == NULL) select = UISelectionCreate ((char *) "Field Selection");
 	XtVaGetValues (text,XmNuserData, &fields, NULL);
 	if ((field = UISelectObject (select,(DBObjectLIST<DBObject> *) fields,DBTableFieldIsFloat)) != NULL)
@@ -85,8 +83,6 @@ void RGISEditPointSTNCoordsCBK (Widget widget,void *data,XmAnyCallbackStruct *ca
 	DBObjTable *table;
 	DBObjTableField *field = (DBObjTableField *) NULL;
 	static Widget dShell = NULL, mainForm, button, textF;
-
-	widget = widget; data = data; callData = callData;
 
 	if (dShell == (Widget) NULL)
 		{
@@ -143,7 +139,7 @@ void RGISEditPointSTNCoordsCBK (Widget widget,void *data,XmAnyCallbackStruct *ca
 	XtVaSetValues (textF,XmNuserData,table->Fields (),NULL);
 	UIDialogFormPopup (dShell);
 	cont = false;
-	while (UILoop ());
+	while (UILoop ())
 		{
 		if (strlen (text = XmTextFieldGetString (textF)) > 0)
 		field = table->Field (text);

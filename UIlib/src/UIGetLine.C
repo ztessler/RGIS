@@ -24,7 +24,6 @@ static void _UIGetLineUserFunc (DBObjData *data,UI2DView *view,XEvent *event)
 	{
 	int UIInquireVector (Widget,XEvent *,int,int,int *,int *);
 
-	data = data; view = view;
 	_UIGetLineRet = UIInquireVector (_UIGetLineWidget,event,_UIGetLineX0,_UIGetLineY0,_UIGetLineX1,_UIGetLineY1);
 	}
 

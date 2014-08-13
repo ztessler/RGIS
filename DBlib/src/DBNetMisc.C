@@ -271,18 +271,20 @@ void DBNetworkIF::DownStreamSearch (DBObjRecord *cellRec,DBNetworkACTION forActi
 bool DBNetworkSelect (DBNetworkIF *netIF,DBObjRecord *cellRec, void *dataPtr)
 
 	{
-	dataPtr = dataPtr;
+	dataPtr = (char *) NULL;
 	if (cellRec == (DBObjRecord *) NULL) return (false);
-	netIF = netIF; cellRec->Flags (DBObjectFlagSelected,DBSet);
+	cellRec->Flags (DBObjectFlagSelected,DBSet);
+	netIF = (DBNetworkIF *) NULL;
 	return (true);
 	}
 
 bool DBNetworkUnselect (DBNetworkIF *netIF,DBObjRecord *cellRec, void *dataPtr)
 
 	{
-	dataPtr = dataPtr;
+	dataPtr = (char *) NULL;
 	if (cellRec == (DBObjRecord *) NULL) return (false);
-	netIF = netIF; cellRec->Flags (DBObjectFlagSelected,DBClear);
+	cellRec->Flags (DBObjectFlagSelected,DBClear);
+	netIF = (DBNetworkIF *) NULL;
 	return (true);
 	}
 

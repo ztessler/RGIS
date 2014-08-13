@@ -21,7 +21,7 @@ class CMDExpression
 		DBMathOperand *Operand;
 		DBObjTable *TablePTR;
 	public:
-		CMDExpression (char *fieldName, char *expression,DBInt tmpVar)
+		CMDExpression (char *fieldName, char *expression, DBInt tmpVar)
 			{ Var.NamePTR = fieldName; Operand = new DBMathOperand (expression); TempVar = tmpVar; }
 		CMDExpression (char *fieldName, char *expression)
 			{ Var.NamePTR = fieldName; Operand = new DBMathOperand (expression); TempVar = true; }

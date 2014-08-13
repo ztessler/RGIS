@@ -12,6 +12,7 @@ bfekete@ccny.cuny.edu
 
 #include <math.h>
 #include <stdio.h>
+#include <string.h>
 #include <cm.h>
 
 bool CMmathEqualValues (double var0,double var1) {
@@ -20,7 +21,7 @@ bool CMmathEqualValues (double var0,double var1) {
 }
 
 bool CMmathIsInteger (const char *string) {
-	int i, len = strlen (string);
+	size_t i, len = strlen (string);
 	
 	for (i = 0;i < len; ++i)
 		if (string [i] == '-' || (string [i] >= '0' && string [i] <= '9')) continue; else break;

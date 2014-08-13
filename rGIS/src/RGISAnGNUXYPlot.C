@@ -35,7 +35,6 @@ void RGISAnGNUXYPlotCBK (Widget widget,RGISWorkspace *workspace,XmAnyCallbackStr
 	Widget toggle;
 	XmString string;
 
-	widget = widget;	workspace = workspace; callData = callData;
 	if (dShell == (Widget) NULL)
 		{
 		Widget button;

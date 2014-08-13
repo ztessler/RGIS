@@ -98,7 +98,6 @@ static void _UIRelateNameChangedCBK (Widget widget,char *nameSTR,XmAnyCallbackSt
 	{
 	char *text = XmTextFieldGetString (widget);
 	int length;
-	callData = callData;
 
 	XtVaGetValues (widget, XmNuserData, 	&length, NULL);
 	strncpy (nameSTR,text,length - 1);
@@ -111,7 +110,6 @@ static void _UIRelateDataSelectButtonCBK (Widget widget,Widget dataField,XmAnyCa
 	UIRelate *relateCLS;
 	DBObjData *relData;
 
-	callData = callData;
 	XtVaGetValues (widget, XmNuserData, 	&relateCLS, NULL);
 
 	relData = UIDatasetSelectData (relateCLS->PData ());
@@ -141,7 +139,6 @@ static void _UIRelateFieldSelectButtonCBK (Widget widget,DBInt fieldCode,XmAnyCa
 	static Widget selectField = (Widget) NULL;
 	Widget fieldWidget;
 
-	widget = widget; callData = callData;
 	XtVaGetValues (widget, XmNuserData, 	&relateCLS, NULL);
 
 	if (selectField == (Widget) NULL) selectField = UISelectionCreate ((char *) "Select Field");

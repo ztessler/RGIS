@@ -19,8 +19,6 @@ void RGISEditNetBuildCBK (Widget widget,RGISWorkspace *workspace,XmAnyCallbackSt
 	DBObjData *netData = dataset->Data ();
 	DBNetworkIF *netIF = new DBNetworkIF (netData);
 
-	widget = widget; workspace = workspace; callData = callData;
-
 	UIPauseDialogOpen ((char *) "Building Topological Networks");
 	netIF->Build ();
 	UIPauseDialogClose ();
@@ -34,8 +32,6 @@ void RGISEditNetTrimCBK (Widget widget,RGISWorkspace *workspace,XmAnyCallbackStr
 	DBDataset *dataset = UIDataset ();
 	DBObjData *netData = dataset->Data ();
 	DBNetworkIF *netIF = new DBNetworkIF (netData);
-
-	widget = widget; callData = callData;
 
 	UIPauseDialogOpen ((char *) "Building Topological Networks");
 	netIF->Trim ();
@@ -62,7 +58,6 @@ void RGISEditNetAddCellXYCBK (Widget widget, RGISWorkspace *workspace,XmAnyCallb
 	DBObjRecord *cellRec;
 	UITable *tableCLS = (UITable *) dbData->Display (UITableName (dbData,cellTable));
 
-	widget = widget; workspace = workspace; callData = callData;
 	UIPauseDialogOpen ((char *) "Adding XY Coordinates");
 	if (xCoordFLD == NULL)
 		{
@@ -108,7 +103,6 @@ void RGISEditNetAddBasinXYCBK (Widget widget, RGISWorkspace *workspace,XmAnyCall
 	DBObjRecord *basinRec;
 	UITable *tableCLS = (UITable *) dbData->Display (UITableName (dbData,itemTable));
 
-	widget = widget; workspace = workspace; callData = callData;
 	UIPauseDialogOpen ((char *) "Adding XY Coordinates");
 	if (xCoordFLD == NULL)
 		{
@@ -154,7 +148,6 @@ void RGISEditNetMagnitudeCBK (Widget widget, RGISWorkspace *workspace,XmAnyCallb
 	DBObjData *netData = dataset->Data ();
 	DBNetworkIF *netIF = new DBNetworkIF (netData);
 
-	widget = widget; workspace = workspace; callData = callData;
 	UIPauseDialogOpen ((char *) "Calculate Shreve Magnitude");
 	netIF->SetMagnitude ();
 	UIPauseDialogClose ();
@@ -168,7 +161,6 @@ void RGISEditNetDistToMouthCBK (Widget widget, RGISWorkspace *workspace,XmAnyCal
 	DBObjData *netData = dataset->Data ();
 	DBNetworkIF *netIF = new DBNetworkIF (netData);
 
-	widget = widget; workspace = workspace; callData = callData;
 	UIPauseDialogOpen ((char *) "Calculate Distance from Ocean");
 	netIF->SetDistToMouth ();
 	UIPauseDialogClose ();
@@ -182,7 +174,6 @@ void RGISEditNetDistToOceanCBK (Widget widget, RGISWorkspace *workspace,XmAnyCal
 	DBObjData *netData = dataset->Data ();
 	DBNetworkIF *netIF = new DBNetworkIF (netData);
 
-	widget = widget; workspace = workspace; callData = callData;
 	UIPauseDialogOpen ((char *) "Calculate Distance to Ocean");
 	netIF->SetDistToOcean ();
 	UIPauseDialogClose ();
@@ -202,7 +193,6 @@ void RGISEditAdjustNetworkCBK (Widget widget, RGISWorkspace *workspace,XmAnyCall
 	DBNetworkIF *netIF = new DBNetworkIF (netData);
 	DBVLineIF *lineIF = new DBVLineIF (lineData);
 
-	widget = widget; workspace = workspace; callData = callData;
 	UIPauseDialogOpen ((char *) "Adjusting Networks");
 	cellNum = 0;
 	for (lineRec = lineIF->FirstItem ();lineRec != (DBObjRecord *) NULL; lineRec = lineIF->NextItem ())

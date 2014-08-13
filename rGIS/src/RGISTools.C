@@ -19,7 +19,6 @@ static void _RGISToolsImportASCIITableCBK (Widget widget,RGISWorkspace *workspac
 	static Widget fileSelect = (Widget) NULL;
 	DBObjData *data = new DBObjData ("",DBTypeTable);
 
-	widget = widget; callData = callData;
 	if (fileSelect == NULL) fileSelect = UIFileSelectionCreate ((char *) "ASCII Import",NULL,(char *) "*.*",XmFILE_REGULAR);
 
 	if (UIDataHeaderForm (data))
@@ -43,7 +42,6 @@ static void _RGISToolsImportARCInfoCBK (Widget widget,RGISWorkspace *workspace,X
 	{
 	DBObjData *data = new DBObjData ("",DBTypeVector);
 
-	widget = widget; callData = callData;
 	if (UIDataHeaderForm (data) && (_RGISARCInfoImport (data) == DBSuccess))
 		workspace->CurrentData  (data);
 	else delete data;
@@ -55,7 +53,6 @@ static void _RGISToolsImportASCIINetCBK (Widget widget,RGISWorkspace *workspace,
 	DBObjData *data = new DBObjData ("",DBTypeNetwork);
 	static Widget fileSelect = NULL;
 
-	widget = widget; callData = callData;
 	if (fileSelect == NULL) fileSelect = UIFileSelectionCreate ((char *) "GHAAS Data Import",NULL,(char *) "*",XmFILE_REGULAR);
 	data->Document (DBDocSubject,"STNetwork");
 	if (UIDataHeaderForm (data))
@@ -81,8 +78,6 @@ static void _RGISToolsExportASCIICBK (Widget widget,RGISWorkspace *workspace,XmA
 	static Widget fileSelect = NULL;
 	static Widget tableSelect = (Widget) NULL;
 
-	widget = widget; workspace = workspace; callData = callData;
-
 	if (tableSelect == (Widget) NULL) tableSelect = UISelectionCreate ((char *) "Table Selection");
 	if (fileSelect == NULL)	fileSelect = UIFileSelectionCreate ((char *) "ASCII Table",NULL,(char *) "*.txt",XmFILE_REGULAR);
 
@@ -104,8 +99,6 @@ static void _RGISToolsExportARCInfoCBK (Widget widget,RGISWorkspace *workspace,X
 	DBDataset *dataset = UIDataset ();
 	DBObjData *data = dataset->Data ();
 	static Widget dirSelect = NULL;
-
-	widget = widget; workspace = workspace; callData = callData;
 
 	if (dirSelect == NULL)
 		{ if ((dirSelect = UIFileSelectionCreate ((char *) "ARC/INFO Workspace",NULL,(char *) "w_*",XmFILE_DIRECTORY)) == NULL) return; }
@@ -129,8 +122,6 @@ static void _RGISToolsExportDMCBK (Widget widget,RGISWorkspace *workspace,XmAnyC
 	DBDataset *dataset = UIDataset ();
 	DBObjData *data = dataset->Data ();
 	static Widget dirSelect = NULL;
-
-	widget = widget; workspace = workspace; callData = callData;
 
 	if (dirSelect == NULL)
 		{ if ((dirSelect = UIFileSelectionCreate ((char *) "DM Coverage",NULL,(char *) "M:*",XmFILE_REGULAR)) == NULL) return; }
@@ -157,8 +148,6 @@ static void _RGISToolsExportNetworkCBK (Widget widget,RGISWorkspace *workspace,X
 	DBObjTable *cellTable = netData->Table (DBrNCells);
 	DBObjTableField *field, **fields = (DBObjTableField **) NULL;
 	static Widget dirSelect = NULL;
-
-	widget = widget; workspace = workspace; callData = callData;
 
 	if (dirSelect == NULL)
 		{ if ((dirSelect = UIFileSelectionCreate ((char *) "Network File",NULL,(char *) "*.txt",XmFILE_REGULAR)) == NULL) return; }
@@ -225,7 +214,7 @@ static void _RGISToolsDuplicateCBK (Widget widget,RGISWorkspace *workspace,XmAny
 	DBObjData *dbData = dataset->Data (), *newData;
 
 	if (dbData == (DBObjData *) NULL) return;
-	widget = widget; callData = callData;
+
 	if (UIDataHeaderForm (newData = new DBObjData (*dbData)))
 		workspace->CurrentData  (newData);
 	else delete newData;
@@ -238,8 +227,6 @@ static void _RGISToolsNetBasinMouthCBK (Widget widget,RGISWorkspace *workspace,X
 	DBDataset *dataset = UIDataset ();
 	DBObjData *netData = dataset->Data (), *pntData;
 	DBNetworkIF *netIF;
-
-	widget = widget; callData = callData;
 
 	if (netData == (DBObjData *) NULL)
 		{ CMmsgPrint (CMmsgAppError, "Null Data in: %s %d",__FILE__,__LINE__); return; }

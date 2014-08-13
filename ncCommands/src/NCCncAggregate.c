@@ -112,7 +112,7 @@ int main(int argc, char* argv[])
 		if (CMargTest(argv[argPos],"-s","--set"))
 		{
 			if ((argNum = CMargShiftLeft(argPos,argv,argc)) <= argPos)
-                            { CMmsgPrint (CMmsgUsrError,"Time step!");  return (CMfailed); }
+				{ CMmsgPrint (CMmsgUsrError,"Time step!");  return (CMfailed); }
 
 			if(interval != NONE) { CMmsgPrint (CMmsgUsrError, "Interval already set!"); cleanup(NCfailed); }
 			if(NCmathIsNumber(argv[argPos])) interval = atoi(argv[argPos]);
@@ -121,8 +121,8 @@ int main(int argc, char* argv[])
 			else if (strcmp(argv[argPos],"month") == 0) interval = MONTH;
 			else if (strcmp(argv[argPos],"year") == 0) interval = YEAR;
 			else { CMmsgPrint (CMmsgUsrError, "Undefined time interval '%s'",argv[argPos]); cleanup(NCfailed); }
-			if ((argNum = CMargShiftLeft(argPos,argv,argc)) <= argNum)
-                            { CMmsgPrint (CMmsgUsrError,"Missing variable!");  return (CMfailed); }
+			if ((argNum = CMargShiftLeft(argPos,argv,argc)) <= argPos)
+				{ CMmsgPrint (CMmsgUsrError,"Missing variable!");  return (CMfailed); }
 			if(varname == (char *) NULL) varname = argv[argPos];
 			else { CMmsgPrint (CMmsgUsrError, "Input field name defined twice!"); cleanup(NCfailed); }
 			if ((argNum = CMargShiftLeft(argPos,argv,argc)) <= argPos) break;

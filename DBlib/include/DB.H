@@ -180,9 +180,8 @@ class DBVarString
 		DBInt VString (const char *string,DBInt len)
 			{
 			for (;len > 0;--len) if (string [len - 1] != ' ') break;
-			StringPTR = (StringPTR == (DBAddress) NULL) ? ((DBAddress) ((char *) malloc (len + 1) - (char *) NULL)) :
-								 ((DBAddress) ((char *) realloc ((char *) NULL + StringPTR,len + 1) - (char *) NULL));
-			if (StringPTR == (DBAddress) NULL)
+			
+			if ((StringPTR = (DBAddress) (realloc ((void *) StringPTR,len + 1))) == (DBAddress) NULL)
 				{ perror ("Memory Allocation Error in: DBVarString::String ()"); return (DBFault); }
 			strncpy ((char *) NULL + StringPTR,string,len); ((char *) NULL + StringPTR) [len] = '\0'; LengthVAR = len;
 			return (DBSuccess);

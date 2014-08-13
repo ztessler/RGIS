@@ -400,7 +400,6 @@ class DBNetworkIF
 
 		DBObjTableField *RowNumFLD;
 		DBObjTableField *ColNumFLD;
-		DBObjTableField *LayerFLD;
 		DBObjTableField *CellWidthFLD;
 		DBObjTableField *CellHeightFLD;
 

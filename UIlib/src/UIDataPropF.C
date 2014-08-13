@@ -24,7 +24,6 @@ static void _UIDataPropProjectionButtonCBK (Widget widget,void *projection,XmAny
 	{
 	int *userData;
 
-	callData = callData;
 	XtVaGetValues (widget,XmNuserData, &userData, NULL);
 	*userData = (int) ((char *) projection - (char *) NULL);
 	}
@@ -52,7 +51,7 @@ class UIDataPropProjection
 													XmNlabelString,	string,
 													NULL);
 			XmStringFree (string);
-			XtAddCallback (button,XmNactivateCallback,(XtCallbackProc) _UIDataPropProjectionButtonCBK,(void *) ProjectionVAR);
+			XtAddCallback (button,XmNactivateCallback,(XtCallbackProc) _UIDataPropProjectionButtonCBK,(void *) ((char *) NULL + ProjectionVAR));
 			}
 	};
 
@@ -114,10 +113,7 @@ static void UIDataPropPrecision (Widget widget,int value)
 
 static void UIDataPropPrecisionCBK (Widget widget,void *data,XmScaleCallbackStruct *callData)
 
-	{
-	data = data;
-	UIDataPropPrecision (widget,callData->value);
-	}
+	{ UIDataPropPrecision (widget,callData->value); }
 
 static void UIDataPropScale (Widget widget,int value)
 
@@ -134,10 +130,7 @@ static void UIDataPropScale (Widget widget,int value)
 
 static void UIDataPropScaleCBK (Widget widget,void *data,XmScaleCallbackStruct *callData)
 
-	{
-	data = data;
-	UIDataPropScale (widget,callData->value);
-	}
+	{ UIDataPropScale (widget,callData->value); }
 
 class UIDataPropertiesGeo : public UIDataProperties
 
@@ -569,7 +562,6 @@ static void _UIDataPropContinuousColorCBK (Widget widget,void *Flags,XmAnyCallba
 	{
 	DBUnsigned *userData;
 
-	callData = callData;
 	XtVaGetValues (widget,XmNuserData, &userData, NULL);
 	*userData = (DBUnsigned) ((char *) Flags - (char *) NULL);
 	}
@@ -593,7 +585,7 @@ class UIDataPropContinuousColor
 														XmNuserData,				userData,
 														NULL);
 			XmStringFree (string);
-			XtAddCallback (button,XmNactivateCallback,(XtCallbackProc) _UIDataPropContinuousColorCBK,(void *) FlagVAR);
+			XtAddCallback (button,XmNactivateCallback,(XtCallbackProc) _UIDataPropContinuousColorCBK,(void *) ((char *) NULL + FlagVAR));
 			}
 		DBInt IsColor (DBUnsigned flag) { return (FlagVAR == flag ? true : false); }
 	};
@@ -1011,7 +1003,6 @@ DBInt UIDataPropertiesForm (DBObjData *data)
 	static UIDataPropertiesContinuous	*ContGridProp;
 	static UIDataPropertiesNetwork	*networkProp;
 
-	data = data;
 	if (dShell == NULL)
 		{
 		Widget rowColumn;

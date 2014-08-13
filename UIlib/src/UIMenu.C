@@ -23,10 +23,7 @@ bfekete@ccny.cuny.edu
 void _UIHelpCallback (Widget,char *, XmAnyCallbackStruct *);
 
 static void _UINotImplementedCBK (Widget widget,char *text,XmAnyCallbackStruct *callData)
-         {
-         widget = widget; text = text; callData = callData;
-          UIMessage ((char *) "This menu option is not implemented");
-          }
+	{ UIMessage ((char *) "This menu option is not implemented"); }
 
 UIMenuItem::UIMenuItem ()
 

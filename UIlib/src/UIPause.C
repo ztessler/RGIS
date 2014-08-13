@@ -25,7 +25,6 @@ static Widget _UIPauseButton, _UIContButton, _UIStopButton, _UIDrawingArea;
 static void _UIPauseCallback (Widget widget,int data,XmAnyCallbackStruct *callData)
 
 	{
-	widget = widget; data = data; callData = callData;
 	XtSetSensitive (_UIContButton,true);
 	XtSetSensitive (_UIPauseButton,false);
 	while (UILoop ());

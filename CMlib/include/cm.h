@@ -60,9 +60,9 @@ bool    CMmathIsInteger (const char *);
 #define CMyesNoString(cond) (cond ? "yes" : "no")
 
 typedef struct CMthreadData_s {
-	size_t          Id;
-	pthread_t       Thread;
-	void           *TeamPtr;
+size_t          Id;
+pthread_t       Thread;
+void           *TeamPtr;
 } CMthreadData_t,  *CMthreadData_p;
 
 typedef struct CMthreadTeam_s {
@@ -76,6 +76,7 @@ typedef struct CMthreadTeam_s {
 
 CMthreadTeam_p CMthreadTeamCreate     (size_t threadNum);
 void           CMthreadTeamDestroy    (CMthreadTeam_p);
+size_t         CMthreadProcessorNum   ();
 
 typedef void  (*CMthreadUserExecFunc)  (void *, void *, size_t);
 typedef void *(*CMthreadUserAllocFunc) (void *);
@@ -106,11 +107,11 @@ typedef struct CMthreadJob_s {
 	size_t               Completed;
 	CMthreadUserExecFunc UserFunc;
 	void                *CommonData;
-	void               **ThreadData;
+	void               **Data;
 } CMthreadJob_t, *CMthreadJob_p;
 
-CMthreadJob_p CMthreadJobCreate        (CMthreadTeam_p, void *, size_t, CMthreadUserAllocFunc, CMthreadUserExecFunc);
-void          CMthreadJobDestroy       (CMthreadJob_p, CMthreadUserFreeFunc);
+CMthreadJob_p CMthreadJobCreate        (CMthreadTeam_p, void *, size_t, CMthreadUserExecFunc);
+void          CMthreadJobDestroy       (CMthreadJob_p);
 CMreturn      CMthreadJobExecute       (CMthreadTeam_p, CMthreadJob_p);
 CMreturn      CMthreadJobTaskDependent (CMthreadJob_p,  size_t, size_t);
 

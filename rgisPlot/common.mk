@@ -5,7 +5,7 @@ ifndef ($(CUSTOM_INC)
 	CUSTOM_INC=-I/sw/include -I/sw/lib/pgplot
 endif
 ifndef ($(CUSTOM_LIB)
-	CUSTOM_LIB=-L/sw/lib -L/sw/lib/pgplot -L/sw/lib/gcc4.7/lib -L/usr/X11R6/lib -Wl,-framework -Wl,Foundation -lgfortran -lz -laquaterm
+	CUSTOM_LIB=-L/sw/lib -L/sw/lib/pgplot -L/sw/lib/gcc4.8/lib -L/usr/X11R6/lib -Wl,-framework -Wl,Foundation -lgfortran -lz -laquaterm
 endif
 endif
 

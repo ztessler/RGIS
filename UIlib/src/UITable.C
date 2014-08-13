@@ -56,7 +56,6 @@ static void _UITableFieldSortCBK (Widget widget,DBInt dir,XmAnyCallbackStruct *c
 	DBObjTable *table;
 	DBObjTableField *field;
 
-	callData = callData;
 	XtVaGetValues (XtParent (XtParent (XtParent (widget))),XmNuserData, &uiTable,NULL);
 	XtVaGetValues (widget,XmNuserData, &uiField,NULL);
 	table = uiTable->Table ();
@@ -99,7 +98,6 @@ static void _UITableFieldSelectCBK (Widget widget,DBInt select,XmAnyCallbackStru
 	UITable *uiTable;
 	UITableField *uiField;
 
-	callData = callData;
 	XtVaGetValues (XtParent (XtParent (XtParent (widget))),XmNuserData, &uiTable,NULL);
 	XtVaGetValues (widget,XmNuserData, &uiField,NULL);
 	dbTable = uiTable->Table ();
@@ -119,49 +117,49 @@ static void _UITableFieldSelectCBK (Widget widget,DBInt select,XmAnyCallbackStru
 								XmNlabelString,	string,
 								XmNuserData,		&cond,
 								NULL);
-		XtAddCallback (button,XmNactivateCallback,(XtCallbackProc) _UITableFieldConditionCBK,(XtPointer) cond++);
+		XtAddCallback (button,XmNactivateCallback,(XtCallbackProc) _UITableFieldConditionCBK,(XtPointer) ((char *) NULL + cond++));
 		XmStringFree (string);
 		string = XmStringCreate ((char *) ">=",UICharSetNormal);
 		button = XtVaCreateManagedWidget ("UITableSelectCondButton",xmPushButtonGadgetClass,condMenu,
 								XmNlabelString,	string,
 								XmNuserData,		&cond,
 								NULL);
-		XtAddCallback (button,XmNactivateCallback,(XtCallbackProc) _UITableFieldConditionCBK,(XtPointer) cond++);
+		XtAddCallback (button,XmNactivateCallback,(XtCallbackProc) _UITableFieldConditionCBK,(XtPointer) ((char *) NULL + cond++));
 		XmStringFree (string);
 		string = XmStringCreate ((char *) "==",UICharSetNormal);
 		button = XtVaCreateManagedWidget ("UITableSelectCondButton",xmPushButtonGadgetClass,condMenu,
 								XmNlabelString,	string,
 								XmNuserData,		&cond,
 								NULL);
-		XtAddCallback (button,XmNactivateCallback,(XtCallbackProc) _UITableFieldConditionCBK,(XtPointer) cond++);
+		XtAddCallback (button,XmNactivateCallback,(XtCallbackProc) _UITableFieldConditionCBK,(XtPointer) ((char *) NULL + cond++));
 		XmStringFree (string);
 		string = XmStringCreate ((char *) "!=",UICharSetNormal);
 		button = XtVaCreateManagedWidget ("UITableSelectCondButton",xmPushButtonGadgetClass,condMenu,
 								XmNlabelString,	string,
 								XmNuserData,		&cond,
 								NULL);
-		XtAddCallback (button,XmNactivateCallback,(XtCallbackProc) _UITableFieldConditionCBK,(XtPointer) cond);
+		XtAddCallback (button,XmNactivateCallback,(XtCallbackProc) _UITableFieldConditionCBK,(XtPointer) ((char *) NULL + cond));
 		XmStringFree (string);
 		string = XmStringCreate ((char *) "<>",UICharSetNormal);
 		button = XtVaCreateManagedWidget ("UITableSelectCondButton",xmPushButtonGadgetClass,condMenu,
 								XmNlabelString,	string,
 								XmNuserData,		&cond,
 								NULL);
-		XtAddCallback (button,XmNactivateCallback,(XtCallbackProc) _UITableFieldConditionCBK,(XtPointer) cond++);
+		XtAddCallback (button,XmNactivateCallback,(XtCallbackProc) _UITableFieldConditionCBK,(XtPointer) ((char *) NULL + cond++));
 		XmStringFree (string);
 		string = XmStringCreate ((char *) "<=",UICharSetNormal);
 		button = XtVaCreateManagedWidget ("UITableSelectCondButton",xmPushButtonGadgetClass,condMenu,
 								XmNlabelString,	string,
 								XmNuserData,		&cond,
 								NULL);
-		XtAddCallback (button,XmNactivateCallback,(XtCallbackProc) _UITableFieldConditionCBK,(XtPointer) cond++);
+		XtAddCallback (button,XmNactivateCallback,(XtCallbackProc) _UITableFieldConditionCBK,(XtPointer) ((char *) NULL + cond++));
 		XmStringFree (string);
 		string = XmStringCreate ((char *) "<",UICharSetNormal);
 		button = XtVaCreateManagedWidget ("UITableSelectCondButton",xmPushButtonGadgetClass,condMenu,
 								XmNlabelString,	string,
 								XmNuserData,		&cond,
 								NULL);
-		XtAddCallback (button,XmNactivateCallback,(XtCallbackProc) _UITableFieldConditionCBK,(XtPointer) cond++);
+		XtAddCallback (button,XmNactivateCallback,(XtCallbackProc) _UITableFieldConditionCBK,(XtPointer) ((char *) NULL + cond++));
 		XmStringFree (string);
 		string = XmStringCreate ((char *) "Condition:",UICharSetBold);
 		condMenu = XtVaCreateManagedWidget ("UITableSelectCondMenu",xmRowColumnWidgetClass,mainForm,
@@ -435,7 +433,6 @@ static void _UITableRecordIDSortCBK (Widget widget,DBInt dir,XmAnyCallbackStruct
 	UITable *uiTable;
 	DBObjTable *table;
 
-	dir = dir; callData = callData;
 	XtVaGetValues (XtParent (XtParent (XtParent (widget))),XmNuserData, &uiTable,NULL);
 	table = uiTable->Table ();
 	table->ListReset ();
@@ -586,7 +583,6 @@ static void _UITableFieldSelectRecordCBK (Widget widget,UITableRecord *uiRecord,
 	UITable *uiTable;
 	UIXYGraphShell *graphCLS;
 
-	callData = callData;
 	XtVaGetValues (XtParent (XtParent (widget)),XmNuserData,		&uiTable, NULL);
 	dbData = uiTable->Data ();
 	table  = uiTable->Table ();
@@ -775,14 +771,13 @@ static void _UITableResizeACTION (Widget widget, XEvent *event, String *args,uns
 	{
 	UITable *tableCLS;
 
-	args = args; argNum = argNum;
 	XtVaGetValues (widget, XmNuserData, &tableCLS, NULL);
 	tableCLS->Resize (event->xconfigure.height);
 	}
 
 static void _UITableVerScrollBarCBK (Widget widget,UITable *tableCLS,XmScrollBarCallbackStruct *callData)
 
-	{	widget = widget;	tableCLS->Draw (callData->value); }
+	{	tableCLS->Draw (callData->value); }
 
 static Widget _UITableSelectionFileSelect = NULL;
 static Widget _UITableSelectionFieldSelect = (Widget) NULL;
@@ -797,7 +792,6 @@ static void _UITableLoadSelectionCBK (Widget widget,UITable *uiTable,XmAnyCallba
 	DBObjTableField *field;
 	DBObjRecord *record;
 
-	widget = widget; callData = callData;
 	if (_UITableSelectionFieldSelect == (Widget) NULL) _UITableSelectionFieldSelect = UISelectionCreate ((char *) "Table Field Selection");
 	if (_UITableSelectionFileSelect == NULL)	_UITableSelectionFileSelect = UIFileSelectionCreate ((char *) "Selection File",NULL,(char *) "*.*",XmFILE_REGULAR);
 	if ((selection = UISelectObject (_UITableSelectionFieldSelect,(DBObjectLIST<DBObject> *) (table->Fields ()),DBTableFieldIsCategory)) == (char *) NULL) return;
@@ -841,7 +835,6 @@ static void _UITableSaveSelectionCBK (Widget widget,UITable *uiTable,XmAnyCallba
 	DBObjTableField *field;
 	DBObjRecord *record;
 
-	widget = widget; callData = callData;
 	if (_UITableSelectionFieldSelect == (Widget) NULL) _UITableSelectionFieldSelect = UISelectionCreate ((char *) "Table Field Selection");
 	if (_UITableSelectionFileSelect == NULL)	_UITableSelectionFileSelect = UIFileSelectionCreate ((char *) "Selection File",NULL,(char *) "*.*",XmFILE_REGULAR);
 	if ((selection = UISelectObject (_UITableSelectionFieldSelect,(DBObjectLIST<DBObject> *) (table->Fields ()),DBTableFieldIsCategory)) == (char *) NULL) return;
@@ -864,7 +857,6 @@ static void _UITableClearSelectionCBK (Widget widget,UITable *uiTable,XmAnyCallb
 	DBObjTable *table = uiTable->Table ();
 	DBObjRecord *record;
 
-	widget = widget; callData = callData;
 	for (record = table->First ();record != (DBObjRecord *) NULL;record = table->Next ())
 		if ((record->Flags () & DBObjectFlagSelected) == DBObjectFlagSelected)
 			record->Flags (DBObjectFlagSelected,false);
@@ -884,7 +876,6 @@ static void _UITableInvertSelectionCBK (Widget widget,UITable *uiTable,XmAnyCall
 	DBObjTable *table = uiTable->Table ();
 	DBObjRecord *record;
 
-	widget = widget; callData = callData;
 	for (record = table->First ();record != (DBObjRecord *) NULL;record = table->Next ())
 		record->Flags (DBObjectFlagSelected,((record->Flags () & DBObjectFlagSelected) != DBObjectFlagSelected));
 	uiTable->Draw ();
@@ -902,7 +893,6 @@ static void _UITableSetIdleCBK (Widget widget,UITable *uiTable,XmAnyCallbackStru
 	DBObjTable *table = uiTable->Table ();
 	DBObjRecord *record;
 
-	widget = widget; callData = callData;
 	for (record = table->First ();record != (DBObjRecord *) NULL;record = table->Next ())
 		if ((record->Flags () & DBObjectFlagSelected) == DBObjectFlagSelected)
 			{
@@ -920,7 +910,6 @@ static void _UITableGetIdleCBK (Widget widget,UITable *uiTable,XmAnyCallbackStru
 	DBObjTable *table = uiTable->Table ();
 	DBObjRecord *record;
 
-	widget = widget; callData = callData;
 	for (record = table->First ();record != (DBObjRecord *) NULL;record = table->Next ())
 		if ((record->Flags () & DBObjectFlagIdle) == DBObjectFlagIdle)
 			{
@@ -936,7 +925,7 @@ static void _UITableDeleteCBK (Widget widget,UITable *uiTable,XmAnyCallbackStruc
 
 	{
 	DBObjData *dbData = uiTable->Data ();
-	widget = widget; callData = callData;
+
 	dbData->DispRemove (uiTable);
 	delete uiTable;
 	}

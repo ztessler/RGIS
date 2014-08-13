@@ -170,40 +170,200 @@ class CMDgrdVariable
 		}
 	};
 
+class CMDgrdThreadData
+	{
+	private:
+		DBInt ExpNum, VarNum, LayerNum, MasterVar;
+		DBCoordinate CellSize;
+		DBRegion Extent;
+		DBObjRecord *LayerRec;
+		DBGridIF *GridIF;
+		CMDExpression **Expressions;
+		CMDgrdVariable **GrdVar;
+		DBObjectLIST<DBObject>	*Variables;
+		DBObjTable *Table;
+		DBMathOperand *Operand;
+	public:
+	CMDgrdThreadData ()
+		{
+		Expressions = (CMDExpression **) NULL;
+		GrdVar      = (CMDgrdVariable **) NULL;
+		ExpNum   = 0;
+		VarNum   = 0;
+		LayerNum = 0;
+		Variables = new DBObjectLIST<DBObject>  ("Variables");
+		Table     = new DBObjTable ("TEMPTable");
+		}
+	~CMDgrdThreadData ()
+		{
+		DBInt i;
+		if (ExpNum > 0) { for (i = 0;i < ExpNum; ++i) delete Expressions [i]; free (Expressions); }
+		delete Variables;
+		delete Table;
+		}
+	
+	CMreturn AddExpression (char *varName, char *exprStr)
+		{
+		DBObjTableField *fieldPTR = new DBObjTableField (varName,DBVariableFloat,"%10.3f",sizeof (DBFloat),false);
+		Table->AddField (fieldPTR);
+
+		if ((Expressions = (CMDExpression **) realloc (Expressions,(ExpNum + 1) * sizeof (CMDExpression *))) == (CMDExpression **) NULL)
+				{ CMmsgPrint (CMmsgSysError, "Memory Allocation error in: %s %d",__FILE__,__LINE__); return (CMfailed); }
+		Expressions [ExpNum] = new CMDExpression (varName, exprStr);
+		if ((Expressions [ExpNum])->Expand (Variables) == DBFault)
+			{ CMmsgPrint (CMmsgUsrError,"Invalid Expression!"); return (CMfailed); }
+		ExpNum++;
+		return (CMsucceeded);
+		}
+	CMreturn Configure (bool shrink, bool flat, char *expStr)
+		{
+		DBInt i, recID, layerID;
+		DBFloat floatVal;
+		DBObject *obj;
+		DBObjTableField *fieldPTR;
+	
+		Operand = new DBMathOperand (expStr);
+		if (Operand->Expand (Variables) == DBFault) return (CMfailed);
+
+		CellSize.X = CellSize.Y = DBHugeVal;
+		for (recID = 0;recID < Variables->ItemNum ();++recID)
+			{
+			obj = Variables->Item (recID);
+			if ((fieldPTR = Table->Field (obj->Name ())) != (DBObjTableField *) NULL) continue;
+
+			if ((GrdVar = (CMDgrdVariable **) realloc (GrdVar,sizeof (CMDgrdVariable *) * (VarNum + 1))) == (CMDgrdVariable **) NULL)
+				{ CMmsgPrint (CMmsgSysError, "Memory Allocation Error in: %s %d",__FILE__,__LINE__); return (CMfailed); }
+			GrdVar [VarNum] = new CMDgrdVariable (obj->Name ());
+			if (GrdVar [VarNum]->Configure (Table,flat) == DBFault)
+				{
+				for (i = 0;i <= VarNum;++i) delete GrdVar [i];
+				free (GrdVar);
+				return (CMfailed);
+				}
+			Extent.Expand (GrdVar [VarNum]->Extent ());
+			floatVal = GrdVar [VarNum]->CellWidth ();  if (CellSize.X > floatVal) CellSize.X = floatVal;
+			floatVal = GrdVar [VarNum]->CellHeight (); if (CellSize.Y > floatVal) CellSize.Y = floatVal;
+			layerID = (GrdVar [VarNum])->LayerNum ();
+			if (LayerNum < layerID) { LayerNum = layerID; MasterVar = VarNum; }
+			VarNum++;
+			}
+
+		for (i = 0;i < ExpNum;++i) if (Expressions [i]->Configure (Table) == DBFault) return (CMfailed);
+		Operand->Configure (Table->Fields ());
+		if (shrink) for (i = 0;i < VarNum;++i) Extent.Shrink (GrdVar [i]->Extent ());
+		return (CMsucceeded);
+		}
+	DBObjData *Compute (char *title, CMthreadUserExecFunc userFunc)
+		{
+		DBInt i, layerID, dataLayerID, threadId;
+		DBPosition pos;
+		DBCoordinate coord;
+		char *layerName;
+		DBObjData *data;
+		DBObjRecord *record;
+		size_t threadsNum = CMthreadProcessorNum ();
+		CMthreadTeam_p team = threadsNum > 0 ? CMthreadTeamCreate (threadsNum) : (CMthreadTeam_p) NULL;
+		CMthreadJob_p  job  = (CMthreadJob_p) NULL;
+
+
+		if ((data = DBGridCreate (title,Extent,CellSize)) == (DBObjData *) NULL) return ((DBObjData *) NULL);
+		data->Projection(GrdVar [0]->Projection ()); // Taking projection from first grid variable
+
+		GridIF = new DBGridIF (data);
+			
+		if (team != (CMthreadTeam_p) NULL)
+			{
+				if ((job  = CMthreadJobCreate (team, (void *) this,GridIF->RowNum () * GridIF->ColNum (), userFunc)) == (CMthreadJob_p) NULL)
+					{
+					CMmsgPrint (CMmsgAppError, "Job creation error in %s:%d",__FILE__,__LINE__);
+					CMthreadTeamDestroy (team);
+					return ((DBObjData *) NULL);
+					}
+				for (threadId = 0; threadId < job->ThreadNum; ++threadId)
+					if ((job->Data [threadId] = (void *) (Table->Add ("TEMPRecord"))) == (void *) NULL)
+						{ CMthreadTeamDestroy (team); return ((DBObjData *) NULL); }
+			}
+		else
+			{
+			if ((record = Table->Add ("TEMPRecord")) == (DBObjRecord *) NULL) return ((DBObjData *) NULL);
+			}
+		for (layerID = 0;layerID < LayerNum;++layerID)
+			{
+			layerName = GrdVar [MasterVar]->CurrentLayer (layerID);
+			for (i = 0;i < VarNum;++i)
+				{
+				if ((dataLayerID = GrdVar [i]->FindLayer (layerName)) != DBFault)
+					GrdVar [i]->CurrentLayer (dataLayerID);
+				else
+					{
+					if (GrdVar [i]->LayerIsDated (0)) continue;
+					GrdVar [i]->CurrentLayer (dataLayerID);
+					}
+				}
+			if (layerID > 0) GridIF->AddLayer ((char *) "New Layer");
+			LayerRec = GridIF->Layer (layerID);
+			GridIF->RenameLayer (LayerRec,layerName);
+
+			if (job != (CMthreadJob_p) NULL) CMthreadJobExecute (team, job);
+			else
+				for (pos.Row = 0;pos.Row < GridIF->RowNum ();++pos.Row)
+					for (pos.Col = 0;pos.Col < GridIF->ColNum ();++pos.Col)
+						{
+						GridIF->Pos2Coord (pos,coord);
+						for (i = 0;i < VarNum;++i) GrdVar [i]->GetVariable (record,coord);
+						for (i = 0;i < ExpNum;++i) Expressions [i]->Evaluate (record);
+						GridIF->Value (LayerRec,pos,Operand->Float (record));
+						}
+			GridIF->RecalcStats (LayerRec);
+			}
+		delete GridIF;
+		return (data);
+		}
+	void ComputeTask (DBObjRecord *record, size_t taskId)
+		{
+		size_t i;
+		DBPosition pos;
+		DBCoordinate coord;
+		
+		pos.Row = taskId / GridIF->ColNum ();
+		pos.Col = taskId % GridIF->ColNum ();
+
+		GridIF->Pos2Coord (pos,coord);
+		for (i = 0;i < VarNum;++i) GrdVar [i]->GetVariable (record,coord);
+		for (i = 0;i < ExpNum;++i) Expressions [i]->Evaluate (record);
+		GridIF->Value (LayerRec,pos,Operand->Float (record));
+		}
+	};
+
+static void _CMDgrdCalculateUserFunc (void *commonPtr,void *dataPtr, size_t taskId)
+	{
+	DBPosition pos;
+	CMDgrdThreadData *threadData = (CMDgrdThreadData *) commonPtr;
+	DBObjRecord *record = (DBObjRecord *) dataPtr;
+	
+	threadData->ComputeTask(record, taskId);
+	}
+
 int main (int argc,char *argv [])
 
 	{
 	int argPos, argNum = argc, ret, verbose = false;
-	DBInt i, expNum = 0, varNum = 0, masterVar = 0, recID, layerID, dataLayerID, layerNum = 0;
 	char *expStr = (char *) NULL;
 	char *title  = (char *) NULL, *subject = (char *) NULL;
 	char *domain = (char *) NULL, *version = (char *) NULL;
-	char *layerName;
 	int shadeSet = DBDataFlagDispModeContGreyScale;
 	bool shrink = true, flat = false;
-	DBFloat var;
-	DBRegion extent;
-	DBPosition pos;
-	DBCoordinate coord, cellSize;
-	DBMathOperand *operand;
-	DBObjectLIST<DBObject>	*variables = new DBObjectLIST<DBObject>  ("Variables");
-	DBObjTable *table = new DBObjTable ("TEMPTable");
-	DBObjTableField *fieldPTR;
-	DBObject *obj;
 	DBObjData *data;
-	DBObjRecord *record, *layerRec;
-	DBGridIF *gridIF;
-	CMDExpression **expressions = (CMDExpression **) NULL;
-	CMDgrdVariable **grdVar = (CMDgrdVariable **) NULL;
+	CMDgrdThreadData *threadData = new CMDgrdThreadData ();
 
 	for (argPos = 1;argPos < argNum; )
 		{
 		if (CMargTest (argv [argPos],"-c","--calculate"))
 			{
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos)
-				{ CMmsgPrint (CMmsgUsrError,"Missing expression!");   return (CMfailed); }
+				{ CMmsgPrint (CMmsgUsrError,"Missing expression!");  delete threadData;  return (CMfailed); }
 			if (expStr != (char *) NULL)
-				{ CMmsgPrint (CMmsgUsrError,"Expression is already specified!"); return (CMfailed); }
+				{ CMmsgPrint (CMmsgUsrError,"Expression is already specified!"); delete threadData; return (CMfailed); }
 			expStr = argv [argPos];
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos) break;
 			continue;
@@ -212,20 +372,12 @@ int main (int argc,char *argv [])
 			{
 			char *varName;
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos)
-				{ CMmsgPrint (CMmsgUsrError,"Missing variable name!"); return (CMfailed); }
+				{ CMmsgPrint (CMmsgUsrError,"Missing variable name!"); delete threadData; return (CMfailed); }
 			varName = argv [argPos];
-			fieldPTR = new DBObjTableField (varName,DBVariableFloat,"%10.3f",sizeof (DBFloat),false);
-			table->AddField (fieldPTR);
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos)
-				{ CMmsgPrint (CMmsgUsrError,"Missing expression!");   return (CMfailed); }
-			expressions = expNum < 1 ? (CMDExpression **) calloc (1,sizeof (CMDExpression *)) :
-								(CMDExpression **) realloc (expressions,(expNum + 1) * sizeof (CMDExpression *));
-			if (expressions == (CMDExpression **) NULL)
-				{ CMmsgPrint (CMmsgSysError, "Memory Allocation error in: %s %d",__FILE__,__LINE__); return (CMfailed); }
-			expressions [expNum] = new CMDExpression (varName, argv [argPos]);
-			if ((expressions [expNum])->Expand (variables) == DBFault)
-				{ CMmsgPrint (CMmsgUsrError,"Invalid Expression!"); return (CMfailed); }
-			expNum++;
+				{ CMmsgPrint (CMmsgUsrError,"Missing expression!");   delete threadData; return (CMfailed); }
+			if (threadData->AddExpression (varName,argv [argPos]) == CMfailed)
+				{ CMmsgPrint (CMmsgUsrError,"Invalid Expression!"); delete threadData; return (CMfailed); }
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos) break;
 			continue;
 			}
@@ -235,9 +387,9 @@ int main (int argc,char *argv [])
 			const char *names [] = { "minimum","maximum", (char *) NULL };
 
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos)
-				{ CMmsgPrint (CMmsgUsrError,"Missing extent mode!");     return (CMfailed); }
+				{ CMmsgPrint (CMmsgUsrError,"Missing extent mode!");     delete threadData; return (CMfailed); }
 			if ((ret = CMoptLookup (names,argv [argPos],true)) == CMfailed)
-				{ CMmsgPrint (CMmsgUsrError,"Invalid extent mode!");     return (CMfailed); }
+				{ CMmsgPrint (CMmsgUsrError,"Invalid extent mode!");     delete threadData; return (CMfailed); }
 			shrink = codes [ret];
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos) break;
 			continue;
@@ -248,9 +400,9 @@ int main (int argc,char *argv [])
 			const char *names [] = { "surface","flat", (char *) NULL };
 
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos)
-				{ CMmsgPrint (CMmsgUsrError,"Missing interpolation mode!");     return (CMfailed); }
+				{ CMmsgPrint (CMmsgUsrError,"Missing interpolation mode!");     delete threadData; return (CMfailed); }
 			if ((ret = CMoptLookup (names,argv [argPos],true)) == CMfailed)
-				{ CMmsgPrint (CMmsgUsrError,"Invalid interpolation mode!");     return (CMfailed); }
+				{ CMmsgPrint (CMmsgUsrError,"Invalid interpolation mode!");     delete threadData; return (CMfailed); }
 			flat = codes [ret];
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos) break;
 			continue;
@@ -258,7 +410,7 @@ int main (int argc,char *argv [])
 		if (CMargTest (argv [argPos],"-t","--title"))
 			{
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos)
-				{ CMmsgPrint (CMmsgUsrError,"Missing title!");        return (CMfailed); }
+				{ CMmsgPrint (CMmsgUsrError,"Missing title!");        delete threadData; return (CMfailed); }
 			title = argv [argPos];
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos) break;
 			continue;
@@ -266,7 +418,7 @@ int main (int argc,char *argv [])
 		if (CMargTest (argv [argPos],"-u","--subject"))
 			{
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos)
-				{ CMmsgPrint (CMmsgUsrError,"Missing subject!");      return (CMfailed); }
+				{ CMmsgPrint (CMmsgUsrError,"Missing subject!");      delete threadData; return (CMfailed); }
 			subject = argv [argPos];
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos) break;
 			continue;
@@ -274,7 +426,7 @@ int main (int argc,char *argv [])
 		if (CMargTest (argv [argPos],"-d","--domain"))
 			{
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos)
-				{ CMmsgPrint (CMmsgUsrError,"Missing domain!");            return (CMfailed); }
+				{ CMmsgPrint (CMmsgUsrError,"Missing domain!");            delete threadData; return (CMfailed); }
 			domain  = argv [argPos];
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos) break;
 			continue;
@@ -282,7 +434,7 @@ int main (int argc,char *argv [])
 		if (CMargTest (argv [argPos],"-v","--version"))
 			{
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos)
-				{ CMmsgPrint (CMmsgUsrError,"Missing version!");      return (CMfailed); }
+				{ CMmsgPrint (CMmsgUsrError,"Missing version!");      delete threadData; return (CMfailed); }
 			version  = argv [argPos];
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos) break;
 			continue;
@@ -297,9 +449,9 @@ int main (int argc,char *argv [])
 			const char *shadeSets [] = { "standard","grey","blue","blue-to-red","elevation", (char *) NULL };
 
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos)
-				{ CMmsgPrint (CMmsgUsrError,"Missing shadeset!");     return (CMfailed); }
+				{ CMmsgPrint (CMmsgUsrError,"Missing shadeset!");     delete threadData; return (CMfailed); }
 			if ((shadeSet = CMoptLookup (shadeSets,argv [argPos],true)) == CMfailed)
-				{ CMmsgPrint (CMmsgUsrError,"Invalid shadeset!");     return (CMfailed); }
+				{ CMmsgPrint (CMmsgUsrError,"Invalid shadeset!");     delete threadData; return (CMfailed); }
 			shadeSet = shadeCodes [shadeSet];
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos) break;
 			continue;
@@ -327,103 +479,36 @@ int main (int argc,char *argv [])
 			return (DBSuccess);
 			}
 		if ((argv [argPos][0] == '-') && ((int) strlen (argv [argPos]) > 1))
-			{ CMmsgPrint (CMmsgUsrError,"Unknown option: %s!",argv [argPos]); return (CMfailed); }
+			{ CMmsgPrint (CMmsgUsrError,"Unknown option: %s!",argv [argPos]); delete threadData; return (CMfailed); }
 		argPos++;
 		}
 
 	if (expStr == (char *) NULL)
-		{ CMmsgPrint (CMmsgUsrError,"Missing expression!"); return (CMfailed); }
+		{ CMmsgPrint (CMmsgUsrError,"Missing expression!"); delete threadData; return (CMfailed); }
 
-	if (argNum > 2) { CMmsgPrint (CMmsgUsrError,"Extra arguments!"); return (CMfailed); }
+	if (argNum > 2) { CMmsgPrint (CMmsgUsrError,"Extra arguments!"); delete threadData; return (CMfailed); }
 	if (verbose) RGlibPauseOpen (argv[0]);
 
-	operand = new DBMathOperand (expStr);
-	if (operand->Expand (variables) == DBFault) return (CMfailed);
-
-	cellSize.X = cellSize.Y = DBHugeVal;
-	for (recID = 0;recID < variables->ItemNum ();++recID)
-		{
-		obj = variables->Item (recID);
-		if ((fieldPTR = table->Field (obj->Name ())) != (DBObjTableField *) NULL) continue;
-
-		grdVar = (CMDgrdVariable **) realloc (grdVar,sizeof (CMDgrdVariable *) * (varNum + 1));
-		if (grdVar == (CMDgrdVariable **) NULL)
-			{ CMmsgPrint (CMmsgSysError, "Memory Allocation Error in: %s %d",__FILE__,__LINE__); return (CMfailed); }
-		grdVar [varNum] = new CMDgrdVariable (obj->Name ());
-		if (grdVar [varNum]->Configure (table,flat) == DBFault)
-			{
-			for (i = 0;i <= varNum;++i) delete grdVar [i];
-			free (grdVar);
-			return (CMfailed);
-			}
-		extent.Expand (grdVar [varNum]->Extent ());
-		var = grdVar [varNum]->CellWidth ();
-		if (cellSize.X > var) cellSize.X = var;
-		var = grdVar [varNum]->CellHeight ();
-		if (cellSize.Y > var) cellSize.Y = var;
-		layerID = (grdVar [varNum])->LayerNum ();
-		if (layerNum < layerID) { layerNum = layerID; masterVar = varNum; }
-		varNum++;
-		}
-
-	for (i = 0;i < expNum;++i) if (expressions [i]->Configure (table) == DBFault) return (CMfailed);
-	operand->Configure (table->Fields ());
-	if ((record = table->Add ("TEMPRecord")) == (DBObjRecord *) NULL) return (CMfailed);
-//	for (i = 0;i < expNum;++i) expressions [i]->Evaluate (record);
-
-//	TODO CMmsgPrint (CMmsgDebug, ,"%f %f %f %f",extent.LowerLeft.X, extent.LowerLeft.Y, extent.UpperRight.X, extent.UpperRight.Y);
-	if (shrink) for (i = 0;i < varNum;++i)	{
-//	TODO	CMmsgPrint (CMmsgDebug, ,"%f %f %f %f",grdVar [i]->Extent ().LowerLeft.X, grdVar [i]->Extent ().LowerLeft.Y, grdVar [i]->Extent ().UpperRight.X, grdVar [i]->Extent ().UpperRight.Y);
-		extent.Shrink (grdVar [i]->Extent ());
-	}
-// TODO	CMmsgPrint (CMmsgDebug, ,"%f %f %f %f",extent.LowerLeft.X, extent.LowerLeft.Y, extent.UpperRight.X, extent.UpperRight.Y);
-
-	if (title	== (char *) NULL)	title = (char *) "Grid Calculate Result";
+	if (threadData->Configure(shrink, flat, expStr) == CMfailed) { delete threadData; return (CMfailed); }
+	
+	if (title	== (char *) NULL)	title   = (char *) "Grid Calculate Result";
 	if (subject == (char *) NULL) subject = (char *) "GridCalc";
 	if (domain  == (char *) NULL) domain  = (char *) "Non-specified";
 	if (version == (char *) NULL) version = (char *) "0.01pre";
 	if (shadeSet == DBFault)     shadeSet = DBDataFlagDispModeContGreyScale;
 
-	if ((data = DBGridCreate (title,extent,cellSize)) == (DBObjData *) NULL) return (CMfailed);
-	data->Document (DBDocSubject,subject);
-	data->Document (DBDocGeoDomain,domain);
-	data->Document (DBDocVersion,version);
-	data->Flags (DBDataFlagDispModeContShadeSets,DBClear);
-	data->Flags (shadeSet, DBSet);
-	data->Projection(grdVar [0]->Projection ()); // Taking projection from first grid variable
+	if ((data = threadData->Compute (title, _CMDgrdCalculateUserFunc)) == (DBObjData *) NULL) { delete threadData; return (CMfailed); }
+		
+	delete threadData; 
 
-	gridIF = new DBGridIF (data);
-	for (layerID = 0;layerID < layerNum;++layerID)
-		{
-		layerName = grdVar [masterVar]->CurrentLayer (layerID);
-		for (i = 0;i < varNum;++i)
-			{
-			if ((dataLayerID = grdVar [i]->FindLayer (layerName)) != DBFault)
-				grdVar [i]->CurrentLayer (dataLayerID);
-			else
-				{
-				if (grdVar [i]->LayerIsDated (0)) continue;
-				grdVar [i]->CurrentLayer (dataLayerID);
-				}
-			}
-		if (layerID > 0) gridIF->AddLayer ((char *) "New Layer");
-		layerRec = gridIF->Layer (layerID);
-		gridIF->RenameLayer (layerRec,layerName);
-		for (pos.Row = 0;pos.Row < gridIF->RowNum ();++pos.Row)
-			for (pos.Col = 0;pos.Col < gridIF->ColNum ();++pos.Col)
-				{
-			 	gridIF->Pos2Coord (pos,coord);
-				for (i = 0;i < varNum;++i) grdVar [i]->GetVariable (record,coord);
-				for (i = 0;i < expNum;++i) expressions [i]->Evaluate (record);
-				gridIF->Value (layerRec,pos,operand->Float (record));
-				}
-		gridIF->RecalcStats (layerRec);
-		}
+	data->Document (DBDocSubject,  subject);
+	data->Document (DBDocGeoDomain,domain);
+	data->Document (DBDocVersion,  version);
+	data->Flags    (DBDataFlagDispModeContShadeSets,DBClear);
+	data->Flags (shadeSet, DBSet);
 
 	ret = (argNum > 1) && (strcmp (argv [1],"-") != 0) ? data->Write (argv [1]) : data->Write (stdout);
 
-	for (i = 0;i < varNum;++i) delete grdVar [i];
-	delete variables;
 	if (verbose) RGlibPauseClose ();
 	return (ret);
 	}

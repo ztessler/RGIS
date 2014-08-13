@@ -44,38 +44,29 @@ char *UIAuxGetLabelString (Widget widget)
 
 void UIAuxSetBooleanTrueCBK (Widget widget,int *boolean,XmAnyCallbackStruct *callData)
 
-	{
-	widget = widget; callData = callData;
-	*boolean = True;
-	}
+	{ *boolean = True; }
 
 void UIAuxSetBooleanFalseCBK (Widget widget,int *boolean,XmAnyCallbackStruct *callData)
 
-	{
-	widget = widget; callData = callData;
-	*boolean = False;
-	}
+	{ *boolean = False; }
 
 void UIAuxSetIntegerCBK (Widget widget,DBInt setVal,XmAnyCallbackStruct *callData)
 
 	{
 	DBInt *intVal;
-	callData = callData;
 	XtVaGetValues (widget,XmNuserData, &intVal, NULL);
 	*intVal = setVal;
 	}
 
 void UIAuxSetToggleCBK (Widget widget,DBInt *toggle,XmToggleButtonCallbackStruct *callData)
 
-	{	widget = widget;	*toggle = callData->set; }
+	{	*toggle = callData->set; }
 
 
 void UIAuxSetDefaultButtonEH (Widget widget,void *data,XEvent *event,Boolean boolVal)
 
 	{
 	Arg wargs [1];
-
-	data = data; boolVal = boolVal;
 
 	switch (event->type)
 		{
@@ -94,7 +85,6 @@ void UIAuxObjectSelectCBK (Widget widget,Widget text,XmAnyCallbackStruct *callDa
 	int (*condFunc) (const DBObject *);
 	DBObjectLIST<DBObject> *objects;
 
-	callData = callData;
 	if (select == NULL) select = UISelectionCreate ((char *) "Object Selection");
 	XtVaGetValues (text,XmNuserData, &objects, NULL);
 	XtVaGetValues (widget,XmNuserData, &condFunc, NULL);
@@ -110,7 +100,6 @@ void UIAuxFileSelectCBK (Widget widget,Widget text,XmAnyCallbackStruct *callData
 	DBInt selectMode;
 	XmString string;
 
-	callData = callData;
 	if (select == (Widget) NULL) select = UIFileSelectionCreate ((char *) "File Selection",(char *) NULL,(char *) NULL,XmFILE_REGULAR);
 	XtVaGetValues (text,		XmNuserData, &pattern, 		NULL);
 	XtVaGetValues (widget,	XmNuserData, &selectMode,	NULL);
@@ -132,7 +121,6 @@ void UIAuxDirSelectCBK (Widget widget,Widget text,XmAnyCallbackStruct *callData)
 	DBInt selectMode;
 	XmString string;
 
-	callData = callData;
 	if (select == NULL) select = UIFileSelectionCreate ((char *) "Directory Selection",(char *) NULL,(char *) NULL,XmFILE_DIRECTORY);
 	XtVaGetValues (text,XmNuserData, 	&pattern,		NULL);
 	XtVaGetValues (widget,XmNuserData,	&selectMode,	NULL);

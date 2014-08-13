@@ -31,7 +31,7 @@ static void doHelp(const char *progName, bool extend)
 
 int main(int argc, char* argv[])
 {
-	int argPos = 0, argNum = argc, ncid;
+	int argPos = 0, argNum = argc, ncid = -1;
 	char *fname = (char *) NULL, *tname = "time";
 	FILE *output = stdout;
 	NCtable_t *tbl = (NCtable_t *) NULL;

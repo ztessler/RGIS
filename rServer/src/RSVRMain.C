@@ -35,7 +35,7 @@ int main (int argc, char *argv [])
 			if ((argNum = CMargShiftLeft(argPos,argv,argNum)) <= argPos) break;
 			continue;
 		}
-Help:	if (CMargTest(argv[argPos],"-h","--help")) {
+		if (CMargTest(argv[argPos],"-h","--help")) {
 			if ((argNum = CMargShiftLeft(argPos,argv,argNum)) < argPos) break;
 			CMmsgPrint (CMmsgUsrError,"%s [options]",CMfileName(argv[0]));
 			CMmsgPrint (CMmsgUsrError,"  -p, --port");
@@ -51,10 +51,6 @@ Help:	if (CMargTest(argv[argPos],"-h","--help")) {
       argPos++;
 	}
 	if (argNum > 1) { CMmsgPrint (CMmsgUsrError,"Extra arguments!"); return (CMfailed); }
-
-   {
-      DBObjData *data;
-   }
    
    ret = CMsucceeded;
    

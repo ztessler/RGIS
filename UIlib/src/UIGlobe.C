@@ -238,7 +238,7 @@ static void _UIGlobeSpin (XtPointer data,XtIntervalId *id)
 	static int rot = 0;
 	static GC gc;
 
-	id = id;
+	id = 0;
 	if (_UIGlobeSize == 0) return;
 	if (_UIGlobePixmap [rot] == (Pixmap) NULL)
 		{
@@ -279,6 +279,5 @@ void _UIGlobeInitialize (Widget widget,int globeSize,Pixel background,DBInt spin
 	_UIGlobeImage = XCreateImage(XtDisplay(UITopLevel ()),DefaultVisual (XtDisplay(UITopLevel ()),XDefaultScreen (XtDisplay (UITopLevel ()))),sDepth,ZPixmap,0,data,_UIGlobeSize,_UIGlobeSize,bitmap_pad,0);
 	for (rot = 0;rot < 360 / UIRotationStep;++rot) _UIGlobePixmap [rot] = (Pixmap) NULL;
 	if (spin) XtAppAddTimeOut (UIApplicationContext (),50,_UIGlobeSpin,(XtPointer) true);
-	else _UIGlobeSpin ((XtPointer) false,(XtIntervalId) NULL);
 	}
 

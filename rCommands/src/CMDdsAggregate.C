@@ -19,8 +19,8 @@ enum { DAY = 10, MONTH = 7, YEAR = 4 };
 enum { AVG = 1, SUM = 2};
 
 int main(int argc,char *argv []) {
-	int argPos, argNum = argc, ret = CMfailed, itemSize, i, step = CMfailed, mode = CMfailed;
-	FILE *inFile, *outFile;
+	int argPos = 0, argNum = argc, ret = CMfailed, itemSize, i, step = CMfailed, mode = CMfailed;
+	FILE *inFile = stdin, *outFile = stdout;
 	char date [MFDateStringLength];
 	MFVarHeader_t header, outHeader;
 	void   *items  = (void *)   NULL;

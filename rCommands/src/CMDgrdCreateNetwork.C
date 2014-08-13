@@ -23,7 +23,7 @@ int main (int argc,char *argv [])
 	bool downhill = true;
 	char *title  = (char *) NULL;
 	char *domain = (char *) NULL, *version = (char *) NULL;
-	DBObjData *outData, *inData, *basinData = (DBObjData *) NULL;
+	DBObjData *outData = (DBObjData *) NULL, *inData = (DBObjData *) NULL, *basinData = (DBObjData *) NULL;
 	DBInt DBGridCont2Network (DBObjData *,DBObjData *, bool);
 
 	for (argPos = 1;argPos < argNum; )

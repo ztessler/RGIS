@@ -162,8 +162,8 @@ DBInt DBImportASCIITable (DBObjTable *table, FILE *fp)
 	DBObjTableField *fieldFLD;
 	char *buffer = (char *) NULL, format [20], recordName [32];
 	const char *fieldSTR;
-	int   bufferSize = 0, nDecimals, ret = DBSuccess;
-	int   recordNum  = 0, recordID, fieldID, i;
+	int   bufferSize = 0, ret = DBSuccess;
+	int   recordNum  = 0, recordID, fieldID;
 	DBInt     intVal, maxInt   = -HUGE_VAL;
 	DBFloat floatVal, maxFloat = -HUGE_VAL;
 	_DBImportASCIIHeader *header;

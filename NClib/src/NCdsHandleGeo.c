@@ -19,7 +19,7 @@ NCstate NCdsHandleGeoDefine (NCdsHandleGeo_t *dsHandleGeo, int *ncids, size_t n)
 void NCdsHandleGeoClear (NCdsHandleGeo_t *dsHandleGeo)
 {
 	NCdsHandleClear ((NCdsHandle_t *) dsHandleGeo);
-	dsHandleGeo->Projection = NCundefined;
+	dsHandleGeo->Projection = NCprojNoCoordinates;
 	dsHandleGeo->Extent.LowerLeft.X  = dsHandleGeo->Extent.LowerLeft.Y  =  HUGE_VAL;
 	dsHandleGeo->Extent.UpperRight.X = dsHandleGeo->Extent.UpperRight.Y = -HUGE_VAL;
 }

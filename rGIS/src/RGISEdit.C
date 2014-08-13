@@ -26,7 +26,6 @@ static void _RGISEditNameFieldCBK (Widget widget,void *data,XmAnyCallbackStruct 
 	DBObjTableField *field;
 	DBObjRecord *record;
 	static Widget fieldSelect = (Widget) NULL;
-	widget = widget; data = data; callData = callData;
 
 	if (table == (DBObjTable *) NULL) return;
 	if (fieldSelect == (Widget) NULL) fieldSelect = UISelectionCreate ((char *) "Field Selection");
@@ -51,7 +50,6 @@ static void _RGISEditJoinTableSelectCBK (Widget widget,Widget text,XmAnyCallback
 	DBObjectLIST<DBObjTableField> *fields;
 	int (*condFunc) (const DBObject *);
 
-	callData = callData;
 	if (select == NULL) select = UISelectionCreate ((char *) "Field Selection");
 	XtVaGetValues (widget,XmNuserData, &condFunc, NULL);
 	XtVaGetValues (text,XmNuserData, &fields, NULL);
@@ -76,7 +74,6 @@ static void _RGISEditJoinTableCBK (Widget widget,void *data,XmAnyCallbackStruct 
 	static Widget field0TextF, field1TextF;
 	static Widget field0Button, field1Button;
 
-	widget = widget; data = data; callData = callData;
 	if (tableSelect == (Widget) NULL)
 		{
 		tableSelect = UISelectionCreate ((char *) "Table Selection");
@@ -229,7 +226,6 @@ static void _RGISEditAddFieldCBK (Widget widget,void *data,XmAnyCallbackStruct *
 	UITable *tableCLS;
 	static Widget tableSelect = (Widget) NULL;
 
-	widget = widget; data = data; callData = callData;
 	if (tableSelect == (Widget) NULL) tableSelect = UISelectionCreate ((char *) "Table Selection");
 	if ((selection = UISelectObject (tableSelect,(DBObjectLIST<DBObject> *) dbData->Tables ())) == (char *) NULL) return;
 	if ((table = dbData->Table (selection)) == (DBObjTable *) NULL) return;
@@ -252,7 +248,6 @@ static void _RGISEditRedefineFieldCBK (Widget widget,void *data,XmAnyCallbackStr
 	UITable *tableCLS;
 	static Widget tableSelect = (Widget) NULL;
 
-	widget = widget; data = data; callData = callData;
 	if (tableSelect == (Widget) NULL) tableSelect = UISelectionCreate ((char *) "Table Selection");
 	selection = UISelectObject (tableSelect,(DBObjectLIST<DBObject> *) dbData->Tables ());
 	if (selection == (char *) NULL)	return;
@@ -277,7 +272,6 @@ static void _RGISEditDeleteFieldCBK (Widget widget,void *data,XmAnyCallbackStruc
 	static Widget tableSelect = (Widget) NULL;
 	static Widget fieldSelect = (Widget) NULL;
 
-	widget = widget; data = data; callData = callData;
 	if (tableSelect == (Widget) NULL) tableSelect = UISelectionCreate ((char *) "Table Selection");
 	if (fieldSelect == (Widget) NULL) fieldSelect = UISelectionCreate ((char *) "Field Selection");
 	selection = UISelectObject (tableSelect,(DBObjectLIST<DBObject> *) dbData->Tables ());
@@ -297,7 +291,6 @@ static void _RGISEditDeleteSelectionCBK (Widget widget,void *data,XmAnyCallbackS
 	DBObjTable *table, *groups;
 	DBObjRecord *record;
 	static Widget tableSelect = (Widget) NULL;
-	widget = widget; data = data; callData = callData;
 
 	if (tableSelect == (Widget) NULL) tableSelect = UISelectionCreate ((char *) "Table Selection");
 	selection = UISelectObject (tableSelect,(DBObjectLIST<DBObject> *) dbData->Tables ());
@@ -344,7 +337,6 @@ static void _RGISEditSymbolCBK (Widget widget,void *data,XmAnyCallbackStruct *ca
 	DBObjData *symData = dataset->Data ();
 	DBObjTable *symbols = symData->Table (DBrNSymbols);
 
-	widget = widget; data = data; callData = callData;
 	switch (symData->Type ())
 		{
 		case DBTypeVectorPoint: UISymbolEdit (symbols,UISymbolMarker);	break;
@@ -363,7 +355,6 @@ static void _RGISEditSymbolFieldCBK (Widget widget,void *data,XmAnyCallbackStruc
 	DBObjData *dbData = dataset->Data ();
 	DBObjTable *table = dbData->Table (DBrNItems);
 	static Widget fieldSelect = (Widget) NULL;
-	widget = widget; data = data; callData = callData;
 
 	if (table == (DBObjTable *) NULL) return;
 	if (fieldSelect == (Widget) NULL) fieldSelect = UISelectionCreate ((char *) "Field Selection");

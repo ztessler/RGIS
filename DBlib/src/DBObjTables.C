@@ -746,7 +746,7 @@ void DBObjTable::RedefineField (DBObjTableField *field, DBObjTableField *newFiel
 			}
 		delete oldRecord;
 		}
-	if (strcmp (field->Name (),newField->Name ()) != 0); field->Name (newField->Name ());
+	if (strcmp (field->Name (),newField->Name ()) != 0) field->Name (newField->Name ());
 	if (field->Type () != newField->Type ()) field->Type (newField->Type ());
 	if (field->FormatWidth () != newField->FormatWidth ()) field->FormatWidth (newField->FormatWidth ());
 	if ((field->Type () == DBTableFieldFloat) && (field->FormatDecimals () != field->FormatDecimals ()))

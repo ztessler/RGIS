@@ -250,8 +250,6 @@ void RGISAnGContPitsCBK (Widget widget,RGISWorkspace *workspace,XmAnyCallbackStr
 	DBNetworkIF *netIF;
 	DBGridIF *gridIF;
 
-	widget = widget; callData = callData;
-
 	if (gridData == (DBObjData *) NULL)
 		{ CMmsgPrint (CMmsgAppError, "Null Data in: %s %d",__FILE__,__LINE__); return; }
 
@@ -407,7 +405,6 @@ static bool _RGISAnnGContFindBasinMinCrest (DBNetworkIF *netIF,DBObjRecord *cell
 
 	{
 	DBFloat elev;
-	dataPtr = dataPtr;
 
 	if (netIF->CellBasinCells (cellRec) > 1) return (false);
 	printf ("Itt Jartam: %d %d\n",cellRec->RowID (),netIF->CellBasinCells (cellRec));
@@ -429,8 +426,6 @@ void RGISAnGContPourCBK (Widget widget,RGISWorkspace *workspace,XmAnyCallbackStr
 	DBDataset *dataset = UIDataset ();
 	DBObjData *gridData = dataset->Data (), *netData;
 	DBNetworkIF *netIF;
-
-	widget = widget; workspace = workspace; callData = callData;
 
 	if (gridData == (DBObjData *) NULL) { CMmsgPrint (CMmsgAppError, "Null Data in: %s %d",__FILE__,__LINE__); return; }
 
@@ -465,8 +460,6 @@ void RGISAnGContCreateNetworkCBK (Widget widget,RGISWorkspace *workspace,XmAnyCa
 	DBObjData *gridData = dataset->Data ();
 	DBObjData *netData = new DBObjData ("",DBTypeNetwork);
 	DBInt DBGridCont2Network (DBObjData *,DBObjData *, bool);
-
-	widget = widget; callData = callData;
 
 	netData->Document (DBDocGeoDomain,gridData->Document (DBDocGeoDomain));
 	netData->Document (DBDocSubject,"STNetwork");
@@ -638,7 +631,6 @@ void RGISAnGContAddCBK (Widget widget,RGISWorkspace *workspace,XmAnyCallbackStru
 	DBObjData *grdData = dataset->Data ();
 	DBObjData *lnkData = grdData->LinkedData ();
 
-	widget = widget; callData = callData;
 	grdData = new DBObjData (*grdData);
 	if (UIDataHeaderForm (grdData))
 		{
@@ -659,7 +651,6 @@ void RGISAnGContSubtractCBK (Widget widget,RGISWorkspace *workspace,XmAnyCallbac
 	DBObjData *grdData = dataset->Data ();
 	DBObjData *lnkData = grdData->LinkedData ();
 
-	widget = widget; callData = callData;
 	grdData = new DBObjData (*grdData);
 	if (UIDataHeaderForm (grdData))
 		{
@@ -680,7 +671,6 @@ void RGISAnGContMultiplyCBK (Widget widget,RGISWorkspace *workspace,XmAnyCallbac
 	DBObjData *grdData = dataset->Data ();
 	DBObjData *lnkData = grdData->LinkedData ();
 
-	widget = widget; callData = callData;
 	grdData = new DBObjData (*grdData);
 	if (UIDataHeaderForm (grdData))
 		{
@@ -701,7 +691,6 @@ void RGISAnGContDivideCBK (Widget widget,RGISWorkspace *workspace,XmAnyCallbackS
 	DBObjData *grdData = dataset->Data ();
 	DBObjData *lnkData = grdData->LinkedData ();
 
-	widget = widget; callData = callData;
 	grdData = new DBObjData (*grdData);
 	if (UIDataHeaderForm (grdData))
 		{

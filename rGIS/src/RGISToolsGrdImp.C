@@ -47,7 +47,6 @@ static void _RGISToolsImpGridMapMenuCBK (Widget widget,Widget mapWidget, XmAnyCa
 	{
 	DBInt *val;
 
-	callData = callData;
 	XtVaGetValues (widget,XmNuserData, 	&val, NULL);
 	if ((*val & 0x01) == 0x01)
 			XtUnmapWidget (mapWidget);
@@ -97,8 +96,6 @@ void RGISToolsImportGridCBK (Widget widget,RGISWorkspace *workspace,XmAnyCallbac
 	static Widget dShell = NULL, mainForm;
 	static Widget rowNumFLD, colNumFLD, cellWidthFLD, llCellRowFLD, llCellColFLD, cellHeightFLD, llXCoordFLD, llYCoordFLD;
 	static Widget missingValFLD, skipHeaderFLD, skipPadFLD, listFileNameFLD, listFileTGL;
-
-	widget = widget; callData = callData;
 
 	if (dShell == (Widget) NULL)
 		{
@@ -932,7 +929,6 @@ void RGISToolsImportGridDMCBK (Widget widget,RGISWorkspace *workspace,XmAnyCallb
 	DBObjData *data = new DBObjData ("",DBTypeGrid);
 	static Widget fileSelect = NULL;
 
-	widget = widget; callData = callData;
 	if (fileSelect == NULL) fileSelect = UIFileSelectionCreate ((char *) "Data Manager Import",NULL,(char *) "M:*",XmFILE_REGULAR);
 	if (UIDataHeaderForm (data))
 		{

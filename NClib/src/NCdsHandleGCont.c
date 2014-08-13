@@ -253,7 +253,7 @@ NCstate NCdsHandleGContLoadCache (NCdsHandleGCont_t *gCont,size_t sTStep, size_t
 	double val;
 
 	count [0] = 1;
-	if (gCont->LVarIds [ncidx] == NCundefined)
+	if (gCont->LVarIds [0] == NCundefined)
 	{
 		start [1]   = (size_t) 0; count [1] = gCont->RowNum;
 		start [2]   = (size_t) 0; count [2] = gCont->ColNum;

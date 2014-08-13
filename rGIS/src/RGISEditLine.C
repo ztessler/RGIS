@@ -24,7 +24,6 @@ void RGISEditLineDirectionCBK (Widget widget, RGISWorkspace *workspace,XmAnyCall
 	DBVLineIF *lineIF = new DBVLineIF (lineData);
 	DBGridIF *gridIF = new DBGridIF (gridData);
 
-	widget = widget; workspace = workspace; callData = callData;
 	UIPauseDialogOpen ((char *) "Changing Directionality");
 	for (lineRec = lineIF->FirstItem ();lineRec != (DBObjRecord *) NULL;lineRec = lineIF->NextItem ())
 		{

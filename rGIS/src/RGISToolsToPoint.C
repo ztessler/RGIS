@@ -25,7 +25,6 @@ static void _RGISToolsConvertToPointSelectCBK (Widget widget,Widget text,XmAnyCa
 	char *field;
 	int (*condFunc) (const DBObject *);
 
-	callData = callData;
 	if (select == NULL) select = UISelectionCreate ((char *) "Field Selection");
 	XtVaGetValues (widget,XmNuserData, &condFunc, NULL);
 	if ((field = UISelectObject (select,(DBObjectLIST<DBObject> *) (_RGISToolsConvertToPointFields),condFunc)) != NULL)
@@ -46,7 +45,6 @@ void RGISToolsConvertToPointCBK (Widget widget,RGISWorkspace *workspace,XmAnyCal
 	static Widget nameTextF, xCoordTextF, yCoordTextF;
 	XmString string;
 
-	widget = widget;	callData = callData;
 	if (tableSelect == (Widget) NULL)	tableSelect = UISelectionCreate ((char *) "Table Selection");
 	selection = UISelectObject (tableSelect,(DBObjectLIST<DBObject> *) dbData->Tables ());
 	if (selection == (char *) NULL) return;

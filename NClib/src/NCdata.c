@@ -17,7 +17,7 @@ NCdataType NCdataGetType (int ncid)
 		else if (strncmp (dTypeStr,NCnameTypePolygon,strlen (NCnameTypePolygon)) == 0)  return (NCtypePolygon);
 		else if (strncmp (dTypeStr,NCnameTypeNetwork,strlen (NCnameTypeNetwork)) == 0)  return (NCtypeNetwork);
 		CMmsgPrint (CMmsgAppError, "Invalid data type in: %s %d",__FILE__,__LINE__);
-		return (NCundefined);
+		return (NCtypeUndefined);
 	}
 	return (NCtypeGCont);
 }
@@ -127,7 +127,7 @@ NCprojection NCdataGetProjection (int ncid)
 		else if (nc_inq_dimid (ncid, NCnameDNLongitude, &dimid) == NC_NOERR) return (NCprojSpherical);
 		CMmsgPrint (CMmsgAppError, "Nongeographical data in: %s %d",__FILE__,__LINE__);
 	}
-	return (NCundefined);
+	return (NCprojNoCoordinates);
 }
 
 int NCdataGetXDimId (int ncid)

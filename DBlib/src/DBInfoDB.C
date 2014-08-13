@@ -53,6 +53,16 @@ class ARCDirRecord
 			DBByteOrderSwapHalfWord (&Filler2);
 			}
 	public:
+		void SetUnusedFillers (char *filler)
+			{
+			strncpy (Level0Password,filler,3);
+			strncpy (Level1Password,filler,3);
+			strncpy (Level2Password,filler,3);
+			strncpy (Level3Password,filler,3);
+			strncpy (Filler3,       filler,3);
+			strncpy (ExternalFlag,  filler,1);
+			strncpy (Filler4,       filler,4);
+			}
 		int Read (FILE *file,DBInt swap)
 			{
 			int i;
@@ -116,6 +126,15 @@ class ARCNitRecord
 			DBByteOrderSwapHalfWord (&ItemNumberVAR);
 			}
 	public:
+		void SetUnusedFillers (char *filler)
+			{
+			strncpy (AlternateNameSTR,filler,15);
+			strncpy (Filler3STR,      filler,15);
+			strncpy (Filler4STR,      filler,31);
+			strncpy (Filler5STR,      filler,27);
+			AlternateRuleVAR = 0;
+			ConcordCaseVAR   = 0;
+			}
 		DBInt Read (FILE *file,DBInt swap)
 			{
 			if (fread (this,sizeof (ARCNitRecord),1,file) != 1) return (DBFault);

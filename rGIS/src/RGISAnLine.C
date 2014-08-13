@@ -25,7 +25,6 @@ static void _RGIAnalyseLineSSampleGridSSelectCBK (Widget widget,Widget text,XmAn
 	char *field;
 	int (*condFunc) (const DBObject *);
 
-	callData = callData;
 	if (select == NULL) select = UISelectionCreate ((char *) "Field Selection");
 	XtVaGetValues (widget,XmNuserData, &condFunc, NULL);
 	if ((field = UISelectObject (select,(DBObjectLIST<DBObject> *) (_RGISAnLineSampleGridFields),condFunc)) != NULL)
@@ -45,7 +44,6 @@ void RGISAnalyseLineSSampleGridCBK (Widget widget, RGISWorkspace *workspace,XmAn
 	static Widget fromNameTextF, toNameTextF;
 	XmString string;
 
-	widget = widget;	workspace = workspace; callData = callData;
 	_RGISAnLineSampleGridFields = itemTable->Fields ();
 	if (dShell == (Widget) NULL)
 		{
@@ -228,7 +226,7 @@ Stop:
 void RGISAnalyseLineMSampleGridCBK (Widget widget, RGISWorkspace *workspace,XmAnyCallbackStruct *callData)
 
 	{
-	DBInt layerID, layerNum;
+	DBInt layerID, layerNum = 0;
 	DBCoordinate coord;
 	DBFloat realValue;
 	DBDataset *dataset  = UIDataset ();
@@ -245,8 +243,6 @@ void RGISAnalyseLineMSampleGridCBK (Widget widget, RGISWorkspace *workspace,XmAn
 	DBGridIF *gridIF;
 	DBObjRecord *record, *layerRec, *tblRec;
 	DBObjectLIST<DBObjTableField> *fields;
-
-	widget = widget; callData = callData;
 
 	gridIF = new DBGridIF (grdData);
 	for (layerID = 0;layerID < gridIF->LayerNum ();++layerID)

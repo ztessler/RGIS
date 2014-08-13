@@ -35,11 +35,11 @@ class FieldOptions
 	public:
 		FieldOptions()
 			{
-			Name = new char[1];
-			Name = '\0';
-			reName = new char[1];
-			reName = '\0';
-			isInteger = false;
+			Name       = new char[1];
+			Name [0]   = '\0';
+			reName     = new char[1];
+			reName [0] = '\0';
+			isInteger  = false;
 			print = false;
 			func = BAD;
 			headval = tailVal = new Values;
@@ -50,9 +50,9 @@ class FieldOptions
 			{
 			Name = new char[strlen(oldName)+1];
 			strcpy(Name,oldName);
-			reName = new char[1];
-			reName = '\0';
-			isInteger = false;
+			reName     = new char[1];
+			reName [0] = '\0';
+			isInteger  = false;
 			print = false;
 			func = funcname;
 			headval = tailVal = new Values;

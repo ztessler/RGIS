@@ -89,7 +89,7 @@ int main (int argc,char *argv [])
 			else
 				record->Flags (DBObjectFlagIdle,DBClear);
 			}
-	else for (recID = 0;recID < table->ItemNum ();++recID) record->Flags (DBObjectFlagIdle,DBClear);
+	else for (recID = 0;recID < table->ItemNum ();++recID) { record = table->Item (recID); record->Flags (DBObjectFlagIdle,DBClear); }
 
 	ret = (argNum > 2) && (strcmp (argv [2],"-") != 0) ? data->Write (argv [2]) : data->Write (stdout);
 

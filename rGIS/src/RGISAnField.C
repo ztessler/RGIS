@@ -201,7 +201,6 @@ void RGISAnalyseFieldCalcAddCBK (Widget widget,void *data,XmAnyCallbackStruct *c
 	DBDataset *dataset = UIDataset ();
 	DBObjData *dbData = dataset->Data ();
 	DBObjTable *table;
-	widget = widget; data = data; callData = callData;
 
 	if (_RGISAnalyseFieldTableSelect == (Widget) NULL) _RGISAnalyseFieldTableSelect = UISelectionCreate ((char *) "Table Selection");
 	table = dbData->Table (UISelectObject (_RGISAnalyseFieldTableSelect,(DBObjectLIST<DBObject> *) dbData->Tables ()));
@@ -216,7 +215,6 @@ void RGISAnalyseFieldCalcSubtractCBK (Widget widget,void *data,XmAnyCallbackStru
 	DBObjData *dbData = dataset->Data ();
 	DBObjTable *table;
 
-	widget = widget; data = data; callData = callData;
 	if (_RGISAnalyseFieldTableSelect == (Widget) NULL) _RGISAnalyseFieldTableSelect = UISelectionCreate ((char *) "Table Selection");
 	table = dbData->Table (UISelectObject (_RGISAnalyseFieldTableSelect,(DBObjectLIST<DBObject> *) dbData->Tables ()));
 	if (table == (DBObjTable *) NULL) return;
@@ -230,7 +228,6 @@ void RGISAnalyseFieldCalcMultiplyCBK (Widget widget,void *data,XmAnyCallbackStru
 	DBObjData *dbData = dataset->Data ();
 	DBObjTable *table;
 
-	widget = widget; data = data; callData = callData;
 	if (_RGISAnalyseFieldTableSelect == (Widget) NULL) _RGISAnalyseFieldTableSelect = UISelectionCreate ((char *) "Table Selection");
 	table = dbData->Table (UISelectObject (_RGISAnalyseFieldTableSelect,(DBObjectLIST<DBObject> *) dbData->Tables ()));
 	if (table == (DBObjTable *) NULL) return;
@@ -244,7 +241,6 @@ void RGISAnalyseFieldCalcDivideCBK (Widget widget,void *data,XmAnyCallbackStruct
 	DBObjData *dbData = dataset->Data ();
 	DBObjTable *table;
 
-	widget = widget; data = data; callData = callData;
 	if (_RGISAnalyseFieldTableSelect == (Widget) NULL) _RGISAnalyseFieldTableSelect = UISelectionCreate ((char *) "Table Selection");
 	table = dbData->Table (UISelectObject (_RGISAnalyseFieldTableSelect,(DBObjectLIST<DBObject> *) dbData->Tables ()));
 	if (table == (DBObjTable *) NULL) return;
@@ -263,7 +259,6 @@ void RGISAnalyseFieldSetValueCBK (Widget widget,void *data,XmAnyCallbackStruct *
 	static Widget selectWidget = (Widget) NULL;
 	static Widget dShell = NULL, mainForm, button, srcTextF;
 
-	widget = widget; data = data; callData = callData;
 	if (selectWidget == (Widget) NULL) selectWidget = UISelectionCreate ((char *) "Select Field");
 	if (dShell == (Widget) NULL)
 		{
@@ -382,7 +377,6 @@ void RGISAnalyseFieldsCompareCBK (Widget widget,void *data,XmAnyCallbackStruct *
 	static Widget field0TextF, field1TextF, resultTextF, menu, mButton;
 	XmString string;
 
-	widget = widget;	data = data; callData = callData;
 	if (dShell == (Widget) NULL)
 		{
 		Widget button;
@@ -769,14 +763,8 @@ static void _RGISAnFieldTopoDialog (DBInt (*function) (DBObjTable *,char *,char 
 
 void RGISAnalyseFieldTopoAccumCBK (Widget widget, void *userData,XmAnyCallbackStruct *callData)
 
-	{
-	widget = widget; userData = userData; callData = callData;
-	_RGISAnFieldTopoDialog (RGlibGenFuncTopoAccum);
-	}
+	{ _RGISAnFieldTopoDialog (RGlibGenFuncTopoAccum); }
 
 void RGISAnalyseFieldTopoSubtractCBK (Widget widget, void *userData,XmAnyCallbackStruct *callData)
 
-	{
-	widget = widget; userData = userData; callData = callData;
-	_RGISAnFieldTopoDialog (RGlibGenFuncTopoSubtract);
-	}
+	{ _RGISAnFieldTopoDialog (RGlibGenFuncTopoSubtract); }

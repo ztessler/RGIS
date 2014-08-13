@@ -1,5 +1,5 @@
 include ./common.mk
-all: rgis_target rcommands_target rserver_target nccommands_target rgisPlot_target tfcommands_target
+all: rgis_target rcommands_target rserver_target nccommands_target tfcommands_target
 
 install: reinstall
 	ln -s $(INSTALLDIR)/Scripts/rgis.sh $(INSTALLDIR)/bin/rgis
@@ -8,7 +8,6 @@ reinstall: $(INSTALLDIR)/bin $(INSTALLDIR)/XResources/bitmaps $(INSTALLDIR)/Mess
 	$(UNIXMAKE) -i -C rGIS       install
 	$(UNIXMAKE) -i -C rCommands  install
 	$(UNIXMAKE) -i -C rServer    install
-	$(UNIXMAKE) -i -C rgisPlot   install
 	$(UNIXMAKE) -i -C tfCommands install
 	$(UNIXMAKE) -i -C CMlib      install
 	$(UNIXMAKE) -i -C DBlib      install
@@ -47,7 +46,6 @@ uninstall:
 
 clean:
 	$(UNIXMAKE) -i -C rGIS       clean
-	$(UNIXMAKE) -i -C rgisPlot   clean
 	$(UNIXMAKE) -i -C ncCommands clean
 	$(UNIXMAKE) -i -C rCommands  clean
 	$(UNIXMAKE) -i -C rServer    clean
@@ -87,8 +85,6 @@ nccommands_target: cmlib_target nclib_target
 	$(UNIXMAKE) -i -C ncCommands all
 tfcommands_target: cmlib_target dblib_target flib_target
 	$(UNIXMAKE) -i -C tfCommands all
-rgisPlot_target: cmlib_target dblib_target
-	$(UNIXMAKE) -i -C rgisPlot all
 
 cmlib_target:
 	$(UNIXMAKE) -C CMlib all

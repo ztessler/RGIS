@@ -26,7 +26,7 @@ int main (int argc,char *argv [])
 	char *tsName     = (char *) NULL;
 	char *fields [5] = { (char *) NULL, (char *) NULL, (char *) NULL, (char *) NULL, (char *) NULL };
 	DBInt shadeSet   = DBFault;
-	bool areaMult    = true, correction = false, allowNegative = true;
+	int areaMult    = true, correction = false, allowNegative = true;
 	DBObjData *data, *netData, *grdData, *stnData = (DBObjData *) NULL, *tsData = (DBObjData *) NULL;
 
 	for (argPos = 1;argPos < argNum; )

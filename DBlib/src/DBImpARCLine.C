@@ -46,8 +46,8 @@ class DBARCRecord
 		DBInt NumOfPnts () const 	 { return (NumOfPntsVAR); }
 		DBInt FromNode () const 	 { return (FromNodeVAR); }
 		DBInt ToNode () const 		 { return (ToNodeVAR); }
-		DBObjRecord *LeftPoly  () const { return ((DBObjRecord *) (LeftPolyVAR  > 1 ? LeftPolyVAR  - 2 : DBFault)); }
-		DBObjRecord *RightPoly () const { return ((DBObjRecord *) (RightPolyVAR > 1 ? RightPolyVAR - 2 : DBFault)); }
+		DBObjRecord *LeftPoly  () const { return ((DBObjRecord *) ((char *) NULL + (LeftPolyVAR  > 1 ? LeftPolyVAR  - 2 : DBFault))); }
+		DBObjRecord *RightPoly () const { return ((DBObjRecord *) ((char *) NULL + (RightPolyVAR > 1 ? RightPolyVAR - 2 : DBFault))); }
 	};
 
 int DBImportARCLine (DBObjData *vecData,const char *arcCov)

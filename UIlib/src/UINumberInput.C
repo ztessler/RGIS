@@ -66,8 +66,6 @@ static void _UINumberInputScaleCBK (Widget widget,Widget form,XmScaleCallbackStr
 	{
 	UINumberProp *numberProp;
 
-	widget = widget;
-
 	XtVaGetValues (form,XmNuserData, &numberProp, NULL);
 	UIAuxSetLabelString (XtNameToWidget (form,UINumberInputField),numberProp->ValueString (callData->value));
 	}

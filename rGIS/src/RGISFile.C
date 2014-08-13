@@ -25,8 +25,6 @@ static void _RGISFileProjectLoadCBK (Widget widget,RGISWorkspace *workspace,XmAn
 	DBDataset *dataset = UIDataset ();
 	DBObjData *data;
 
-	widget = widget; callData = callData;
-
 	if (_RGISProjectSelect == (Widget) NULL) _RGISProjectSelect = UIFileSelectionCreate ((char *) "Project file",NULL,(char *) "*.gprj",XmFILE_REGULAR);
 
 	if ((fileName = UIFileSelection (_RGISProjectSelect,true)) == NULL) return;
@@ -55,7 +53,6 @@ static void _RGISFileProjectSaveCBK (Widget widget,RGISWorkspace *workspace,XmAn
 	FILE *listFile;
 	DBDataset *dataset = UIDataset ();
 	DBObjData *data;
-	widget = widget; callData = callData;
 
 	if (_RGISProjectSelect == (Widget) NULL) _RGISProjectSelect = UIFileSelectionCreate ((char *) "Project file",NULL,(char *) "*.gprj",XmFILE_REGULAR);
 
@@ -80,7 +77,6 @@ static void _RGISFileProjectSaveAsCBK (Widget widget,RGISWorkspace *workspace,Xm
 	FILE *listFile;
 	DBDataset *dataset = UIDataset ();
 	DBObjData *data;
-	widget = widget; callData = callData;
 
 	if (_RGISProjectSelect == (Widget) NULL) _RGISProjectSelect = UIFileSelectionCreate ((char *) "Project file",NULL,(char *) "*.gprj",XmFILE_REGULAR);
 
@@ -101,7 +97,6 @@ static void _RGISFileOpenCBK (Widget widget,RGISWorkspace *workspace,XmAnyCallba
 	char *subjectSTR = strlen (workspace->Subject ()) > 0 ? workspace->Subject () : (char *) NULL;
 	char *domainSTR  = strlen (workspace->Domain ())  > 0 ? workspace->Domain ()  : (char *) NULL;
 	DBObjData *data;
-	widget = widget; callData = callData;
 
 	if ((data = UIDatasetOpenData (subjectSTR,domainSTR,DBFault)) != (DBObjData *) NULL)
 		workspace->CurrentData (data);
@@ -113,7 +108,6 @@ static void _RGISFileOpenFileCBK (Widget widget,RGISWorkspace *workspace,XmAnyCa
 	char *fileName;
 	DBDataset *dataset = UIDataset ();
 	DBObjData *data;
-	widget = widget; callData = callData;
 
 	if (_RGISFileSelect == NULL) _RGISFileSelect = UIFileSelectionCreate ((char *) "GHAAS Data",NULL,(char *) "*.gdb?",XmFILE_REGULAR);
 
@@ -141,7 +135,6 @@ static void _RGISFileReloadCBK (Widget widget,RGISWorkspace *workspace,XmAnyCall
 	DBDataset *dataset = UIDataset ();
 	DBObjData *data = dataset->Data ();
  	DBUnsigned dataFlags = data->Flags ();
-	widget = widget; callData = callData;
 
 	if (data->Read (data->FileName ()) != DBSuccess)
 		{
@@ -163,7 +156,6 @@ static void _RGISFileCloseCBK (Widget widget,RGISWorkspace *workspace,XmAnyCallb
 	DBObject *dispObj;
 	DBObjectLIST<DBObjTable>	*tableList = data->Tables ();
 
-	widget = widget; workspace = workspace; callData = callData;
 	dataset->RemoveData (data);
 	for (table = tableList->First ();table != (DBObjTable *) NULL;table = tableList->Next ())
 		if ((dispObj = data->Display (UITableName (data,table))) != (DBObject *) NULL)
@@ -187,7 +179,6 @@ static void _RGISFileSaveCBK (Widget widget,RGISWorkspace *workspace,XmAnyCallba
 	DBObjectLIST<DBObjMetaEntry>	*metaList = dataset->MetaList ();
 	DBObjMetaEntry *metaEntry;
 
-	widget = widget; workspace = workspace; callData = callData;
 	if (_RGISFileSelect == NULL) _RGISFileSelect = UIFileSelectionCreate ((char *) "GHAAS Data",NULL,(char *) "*.gdb?",XmFILE_REGULAR);
 
 	fileName = data->FileName ();
@@ -213,7 +204,6 @@ static void _RGISFileSaveAsCBK (Widget widget,RGISWorkspace *workspace,XmAnyCall
 	DBObjectLIST<DBObjMetaEntry>	*metaList = dataset->MetaList ();
 	DBObjMetaEntry *metaEntry;
 
-	widget = widget; workspace = workspace; callData = callData;
 	if (_RGISFileSelect == NULL) _RGISFileSelect = UIFileSelectionCreate ((char *) "GHAAS Data",NULL,(char *) "*.gdb?",XmFILE_REGULAR);
 
 	if ((fileName = UIFileSelection (_RGISFileSelect,false)) == NULL) return;
@@ -232,7 +222,6 @@ static void _RGISFileSaveAllCBK (Widget widget,RGISWorkspace *workspace,XmAnyCal
 	DBObjectLIST<DBObjMetaEntry>	*metaList = dataset->MetaList ();
 	DBObjMetaEntry *metaEntry;
 
-	widget = widget; workspace = workspace; callData = callData;
 	if (_RGISFileSelect == NULL) _RGISFileSelect = UIFileSelectionCreate ((char *) "GHAAS Data",NULL,(char *) "*.gdb?",XmFILE_REGULAR);
 
 	for (data = dataset->FirstData ();data != (DBObjData *) NULL;data = dataset->NextData ())
@@ -262,7 +251,6 @@ static void _RGISFileHeaderInfoCBK (Widget widget,RGISWorkspace *workspace,XmAny
 	DBObjectLIST<DBObjMetaEntry>	*metaList = dataset->MetaList ();
 	DBObjMetaEntry *metaEntry;
 
-	widget = widget; workspace = workspace; callData = callData;
 	metaEntry = metaList->Item (data->Name ());
 	UIDataHeaderForm (data);
 	workspace->CurrentDataName ();
@@ -279,7 +267,6 @@ static void _RGISFilePropertiesCBK (Widget widget,RGISWorkspace *workspace,XmAny
 	DBDataset *dataset = UIDataset ();
 	DBObjData *data = dataset->Data ();
 
-	widget = widget; workspace = workspace; callData = callData;
 	UIDataPropertiesForm (data);
 	}
 
@@ -290,21 +277,16 @@ static void _RGISFileRelateNewCBK (Widget widget,RGISWorkspace *workspace,XmAnyC
 	DBDataset *dataset = UIDataset ();
 	DBObjData *data = dataset->Data ();
 
-	widget = widget; workspace = workspace; callData = callData;
 	UIRelateData (data,(DBObjRecord *) NULL);
 	}
 
 static void _RGISFileRelateEditCBK (Widget widget,RGISWorkspace *workspace,XmAnyCallbackStruct *callData)
 
-	{
-	widget = widget; workspace = workspace; callData = callData;
-	}
+	{ }
 
 static void _RGISFileRelateDeleteCBK (Widget widget,RGISWorkspace *workspace,XmAnyCallbackStruct *callData)
 
-	{
-	widget = widget; workspace = workspace; callData = callData;
-	}
+	{	}
 
 
 static void _RGISFileLinkDataCBK (Widget widget,RGISWorkspace *workspace,XmAnyCallbackStruct *callData)
@@ -313,7 +295,6 @@ static void _RGISFileLinkDataCBK (Widget widget,RGISWorkspace *workspace,XmAnyCa
 	DBDataset *dataset = UIDataset ();
 	DBObjData *data = dataset->Data (), *linkedData;
 
-	widget = widget; workspace = workspace; callData = callData;
 	if ((linkedData = UIDatasetSelectData ()) != (DBObjData *) NULL)
 		{ data->LinkedData (linkedData); workspace->CurrentData (data); return; }
 	}
@@ -324,7 +305,6 @@ static void _RGISFileLinkAllDataCBK (Widget widget,RGISWorkspace *workspace,XmAn
 	DBDataset *dataset = UIDataset ();
 	DBObjData *currentData = dataset->Data (), *data, *linkedData, *firstData;
 
-	widget = widget; workspace = workspace; callData = callData;
 	firstData = data = dataset->FirstData ();
 	while ((linkedData = dataset->NextData ()) != (DBObjData *) NULL) { data->LinkedData (linkedData); data = linkedData; }
 	if (data != firstData) data->LinkedData (firstData);
@@ -337,7 +317,6 @@ static void _RGISFileUnlinkAllDataCBK (Widget widget,RGISWorkspace *workspace,Xm
 	DBDataset *dataset = UIDataset ();
 	DBObjData *data, *currentData = dataset->Data ();
 
-	widget = widget; workspace = workspace; callData = callData;
 	for (data = dataset->FirstData (); data != (DBObjData *) NULL; data = dataset->NextData ())
 		data->LinkedData ((DBObjData *) NULL);
 	workspace->CurrentData (currentData);
@@ -349,7 +328,6 @@ static void _RGISFileUnlinkDataCBK (Widget widget,RGISWorkspace *workspace,XmAny
 	DBDataset *dataset = UIDataset ();
 	DBObjData *data = dataset->Data (), *linkedData = data->LinkedData ();
 
-	widget = widget; workspace = workspace; callData = callData;
 	if (linkedData == (DBObjData *) NULL) return;
 
 	data->LinkedData ((DBObjData *) NULL);

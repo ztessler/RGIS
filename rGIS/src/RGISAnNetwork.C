@@ -206,8 +206,6 @@ void RGISAnNetworkAccumulateCBK (Widget widget,RGISWorkspace *workspace,XmAnyCal
 	DBObjData *netData = dataset->Data ();
 	DBObjData *inGridData, *outGridData;
 
-	widget = widget; callData = callData;
-
 	if ((inGridData = netData->LinkedData ()) == (DBObjData *) NULL)
 		{ CMmsgPrint (CMmsgAppError,"Null Linked Data in: %s %d",__FILE__,__LINE__); return; }
 
@@ -230,8 +228,6 @@ void RGISAnNetworkUpStreamAvgCBK (Widget widget,RGISWorkspace *workspace,XmAnyCa
 	DBDataset *dataset = UIDataset ();
 	DBObjData *netData = dataset->Data ();
 	DBObjData *inGridData, *outGridData;
-
-	widget = widget; callData = callData;
 
 	if ((inGridData = netData->LinkedData ()) == (DBObjData *) NULL)
 		{ CMmsgPrint (CMmsgAppError,"Null Linked Data in: %s %d",__FILE__,__LINE__); return; }
@@ -256,8 +252,6 @@ void RGISAnNetworkCellSlopesCBK (Widget widget,RGISWorkspace *workspace,XmAnyCal
 	DBObjData *netData = dataset->Data ();
 	DBObjData *inGridData, *outGridData;
 
-	widget = widget; callData = callData;
-
 	if ((inGridData = netData->LinkedData ()) == (DBObjData *) NULL)
 		{ CMmsgPrint (CMmsgAppError,"Null Linked Data in: %s %d",__FILE__,__LINE__); return; }
 
@@ -281,8 +275,6 @@ void RGISAnNetworkBasinProfCBK (Widget widget,RGISWorkspace *workspace,XmAnyCall
 	DBDataset *dataset = UIDataset ();
 	DBObjData *netData = dataset->Data ();
 	DBObjData *gridData, *tblData;
-
-	widget = widget; callData = callData;
 
 	if ((gridData = netData->LinkedData ()) == (DBObjData *) NULL)
 		{ CMmsgPrint (CMmsgAppError, "Null Linked Data in: %s %d",__FILE__,__LINE__); return; }
@@ -310,8 +302,6 @@ void RGISAnNetworkBasinStatsCBK (Widget widget,RGISWorkspace *workspace,XmAnyCal
 	DBObjData *grdData = netData->LinkedData ();
 	DBObjData *tblData;
 
-	widget = widget; callData = callData;
-
 	tblData  = new DBObjData ("",DBTypeTable);
 	tblData->Document (DBDocGeoDomain,netData->Document (DBDocGeoDomain));
 	tblData->Document (DBDocSubject,"Basin Statistics");
@@ -335,8 +325,6 @@ void RGISAnNetworkHeadStatsCBK (Widget widget,RGISWorkspace *workspace,XmAnyCall
 	DBObjData *grdData = netData->LinkedData ();
 	DBObjData *tblData;
 
-	widget = widget; callData = callData;
-
 	tblData  = new DBObjData ("",DBTypeTable);
 	tblData->Document (DBDocGeoDomain,netData->Document (DBDocGeoDomain));
 	tblData->Document (DBDocSubject,"Head Statistics");
@@ -359,8 +347,6 @@ void RGISAnNetworkDivideStatsCBK (Widget widget,RGISWorkspace *workspace,XmAnyCa
 	DBObjData *netData = dataset->Data ();
 	DBObjData *grdData = netData->LinkedData ();
 	DBObjData *tblData;
-
-	widget = widget; callData = callData;
 
 	tblData  = new DBObjData ("",DBTypeTable);
 	tblData->Document (DBDocGeoDomain,netData->Document (DBDocGeoDomain));
@@ -406,8 +392,6 @@ void RGISAnNetworkBasinDistribCBK (Widget widget,RGISWorkspace *workspace,XmAnyC
 	DBObjData *grdData = netData->LinkedData ();
 	DBObjData *tblData;
 
-	widget = widget; callData = callData;
-
 	tblData  = new DBObjData ("",DBTypeTable);
 	tblData->Document (DBDocGeoDomain,netData->Document (DBDocGeoDomain));
 	tblData->Document (DBDocSubject,"Category Distribution");
@@ -429,7 +413,6 @@ void RGISAnNetworkCellSampleGridCBK (Widget widget, RGISWorkspace *workspace,XmA
 	DBDataset *dataset = UIDataset ();
 	DBObjData *netData  = dataset->Data (), *grdData = netData->LinkedData ();
 
-	widget = widget;	workspace = workspace; callData = callData;
 	UIPauseDialogOpen ((char *) "Cell Sampling");
 	RGlibGridSampling (netData,grdData,true);
 	UIPauseDialogClose ();

@@ -128,6 +128,7 @@ DBInt RGlibNetworkToGrid (DBObjData *netData,DBObjTableField *field, DBObjData *
 			} break;
 		default:
 			CMmsgPrint (CMmsgSysError, "Invalid data type in: %s %d",__FILE__,__LINE__);
+			cellID = 0;
 			break;
 		}
 Stop:

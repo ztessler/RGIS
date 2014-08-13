@@ -62,7 +62,6 @@ static RGISControlMode _RGISSelectModes [] = {
 static void _RGISUserModeCBK (Widget widget,void *mode,XmAnyCallbackStruct *callData)
 
 	{
-	callData = callData;
 	DBObjData *data;
 
 	XtVaGetValues (widget,XmNuserData, &data, NULL);
@@ -73,7 +72,6 @@ static void _RGISUserModeCBK (Widget widget,void *mode,XmAnyCallbackStruct *call
 static void _RGISSelectModeCBK (Widget widget,void *mode,XmAnyCallbackStruct *callData)
 
 	{
-	callData = callData;
 	DBObjData *data;
 
 	XtVaGetValues (widget,XmNuserData, &data, NULL);
@@ -85,7 +83,6 @@ static void _RGISDisplayModeCBK (Widget widget,void *dummy,XmToggleButtonCallbac
 	{
 	DBObjData *data;
 
-	dummy = dummy;
 	XtVaGetValues (widget,XmNuserData, &data, NULL);
 	data->Flags (DBDataFlagDisplay,callData->set);
 	}
@@ -93,7 +90,6 @@ static void _RGISDisplayModeCBK (Widget widget,void *dummy,XmToggleButtonCallbac
 static void _RGISSmartSortCBK (Widget widget,DBObjectLIST<DBObjData> *dataList,XmToggleButtonCallbackStruct *callData)
 
 	{
-	widget = widget;
 	dataList->Flags (DBDataLISTFlagSmartSort,callData->set);
 	}
 
@@ -104,7 +100,7 @@ int RGISControlMode::CreateButton (Widget menu,XtCallbackProc controlModeCBK)
 	XmString string = XmStringCreate (NameSTR,(EditFLAG ? (char *) UICharSetItalic : (char *) UICharSetNormal));
 	ButtonWDT = XtVaCreateManagedWidget ("RGISControlModesButton",xmPushButtonGadgetClass,menu,
 								XmNlabelString,	string, NULL);
-	XtAddCallback (ButtonWDT,XmNactivateCallback,controlModeCBK,(void *) ModeVAL);
+	XtAddCallback (ButtonWDT,XmNactivateCallback,controlModeCBK,(void *) ((char *) NULL + ModeVAL));
 	XmStringFree (string);
 	XtVaGetValues (ButtonWDT,XmNwidth, &width, NULL);
 	return ((int) width);
@@ -152,8 +148,6 @@ static void _RGISTextFieldValueChangedCBK (Widget widget,char *nameSTR,XmAnyCall
 	{
 	char *text = XmTextFieldGetString (widget);
 
-	callData = callData;
-
 	strcpy (nameSTR,text);
 	XtFree (text);
 	}
@@ -163,7 +157,6 @@ static void _RGISSelectButtonCBK (Widget widget,Widget textF,XmAnyCallbackStruct
 	{
 	char *(*function) (void), *string, *nameSTR;
 
-	callData = callData;
 	XtVaGetValues (widget,XmNuserData, (int *) (&function), NULL);
 	XtVaGetValues (textF,XmNuserData, 	&nameSTR, NULL);
 	if ((string = (*function) ()) != NULL)
@@ -179,7 +172,6 @@ static void _RGISWorkspaceSetCurrentDataCBK (Widget widget, RGISWorkspace *workS
 	DBDataset *dataset = UIDataset ();
 	DBObjData *data;
 
-	widget = widget;
 	XmStringGetLtoR (callData->item,UICharSetNormal,&dataName);
 	if ((data = dataset->Data (dataName)) == (DBObjData *) NULL)
 		{ CMmsgPrint (CMmsgAppError, "Data not found in: %s %d",__FILE__,__LINE__); return; }

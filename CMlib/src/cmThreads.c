@@ -15,6 +15,15 @@ bfekete@ccny.cuny.edu
 #include <math.h>
 #include <cm.h>
 
+size_t CMthreadProcessorNum () {
+	char *procEnv;
+	int procNum;
+
+	if (((procEnv = getenv ("GHAASprocessorNum")) != (char *) NULL) && (sscanf (procEnv,"%d",&procNum)))
+		return (procNum);
+	return (0);
+}
+
 static CMreturn _CMthreadTaskGroupInitialize (CMthreadTaskGroup_p group, size_t id, size_t threadNum, size_t taskNum, size_t minTasks, size_t start) {
 	size_t threadId, res, num;
 
@@ -52,10 +61,8 @@ static CMreturn _CMthreadTaskGroupInitialize (CMthreadTaskGroup_p group, size_t 
 CMthreadJob_p CMthreadJobCreate (CMthreadTeam_p team,
 		                         void *commonData,
 		                         size_t taskNum,
-		                         CMthreadUserAllocFunc allocFunc,
 		                         CMthreadUserExecFunc  execFunc) {
-	size_t taskId;
-	int    threadId;
+	size_t taskId, threadId;
 	CMthreadJob_p job;
 
 	if ((job = (CMthreadJob_p) malloc (sizeof (CMthreadJob_t))) == (CMthreadJob_p) NULL) {
@@ -103,23 +110,13 @@ CMthreadJob_p CMthreadJobCreate (CMthreadTeam_p team,
 	}
 	job->UserFunc = execFunc;
 	job->CommonData = (void *) commonData;
-	if (allocFunc != (CMthreadUserAllocFunc) NULL) {
-		if ((job->ThreadData = (void **) calloc (job->ThreadNum, sizeof (void *))) == (void **) NULL) {
-			CMmsgPrint (CMmsgSysError, "Memory allocation error in %s:%d\n",__FILE__,__LINE__);
-			free (job);
-			return ((CMthreadJob_p) NULL);
+	
+	if ((job->Data = (void **) calloc (job->ThreadNum, sizeof (void *))) == (void **) NULL) {
+		CMmsgPrint (CMmsgSysError, "Memory allocation error in %s:%d\n",__FILE__,__LINE__);
+		free (job);
+		return ((CMthreadJob_p) NULL);
 		}
-		for (threadId = 0;threadId < job->ThreadNum;++threadId) {
-			if ((job->ThreadData [threadId] = allocFunc (commonData)) == (void *) NULL) {
-				CMmsgPrint (CMmsgSysError, "Memory allocation error in %s:%d\n",__FILE__,__LINE__);
-				for (--threadId;threadId >= 0; --threadId) free (job->ThreadData [threadId]);
-				free (job->ThreadData);
-				free (job);
-				return ((CMthreadJob_p) NULL);
-			}
-		}
-	}
-	else job->ThreadData = (void **) NULL;
+	for (threadId = 0;threadId < job->ThreadNum;++threadId) job->Data [threadId] = (void *) NULL;
 	return (job);
 }
 
@@ -207,19 +204,16 @@ CMreturn _CMthreadJobTaskSort (CMthreadJob_p job) {
 	return (CMsucceeded);
 }
 
-void CMthreadJobDestroy (CMthreadJob_p job, CMthreadUserFreeFunc freeFunc) {
-	size_t threadId, group;
+void CMthreadJobDestroy (CMthreadJob_p job) {
+	size_t group;
 
-	if (freeFunc != (CMthreadUserFreeFunc) NULL) {
-		for (threadId = 0;threadId < job->ThreadNum; ++threadId)
-			freeFunc (job->ThreadData [threadId]);
-	}
 	for (group = 0; group < job->GroupNum; group++) {
 		if (job->Groups [group].Start != (size_t *) NULL) free (job->Groups [group].Start);
 		if (job->Groups [group].End   != (size_t *) NULL) free (job->Groups [group].End);
 	}
 	if (job->Groups != (CMthreadTaskGroup_p) NULL) free (job->Groups);
 	free (job->Tasks);
+	free (job->Data);
 	free (job);
 }
 
@@ -228,14 +222,13 @@ static void *_CMthreadWork (void *dataPtr) {
 	size_t taskId, start, end;
 	CMthreadTeam_p team = (CMthreadTeam_p) data->TeamPtr;
 	CMthreadJob_p  job  = team->JobPtr;
-	void *commonPtr = job->CommonData, *threadData = job->ThreadData == (void **) NULL ? (void *) NULL : job->ThreadData [data->Id];
 
 	pthread_mutex_lock   (&(team->Mutex));
 	while (job->Group < job->GroupNum) {
 		pthread_mutex_unlock (&(team->Mutex));
 		start = job->Groups [job->Group].Start [data->Id];
 		end   = job->Groups [job->Group].End   [data->Id];
-		for (taskId = start; taskId < end; taskId++) job->UserFunc (commonPtr, threadData, job->SortedTasks [taskId]->Id);
+		for (taskId = start; taskId < end; taskId++) job->UserFunc (job->CommonData, job->Data [data->Id], job->SortedTasks [taskId]->Id);
 		pthread_mutex_lock (&(team->Mutex));
 		job->Completed++;
 		if (job->Completed == team->ThreadNum) {
@@ -275,9 +268,7 @@ CMreturn CMthreadJobExecute (CMthreadTeam_p team, CMthreadJob_p job) {
 	}
 	else
 		for (taskId = 0;taskId < job->TaskNum; ++taskId)
-			job->UserFunc (job->CommonData,
-			               job->ThreadData != (void **) NULL ? job->ThreadData [0] : (void *) NULL,
-			               taskId);
+			job->UserFunc (job->CommonData, job->Data, taskId);
 	return (CMsucceeded);
 }
 

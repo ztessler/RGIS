@@ -20,7 +20,6 @@ bfekete@ccny.cuny.edu
 static MFDomain_t *_MFDomain    = (MFDomain_t *) NULL;
 static MFFunction *_MFFunctions = (MFFunction *) NULL;
 static int _MFFunctionNum = 0;
-static int _MFThreadsNum  = 0;
 
 int MFModelAddFunction (MFFunction func) {
 
@@ -185,18 +184,6 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*conf) ()) {
 			if ((argNum = CMargShiftLeft(argPos,argv,argNum)) <= argPos) break;
 			continue;
 		}
-		if (CMargTest (argv [argPos],"-P","--processors")) {
-			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) < 1) {
-				CMmsgPrint (CMmsgUsrError,"Missing thread number!\n");
-				return (CMfailed);
-			}
-			if (sscanf (argv [argPos],"%d", &_MFThreadsNum) != 1) {
-				CMmsgPrint (CMmsgUsrError,"Invalid thread number!\n");
-				return (CMfailed);
-			}
-			if ((argNum = CMargShiftLeft(argPos,argv,argNum)) <= argPos) break;
-			continue;
-		}
 		if (CMargTest (argv [argPos],"-T","--testonly")) {
 			testOnly = true;
 			if ((argNum = CMargShiftLeft(argPos,argv,argNum)) <= argPos) break;
@@ -238,7 +225,6 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*conf) ()) {
 			CMmsgPrint (CMmsgInfo,"     -ol, --output-listfile [output listfile]\n");
 			CMmsgPrint (CMmsgInfo,"     -p,  --option     [option=content]\n");
 			CMmsgPrint (CMmsgInfo,"     -r,  --route      [variable]\n");
-			CMmsgPrint (CMmsgInfo,"     -P,  --processors [number of processor threads]\n");
 			CMmsgPrint (CMmsgInfo,"     -T,  --testonly\n");
 			CMmsgPrint (CMmsgInfo,"     -m,  --message    [sys_error|app_error|usr_error|debug|warning|info]=[on|off|file=<filename>]\n");
 			CMmsgPrint (CMmsgInfo,"     -h,  --help\n");
@@ -432,6 +418,9 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*conf) ()) {
 	char *timeCur;
 	MFVariable_t *var;
 	time_t sec;
+	size_t threadsNum = CMthreadProcessorNum ();
+	CMthreadTeam_p team = threadsNum > 0 ? CMthreadTeamCreate (threadsNum) : (CMthreadTeam_p) NULL;
+	CMthreadJob_p  job  = (CMthreadJob_p) NULL;
 
 	if (_MFModelParse (argc,argv,argNum,conf) == CMfailed) return (CMfailed);
 
@@ -443,16 +432,12 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*conf) ()) {
 		CMmsgPrint (CMmsgInfo, "MFModelReadInput(%s) returned MFStop in: %s:%d",timeCur,__FILE__,__LINE__);
 		return (CMfailed);
 	}
-	if (_MFThreadsNum > 0) {
-		CMthreadTeam_p team = (CMthreadTeam_p) NULL;
-		CMthreadJob_p  job;
-
-		team = CMthreadTeamCreate (_MFThreadsNum);
-		if ((job  = CMthreadJobCreate (team, (void *) NULL, _MFDomain->ObjNum, (CMthreadUserAllocFunc) NULL,_MFUserFunc)) == (CMthreadJob_p) NULL) {
+	if (team != (CMthreadTeam_p) NULL) {
+		if ((job  = CMthreadJobCreate (team, (void *) NULL, _MFDomain->ObjNum, _MFUserFunc)) == (CMthreadJob_p) NULL) {
 			CMmsgPrint (CMmsgAppError, "Job creation error in %s:%d",__FILE__,__LINE__);
 			CMthreadTeamDestroy (team);
 			return (CMfailed);
-		}
+			}
 		for (i = 0;i < _MFDomain->ObjNum; ++i) {
 			dlink  = _MFDomain->Objects [i].DLinkNum == 1 ? _MFDomain->Objects [i].DLinks [0] : i;
 			dlink  = _MFDomain->ObjNum - dlink - 1;
@@ -468,7 +453,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*conf) ()) {
 				if (var->OutStream != (MFDataStream_t *) NULL) MFDataStreamWrite (var, timeCur);
 			}
 		} while ((timeCur = MFDateAdvance ()) != (char *) NULL ? _MFModelReadInput (timeCur) : MFStop);
-		CMthreadJobDestroy  (job,(CMthreadUserFreeFunc) NULL);
+		CMthreadJobDestroy  (job);
 		CMthreadTeamDestroy (team);
 	}
 	else // TODO Single CPU

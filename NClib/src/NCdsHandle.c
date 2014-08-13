@@ -40,8 +40,8 @@ NCdsHandle_t *NCdsHandleOpenByIds (int *ncids, size_t n)
 
 NCdsHandle_t *NCdsHandleOpen (const char *pattern)
 {
-	int status, *ncids = (int *) NULL;
-	size_t i = 0, ncNum = 0;
+	int status, *ncids = (int *) NULL, i;
+	size_t ncNum = 0;
 	char **fileList = (char **) NULL;
 	NCdsHandle_t *dsHandle = (NCdsHandle_t *) NULL;
 
@@ -215,7 +215,7 @@ NCstate NCdsHandleDefine (NCdsHandle_t *dsh, int *ncids, size_t n)
 void NCdsHandleClear (NCdsHandle_t *dsh)
 {
 	if (dsh->NCIds   != (int *)  NULL) free (dsh->NCIds);
-	dsh->DataType = NCundefined;
+	dsh->DataType = NCtypeUndefined;
 	dsh->NCIds    = (int *) NULL;
 	dsh->NCnum    = 0;
 }
@@ -307,7 +307,7 @@ NCstate NCdsHandleSetFloat (NCdsHandle_t *dsh, size_t *index, double val)
 //		case NCtypeGDisc:    return (NCdsHandleGDiscSetFloat  ((NCdsHandleGDisc_t *)  dsh, index [0], index [1], val));
 //		case NCtypePoint:    return (NCdsHandleVPoinSetFloat  ((NCdsHandleVPoint_t *) dsh, index [0], val));
 	}
-	return (CMfailed);
+	return (NCfailed);
 }
 
 NCstate NCdsHandleSetFill (NCdsHandle_t *dsh, size_t *index)
@@ -319,7 +319,7 @@ NCstate NCdsHandleSetFill (NCdsHandle_t *dsh, size_t *index)
 //		case NCtypeGDisc:    return (NCdsHandleGDiscSetFloat ((NCdsHandleGDisc_t *)  dsh, index [0], index [1], val));
 //		case NCtypePoint:    return (NCdsHandleVPoinSetFloat ((NCdsHandleVPoint_t *) dsh, index [0], val));
 	}
-	return (CMfailed);
+	return (NCfailed);
 }
 
 NCstate NCdsHandleGetTime (const NCdsHandle_t *dsh, size_t layerID, utUnit *tUnit, double *time)

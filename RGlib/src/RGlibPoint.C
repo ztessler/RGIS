@@ -54,7 +54,7 @@ static DBObjTableField *_RGlibTEMPPointIDFLD;
 
 static DBInt _RGlibSetPointID (DBNetworkIF *netIF,DBObjRecord *cellRec,DBInt pointID)
 
-	{ netIF = netIF; _RGlibTEMPPointIDFLD->Int (cellRec,pointID); return (true); }
+	{ _RGlibTEMPPointIDFLD->Int (cellRec,pointID); netIF = (DBNetworkIF *) NULL; return (true); }
 
 DBInt RGlibPointSTNCharacteristics (DBObjData *dbData)
 
@@ -200,7 +200,7 @@ DBInt RGlibPointSTNCharacteristics (DBObjData *dbData)
 		if ((pointRec->Flags () & DBObjectFlagIdle) == DBObjectFlagIdle) continue;
 		if (DBPause (40 + pointID * 20 / pointTable->ItemNum ())) goto Stop;
 		cellRec = netIF->Cell (pntIF->Coordinate  (pointRec));
-		netIF->UpStreamSearch (cellRec,(DBNetworkACTION) _RGlibSetPointID,(void *) pointRec->RowID ());
+		netIF->UpStreamSearch (cellRec,(DBNetworkACTION) _RGlibSetPointID,(void *) ((char *) NULL + pointRec->RowID ()));
 		}
 	for (pointID = 0; pointID < pointTable->ItemNum (); pointID++)
 		{

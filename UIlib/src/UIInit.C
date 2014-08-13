@@ -57,8 +57,9 @@ XmFontList UIFixedFontList ()		{ return (_UIResData.FixedFontList); }
 static void _UIMenuHelpButtonCBK (Widget widget,char *helpFile,XmAnyCallbackStruct *callData)
 
 	{
-	widget = widget; callData = callData;
 	void UIMenuDisplayHelp (char *); UIMenuDisplayHelp (helpFile);
+	widget   = (Widget) NULL;
+	callData = (XmAnyCallbackStruct *) NULL;
 	}
 
 void UIDataset (char *icon, char *ghaasMetaDB)
@@ -129,8 +130,8 @@ Widget UIInitialize (char *title,char *icon,char *helpFile, UIMenuItem mainMenu 
 											NULL);
 		XmStringFree (string);
 		XtAddCallback (helpButton,XmNactivateCallback, (XtCallbackProc) _UIMenuHelpButtonCBK,(XtPointer) helpFile);
+		XtVaSetValues (menuBar, XmNmenuHelpWidget, helpButton, NULL);
 		}
-	XtVaSetValues (menuBar, XmNmenuHelpWidget, helpButton, NULL);
 
 	for (i = 0;_UIMainMenu [i].Type != 0;++i)
 		_UIMainMenu [i].CreateButton (menuBar,_UIMainMenu + i,data);

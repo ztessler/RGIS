@@ -17,7 +17,7 @@ void RGISEditPolyFourColorCBK (Widget widget, RGISWorkspace *workspace,XmAnyCall
 	{
 	DBDataset *dataset = UIDataset ();
 	DBVPolyIF *polyIF = new DBVPolyIF (dataset->Data ());
-	widget = widget; workspace = workspace; callData = callData;
+
 	UIPauseDialogOpen ((char *) "Four Coloring Polygons");
 	polyIF->FourColoring ();
 	UIPauseDialogClose ();

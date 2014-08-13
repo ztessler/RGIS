@@ -26,31 +26,31 @@ bfekete@ccny.cuny.edu
 
 static void _UIXYGraphShellDeleteCBK (Widget widget,UIXYGraphShell *xyGraph, XmAnyCallbackStruct *callData)
 
-	{ widget = widget; callData = callData; delete xyGraph; }
+	{ delete xyGraph; }
 
 static void _UIXYGraphShellSetDataCBK (Widget widget, UIXYGraphShell *xyGraph, XmAnyCallbackStruct *callData)
 
-	{ widget = widget; callData = callData; xyGraph->SetData (); }
+	{ xyGraph->SetData (); }
 
 static void _UIXYGraphShellConfigureCBK (Widget widget, UIXYGraphShell *xyGraph, XmAnyCallbackStruct *callData)
 
-	{ widget = widget; callData = callData; xyGraph->Configure (); }
+	{ xyGraph->Configure (); }
 
 static void _UIXYGraphShellSetListCBK (Widget widget, UIXYGraphShell *xyGraph, XmListCallbackStruct *callData)
 
-	{ widget = widget; xyGraph->SetList (callData->item_position); }
+	{ xyGraph->SetList (callData->item_position); }
 
 static void _UIXYGraphShellSetSeriesCBK (Widget widget, UIXYGraphShell *xyGraph, XmAnyCallbackStruct *callData)
 
-	{ widget = widget; callData = callData; xyGraph->SetSeries (); }
+	{ xyGraph->SetSeries (); }
 
 static void _UIXYGraphShellAddSeriesCBK (Widget widget, UIXYGraphShell *xyGraph, XmAnyCallbackStruct *callData)
 
-	{ widget = widget; callData = callData; xyGraph->AddSeries (); }
+	{ xyGraph->AddSeries (); }
 
 static void _UIXYGraphShellRemoveSeriesCBK (Widget widget, UIXYGraphShell *xyGraph, XmAnyCallbackStruct *callData)
 
-	{ widget = widget; callData = callData; xyGraph->RemoveSeries (); }
+	{ xyGraph->RemoveSeries (); }
 
 UIXYGraphShell::UIXYGraphShell (DBObjData *dbData) : DBObject (UIXYGraphShellStr,sizeof (UIXYGraphShell))
 

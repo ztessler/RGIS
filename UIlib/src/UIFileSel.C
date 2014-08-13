@@ -18,18 +18,13 @@ static char *_UIFileName = NULL;
 
 static void _UIFileSelectionNoMatchCBK (Widget widget,void *dummy,XmFileSelectionBoxCallbackStruct *callData)
 
-	{
-	widget = widget; dummy = dummy; callData = callData;
-	UIMessage ((char *) "Must Select!");
-	}
+	{ UIMessage ((char *) "Must Select!"); }
 
 static void _UIFileSelectionOkCBK (Widget widget,char *fullPath,XmFileSelectionBoxCallbackStruct *callData)
 
 	{
 	char *mask, *dir;
 	int i;
-
-	widget = widget;
 
 	if (XmStringGetLtoR (callData->value,XmSTRING_DEFAULT_CHARSET,&_UIFileName));
 	else _UIFileName = NULL;

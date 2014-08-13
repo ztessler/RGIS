@@ -83,7 +83,6 @@ static void _UISymbolSetForegroundCBK (Widget widget,Widget text,XmAnyCallbackSt
 	UISymbol *editSymbol;
 	DBInt value;
 
-	callData = callData;
 	XtVaGetValues (widget,XmNuserData, &value, NULL);
 	XtVaGetValues (text,XmNuserData, &editSymbol, NULL);
 	editSymbol->Foreground (value);
@@ -95,7 +94,6 @@ static void _UISymbolSetBackgroundCBK (Widget widget,Widget text,XmAnyCallbackSt
 	UISymbol *editSymbol;
 	DBInt value;
 
-	callData = callData;
 	XtVaGetValues (widget,XmNuserData, &value, NULL);
 	XtVaGetValues (text,XmNuserData, &editSymbol, NULL);
 	editSymbol->Background (value);
@@ -107,7 +105,6 @@ static void _UISymbolSetStyleCBK (Widget widget,Widget text,XmAnyCallbackStruct 
 	UISymbol *editSymbol;
 	DBInt value;
 
-	callData = callData;
 	XtVaGetValues (widget,XmNuserData, &value, NULL);
 	XtVaGetValues (text,XmNuserData, &editSymbol, NULL);
 	editSymbol->Style (value);
@@ -187,8 +184,6 @@ static void _UISymbolLoadNamesCBK (Widget widget,Widget list,XmAnyCallbackStruct
 	static Widget select = NULL;
 	UISymbol**editSymbols;
 	XmString xmString [1];
-
-	widget = widget; callData = callData;
 
 	if (select == NULL)
 		select = UIFileSelectionCreate ((char *) "Symbol Name file Selection",NULL,(char *) "*.txt",XmFILE_REGULAR);

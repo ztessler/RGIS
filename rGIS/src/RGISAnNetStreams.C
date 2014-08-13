@@ -30,7 +30,6 @@ static bool _RGISAnNetworkUpStreamAction (DBNetworkIF *netIF,DBObjRecord *cellRe
 
 	{
 	DBInt nextOrder [2];
-	dataPtr = dataPtr;
 
 	if (_RGISAnNetVertex < 1)
 		{
@@ -56,7 +55,6 @@ static bool _RGISAnNetworkUpStreamAction (DBNetworkIF *netIF,DBObjRecord *cellRe
 static bool _RGISAnNetworkDownStreamAction (DBNetworkIF *netIF,DBObjRecord *cellRec, void *dataPtr)
 
 	{
-	dataPtr = dataPtr;
 	if (_RGISAnNetStreamIDFLD->Int (cellRec) != _RGISAnNetStreamID) return (false);
 	_RGISAnNetArea += netIF->CellArea (cellRec);
 	_RGISAnNetCoord [_RGISAnNetVertex++] = netIF->Center (cellRec);
@@ -73,8 +71,6 @@ void RGISAnNetworkStreamLinesCBK (Widget widget,RGISWorkspace *workspace,XmAnyCa
 	DBObjData *arcData = new DBObjData ("",DBTypeVectorLine);
 	DBNetworkIF *netIF = new DBNetworkIF (netData);
 	static Widget fieldSelect = (Widget) NULL;
-
-	widget = widget; callData = callData;
 
 	if (fieldSelect == (Widget) NULL)	fieldSelect = UISelectionCreate ((char *) "Select Field");
 	if ((selection = UISelectObject (fieldSelect,(DBObjectLIST<DBObject> *) cellTable->Fields (),DBTableFieldIsInteger)) == (char *) NULL)

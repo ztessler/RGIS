@@ -100,18 +100,17 @@ UIDataSeries::UIDataSeries (char *name,DBObjTable *table,DBObjTableField *idFLD,
 
 static void _UIXYGraphScaleChangedCBK (Widget widget,UIXYGraph *graph,XmScaleCallbackStruct *callData)
 
-	{	widget = widget;	graph->SetViewPercent (callData->value);	graph->DrawSeries (true); }
+	{	graph->SetViewPercent (callData->value);	graph->DrawSeries (true); }
 
 static void _UIXYGraphScrollBarChangedCBK (Widget widget,UIXYGraph *graph,XmScaleCallbackStruct *callData)
 
-	{ widget = widget;	graph->SetViewOffset (callData->value);	graph->DrawSeries (true); }
+	{ graph->SetViewOffset (callData->value);	graph->DrawSeries (true); }
 
 static void _UIXYGraphDrawingResizeCBK (Widget widget,Widget yAxis,XmDrawingAreaCallbackStruct *callData)
 
 	{
 	Dimension height;
 
-	callData = callData;
 	XtVaGetValues (widget,XmNheight,&height, NULL); 
 	XtVaSetValues (yAxis, XmNheight,height - 20, NULL);
 	if (XtIsRealized (widget))
@@ -123,11 +122,11 @@ static void _UIXYGraphDrawingResizeCBK (Widget widget,Widget yAxis,XmDrawingArea
 
 static void _UIXYGraphDrawingExposeCBK (Widget widget,UIXYGraph *graph,XmDrawingAreaCallbackStruct *callData)
 
-	{ widget = widget; callData = callData; graph->DrawSeries (false); }
+	{ graph->DrawSeries (false); }
 
 static void _UIXYyAxisExposeCBK (Widget widget,UIXYGraph *graph,XmDrawingAreaCallbackStruct *callData)
 
-	{ widget = widget; callData = callData; graph->DrawYAxis (false); }
+	{ graph->DrawYAxis (false); }
 
 void UIXYGraph::SetViewPercent (DBInt percent)
 

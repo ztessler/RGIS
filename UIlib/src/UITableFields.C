@@ -167,7 +167,6 @@ static void _UITableFieldSubFormTypeButtonCBK (Widget widget,DBInt type, XmAnyCa
 	{
 	UITableFieldSubForm *subForm;
 
-	callData = callData;
 	XtVaGetValues (widget, XmNuserData, &subForm, NULL);
 	subForm->Type (type);
 	subForm->Display ();
@@ -178,29 +177,21 @@ static void _UITableFieldSubFormSizeButtonCBK (Widget widget,DBInt size, XmAnyCa
 	{
 	UITableFieldSubForm *subForm;
 
-	callData = callData;
 	XtVaGetValues (widget, XmNuserData, &subForm, NULL);
 	subForm->Size (size);
 	}
 
 static void UITableFieldSubFormIdleToggleCBK (Widget widget,DBObjTableField *field,XmToggleButtonCallbackStruct *callData)
 
-	{
-	widget = widget;
-	field->Flags (DBObjectFlagIdle,callData->set ? DBSet : DBClear);
-	}
+	{ field->Flags (DBObjectFlagIdle,callData->set ? DBSet : DBClear); }
 
 static void _UITableFieldSubFormWidthScaleCBK (Widget widget,UITableFieldSubForm *subForm,XmScaleCallbackStruct *callData)
 
-	{
-	widget = widget; callData = callData;
-	subForm->FormatWidth (callData->value);
-	}
+	{ subForm->FormatWidth (callData->value); }
 
 static void _UITableFieldSubFormDecimalScaleCBK (Widget widget,DBObjTableField *field,XmScaleCallbackStruct *callData)
 
 	{
-	widget = widget; callData = callData;
 	if (field->Type () != DBTableFieldFloat) return;
 	field->FormatDecimals (callData->value);
 	}

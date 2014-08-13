@@ -124,12 +124,12 @@ Restart:
 					lineRec = LinePrevLine (lineRec);
 					}
 				if (neighborPolyRec == (DBObjRecord *) NULL) continue;
-				if (SymbolFLD->Record (neighborPolyRec) == (DBObjRecord *) symbol)
+				if (SymbolFLD->Record (neighborPolyRec) == (DBObjRecord *) ((char *) NULL + symbol))
 					{ symbol++; goto Restart; }
 				}
 			}
  		for (polyRec = ItemTable->First (&index);polyRec != (DBObjRecord *) NULL;polyRec = ItemTable->Next (&index))
- 			if (strcmp (polyRec->Name (),searchPoly->Name ()) == 0) SymbolFLD->Record (polyRec,(DBObjRecord *) symbol);
+ 			if (strcmp (polyRec->Name (),searchPoly->Name ()) == 0) SymbolFLD->Record (polyRec,(DBObjRecord *) ((char *) NULL + symbol));
 		maxSymbol = maxSymbol > symbol ? maxSymbol : symbol;
 		}
 	while (maxSymbol < SymbolTable->ItemNum ()) SymbolTable->Remove (SymbolTable->ItemNum () - 1);

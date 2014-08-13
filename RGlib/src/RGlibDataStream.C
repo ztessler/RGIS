@@ -17,7 +17,7 @@ bfekete@ccny.cuny.edu
 
 DBInt RGlibRGIS2DataStream (DBObjData *grdData,DBObjData *tmplData,char *fieldName,FILE *outFile)
 	{
-	DBInt layerID, ret, itemSize, itemID;
+	DBInt layerID, ret = DBSuccess, itemSize, itemID;
 	DBInt intValue;
 	DBFloat floatValue;
 	void *data;

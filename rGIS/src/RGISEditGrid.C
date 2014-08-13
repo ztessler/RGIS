@@ -45,7 +45,6 @@ void RGISEditGridDateLayersCBK (Widget widget, RGISWorkspace *workspace,XmAnyCal
 	static Widget yearTextF;
 	static Widget menu, button;
 
-	widget = widget; workspace = workspace; callData = callData;
 	if (dShell == (Widget) NULL)
 		{
 		Widget mainForm;
@@ -210,7 +209,6 @@ void RGISEditGridStatsCBK (Widget widget, RGISWorkspace *workspace,XmAnyCallback
 	DBGridIF *gridIF = new DBGridIF (dbData);
 	UITable *tableCLS = (UITable *) dbData->Display (UITableName (dbData,dbData->Table (DBrNItems)));
 
-	widget = widget; workspace = workspace; callData = callData;
 	if (dbData->Type () == DBTypeGridContinuous)
 			gridIF->RecalcStats ();
 	else	gridIF->DiscreteStats ();

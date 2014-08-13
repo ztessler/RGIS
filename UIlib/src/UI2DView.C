@@ -129,8 +129,6 @@ void UI2DView::SetUserToggleMode (DBInt visible)
 static void _UI2DViewResizeCBK (Widget widget,UI2DView *view,XmDrawingAreaCallbackStruct *callData)
 
 	{
-	widget = widget;
-
 	if (callData->reason != XmCR_RESIZE) return;
 	view->Size ();
 	view->Set ();
@@ -143,7 +141,6 @@ static void _UI2DViewHorScrollBarValueChangedCBK (Widget widget,UI2DView *view,X
 	double deltaX, freeLength;
 	DBRegion dataEXT = (UIDataset ())->Extent (), viewEXT = view->Extent ();
 
-	callData = callData;
 	XmScrollBarGetValues (widget,&value,&slider,&incr,&pgIncr);
 
 	freeLength = (dataEXT.UpperRight.X - dataEXT.LowerLeft.X) - (viewEXT.UpperRight.X - viewEXT.LowerLeft.X);
@@ -164,7 +161,6 @@ static void _UI2DViewVerScrollBarValueChangedCBK (Widget widget,UI2DView *view,X
 	double deltaY, freeLength;
 	DBRegion dataEXT = (UIDataset ())->Extent (), viewEXT = view->Extent ();
 
-	callData = callData;
 	XmScrollBarGetValues (widget,&value,&slider,&incr,&pgIncr);
 
 	freeLength = (dataEXT.UpperRight.Y - dataEXT.LowerLeft.Y) - (viewEXT.UpperRight.Y - viewEXT.LowerLeft.Y);
@@ -186,7 +182,6 @@ static void _UI2DViewScaleValueChangedCBK (Widget widget,UI2DView *view,XmScaleC
 	DBCoordinate center, size;
 	DBRegion extent, dataEXT = (UIDataset ())->Extent (), viewEXT = view->Extent ();
 
-	widget = widget;
 	if (callData->reason != XmCR_VALUE_CHANGED) return;
 
 	value = callData->value;
@@ -217,8 +212,6 @@ static void _UI2DViewScaleValueChangedCBK (Widget widget,UI2DView *view,XmScaleC
 void _UI2DViewFullActivateCBK (Widget widget,UI2DView *view,XmPushButtonCallbackStruct *callData)
 
 	{
-	widget = widget;
-
 	if (callData->reason != XmCR_ACTIVATE) return;
 
 	view->Set ((UIDataset ())->Extent ());
@@ -227,7 +220,6 @@ void _UI2DViewFullActivateCBK (Widget widget,UI2DView *view,XmPushButtonCallback
 static void _UI2DViewExtentActivateCBK (Widget widget,UI2DView *view,XmPushButtonCallbackStruct *callData)
 
 	{
-	widget = widget;
 	DBObjData *data = (UIDataset ())->Data ();
 	if (callData->reason != XmCR_ACTIVATE) return;
 	if (data == (DBObjData *) NULL) return;
@@ -238,7 +230,6 @@ static void _UI2DViewExtentActivateCBK (Widget widget,UI2DView *view,XmPushButto
 static void _UI2DViewRedrawCBK (Widget widget,UI2DView *view,XmPushButtonCallbackStruct *callData)
 
 	{
-	widget = widget;
 	if (callData->reason != XmCR_ACTIVATE) return;
 	view->Draw ();
 	}
@@ -288,25 +279,23 @@ static void _UI2DViewPane (Widget widget,XEvent *event,UI2DView *view)
 
 static void _UI2DViewZoomToggleValueCBK (Widget widget,UI2DView *view,XmToggleButtonCallbackStruct *callData)
 
-	{ widget = widget; if (callData->set) view->InputMode (ZOOM_MODE); }
+	{ if (callData->set) view->InputMode (ZOOM_MODE); }
 
 static void _UI2DViewPaneToggleValueCBK (Widget widget,UI2DView *view,XmToggleButtonCallbackStruct *callData)
 
-	{ widget = widget; if (callData->set) view->InputMode (PANE_MODE); }
+	{ if (callData->set) view->InputMode (PANE_MODE); }
 
 static void _UI2DViewUserToggleValueCBK (Widget widget,UI2DView *view,XmToggleButtonCallbackStruct *callData)
 
-	{ widget = widget; if (callData->set) view->InputMode (USER_MODE); }
+	{ if (callData->set) view->InputMode (USER_MODE); }
 
 static void _UI2DViewMeshOptionCBK (Widget widget,UI2DView *view,XmToggleButtonCallbackStruct *callData)
 
-	{ widget = widget; if (callData->set) view->DrawMesh (); else	view->Draw (); }
+	{ if (callData->set) view->DrawMesh (); else	view->Draw (); }
 
 static void _UI2DViewPointerEHR (Widget widget,UI2DView *view,XEvent *event,Boolean *boolean)
 
 	{
-	boolean = boolean;
-
 	switch (view->InputMode ())
 		{
 		case ZOOM_MODE:
@@ -322,7 +311,7 @@ static void _UI2DViewPointerEHR (Widget widget,UI2DView *view,XEvent *event,Bool
 
 static void _UI2DViewDeleteCBK (Widget widget,UI2DView *view,XmAnyCallbackStruct *callData)
 
-	{ widget = widget; callData = callData; delete view; }
+	{ delete view; }
 
 UI2DView::UI2DView () : DBObject ("Noname 2DView",sizeof (UI2DView))
 

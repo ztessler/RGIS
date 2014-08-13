@@ -164,7 +164,6 @@ static void _UITableFieldEditDecimalScaleValueCBK (Widget widget,void *data,XmSc
 	Widget mainForm;
 	DBObjTableField *field;
 
-	data = data;
 	XtVaGetValues (widget, XmNuserData, &mainForm, NULL);
 	XtVaGetValues (mainForm, XmNuserData, &field,  NULL);
 	if (field->Type () != DBTableFieldFloat) return;
@@ -177,7 +176,6 @@ static void _UITableFieldEditTypeButtonCBK (Widget widget,DBInt type, XmAnyCallb
 	Widget mainForm;
 	DBObjTableField *field;
 
-	callData = callData;
 	XtVaGetValues (widget,	XmNuserData, &mainForm,	NULL);
 	XtVaGetValues (mainForm,XmNuserData, &field, 	NULL);
 
@@ -191,7 +189,6 @@ static void _UITableFieldEditSizeButtonCBK (Widget widget,DBInt size, XmAnyCallb
 	Widget mainForm;
 	DBObjTableField *field;
 
-	callData = callData;
 	XtVaGetValues (widget, XmNuserData, &mainForm, NULL);
 	XtVaGetValues (mainForm, XmNuserData, &field,  NULL);
 	if ((field->Type () != DBTableFieldInt) || (field->Type () != DBTableFieldFloat)) return;
@@ -207,7 +204,6 @@ static void _UITableFieldEditTextValueChangedCBK (Widget widget,void *data,XmTex
 	Widget mainForm;
 	DBObjTableField *field;
 
-	data = data;
 	if (callData->reason != XmCR_VALUE_CHANGED) return;
 	XtVaGetValues (widget, XmNuserData, &mainForm, NULL);
 	XtVaGetValues (mainForm, XmNuserData, &field,  NULL);
@@ -222,7 +218,6 @@ static void _UITableFieldEditNoDataValueChangedCBK (Widget widget,void *data,XmT
 	Widget mainForm;
 	DBObjTableField *field;
 
-	data = data;
 	if (callData->reason != XmCR_VALUE_CHANGED) return;
 	XtVaGetValues (widget, XmNuserData, &mainForm, NULL);
 	XtVaGetValues (mainForm, XmNuserData, &field,  NULL);
