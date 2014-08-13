@@ -156,8 +156,8 @@ int DBObjTable::Read (FILE *file,int swap)
 				case DBTableFieldDataRec:
 					switch (field->Length ())
 						{
-						case 2: DBByteOrderSwapHalfWord ((char *) record->Data () + field->StartByte ());	break;
-						case 4: DBByteOrderSwapWord     ((char *) record->Data () + field->StartByte ());	break;
+						case 2: DBByteOrderSwapHalfWord  ((char *) record->Data () + field->StartByte ());	break;
+						case 4: DBByteOrderSwapWord      ((char *) record->Data () + field->StartByte ());	break;
 						case 8: DBByteOrderSwapLongWord	((char *) record->Data () + field->StartByte ());	break;
 						}
 					break;
