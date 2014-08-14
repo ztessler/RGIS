@@ -271,7 +271,6 @@ void DBNetworkIF::DownStreamSearch (DBObjRecord *cellRec,DBNetworkACTION forActi
 bool DBNetworkSelect (DBNetworkIF *netIF,DBObjRecord *cellRec, void *dataPtr)
 
 	{
-	dataPtr = (char *) NULL;
 	if (cellRec == (DBObjRecord *) NULL) return (false);
 	cellRec->Flags (DBObjectFlagSelected,DBSet);
 	netIF = (DBNetworkIF *) NULL;
@@ -281,7 +280,6 @@ bool DBNetworkSelect (DBNetworkIF *netIF,DBObjRecord *cellRec, void *dataPtr)
 bool DBNetworkUnselect (DBNetworkIF *netIF,DBObjRecord *cellRec, void *dataPtr)
 
 	{
-	dataPtr = (char *) NULL;
 	if (cellRec == (DBObjRecord *) NULL) return (false);
 	cellRec->Flags (DBObjectFlagSelected,DBClear);
 	netIF = (DBNetworkIF *) NULL;
