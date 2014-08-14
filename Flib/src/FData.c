@@ -35,13 +35,13 @@ char* formatString( const fDataType t )
 //---------------------------------------
 int is_Integer( const char*in )
 {
-  long x;
+	long x;
   char* remainder;
   
   x = strtol(in, & remainder,0);
   if(strlen(remainder)) //we have not read in an integer value
     return 0;
-  return (int)x;
+  return ((int) x);
 }
 //---------------------------------------
 int findFieldNum( const char* key, const char** args )
@@ -123,7 +123,6 @@ void getDataTypes( const int numCols, fDataType* types, char** rowData )
 //=======================================================
 void findType( fDataType* out, const char* in )
 {  
-  double x;
   char* remainder;
   
   //if the length is 0, dont make any assumption about the type
@@ -132,7 +131,7 @@ void findType( fDataType* out, const char* in )
   
   //else try to convert the string to double and 
   //look for no remaining characters
-  x = strtod(in, & remainder);
+  strtod(in, & remainder);
   if(strcmp(remainder,"") == 0)
     {
       findNumberType( out, in );
@@ -146,10 +145,9 @@ void findType( fDataType* out, const char* in )
 //----------------------------------------
 void findNumberType( fDataType* out, const char* in )
 {
-  long x;
   char* remainder;
   
-  x = strtol(in, & remainder,0);
+	strtol(in, & remainder,0);
   if(strcmp(remainder,"") == 0) //we have read in an integer value
     {
 	out->sigDigits = intCmp( out->sigDigits, strlen(in) );
@@ -172,7 +170,7 @@ void findNumberType( fDataType* out, const char* in )
 	  out->inSigDigits = strlen(remainder) - 1;
 	  out->type = FLOAT;
 	}
-    }
+	}
 }
 //-------------------------------------
 int verifyType( const char* data, const fDataType type )

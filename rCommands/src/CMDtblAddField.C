@@ -21,7 +21,7 @@ int main (int argc,char *argv [])
 	int argPos, argNum = argc, ret, verbose = false;
 	DBInt type = DBFault, length = DBFault, dWidth = DBFault, dDecimals = DBFault;
 	DBObjData *data;
-	char *tableName = (char *) NULL, *fieldName = (char *) NULL, *newName = (char *) NULL;
+	char *tableName = (char *) NULL, *fieldName = (char *) NULL;
 	DBObjTable *table;
 	DBObjTableField *field;
 
@@ -40,14 +40,6 @@ int main (int argc,char *argv [])
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos)
 				{ CMmsgPrint (CMmsgUsrError,"Missing field name!");   return (CMfailed); }
 			fieldName = argv [argPos];
-			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos) break;
-			continue;
-			}
-		if (CMargTest (argv [argPos],"-r","--rename"))
-			{
-			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos)
-				{ CMmsgPrint (CMmsgUsrError,"Missing new field name!"); return (CMfailed); }
-			newName = argv [argPos];
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos) break;
 			continue;
 			}

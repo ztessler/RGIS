@@ -847,7 +847,7 @@ void RGISAnGContMakeDiscreteCBK (Widget widget,RGISWorkspace *workspace,XmAnyCal
 		int argNum;
 		Dimension bWidth;
 		Arg wargs [20];
-		Widget label, loadButton;
+		Widget loadButton;
 		XmString string;
 
 		dShell = UIDialogForm ((char *) "Bin Dialog",false);
@@ -881,7 +881,7 @@ void RGISAnGContMakeDiscreteCBK (Widget widget,RGISWorkspace *workspace,XmAnyCal
 								NULL);
 
 		string = XmStringCreate ((char *) "Bin value:",UICharSetBold);
-		label = XtVaCreateManagedWidget ("RGISAnGContMakeDiscreteFieldLabel",xmLabelWidgetClass,mainForm,
+		         XtVaCreateManagedWidget ("RGISAnGContMakeDiscreteFieldLabel",xmLabelWidgetClass,mainForm,
 								XmNtopAttachment,       XmATTACH_OPPOSITE_WIDGET,
 								XmNtopWidget,           textField,
 								XmNleftAttachment,      XmATTACH_FORM,

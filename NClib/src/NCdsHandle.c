@@ -35,6 +35,7 @@ NCdsHandle_t *NCdsHandleOpenByIds (int *ncids, size_t n)
 //		case NCtypeLine:    ret = NCdsHandleVLineDefine    ((NCdsHandleVLine_t *)    dsHandle, ncids [0]); break;
 //		case NCtypePolygon: ret = NCdsHandleVPolygonDefine ((NCdsHandleVPolygon_t *) dsHandle, ncids [0]); break;
 	}
+	if (ret == NCfailed) return ((NCdsHandle_t *) NULL);
 	return (dsHandle);
 }
 
@@ -203,7 +204,7 @@ NCstate NCdsHandleDefine (NCdsHandle_t *dsh, int *ncids, size_t n)
 	NCdsHandleClear (dsh);
 
 	if (n < 1) return (NCfailed);
-	if ((dataType = NCdataGetType (ncids [0])) == NCundefined) return (NCfailed);
+	if ((dataType = NCdataGetType (ncids [0])) == NCtypeUndefined) return (NCfailed);
 	dsh->DataType = dataType;
 	if ((dsh->NCIds = (int *) calloc (n,sizeof (int))) == (int *) NULL)
 	{ CMmsgPrint (CMmsgSysError, "Memory allocation error in: %s %d",__FILE__,__LINE__); return (NCfailed); }

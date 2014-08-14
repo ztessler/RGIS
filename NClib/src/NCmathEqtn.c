@@ -367,7 +367,7 @@ void NCmathEqtnFixTreeI(IneqNode_t *s) {
 					s->equal = CalculateI(s);
 					delTree(s->lhead);
 					delTree(s->rhead);
-					s->lhead = s->lhead = (TreeNode_t *) NULL;
+					s->lhead = (TreeNode_t *) NULL;
 				}
 			} else {
 				if((Calculate(s->lhead) != FLOAT_NOVALUE) && ((s->right->equal == TRUE) || (s->right->equal == FALSE))) {

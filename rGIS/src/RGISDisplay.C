@@ -14,7 +14,7 @@ bfekete@ccny.cuny.edu
 
 static void _RGIS2DViewCBK (Widget widget,void *workspace,XmAnyCallbackStruct *callData)
 
-	{ UI2DView *view = new UI2DView (); view = (UI2DView *) NULL; }
+	{ UI2DView (); }
 
 static void _RGIS2DViewRedrawCBK (Widget widget,void *data,XmAnyCallbackStruct *callData)
 

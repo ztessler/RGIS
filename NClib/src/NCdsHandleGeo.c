@@ -7,7 +7,7 @@ NCstate NCdsHandleGeoDefine (NCdsHandleGeo_t *dsHandleGeo, int *ncids, size_t n)
 
 	if (n < 1) return (NCfailed);
 	if (NCdsHandleDefine ((NCdsHandle_t *) dsHandleGeo, ncids, n) == NCfailed) return (NCfailed);
-	if ((proj = NCdataGetProjection (ncids [0])) == NCundefined)
+	if ((proj = NCdataGetProjection (ncids [0])) == NCprojNoCoordinates)
 	{ NCdsHandleClear ((NCdsHandle_t *) dsHandleGeo); return (NCfailed); }
 
 	dsHandleGeo->Projection = proj;

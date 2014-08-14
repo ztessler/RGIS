@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
 {
 	char *filename = (char *) NULL, *rename = (char *) NULL, *varname = (char *) NULL;
 	int argPos = 0, argNum = argc, interval = NONE, ncid = 0, *dimIDs = (int *) NULL;
-	NCdsHandle_t *dsHandle;
+//	NCdsHandle_t *dsHandle;
 
 	if(argNum == 1) { doHelp(CMfileName(argv[0])); return (NCsucceeded); }
 	if ((argNum == 2) && (argv[1][0] == '-'))
@@ -140,7 +140,7 @@ int main(int argc, char* argv[])
 		if(nc_open(argv[1],NC_WRITE,&ncid) != NC_NOERR) { CMmsgPrint (CMmsgUsrError, "Error opening file: %s!",argv[1]); return (NCfailed); }
 	} else doHelp(CMfileName(argv[0]));
 
-	dsHandle = NCdsHandleOpenById (ncid);
+//	dsHandle = NCdsHandleOpenById (ncid);
 /*	if((nc_inq_varid(ncid,varname,&inVar)) != NC_NOERR) { CMmsgPrint (CMmsgUsrError, "NC: Error getting varID!"); cleanup(NCfailed); }
 	if(nc_inq_ndims(ncid,&ndims) != NC_NOERR) { CMmsPrint (CMmsgAppError, "Cannot get the ndims!",__FILE__,__LINE__); cleanup(NCfailed); }
 	dimIDs = malloc(sizeof(int) * ndims);

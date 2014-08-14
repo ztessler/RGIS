@@ -180,7 +180,7 @@ void UI2DView::DrawLineObject (DBVLineIF *lineIF, DBObjRecord *record,GC gc)
 
 	if (MaxVertexNumVAR < lineIF->VertexNum (record) + 2)
 		{
-		PointARR = PointARR = (XPoint *) realloc (PointARR,(lineIF->VertexNum (record) + 2) * sizeof (XPoint));
+		PointARR = (XPoint *) realloc (PointARR,(lineIF->VertexNum (record) + 2) * sizeof (XPoint));
 		if (PointARR == NULL) { CMmsgPrint (CMmsgSysError, "Memory Allocation Error in: %s %d",__FILE__,__LINE__); return; }
 		MaxVertexNumVAR =  lineIF->VertexNum (record) + 2;
 		}

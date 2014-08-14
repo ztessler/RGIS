@@ -26,7 +26,7 @@ int main(int argc,char *argv []) {
 	double *min     = (double *) NULL;
 	float  *output  = (float *)  NULL;
 	int    *bins    = (int *)    NULL;
-	double value, binSize, binMax, binMin, percentMax, percentMin;
+	double value, binSize, binMax, binMin, percentMin; /* percentMax */
 	MFVarHeader_t header, outHeader;
 
 	if (argNum < 2) goto Help;
@@ -247,7 +247,7 @@ Help:		CMmsgPrint (CMmsgUsrError,"%s [options] <out datastream>",CMfileName(argv
 					}
 					binMax = bin < binNum ? (float)  bin      * binSize + min [i] : max [i];
 					binMin = bin > 0      ? (float) (bin - 1) * binSize + min [i] : min [i];
-					percentMax = bin < binNum ? bins [bin * header.ItemNum + i] / bins [i] * 100.0 : 100.0;
+//					percentMax = bin < binNum ? bins [bin * header.ItemNum + i] / bins [i] * 100.0 : 100.0;
 					output [i] = (binMax + binMin) / 2.0;
 				}
 			}

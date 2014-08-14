@@ -18,7 +18,7 @@ bfekete@ccny.cuny.edu
 int main (int argc,char *argv [])
 
 	{
-	int argPos, argNum = argc, ret, verbose = false;
+	int argPos, argNum = argc, ret;
 	char *title  = (char *) NULL, *subject = (char *) NULL;
 	char *domain = (char *) NULL, *version = (char *) NULL;
 	DBInt shadeSet = DBFault;
@@ -75,12 +75,6 @@ int main (int argc,char *argv [])
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos) break;
 			continue;
 			}
-		if (CMargTest (argv [argPos],"-V","--verbose"))
-			{
-			verbose = true;
-			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) <= argPos) break;
-			continue;
-			}
 		if (CMargTest (argv [argPos],"-h","--help"))
 			{
 			CMmsgPrint (CMmsgInfo,"%s [options] <input netcdf> <output data>",CMfileName(argv[0]));
@@ -89,7 +83,6 @@ int main (int argc,char *argv [])
 			CMmsgPrint (CMmsgInfo,"     -d,--domain    [domain]");
 			CMmsgPrint (CMmsgInfo,"     -v,--version   [version]");
 			CMmsgPrint (CMmsgInfo,"     -s,--shadeset  [standard|grey|blue|blue-to-red|elevation]");
-			CMmsgPrint (CMmsgInfo,"     -V,--verbose");
 			CMmsgPrint (CMmsgInfo,"     -h,--help");
 			return (DBSuccess);
 			}

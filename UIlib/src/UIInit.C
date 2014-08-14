@@ -83,7 +83,7 @@ Widget UIInitialize (char *title,char *icon,char *helpFile, UIMenuItem mainMenu 
 	int i, foreground, background;
 	Dimension lWidth;
 	char applicationTitle [256];
-	Widget mainForm, menuBar, helpButton, ccnyLogo, unhLogo, ghaasLogo, globeWidget, subForm;
+	Widget mainForm, menuBar, helpButton, ccnyLogo, ghaasLogo, globeWidget, subForm;
 	Pixmap pixmap;
 	XmString string;
 	void _UIColorInitialize (Widget);
@@ -150,8 +150,8 @@ Widget UIInitialize (char *title,char *icon,char *helpFile, UIMenuItem mainMenu 
 	                                    XmNbottomAttachment, XmATTACH_FORM,
 	                                    XmNbottomOffset,     5,
 	                                    NULL);
-	pixmap	= XmGetPixmap(XtScreen(UITopLevel()),(char *) "GHAASunh.xpm",foreground,background);
-	unhLogo = XtVaCreateManagedWidget ("GHAASMainUNHLogo",xmLabelWidgetClass,mainForm,
+	pixmap  = XmGetPixmap(XtScreen(UITopLevel()),(char *) "GHAASunh.xpm",foreground,background);
+	          XtVaCreateManagedWidget ("GHAASMainUNHLogo",xmLabelWidgetClass,mainForm,
 	                                    XmNlabelType,        XmPIXMAP,
 	                                    XmNlabelPixmap,      pixmap,
 	                                    XmNmarginWidth,      0,

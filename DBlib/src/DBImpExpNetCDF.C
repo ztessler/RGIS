@@ -1164,7 +1164,7 @@ DBInt DBImportNetCDF (DBObjData *data,const char *filename)
 	int ndims, nvars, natts, unlimdim;
 	int latdim = -1, londim = -1, levdim = -1, timedim = -1;
 	int varid  = -1;
-	int latidx = -1, lonidx = -1, levidx = -1, timeidx = -1;
+	int latidx = -1, timeidx = -1;
 	int dimids [4];
 	size_t len, start [4] = { 0, 0, 0, 0}, count [4] = { 1, 1, 1, 1} ;
 	int doTimeUnit = false;
@@ -1625,10 +1625,10 @@ DBInt DBImportNetCDF (DBObjData *data,const char *filename)
 	for (id = 0;id < ndims;id++)
 		{
 		start [id] = 0;
-		if      (dimids [id] == londim)  { count [id] = colNum; lonidx  = id; }
+		if      (dimids [id] == londim)  { count [id] = colNum; }
 		else if (dimids [id] == latdim)  { count [id] = 1;      latidx  = id; }
 		else if (dimids [id] == timedim) { count [id] = 1;      timeidx = id; }
-		else if (dimids [id] == levdim)  { count [id] = 1;      levidx  = id; }
+		else if (dimids [id] == levdim)  { count [id] = 1;      }
 		}
 
 		int netcdfdims; int netcdfvars;int netcdfngatts;int recdim;

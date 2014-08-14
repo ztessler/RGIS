@@ -173,7 +173,8 @@ class CMDgrdVariable
 class CMDgrdThreadData
 	{
 	private:
-		DBInt ExpNum, VarNum, LayerNum, MasterVar;
+		size_t ExpNum, VarNum;
+		DBInt  LayerNum, MasterVar;
 		DBCoordinate CellSize;
 		DBRegion Extent;
 		DBObjRecord *LayerRec;
@@ -196,7 +197,7 @@ class CMDgrdThreadData
 		}
 	~CMDgrdThreadData ()
 		{
-		DBInt i;
+		size_t i;
 		if (ExpNum > 0) { for (i = 0;i < ExpNum; ++i) delete Expressions [i]; free (Expressions); }
 		delete Variables;
 		delete Table;
@@ -217,7 +218,8 @@ class CMDgrdThreadData
 		}
 	CMreturn Configure (bool shrink, bool flat, char *expStr)
 		{
-		DBInt i, recID, layerID;
+		size_t i;
+		DBInt recID, layerID;
 		DBFloat floatVal;
 		DBObject *obj;
 		DBObjTableField *fieldPTR;
@@ -255,7 +257,8 @@ class CMDgrdThreadData
 		}
 	DBObjData *Compute (char *title, CMthreadUserExecFunc userFunc)
 		{
-		DBInt i, layerID, dataLayerID, threadId;
+		DBInt i, layerID, dataLayerID;
+		size_t threadId;
 		DBPosition pos;
 		DBCoordinate coord;
 		char *layerName;
@@ -290,7 +293,7 @@ class CMDgrdThreadData
 		for (layerID = 0;layerID < LayerNum;++layerID)
 			{
 			layerName = GrdVar [MasterVar]->CurrentLayer (layerID);
-			for (i = 0;i < VarNum;++i)
+			for (i = 0;i < (DBInt) VarNum;++i)
 				{
 				if ((dataLayerID = GrdVar [i]->FindLayer (layerName)) != DBFault)
 					GrdVar [i]->CurrentLayer (dataLayerID);
@@ -310,8 +313,8 @@ class CMDgrdThreadData
 					for (pos.Col = 0;pos.Col < GridIF->ColNum ();++pos.Col)
 						{
 						GridIF->Pos2Coord (pos,coord);
-						for (i = 0;i < VarNum;++i) GrdVar [i]->GetVariable (record,coord);
-						for (i = 0;i < ExpNum;++i) Expressions [i]->Evaluate (record);
+						for (i = 0;i < (DBInt) VarNum;++i) GrdVar [i]->GetVariable (record,coord);
+						for (i = 0;i < (DBInt) ExpNum;++i) Expressions [i]->Evaluate (record);
 						GridIF->Value (LayerRec,pos,Operand->Float (record));
 						}
 			GridIF->RecalcStats (LayerRec);

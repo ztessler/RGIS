@@ -44,7 +44,7 @@ int main (int argc,char *argv [])
 	if ((status = nc_open (argv [1], NC_NOWRITE, &sncid)) != NC_NOERR)
 	{ NCprintNCError (status,"main"); return (CMfailed); }
 
-	if ((dataType = NCdataGetType (sncid)) == CMfailed) { nc_close (sncid); return (CMfailed); }
+	if ((dataType = NCdataGetType (sncid)) == NCtypeUndefined) { nc_close (sncid); return (CMfailed); }
 	if ((dataType != NCtypeGCont) && (dataType != NCtypeGDisc))
 	{
 		CMmsgPrint (CMmsgUsrError, "%s: Non-grid input coverage!", CMfileName (argv [0]));
@@ -57,7 +57,7 @@ int main (int argc,char *argv [])
 		nc_close (sncid);
 		return (CMfailed);
 	}
-	if ((dataType = NCdataGetType (tncid)) == CMfailed)
+	if ((dataType = NCdataGetType (tncid)) == NCtypeUndefined)
 	{ nc_close (sncid); nc_close (sncid); return (CMfailed); }
 	if ((dataType != NCtypeGCont) && (dataType != NCtypeGDisc) && (dataType != NCtypeNetwork))
 	{
@@ -76,14 +76,14 @@ int main (int argc,char *argv [])
 	if ((domain   == (char *) NULL) && 
 		 ((domain  = NCdataGetTextAttribute (sncid,NC_GLOBAL,NCnameGADomain))  == (char *) NULL)) domain  = "Undefined";
 
-	if (NCdataSetTextAttribute (dncid,NC_GLOBAL,NCnameGATitle,  title)   == CMfailed)
+	if (NCdataSetTextAttribute (dncid,NC_GLOBAL,NCnameGATitle,  title)   == NCfailed)
 	{ nc_close (sncid); nc_close (tncid); nc_close (dncid); unlink (argv [2]); return (CMfailed); }
-	if (NCdataSetTextAttribute (dncid,NC_GLOBAL,NCnameGASubject,subject) == CMfailed)
+	if (NCdataSetTextAttribute (dncid,NC_GLOBAL,NCnameGASubject,subject) == NCfailed)
 	{ nc_close (sncid); nc_close (tncid); nc_close (dncid); unlink (argv [2]); return (CMfailed); }
-	if (NCdataSetTextAttribute (dncid,NC_GLOBAL,NCnameGADomain, domain)  == CMfailed)
+	if (NCdataSetTextAttribute (dncid,NC_GLOBAL,NCnameGADomain, domain)  == NCfailed)
 	{ nc_close (sncid); nc_close (tncid); nc_close (dncid); unlink (argv [2]); return (CMfailed); }
 
-	if ((dvarid = NCfileVarClone (sncid, dncid)) == CMfailed) 
+	if ((dvarid = NCfileVarClone (sncid, dncid)) == NCfailed) 
 	{ nc_close (sncid); nc_close (tncid); nc_close (dncid); unlink (argv [2]); return (CMfailed); }
 	ret = NCGridContSampling (sncid, dncid);
 	nc_close (sncid);

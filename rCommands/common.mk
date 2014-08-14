@@ -11,7 +11,7 @@ endif
 
 export UNIXCPP=g++
 export UNIXCPPOPS=-g -Wall -fsigned-char -D_GNU_SOURCE $(CUSTOM_INC)
-export UNIXLIBS=$(CUSTOM_LIB) -ludunits2 -lnetcdf -lm
+export UNIXLIBS=$(CUSTOM_LIB) -pthread -ludunits2 -lnetcdf -lm
 export UNIXMAKE=make
 
 ifndef INSTALLDIR
