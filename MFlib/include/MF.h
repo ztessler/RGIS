@@ -72,7 +72,7 @@ typedef struct MFVariable_s {
 	int    ID;
 	char   Name [MFNameLength];
 	char   Unit [MFNameLength];
-	bool   Flux, Initial, Set, Route;
+	bool   Flux, Initial, Set, Route, State;
 	short  TStep;
 	void  *Data;
 

@@ -76,7 +76,7 @@ static MFVariable_t *_MFVarFindEntry (const char *name) {
 	return ((MFVariable_t *) NULL);
 }
 
-MFVariable_t *MFVarSetPath (const char *name,const char *path, int type) {
+MFVariable_t *MFVarSetPath (const char *name,const char *path, bool state, int type) {
 	MFVariable_t *var;
 
 	var = _MFVarFindEntry (name);
@@ -114,6 +114,7 @@ MFVariable_t *MFVarSetPath (const char *name,const char *path, int type) {
 			}
 			strcpy (var->OutPath, path);
 			var->OutStream = MFDataStreamOpen (var->OutPath,"w");
+			var->State = state;
 			break;
 	}
 	return (var);

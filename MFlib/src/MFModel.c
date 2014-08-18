@@ -21,6 +21,8 @@ static MFDomain_t *_MFDomain    = (MFDomain_t *) NULL;
 static MFFunction *_MFFunctions = (MFFunction *) NULL;
 static int _MFFunctionNum = 0;
 
+MFVariable_t *MFVarSetPath (const char *,const char *, bool, int);
+
 int MFModelAddFunction (MFFunction func) {
 
 	if ((_MFFunctions = (MFFunction *) realloc (_MFFunctions, (_MFFunctionNum + 1) * sizeof (MFFunction))) == (MFFunction *) NULL) {
@@ -73,26 +75,22 @@ int MFModelGetDownLink (int itemID,size_t linkNum) {
 
 float MFModelGet_dt () { return (86400.0); }
 
-static int _MFVarAddInput (const char *name, const char *path) {
-	MFVariable_t *MFVarSetPath (const char *,const char *, int);
-	return (MFVarSetPath (name,path,MFInput) == (MFVariable_t *) NULL ? CMfailed : CMsucceeded);
-}
-
 static struct output_s {
 	char *Name;
 	char *Path;
+	bool State;
 	} *_MFModelOutput = (struct output_s *) NULL;
 
 static int _MFModelOutNum = 0;
 
-static int _MFModelOutputNew (const char *name, const char *path) {
+static int _MFModelOutputNew (const char *name, const char *path, bool state) {
 	_MFModelOutput = (struct output_s *) realloc (_MFModelOutput,sizeof (struct output_s)  * (_MFModelOutNum + 1));
 	if (_MFModelOutput == (struct output_s *) NULL) {
 		CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d\n",__FILE__,__LINE__);
 		return (CMfailed);
 	}
-	_MFModelOutput [_MFModelOutNum].Name = (char *) malloc (strlen (name) + 1);
-	_MFModelOutput [_MFModelOutNum].Path = (char *) malloc (strlen (path) + 1);
+	_MFModelOutput [_MFModelOutNum].Name  = (char *) malloc (strlen (name) + 1);
+	_MFModelOutput [_MFModelOutNum].Path  = (char *) malloc (strlen (path) + 1);
 	if ((_MFModelOutput [_MFModelOutNum].Name == (char *) NULL) ||
 	    (_MFModelOutput [_MFModelOutNum].Path == (char *) NULL)) {
 		CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d\n",__FILE__,__LINE__);
@@ -100,8 +98,9 @@ static int _MFModelOutputNew (const char *name, const char *path) {
 	}
 	strcpy (_MFModelOutput [_MFModelOutNum].Name, name);
 	strcpy (_MFModelOutput [_MFModelOutNum].Path, path);
-	_MFModelOutput [_MFModelOutNum].Name = CMbufStripDQuotes (CMbufStripSQuotes (CMbufTrim (_MFModelOutput [_MFModelOutNum].Name)));
-	_MFModelOutput [_MFModelOutNum].Path = CMbufStripDQuotes (CMbufStripSQuotes (CMbufTrim (_MFModelOutput [_MFModelOutNum].Path)));
+	_MFModelOutput [_MFModelOutNum].Name  = CMbufStripDQuotes (CMbufStripSQuotes (CMbufTrim (_MFModelOutput [_MFModelOutNum].Name)));
+	_MFModelOutput [_MFModelOutNum].Path  = CMbufStripDQuotes (CMbufStripSQuotes (CMbufTrim (_MFModelOutput [_MFModelOutNum].Path)));
+	_MFModelOutput [_MFModelOutNum].State = state;
 	_MFModelOutNum++;
 	return (CMsucceeded);
 }
@@ -113,8 +112,8 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*conf) ()) {
 	int i, varID, intVal;
 	float floatVal;
 	char *startDate = (char *) NULL, *endDate = (char *) NULL;
-	MFVariable_t *var, *MFVarSetPath (const char *,const char *, int);
-	int MFLoadConfig (const char *,int (*) (const char *, const char *));
+	MFVariable_t *var;
+	int MFLoadConfig (const char *,int (*) (const char *, const char *, bool));
 	bool _MFOptionNew (char *,char *), _MFOptionTestInUse ();
 
 	for (argPos = 1;argPos < argNum;) {
@@ -129,16 +128,7 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*conf) ()) {
 				return (CMfailed);
 			}
 			argv [argPos][i] = '\0';
-			if (_MFVarAddInput (argv [argPos],argv [argPos] + i + 1) == CMfailed)  return (CMfailed);
-			if ((argNum = CMargShiftLeft(argPos,argv,argNum)) <= argPos) break;
-			continue;
-		}
-		if (CMargTest (argv [argPos],"-il","--input-listfile")) {
-			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) < 1) {
-				CMmsgPrint (CMmsgUsrError,"Missing input argument!\n");
-				return (CMfailed);
-			}
-			if (MFLoadConfig (argv [argPos],_MFVarAddInput) == CMfailed) return (CMfailed);
+			if (MFVarSetPath (argv [argPos],argv [argPos] + i + 1, false, MFInput) == (MFVariable_t *) NULL)  return (CMfailed);
 			if ((argNum = CMargShiftLeft(argPos,argv,argNum)) <= argPos) break;
 			continue;
 		}
@@ -153,16 +143,22 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*conf) ()) {
 				return (CMfailed);
 			}
 			argv [argPos][i] = '\0';
-			if (_MFModelOutputNew (argv [argPos],argv [argPos] + i + 1) == CMfailed) return (CMfailed);
+			if (_MFModelOutputNew (argv [argPos],argv [argPos] + i + 1,false) == CMfailed) return (CMfailed);
 			if ((argNum = CMargShiftLeft(argPos,argv,argNum)) <= argPos) break;
 			continue;
 	 	}
-		if (CMargTest (argv [argPos],"-ol","--output-listfile")) {
+		if (CMargTest (argv [argPos],"-t","--state")) {
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) < 1) {
 				CMmsgPrint (CMmsgUsrError,"Missing _MFModelOutput argument!\n");
 				return (CMfailed);
 			}
-			if (MFLoadConfig (argv [argPos],_MFModelOutputNew) == CMfailed) return (CMfailed);
+			for (i = 0;i < (int) strlen (argv[argPos]);++i) if (argv [argPos][i] == '=') break;
+			if (i == (int) strlen (argv [argPos])) {
+				CMmsgPrint (CMmsgUsrError,"Illformed _MFModelOutput variable [%s]!\n",argv [argPos]);
+				return (CMfailed);
+			}
+			argv [argPos][i] = '\0';
+			if (_MFModelOutputNew (argv [argPos],argv [argPos] + i + 1, true) == CMfailed) return (CMfailed);
 			if ((argNum = CMargShiftLeft(argPos,argv,argNum)) <= argPos) break;
 			continue;
 	 	}
@@ -222,6 +218,7 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*conf) ()) {
 			CMmsgPrint (CMmsgInfo,"     -n,  --end        [end date in the form of \"yyyy-mm-dd\"]\n");
 			CMmsgPrint (CMmsgInfo,"     -i,  --input      [variable=source]\n");
 			CMmsgPrint (CMmsgInfo,"     -o,  --output     [variable=destination]\n");
+			CMmsgPrint (CMmsgInfo,"     -r,  --state      [variable=statefile]\n");
 			CMmsgPrint (CMmsgInfo,"     -ol, --output-listfile [output listfile]\n");
 			CMmsgPrint (CMmsgInfo,"     -p,  --option     [option=content]\n");
 			CMmsgPrint (CMmsgInfo,"     -r,  --route      [variable]\n");
@@ -339,11 +336,10 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*conf) ()) {
 		}
 	}
 
-	for (i = 0;i < _MFModelOutNum;++i) MFVarSetPath (_MFModelOutput [i].Name, _MFModelOutput [i].Path, MFOutput);
+	for (i = 0;i < _MFModelOutNum;++i) MFVarSetPath (_MFModelOutput [i].Name, _MFModelOutput [i].Path, _MFModelOutput [i].State, MFOutput);
 	free (_MFModelOutput);
 
-	CMmsgPrint (CMmsgInfo, "ID  %10s %30s[%10s] %6s %5s NStep %3s %4s %8s Output",
-			      "Start_Date", "Variable","Unit","Type", "TStep", "Set", "Flux", "Initial");
+	CMmsgPrint (CMmsgInfo, "ID  %10s %30s[%10s] %6s %5s NStep %3s %4s %8s Output", "Start_Date", "Variable","Unit","Type", "TStep", "Set", "Flux", "Initial");
 	for (var = MFVarGetByID (varID = 1);var != (MFVariable_t *) NULL;var = MFVarGetByID (++varID))
 		if ((strncmp (var->Name,"__",2) != 0) || var->Initial)
 			CMmsgPrint (CMmsgInfo, "%3i %10s %30s[%10s] %6s %5s %5d %3s %4s %8s %6s",

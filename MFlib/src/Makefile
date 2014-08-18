@@ -10,8 +10,7 @@ TARGET = $(LIB)/libMF10.a
 IPREF    = MF
 INCLUDES = $(INC)/MF.h
 
-OBJS = $(OBJ)/MFConfig.o\
-       $(OBJ)/MFDate.o\
+OBJS = $(OBJ)/MFDate.o\
        $(OBJ)/MFOptions.o\
        $(OBJ)/MFVariables.o\
        $(OBJ)/MFDataStream.o\
