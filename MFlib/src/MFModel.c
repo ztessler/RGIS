@@ -476,14 +476,16 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*conf) ()) {
 			}
 
 			for (var = MFVarGetByID (varID = 1);var != (MFVariable_t *) NULL;var = MFVarGetByID (++varID)) {
-				if (var->OutStream != (MFDataStream_t *) NULL) MFDataStreamWrite (var, timeCur);
+				if (var->OutStream != (MFDataStream_t *) NULL) {
+					if (var->State != true) MFDataStreamWrite (var, timeCur);
+				}
 			}
 		} while ((timeCur = MFDateAdvance ()) != (char *) NULL ? _MFModelReadInput (timeCur) : MFStop);
 
 	for (var = MFVarGetByID (varID = 1);var != (MFVariable_t *) NULL;var = MFVarGetByID (++varID)) {
 		if (var->InStream  != (MFDataStream_t *) NULL) MFDataStreamClose (var->InStream);
 		if (var->OutStream != (MFDataStream_t *) NULL) {
-			if (var->State) { var->State = false; MFDataStreamWrite (var, timeCur); }
+			if (var->State) MFDataStreamWrite (var, timeCur);
 			MFDataStreamClose (var->OutStream);
 		}
 		free (var->Data);
