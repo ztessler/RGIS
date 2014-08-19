@@ -411,7 +411,7 @@ static void _MFUserFunc (void *commonPtr,void *threadData, size_t taskId) {
 
 int MFModelRun (int argc, char *argv [], int argNum, int (*conf) ()) {
 	int i, iFunc, varID, dlink, taskId;
-	char *timeCur;
+	char *timeCur, timeWritten [MFDateStringLength];
 	MFVariable_t *var;
 	time_t sec;
 	size_t threadsNum = CMthreadProcessorNum ();
@@ -446,7 +446,9 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*conf) ()) {
 			CMthreadJobExecute (team, job);
 
 			for (var = MFVarGetByID (varID = 1);var != (MFVariable_t *) NULL;var = MFVarGetByID (++varID)) {
-				if (var->OutStream != (MFDataStream_t *) NULL) MFDataStreamWrite (var, timeCur);
+				if (var->OutStream != (MFDataStream_t *) NULL) {
+					if (var->State != true) MFDataStreamWrite (var, timeCur);
+				}
 			}
 		} while ((timeCur = MFDateAdvance ()) != (char *) NULL ? _MFModelReadInput (timeCur) : MFStop);
 		CMthreadJobDestroy  (job);
@@ -479,13 +481,14 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*conf) ()) {
 				if (var->OutStream != (MFDataStream_t *) NULL) {
 					if (var->State != true) MFDataStreamWrite (var, timeCur);
 				}
+			strcpy (timeWritten,timeCur);
 			}
 		} while ((timeCur = MFDateAdvance ()) != (char *) NULL ? _MFModelReadInput (timeCur) : MFStop);
 
 	for (var = MFVarGetByID (varID = 1);var != (MFVariable_t *) NULL;var = MFVarGetByID (++varID)) {
 		if (var->InStream  != (MFDataStream_t *) NULL) MFDataStreamClose (var->InStream);
 		if (var->OutStream != (MFDataStream_t *) NULL) {
-			if (var->State) MFDataStreamWrite (var, timeCur);
+			if (var->State) MFDataStreamWrite (var, timeWritten);
 			MFDataStreamClose (var->OutStream);
 		}
 		free (var->Data);
