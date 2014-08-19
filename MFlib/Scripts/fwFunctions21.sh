@@ -647,7 +647,7 @@ function _fwSpinup()
 		for (( fwI = 0; fwI < ${#_fwStateARRAY[@]} ; ++fwI ))
 		do
 			local fwOutputITEM=(${_fwStateARRAY[${fwI}]})
-			echo "-o ${fwOutputITEM}=file:$(FwGDSFilename "${fwOutputITEM[0]}" "State"  "${fwVERSION}" "" "d")"
+			echo "-t ${fwOutputITEM}=file:$(FwGDSFilename "${fwOutputITEM[0]}" "State"  "${fwVERSION}" "" "d")"
 		done
 		for (( fwI = 0; fwI < ${#_fwOutputARRAY[@]} ; ++fwI ))
 		do
