@@ -102,15 +102,6 @@ int MFOptionParse (int argc, char *argv []) {
 			if ((argNum = CMargShiftLeft(argPos,argv,argNum)) <= argPos) break;
 			continue;
 		}
-		if (CMargTest (argv [argPos],"-pl","--option-listfile")) {
-			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) < 1) {
-				CMmsgPrint (CMmsgUsrError,"Missing option argument!\n");
-				return (CMfailed);
-			}
-			MFLoadConfig (argv [argPos],_MFOptionNew);
-			if ((argNum = CMargShiftLeft(argPos,argv,argNum)) <= argPos) break;
-			continue;
-		}
 		argPos++;
 	}
 	return (argNum);
