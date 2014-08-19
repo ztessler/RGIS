@@ -159,6 +159,8 @@ int MFDataStreamWrite (MFVariable_t *var, const char *date) {
 	int itemSize;
 	MFVarHeader_t header;
 
+	if (var->State) return (CMsucceeded);
+
 	memcpy (&header, &(var->Header), sizeof (MFVarHeader_t));
 	strncpy (header.Date, date, sizeof (header.Date) - 1);
 	itemSize = MFVarItemSize (header.DataType);
