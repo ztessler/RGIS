@@ -482,7 +482,10 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*conf) ()) {
 
 	for (var = MFVarGetByID (varID = 1);var != (MFVariable_t *) NULL;var = MFVarGetByID (++varID)) {
 		if (var->InStream  != (MFDataStream_t *) NULL) MFDataStreamClose (var->InStream);
-		if (var->OutStream != (MFDataStream_t *) NULL) MFDataStreamClose (var->OutStream);
+		if (var->OutStream != (MFDataStream_t *) NULL) {
+			if (var->State) { var->State = false; MFDataStreamWrite (var, timeCur); }
+			MFDataStreamClose (var->OutStream);
+		}
 		free (var->Data);
 	}
 	return (CMsucceeded);
