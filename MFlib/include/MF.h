@@ -53,6 +53,9 @@ typedef struct MFDataStream_s {
 		int    Int;
 		double Float;
 		} Handle;
+	pthread_t       Thread;
+	pthread_mutex_t Mutex;
+	pthread_cond_t  Cond;
 	} MFDataStream_t;
 
 typedef struct MFVarHeader_s {
