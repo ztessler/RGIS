@@ -1158,7 +1158,6 @@ DBInt DBImportNetCDF (DBObjData *data,const char *filename)
 
 	char name [NC_MAX_NAME], varname [NC_MAX_NAME], timeString [NC_MAX_NAME], /* varUnit [NC_MAX_NAME], */ longName [NC_MAX_NAME], layerName [DBStringLength];
 	size_t attlen;
-   nc_type ntype;
 	int ncid, status, id, i;
 	int ndims, nvars, natts, unlimdim;
 	int latdim = -1, londim = -1, levdim = -1, timedim = -1;
