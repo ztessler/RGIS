@@ -1728,14 +1728,12 @@ DBInt DBImportNetCDF (DBObjData *data,const char *filename)
 				return (DBFault);
 				}
 
-
-			
-				for (colID = 0;colID < colNum;colID++)
-					vector [colID] = CMmathEqualValues (vector [colID], fillValue) ? missingValue : scaleFactor * vector [colID] + dataOffset;
-				if (longitudes [0] < longitudes [1])
-					for (colID = 0;colID < colNum;colID++) ((float *) (dataRec->Data ())) [colNum * rowID + colID] = vector [colID];
-				else
-					for (colID = 0;colID < colNum;colID++) ((float *) (dataRec->Data ())) [colNum * rowID + colID] = vector [colNum - colID - 1];
+			for (colID = 0;colID < colNum;colID++)
+				vector [colID] = CMmathEqualValues (vector [colID], fillValue) ? missingValue : scaleFactor * vector [colID] + dataOffset;
+			if (longitudes [0] < longitudes [1])
+				for (colID = 0;colID < colNum;colID++) ((float *) (dataRec->Data ())) [colNum * rowID + colID] = vector [colID];
+			else
+				for (colID = 0;colID < colNum;colID++) ((float *) (dataRec->Data ())) [colNum * rowID + colID] = vector [colNum - colID - 1];
 			}
 		}
 	gridIF = new DBGridIF (data);
