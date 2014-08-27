@@ -164,7 +164,7 @@ DBInt DBImportASCIITable (DBObjTable *table, FILE *fp)
 	const char *fieldSTR;
 	int   bufferSize = 0, ret = DBSuccess;
 	int   recordNum  = 0, recordID, fieldID;
-	DBInt     intVal, maxInt   = -HUGE_VAL;
+	DBInt     intVal, maxInt   = 0x80000000; // Largest negative integer
 	DBFloat floatVal, maxFloat = -HUGE_VAL;
 	_DBImportASCIIHeader *header;
 	_DBImportASCIIRecord **records = (_DBImportASCIIRecord **) NULL;
