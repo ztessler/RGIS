@@ -1158,8 +1158,7 @@ DBInt DBImportNetCDF (DBObjData *data,const char *filename)
 
 	char name [NC_MAX_NAME], varname [NC_MAX_NAME], timeString [NC_MAX_NAME], /* varUnit [NC_MAX_NAME], */ longName [NC_MAX_NAME], layerName [DBStringLength];
 	size_t attlen;
-        nc_type ntype;
-        int data_type = 0;
+   nc_type ntype;
 	int ncid, status, id, i;
 	int ndims, nvars, natts, unlimdim;
 	int latdim = -1, londim = -1, levdim = -1, timedim = -1;
@@ -1634,16 +1633,6 @@ DBInt DBImportNetCDF (DBObjData *data,const char *filename)
 		int netcdfdims; int netcdfvars;int netcdfngatts;int recdim;
 		status  = nc_inq(ncid, &netcdfdims, &netcdfvars, &netcdfngatts, &recdim);
 
-		for(id=0;id <= netcdfvars;id++)
-			{
-			status = nc_inq_vartype (ncid,id,&ntype);
-
-			if (ntype == NC_FLOAT)
-        		{
-         	data_type = 1;
-				}
-			}
-
 	data->Extent (extent);
 	if (timedim != -1)
 		{
@@ -1718,11 +1707,7 @@ DBInt DBImportNetCDF (DBObjData *data,const char *filename)
 		cellWidthFLD->Float (layerRec,cellSize.X);
 		cellHeightFLD->Float (layerRec,cellSize.Y);
 		valueTypeFLD->Int (layerRec,DBTableFieldFloat);
-		if(data_type == 0) {
-			valueSizeFLD->Int (layerRec,sizeof (DBFloat));
-		}else {
-			valueSizeFLD->Int (layerRec,sizeof (DBFloat4));
-		}
+		valueSizeFLD->Int (layerRec,sizeof (DBFloat4));
 		layerFLD->Record (layerRec,dataRec = new DBObjRecord (layerName,((size_t) colNum) * rowNum * sizeof (DBFloat),sizeof (DBFloat)));
 		(data->Arrays ())->Add (dataRec);
 
@@ -1745,25 +1730,13 @@ DBInt DBImportNetCDF (DBObjData *data,const char *filename)
 				}
 
 
-			if(data_type == 0)
-				{
-					for (colID = 0;colID < colNum;colID++)
-						vector [colID] = CMmathEqualValues (vector [colID], fillValue) ? missingValue : scaleFactor * vector [colID] + dataOffset;
-					if (longitudes [0] < longitudes [1])
-						for (colID = 0;colID < colNum;colID++) ((double *) (dataRec->Data ())) [colNum * rowID + colID] = vector [colID];
-					else
-						for (colID = 0;colID < colNum;colID++) ((double *) (dataRec->Data ())) [colNum * rowID + colID] = vector [colNum - colID - 1];
-				} else 
-				{
-					for (colID = 0;colID < colNum;colID++)
-						vector [colID] = CMmathEqualValues (vector [colID], fillValue) ? missingValue : scaleFactor * vector [colID] + dataOffset;
-					if (longitudes [0] < longitudes [1])
-						for (colID = 0;colID < colNum;colID++) ((float *) (dataRec->Data ())) [colNum * rowID + colID] = vector [colID];
-					else
-						for (colID = 0;colID < colNum;colID++) ((float *) (dataRec->Data ())) [colNum * rowID + colID] = vector [colNum - colID - 1];
-				}
-
-
+			
+				for (colID = 0;colID < colNum;colID++)
+					vector [colID] = CMmathEqualValues (vector [colID], fillValue) ? missingValue : scaleFactor * vector [colID] + dataOffset;
+				if (longitudes [0] < longitudes [1])
+					for (colID = 0;colID < colNum;colID++) ((float *) (dataRec->Data ())) [colNum * rowID + colID] = vector [colID];
+				else
+					for (colID = 0;colID < colNum;colID++) ((float *) (dataRec->Data ())) [colNum * rowID + colID] = vector [colNum - colID - 1];
 			}
 		}
 	gridIF = new DBGridIF (data);
