@@ -79,8 +79,6 @@ void           CMthreadTeamDestroy    (CMthreadTeam_p);
 size_t         CMthreadProcessorNum   ();
 
 typedef void  (*CMthreadUserExecFunc)  (void *, void *, size_t);
-typedef void *(*CMthreadUserAllocFunc) (void *);
-typedef void *(*CMthreadUserFreeFunc)  (void *);
 
 typedef struct CMthreadTask_s {
 	size_t Id;
