@@ -234,7 +234,7 @@ DBInt DBImportASCIITable (DBObjTable *table, FILE *fp)
 	
 		strcpy (format,"Record%");
 		sprintf (format + 7,"0%dd",(int) (ceil (log10 (recordNum))));
-		printf ("%s\n",format);
+
 		for (recordID = 0;recordID < recordNum; recordID++)
 			{
 			sprintf (recordName,format,recordID + 1);
