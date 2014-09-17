@@ -146,7 +146,7 @@ class _DBImportASCIIHeader : public _DBImportASCIIRecord
 			{
 			if (FieldsPTR != (_DBImportASCIIHeaderField *) NULL) free (FieldsPTR);
 			}
-		int Ready () const { return (FieldsPTR != (_DBImportASCIIHeaderField *) NULL); }
+		int  Ready () const { return (FieldsPTR != (_DBImportASCIIHeaderField *) NULL); }
 		void Type     (int field, int type)     { FieldsPTR [field].Type (type); }
 		int  Type     (int field) const { return (FieldsPTR [field].Type ()); }
 		void Length   (int field, int length)   { FieldsPTR [field].Length (length); }
@@ -193,6 +193,8 @@ DBInt DBImportASCIITable (DBObjTable *table, FILE *fp)
 			header->Type (fieldID,DBVariableInt);
 			header->Length   (fieldID, 0);
 			header->Decimals (fieldID, 0);
+			maxInt   = 0x80000000;
+			maxFloat = -HUGE_VAL;
 			for (recordID = 0;recordID < recordNum; recordID++)
 				{
 				if ((fieldSTR = records[recordID]->Field(fieldID)) == (char *) NULL) continue;
@@ -208,62 +210,61 @@ DBInt DBImportASCIITable (DBObjTable *table, FILE *fp)
 					{ maxFloat = fabs (floatVal) > maxFloat ? fabs (floatVal) : maxFloat; continue; }
 				else	header->Type (fieldID,DBVariableString);
 				}
-			}
-		}
-	for (fieldID = 0; fieldID < header->FieldNum(); fieldID++)
-		{
-		if (header->Length(fieldID) == 0) continue;
-		switch (header->Type (fieldID))
-			{
-			default:
-			case DBVariableString:
-				header->Length (fieldID,0x01 << (int) (ceil (log2 ((float) header->Length (fieldID) + 1))));
-				format [0] = '%';
-				sprintf (format + 1,"%ds",header->Length(fieldID) + 1);
-				fieldFLD = new DBObjTableField (header->Field (fieldID),header->Type (fieldID),format,header->Length (fieldID));
-				break;
-			case DBVariableInt:
-				strcpy (format, DBMathIntAutoFormat   (maxInt));
-				fieldFLD = new DBObjTableField (header->Field (fieldID),header->Type (fieldID),format,sizeof (DBInt));
-				break;
-			case DBVariableFloat:
-				strcpy (format, DBMathFloatAutoFormat (maxFloat));
-				fieldFLD = new DBObjTableField (header->Field (fieldID),header->Type (fieldID),format,sizeof (DBFloat));
-				break;
-			}
-		table->AddField (fieldFLD);
-		}
-	sprintf (format + 1,"0%dd",(int) ceil (log10 (recordNum) + 1));
-	for (recordID = 0;recordID < recordNum; recordID++)
-		{
-		sprintf (recordName,format,recordID + 1);
-		if ((recordPTR = table->Add(recordName)) == (DBObjRecord *) NULL)
-			{
-			CMmsgPrint (CMmsgAppError, "New Record Addition Error in: %s %d",__FILE__,__LINE__);
-			ret = DBFault;
-			goto Stop;
-			}
-		for (fieldID = 0; fieldID < header->FieldNum(); fieldID++)
-			{
-			if ((fieldFLD = table->Field(header->Field (fieldID))) == (DBObjTableField *) NULL) continue;
-			if (records[recordID]->Field(fieldID) == (char *) NULL) continue;
-			switch (header->Type(fieldID))
+			if (header->Length(fieldID) == 0) continue;
+			switch (header->Type (fieldID))
 				{
 				default:
 				case DBVariableString:
-					fieldFLD->String(recordPTR,records[recordID]->Field(fieldID));
+					header->Length (fieldID,0x01 << (int) (ceil (log2 ((float) header->Length (fieldID) + 1))));
+					format [0] = '%';
+					sprintf (format + 1,"%ds",header->Length(fieldID) + 1);
+					fieldFLD = new DBObjTableField (header->Field (fieldID),header->Type (fieldID),format,header->Length (fieldID));
 					break;
 				case DBVariableInt:
-					if (sscanf (records[recordID]->Field(fieldID),"%d", &intVal)   != 1) intVal   = fieldFLD->IntNoData ();
-					fieldFLD->Int(recordPTR,intVal);
+					strcpy (format, DBMathIntAutoFormat   (maxInt));
+					fieldFLD = new DBObjTableField (header->Field (fieldID),header->Type (fieldID),format,sizeof (DBInt));
 					break;
 				case DBVariableFloat:
-					if (sscanf (records[recordID]->Field(fieldID),"%lf",  &floatVal) != 1) floatVal = fieldFLD->FloatNoData ();
-					fieldFLD->Float(recordPTR,floatVal);
-					break;					
+					strcpy (format, DBMathFloatAutoFormat (maxFloat));
+					fieldFLD = new DBObjTableField (header->Field (fieldID),header->Type (fieldID),format,sizeof (DBFloat));
+					break;
+				}
+			table->AddField (fieldFLD);
+			}
+	
+		for (recordID = 0;recordID < recordNum; recordID++)
+			{
+			sprintf (recordName,format,recordID + 1);
+			if ((recordPTR = table->Add(recordName)) == (DBObjRecord *) NULL)
+				{
+				CMmsgPrint (CMmsgAppError, "New Record Addition Error in: %s %d",__FILE__,__LINE__);
+				ret = DBFault;
+				goto Stop;
+				}
+			for (fieldID = 0; fieldID < header->FieldNum(); fieldID++)
+				{
+				if ((fieldFLD = table->Field(header->Field (fieldID))) == (DBObjTableField *) NULL) continue;
+				if (records[recordID]->Field(fieldID) == (char *) NULL) continue;
+				switch (header->Type(fieldID))
+					{
+					default:
+					case DBVariableString:
+						fieldFLD->String(recordPTR,records[recordID]->Field(fieldID));
+						break;
+					case DBVariableInt:
+						if (sscanf (records[recordID]->Field(fieldID),"%d", &intVal)   != 1) intVal   = fieldFLD->IntNoData ();
+						fieldFLD->Int(recordPTR,intVal);
+						break;
+					case DBVariableFloat:
+						if (sscanf (records[recordID]->Field(fieldID),"%lf",  &floatVal) != 1) floatVal = fieldFLD->FloatNoData ();
+						fieldFLD->Float(recordPTR,floatVal);
+						break;					
+					}
 				}
 			}
 		}
+	else
+		ret = DBFault;
 Stop:
 	for (recordID = 0;recordID < recordNum; recordID++) delete records [recordID];
 	if (records != (_DBImportASCIIRecord **) NULL) free (records);

@@ -24,7 +24,6 @@ char *DBMathIntAutoFormat (DBInt maxVal)
 	else
 		{
 		length = (DBInt) (ceil (log10 ((double) (abs (maxVal)))));
-		printf ("%d %d\n",maxVal, length);
 		if (maxVal < 0) length++;
 		format [0] = '%';
 		sprintf (format + 1,"%dd",length);
@@ -39,9 +38,8 @@ char *DBMathFloatAutoFormat (DBFloat maxVal)
 
 	i = (DBInt) (ceil (log10 (fabs(maxVal))));
 	
-	decimals = i > 0 ? (8 > i ? 8 - i - 2 : 0) : 0 - i - 3;
-	length   = i > 0 ?  i + decimals + 2         : decimals + 3;
-
+	decimals = i > 0 ? (i > 5 ? 0: 5 - i) : 0 - i - 2;
+	length   = i > 0 ?  i + decimals + 2  : decimals + 2;
 	format [0] = '%';
 	sprintf (format + 1,"%d.%df",length,decimals);
 	return (format);
