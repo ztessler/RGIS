@@ -244,12 +244,22 @@ int DBDataHeader::Write (FILE *file)
 int DBObjData::Read (const char *fileName)
 
 	{
+	DBInt ret;
 	FILE *file;
 
 	if (strncmp(CMfileExtension(fileName),"nc",2) == 0)
 		{
 		Type (DBTypeGridContinuous); // TODO: Limiting to Continuous grid
-		if (DBImportNetCDF (this,fileName) == DBFault) return (DBFault);
+		ret = DBImportNetCDF (this,fileName);
+		}
+	else if (strncmp(CMfileExtension(fileName),"gz",2) == 0)
+		{
+		char pCommand [strlen(fileName) + 16];
+		sprintf (pCommand,"gunzip -c %s", fileName);
+		if ((file = popen (pCommand,"r")) == (FILE *) NULL)
+		{ CMmsgPrint (CMmsgSysError, "File (%s) Opening Error in: %s %d", fileName, __FILE__,__LINE__); return (DBFault); }
+		ret = Read (file);
+		pclose (file);
 		}
 	else
 		{
@@ -258,10 +268,11 @@ int DBObjData::Read (const char *fileName)
 			CMmsgPrint (CMmsgAppError, "File (%s) Opening Error in: %s %d",fileName, __FILE__,__LINE__);
 			return (DBFault);
 			}
-		if (Read (file) == DBFault) return (DBFault);
+		ret = Read (file);
+		fclose (file);
 		}
 	FileName (fileName);
-	return (DBSuccess);
+	return (ret);
 	}
 
 int DBObjData::Read (FILE *file)
@@ -307,10 +318,19 @@ int DBObjData::Write (const char *fileName)
 
 	if (strncmp(CMfileExtension(fileName),"nc",2) == 0)
 		ret = DBExportNetCDF (this,fileName);
+	else if (strncmp(CMfileExtension(fileName),"gz",2) == 0)
+		{
+		char pCommand [strlen(fileName) + 16];
+		sprintf (pCommand,"gzip > %s", fileName);
+		if ((file = popen (pCommand,"w")) == (FILE *) NULL)
+			{ CMmsgPrint (CMmsgSysError, "File (%s) Opening Error in: %s %d", fileName, __FILE__,__LINE__); return (DBFault); }
+		ret = Write (file);
+		pclose (file);
+		}
 	else
 		{
 		if ((file = fopen (fileName,"w")) == (FILE *) NULL)
-		{ CMmsgPrint (CMmsgSysError, "File (%s) Opening Error in: %s %d", fileName, __FILE__,__LINE__); return (DBFault); }
+			{ CMmsgPrint (CMmsgSysError, "File (%s) Opening Error in: %s %d", fileName, __FILE__,__LINE__); return (DBFault); }
 		ret = Write (file);
 		fclose (file);
 		}
