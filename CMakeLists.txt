@@ -1,0 +1,17 @@
+cmake_minimum_required(VERSION 3.2)
+project(trunk)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
+add_subdirectory(CMlib)
+add_subdirectory(DBlib)
+add_subdirectory(Flib)
+add_subdirectory(MFlib)
+add_subdirectory(ncCommands)
+add_subdirectory(NClib)
+add_subdirectory(RGlib)
+add_subdirectory(rGIS)
+add_subdirectory(rgisPlot)
+add_subdirectory(UIlib)
+#set(SOURCE_FILES main.cpp)
+#add_executable(trunk ${SOURCE_FILES})
