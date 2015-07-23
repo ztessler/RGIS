@@ -3,6 +3,11 @@ project(trunk)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
+if(${CMAKE_HOST_APPLE})
+	link_directories(/sw/lib)
+	include_directories(/sw/include)
+endif(${CMAKE_HOST_APPLE})
+
 add_subdirectory(CMlib)
 add_subdirectory(DBlib)
 add_subdirectory(Flib)
