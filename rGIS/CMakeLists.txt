@@ -1,3 +1,4 @@
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 FILE(GLOB sources src/*.C)
 add_executable(rgis22 ${sources})
 target_link_libraries(rgis22 UI22 DB22 CM10 RG22 -lXm -lXt -lXext -lX11 -lnetcdf -ludunits2)

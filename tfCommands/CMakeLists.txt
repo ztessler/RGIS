@@ -1,0 +1,6 @@
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+foreach(loop_var FAccumulate FCut FSort FStat)
+	add_executable(${loop_var} src/${loop_var}.c)
+	target_link_libraries(${loop_var} LINK_PUBLIC CM10 DB22 F10 -lm)
+endforeach(loop_var)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ../CMlib/include ../NClib/include)
