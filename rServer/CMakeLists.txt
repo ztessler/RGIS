@@ -1,0 +1,5 @@
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+FILE(GLOB sources src/*.C)
+add_executable(rServer ${sources})
+target_link_libraries(rServer DB22 CM10 -lm)
+target_include_directories(rServer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include ../DBlib/include ../CMlib/include)
