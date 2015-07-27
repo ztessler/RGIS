@@ -79,16 +79,16 @@ bfekete@ccny.cuny.edu
 #define UIFault -1
 
 #define UISymbolMarker		0x01
-#define UISymbolLine			0x02
+#define UISymbolLine		0x02
 #define UISymbolShade		0x03
 #define UISymbolStick		0x04
 
 #define UIMenuNotImplemented (void (*) (Widget,void *,XmAnyCallbackStruct *)) NULL
 
-void	 UIAuxSetBooleanTrueCBK (Widget,int *,XmAnyCallbackStruct *);
-void	 UIAuxSetBooleanFalseCBK (Widget,int *,XmAnyCallbackStruct *);
-void	 UIAuxSetIntegerCBK (Widget,DBInt,XmAnyCallbackStruct *);
-void	 UIAuxSetToggleCBK (Widget,DBInt *,XmToggleButtonCallbackStruct *);
+void   UIAuxSetBooleanTrueCBK (Widget,int *,XmAnyCallbackStruct *);
+void   UIAuxSetBooleanFalseCBK (Widget,int *,XmAnyCallbackStruct *);
+void   UIAuxSetIntegerCBK (Widget,DBInt,XmAnyCallbackStruct *);
+void   UIAuxSetToggleCBK (Widget,DBInt *,XmToggleButtonCallbackStruct *);
 void   UIAuxObjectSelectCBK (Widget,Widget,XmAnyCallbackStruct *);
 void   UIAuxFileSelectCBK (Widget,Widget,XmAnyCallbackStruct *);
 void   UIAuxDirSelectCBK (Widget,Widget,XmAnyCallbackStruct *);
@@ -460,22 +460,22 @@ Widget UIDialogFormGetMainForm (Widget);
 Widget UIDialogFormGetOkButton (Widget);
 Widget UIDialogFormGetCancelButton (Widget);
 void   UIDialogFormPopup (Widget);
-void 	 UIDialogFormPopdown (Widget);
+void   UIDialogFormPopdown (Widget);
 void   UIDialogFormTitle (Widget,char *);
 
-int	 UIColorSet (int);
+int    UIColorSet (int);
 char  *UIColorSetName (int);
-Pixel	 UIColor (int,int);
+Pixel  UIColor (int,int);
 char  *UIStandardColorName (int);
-int	 UIColorNum (int);
+int    UIColorNum (int);
 
-void	 UILoopAddProc		(void (*) (void *),void *);
-void	 UILoopRemoveProc	(void (*) (void *),void *);
-int	 UILoop ();
-void	 UILoopStopCBK (Widget,void *,XmAnyCallbackStruct *);
+void   UILoopAddProc		(void (*) (void *),void *);
+void   UILoopRemoveProc	(void (*) (void *),void *);
+int    UILoop ();
+void   UILoopStopCBK (Widget,void *,XmAnyCallbackStruct *);
 
-void	 UIMessage (char *);
-int	 UIYesOrNo (char *);
+void   UIMessage (char *);
+int    UIYesOrNo (char *);
 
 typedef int (*UISelectCondFunc) (const DBObject *);
 Widget UISelectionCreate (char *);
@@ -495,15 +495,15 @@ void   UIPauseDialogClose ();
 #define	UINumberInputModeLogarithmic	0x01
 
 Widget 	UINumberInputCreate (Widget, char *, Arg *,int argNum,DBFloat,DBFloat,DBFloat, DBInt, char *);
-void	 	UINumberInputResize (Widget,Dimension,Dimension, Dimension);
+void    UINumberInputResize (Widget,Dimension,Dimension, Dimension);
 Widget 	UINumberInputGetScale (Widget);
-void		UINumberInputSetValue (Widget,DBFloat);
+void    UINumberInputSetValue (Widget,DBFloat);
 DBFloat	UINumberInputGetValue (Widget);
 
-DBInt  UIDataHeaderForm (DBObjData *data);
-DBInt  UIDataPropertiesForm (DBObjData *data);
-DBInt  UIRelateData (DBObjData *,DBObjRecord *);
-int    UISymbolEdit (DBObjTable *,int);
+DBInt   UIDataHeaderForm (DBObjData *data);
+DBInt   UIDataPropertiesForm (DBObjData *data);
+DBInt   UIRelateData (DBObjData *,DBObjRecord *);
+int     UISymbolEdit (DBObjTable *,int);
 DBObjTableField *UITableFieldEdit (DBObjTableField *);
 DBObjTableField *UITableFieldEdit ();
 DBInt UITableRedefineFields (DBObjTable *);

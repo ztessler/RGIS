@@ -109,7 +109,7 @@ static void _RGISFileOpenFileCBK (Widget widget,RGISWorkspace *workspace,XmAnyCa
 	DBDataset *dataset = UIDataset ();
 	DBObjData *data;
 
-	if (_RGISFileSelect == NULL) _RGISFileSelect = UIFileSelectionCreate ((char *) "GHAAS Data",NULL,(char *) "*.gdb?",XmFILE_REGULAR);
+	if (_RGISFileSelect == NULL) _RGISFileSelect = UIFileSelectionCreate ((char *) "GHAAS Data",NULL,(char *) "*.gdb*",XmFILE_REGULAR);
 
 	if ((fileName = UIFileSelection (_RGISFileSelect,true)) == NULL) return;
 
@@ -179,7 +179,7 @@ static void _RGISFileSaveCBK (Widget widget,RGISWorkspace *workspace,XmAnyCallba
 	DBObjectLIST<DBObjMetaEntry>	*metaList = dataset->MetaList ();
 	DBObjMetaEntry *metaEntry;
 
-	if (_RGISFileSelect == NULL) _RGISFileSelect = UIFileSelectionCreate ((char *) "GHAAS Data",NULL,(char *) "*.gdb?",XmFILE_REGULAR);
+	if (_RGISFileSelect == NULL) _RGISFileSelect = UIFileSelectionCreate ((char *) "GHAAS Data",NULL,(char *) "*.gdb*",XmFILE_REGULAR);
 
 	fileName = data->FileName ();
 	if (strlen (fileName) == 0)
