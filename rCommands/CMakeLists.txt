@@ -8,10 +8,10 @@ pntSymbolField rgis2asciigrid rgis2dm rgis2domain rgis2ds rgis2netcdf rgis2table
 tblConvCoord tblDecimalDate tblDeleteField tblDeleteRec tblIdleRec tblJoinTables tblMergeCoord tblMergeDate tblMJoinTables tblRedefField tblSelectRec
 tblSortRec tblSplitDate tblStatistics tblTopoCalc )
 	add_executable(${loop_var} src/CMD${loop_var}.C)
-	if(NOT ${CMAKE_HOST_APPLE})
+	if(${CMAKE_HOST_APPLE})
 		target_link_libraries(${loop_var} LINK_PUBLIC RG22 DB22 MF10 CM10 -lnetcdf -ludunits2 -lm)
-	else(NOT ${CMAKE_HOST_APPLE})
+	else(${CMAKE_HOST_APPLE})
 		target_link_libraries(${loop_var} LINK_PUBLIC RG22 DB22 MF10 CM10 -lnetcdf -ludunits2 -lm -pthread)
-	endif(NOT ${CMAKE_HOST_APPLE})
+	endif(${CMAKE_HOST_APPLE})
 endforeach(loop_var)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ../CMlib/include ../DBlib/include ../RGlib/include ../MFlib/include)
