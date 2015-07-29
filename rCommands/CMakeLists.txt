@@ -11,10 +11,10 @@ pntSymbolField rgis2asciigrid rgis2dm rgis2domain rgis2ds rgis2netcdf rgis2table
 tblConvCoord tblDecimalDate tblDeleteField tblDeleteRec tblIdleRec tblJoinTables tblMergeCoord tblMergeDate tblMJoinTables tblRedefField tblSelectRec
 tblSortRec tblSplitDate tblStatistics tblTopoCalc )
 	add_executable(${loop_var} src/CMD${loop_var}.C)
-	install (TARGETS ${loop_var} RUNTIME DESTINATION FOLDER_LOCATION)
 	if(${CMAKE_HOST_APPLE})
 		target_link_libraries(${loop_var} LINK_PUBLIC RG22 DB22 MF10 CM10 -lnetcdf -ludunits2 -lm)
 	else(${CMAKE_HOST_APPLE})
 		target_link_libraries(${loop_var} LINK_PUBLIC RG22 DB22 MF10 CM10 -lnetcdf -ludunits2 -lm -pthread)
 	endif(${CMAKE_HOST_APPLE})
+	install (TARGETS ${loop_var} RUNTIME DESTINATION FOLDER_LOCATION)
 endforeach(loop_var)
