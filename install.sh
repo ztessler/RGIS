@@ -18,10 +18,6 @@ fi
  source_dir="${0%/*}"
 [ "${source_dir}" == "." ] && source_dir=$(pwd)
 
-echo ${build_dir}
-echo ${source_dir}
-echo ${install_dir}
-
 mkdir ${build_dir}
 cd    ${build_dir}
  cmake -DCMAKE_INSTALL_PREFIX="${install_dir}" "${source_dir}"
