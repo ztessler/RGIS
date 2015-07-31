@@ -13,22 +13,27 @@ bfekete@ccny.cuny.edu
 #include<DB.H>
 #include<cpgplot.h>
 
-class RGPColorMapEntry
-	{
-	public:
-		DBShort Red;
-		DBShort Green;
-		DBShort Blue;
-	};
+class RGPColorMapEntry {
+    public:
+    DBShort Red;
+    DBShort Green;
+    DBShort Blue;
+};
 
 #define RGPBufferSIZE 0x100
 
-void RGPPrintMessage (DBInt,DBInt *,const char *);
-DBInt RGPPrintError (DBInt, DBInt, const char *);
-void  RGPInitPenColors ();
-DBInt RGPSetColorMap (RGPColorMapEntry *,DBInt);
+void RGPPrintMessage(DBInt, DBInt *, const char *);
 
-DBInt RGPDrawVecPoint (DBInt , DBInt *, DBObjData *);
-DBInt RGPDrawVecLine (DBInt , DBInt *, DBObjData *);
-DBInt RGPDrawGridContinuous (DBInt, DBInt *, DBObjData *);
-DBInt RGPDrawNetwork (DBInt, DBInt *, DBObjData *);
+DBInt RGPPrintError(DBInt, DBInt, const char *);
+
+void RGPInitPenColors();
+
+DBInt RGPSetColorMap(RGPColorMapEntry *, DBInt);
+
+DBInt RGPDrawVecPoint(DBInt, DBInt *, DBObjData *);
+
+DBInt RGPDrawVecLine(DBInt, DBInt *, DBObjData *);
+
+DBInt RGPDrawGridContinuous(DBInt, DBInt *, DBObjData *);
+
+DBInt RGPDrawNetwork(DBInt, DBInt *, DBObjData *);

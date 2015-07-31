@@ -16,102 +16,99 @@ bfekete@ccny.cuny.edu
 
 static char *_UISelection = NULL;
 
-static void _UINoMatchSelectionCallback (Widget widget,void *data,XmSelectionBoxCallbackStruct *callData)
-  { UIMessage ((char *) "Must Select!"); }
+static void _UINoMatchSelectionCallback(Widget widget, void *data, XmSelectionBoxCallbackStruct *callData) {
+    UIMessage((char *) "Must Select!");
+}
 
-static void _UIOkSelectionCallback (Widget widget,void *data,XmSelectionBoxCallbackStruct *callData)
+static void _UIOkSelectionCallback(Widget widget, void *data, XmSelectionBoxCallbackStruct *callData) {
+    if (!XmStringGetLtoR(callData->value, XmSTRING_DEFAULT_CHARSET, &_UISelection)) _UISelection = NULL;
+}
 
-	{
-	if (!XmStringGetLtoR (callData->value,XmSTRING_DEFAULT_CHARSET,&_UISelection))	_UISelection = NULL;
-	}
+Widget UISelectionCreate(char *selectTitle) {
+    Widget dShell, selection;
 
-Widget UISelectionCreate (char *selectTitle)
+    dShell = XtVaCreatePopupShell(selectTitle, xmDialogShellWidgetClass, UITopLevel(),
+                                  XmNminWidth, 200,
+                                  XmNallowShellResize, true,
+                                  XmNtransient, true,
+                                  XmNkeyboardFocusPolicy, XmEXPLICIT,
+                                  NULL);
+    selection = XtVaCreateWidget("UISelectionDialog", xmSelectionBoxWidgetClass, dShell,
+                                 XmNnoResize, true,
+                                 XmNdialogStyle, XmDIALOG_FULL_APPLICATION_MODAL,
+                                 XmNautoUnmanage, false,
+                                 XmNmustMatch, true,
+                                 NULL);
+    XtVaSetValues(XmSelectionBoxGetChild(selection, XmDIALOG_OK_BUTTON), XmNdefaultButtonShadowThickness, 0, NULL);
+    XtVaSetValues(XmSelectionBoxGetChild(selection, XmDIALOG_CANCEL_BUTTON), XmNdefaultButtonShadowThickness, 0, NULL);
+    XtUnmanageChild(XmSelectionBoxGetChild(selection, XmDIALOG_HELP_BUTTON));
+    XtUnmanageChild(XmSelectionBoxGetChild(selection, XmDIALOG_APPLY_BUTTON));
+    XtUnmanageChild(XmSelectionBoxGetChild(selection, XmDIALOG_SELECTION_LABEL));
+    XtUnmanageChild(XmSelectionBoxGetChild(selection, XmDIALOG_TEXT));
 
-	{
-	Widget dShell, selection;
-
-	dShell = XtVaCreatePopupShell (selectTitle,xmDialogShellWidgetClass,UITopLevel (),
-										XmNminWidth,				200,
-										XmNallowShellResize,		true,
-										XmNtransient,				true,
-										XmNkeyboardFocusPolicy,	XmEXPLICIT,
-										NULL);
-	selection = XtVaCreateWidget ("UISelectionDialog",xmSelectionBoxWidgetClass,dShell,
-										XmNnoResize,				true,
-										XmNdialogStyle,			XmDIALOG_FULL_APPLICATION_MODAL,
-										XmNautoUnmanage,			false,
-										XmNmustMatch,				true,
-										NULL);
-	XtVaSetValues (XmSelectionBoxGetChild (selection,XmDIALOG_OK_BUTTON),XmNdefaultButtonShadowThickness, 0,NULL);
-	XtVaSetValues (XmSelectionBoxGetChild (selection,XmDIALOG_CANCEL_BUTTON),XmNdefaultButtonShadowThickness, 0,NULL);
-	XtUnmanageChild (XmSelectionBoxGetChild (selection,XmDIALOG_HELP_BUTTON));
-	XtUnmanageChild (XmSelectionBoxGetChild (selection,XmDIALOG_APPLY_BUTTON));
-	XtUnmanageChild (XmSelectionBoxGetChild (selection,XmDIALOG_SELECTION_LABEL));
-	XtUnmanageChild (XmSelectionBoxGetChild (selection,XmDIALOG_TEXT));
-
-	XtAddCallback (selection,XmNokCallback,(XtCallbackProc) _UIOkSelectionCallback,NULL);
-	XtAddCallback (selection,XmNokCallback,(XtCallbackProc) UILoopStopCBK,NULL);
-	XtAddCallback (selection,XmNcancelCallback,(XtCallbackProc)	UILoopStopCBK,NULL);
-	XtAddCallback (selection,XmNdestroyCallback,(XtCallbackProc) UILoopStopCBK,NULL);
-	XtAddCallback (selection,XmNnoMatchCallback,(XtCallbackProc) _UINoMatchSelectionCallback,NULL);
-	return (selection);
-	}
+    XtAddCallback(selection, XmNokCallback, (XtCallbackProc) _UIOkSelectionCallback, NULL);
+    XtAddCallback(selection, XmNokCallback, (XtCallbackProc) UILoopStopCBK, NULL);
+    XtAddCallback(selection, XmNcancelCallback, (XtCallbackProc) UILoopStopCBK, NULL);
+    XtAddCallback(selection, XmNdestroyCallback, (XtCallbackProc) UILoopStopCBK, NULL);
+    XtAddCallback(selection, XmNnoMatchCallback, (XtCallbackProc) _UINoMatchSelectionCallback, NULL);
+    return (selection);
+}
 
 
-char *UISelection (Widget widget,char *items,int itemSize,int itemNum)
+char *UISelection(Widget widget, char *items, int itemSize, int itemNum) {
+    int i;
+    XmString *strings;
 
-	{
-	int i;
-	XmString *strings;
+    if ((strings = (XmString *) calloc(itemNum, sizeof(XmString))) == NULL) {
+        CMmsgPrint(CMmsgSysError, "Memory Allocation Error in: %s %d", __FILE__, __LINE__);
+        return (NULL);
+    }
+    for (i = 0; i < itemNum; ++i) strings[i] = XmStringCreate(items + i * itemSize, UICharSetNormal);
+    _UISelection = NULL;
+    XtVaSetValues(widget, XmNlistItems, strings, XmNlistItemCount, itemNum, NULL);
+    XtManageChild(widget);
 
-	if ((strings = (XmString *) calloc	(itemNum,sizeof (XmString))) == NULL)
-		{
-		CMmsgPrint (CMmsgSysError, "Memory Allocation Error in: %s %d",__FILE__,__LINE__);
-		return (NULL);
-		}
-	for (i = 0;i < itemNum;++i) strings [i] = XmStringCreate (items + i * itemSize,UICharSetNormal);
-	_UISelection = NULL;
-	XtVaSetValues (widget,XmNlistItems, strings,XmNlistItemCount, itemNum,NULL);
-	XtManageChild (widget);
+    while (UILoop());
+    XtUnmanageChild(widget);
 
-	while (UILoop ());
-	XtUnmanageChild (widget);
+    for (i = 0; i < itemNum; ++i) XmStringFree(strings[i]);
+    free(strings);
+    return (_UISelection);
+}
 
-	for (i = 0;i < itemNum;++i) XmStringFree (strings [i]);
-	free (strings);
-	return (_UISelection);
-	}
+static DBInt _UISelectObjectAll(const DBObject *obj) { return (true); }
 
-static DBInt _UISelectObjectAll (const DBObject *obj) { return (true); }
+char *UISelectObject(Widget widget, DBObjectLIST<DBObject> *objList, DBInt (*condFunc)(const DBObject *)) {
+    int i = 0;
+    XmString *strings;
+    DBObject *obj;
 
-char *UISelectObject (Widget widget,DBObjectLIST<DBObject> *objList,DBInt (*condFunc) (const DBObject *))
+    if (objList->ItemNum() < 1) {
+        UIMessage((char *) "Empty List");
+        return (NULL);
+    }
+    if ((strings = (XmString *) calloc(objList->ItemNum(), sizeof(XmString))) == NULL) {
+        CMmsgPrint(CMmsgSysError, "Memory Allocation Error in: %s %d", __FILE__, __LINE__);
+        return (NULL);
+    }
 
-	{
-	int i = 0;
-	XmString *strings;
-	DBObject *obj;
+    if (condFunc == (UISelectCondFunc) NULL) condFunc = _UISelectObjectAll;
+    for (obj = objList->First(); obj != NULL; obj = objList->Next())
+        if (((obj->Flags() & DBObjectFlagIdle) != DBObjectFlagIdle) && (*condFunc)(obj))
+            strings[i++] = XmStringCreateSimple(obj->Name());
 
-	if (objList->ItemNum () < 1) { UIMessage ((char *) "Empty List"); return (NULL); }
-	if ((strings = (XmString *) calloc	(objList->ItemNum (),sizeof (XmString))) == NULL)
-		{ CMmsgPrint (CMmsgSysError, "Memory Allocation Error in: %s %d",__FILE__,__LINE__); return (NULL); }
+    _UISelection = NULL;
+    XtVaSetValues(widget, XmNlistItems, strings, XmNlistItemCount, i, NULL);
+    XtManageChild(widget);
 
-	if (condFunc == (UISelectCondFunc) NULL) condFunc = _UISelectObjectAll;
-	for (obj = objList->First ();obj != NULL;obj = objList->Next ())
-		if (((obj->Flags () & DBObjectFlagIdle) != DBObjectFlagIdle) && (*condFunc) (obj))
-			strings [i++] = XmStringCreateSimple (obj->Name ());
+    while (UILoop());
+    XtUnmanageChild(widget);
 
-	_UISelection = NULL;
-	XtVaSetValues (widget,XmNlistItems, strings,XmNlistItemCount, i,NULL);
-	XtManageChild (widget);
+    for (; i > 0; --i) XmStringFree(strings[i - 1]);
+    free(strings);
+    return (_UISelection);
+}
 
-	while (UILoop ());
-	XtUnmanageChild (widget);
-
-	for (;i > 0;--i) XmStringFree (strings [i - 1]);
-	free (strings);
-	return (_UISelection);
-	}
-
-char *UISelectObject (Widget widget,DBObjectLIST<DBObject> *objList)
-
-	{ return (UISelectObject (widget,objList,_UISelectObjectAll)); }
+char *UISelectObject(Widget widget, DBObjectLIST<DBObject> *objList) {
+    return (UISelectObject(widget, objList, _UISelectObjectAll));
+}

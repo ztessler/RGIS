@@ -6,6 +6,11 @@ if [ "${install_dir}" == "" ]
 then
 	echo "Usage: ${0##*/} <install_path>" 
 	exit 0
+else
+    if [ "${install_dir%%/*}" !=  "" ]
+    then
+       install_dir="$(pwd)/${install_dir}"
+    fi
 fi
 
 if ! [ -e "${install_dir}" ]
@@ -14,9 +19,13 @@ then
 	exit 1;
 fi
 
-  build_dir=~/.TEMPghaas_build
+  build_dir=/tmp/ghaas_build
  source_dir="${0%/*}"
 [ "${source_dir}" == "." ] && source_dir=$(pwd)
+
+# echo ${source_dir}
+# echo ${build_dir}
+# echo ${install_dir}
 
 mkdir ${build_dir}
 cd    ${build_dir}

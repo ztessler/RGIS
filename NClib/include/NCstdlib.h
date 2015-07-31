@@ -9,9 +9,10 @@ extern "C" {
 #endif
 
 void SetDebug();
+
 bool GetDebug();
 
-	#ifdef NCDEBUG
+#ifdef NCDEBUG
 	#include<malloc.h>
 		extern int _StartSize;
 		extern int _MaxSize;
@@ -21,11 +22,11 @@ bool GetDebug();
 		#define initMemInfo() _StartSize = mallinfo().uordblks;
 		void printMemInfo();
 	#else
-		#define Dprint(arg,arg2,arg3)
-		#define Dprint2(arg,arg2,arg3,arg4)
-		#define initMemInfo()
-		#define printMemInfo()
-	#endif
+#define Dprint(arg, arg2, arg3)
+#define Dprint2(arg, arg2, arg3, arg4)
+#define initMemInfo()
+#define printMemInfo()
+#endif
 
 #if defined(__cplusplus)
 }

@@ -13,363 +13,370 @@ bfekete@ccny.cuny.edu
 #include <DB.H>
 #include <DBif.H>
 
-DBDataHeader::DBDataHeader ()
+DBDataHeader::DBDataHeader() {
+    ByteOrderVAR = 1;
+    Type(DBFault);
+    MajorVAR = 2;
+    MinorVAR = 1;
+    Projection(0);
+    Precision(0);
+    SpatialUnit(0);
+    ValueUnit(0);
+    MinScale(3);
+    MaxScale(7);
+}
 
-	{
-	ByteOrderVAR = 1;
-	Type (DBFault);
-	MajorVAR = 2;
-	MinorVAR = 1;
-	Projection	(0);
-	Precision	(0);
-	SpatialUnit	(0);
-	ValueUnit	(0);
-	MinScale		(3);
-	MaxScale 	(7);
-	}
+DBDataHeader::DBDataHeader(const DBDataHeader &header) {
+    ByteOrderVAR = 1;
+    Type(header.Type());
+    MajorVAR = 2;
+    MinorVAR = 1;
+    Projection(header.Projection());
+    Precision(header.Precision());
+    SpatialUnit(header.SpatialUnit());
+    ValueUnit(header.ValueUnit());
+    MinScale(header.MinScale());
+    MaxScale(header.MaxScale());
+    ExtentVAR = header.Extent();
+}
 
-DBDataHeader::DBDataHeader (const DBDataHeader &header)
+void DBDataHeader::Swap() {
+    DBByteOrderSwapHalfWord(&ByteOrderVAR);
+    DBByteOrderSwapHalfWord(&TypeVAR);
+    DBByteOrderSwapHalfWord(&MajorVAR);
+    DBByteOrderSwapHalfWord(&MinorVAR);
 
-	{
-	ByteOrderVAR = 1;
-	Type (header.Type ());
-	MajorVAR = 2;
-	MinorVAR = 1;
-	Projection	(header.Projection ());
-	Precision	(header.Precision ());
-	SpatialUnit	(header.SpatialUnit ());
-	ValueUnit	(header.ValueUnit ());
-	MinScale		(header.MinScale ());
-	MaxScale 	(header.MaxScale ());
-	ExtentVAR = header.Extent();
-	}
+    DBByteOrderSwapHalfWord(&ProjectionVAR);
+    DBByteOrderSwapHalfWord(&PrecisionVAR);
+    DBByteOrderSwapHalfWord(&SpatialUnitVAR);
+    DBByteOrderSwapHalfWord(&ValueUnitVAR);
 
-void DBDataHeader::Swap ()
+    DBByteOrderSwapHalfWord(&MaxScaleVAR);
+    DBByteOrderSwapHalfWord(&MinScaleVAR);
+    DBByteOrderSwapWord(&DummyVAR);
+    ExtentVAR.Swap();
+    LastModVAR.Swap();
+}
 
-	{
-	DBByteOrderSwapHalfWord (&ByteOrderVAR);
-	DBByteOrderSwapHalfWord (&TypeVAR);
-	DBByteOrderSwapHalfWord (&MajorVAR);
-	DBByteOrderSwapHalfWord (&MinorVAR);
+void DBObjData::Initialize() {
+    TablesPTR = new DBObjectLIST<DBObjTable>("Data Tables");
+    DocsPTR = new DBObjectLIST<DBObjRecord>("Doc Records");
+    ArraysPTR = new DBObjectLIST<DBObjRecord>("Data Records");
+    DispPTR = new DBObjectLIST<DBObject>("Data Display");
+    LinkedDataPTR = (DBObjData *) NULL;
+    strcpy(FileNameSTR, "");
+}
 
-	DBByteOrderSwapHalfWord (&ProjectionVAR);
-	DBByteOrderSwapHalfWord (&PrecisionVAR);
-	DBByteOrderSwapHalfWord (&SpatialUnitVAR);
-	DBByteOrderSwapHalfWord (&ValueUnitVAR);
+DBObjTable *_DBCreateDataBlockSymbols();
 
-	DBByteOrderSwapHalfWord (&MaxScaleVAR);
-	DBByteOrderSwapHalfWord (&MinScaleVAR);
-	DBByteOrderSwapWord (&DummyVAR);
-	ExtentVAR.Swap ();
-	LastModVAR.Swap ();
-	}
+DBObjTable *_DBCreateDataBlockPoints();
 
-void DBObjData::Initialize ()
+DBObjTable *_DBCreateDataBlockNodes();
 
-	{
-	TablesPTR = new DBObjectLIST<DBObjTable>  ("Data Tables");
-	DocsPTR   = new DBObjectLIST<DBObjRecord> ("Doc Records");
-	ArraysPTR = new DBObjectLIST<DBObjRecord> ("Data Records");
-	DispPTR   = new DBObjectLIST<DBObject>    ("Data Display");
-	LinkedDataPTR = (DBObjData *)  NULL;
-	strcpy (FileNameSTR,"");
-	}
+DBObjTable *_DBCreateDataBlockLines();
 
-DBObjTable *_DBCreateDataBlockSymbols           ();
-DBObjTable *_DBCreateDataBlockPoints	         ();
-DBObjTable *_DBCreateDataBlockNodes	            ();
-DBObjTable *_DBCreateDataBlockLines	            ();
-DBObjTable *_DBCreateDataBlockContours          ();
-DBObjTable *_DBCreateDataBlockPolygons          ();
-DBObjTable *_DBCreateDataBlockNetBasins         ();
-DBObjTable *_DBCreateDataBlockNetCells          ();
-DBObjTable *_DBCreateDataBlockGridLayers        ();
-DBObjTable *_DBCreateDataBlockGridVariableStats ();
-DBObjTable *_DBCreateDataBlockGridCategoryTable ();
-DBObjTable *_DBCreateDataBlockRelateTable       ();
+DBObjTable *_DBCreateDataBlockContours();
 
-DBObjData::DBObjData (DBObjData &data) : DBObject (data), DBDataHeader (data._Header ())
-	{
-	DBObjTable *table;
-	DBObjRecord *record, *obj;
-	DBObjTableField *field;
-	DBObjectLIST<DBObjTableField> *fields;
-	strcpy (FileNameSTR,"");
-	TablesPTR = new DBObjectLIST<DBObjTable>  (*data.TablesPTR);
-	DocsPTR   = new DBObjectLIST<DBObjRecord> (*data.DocsPTR);
-	ArraysPTR = new DBObjectLIST<DBObjRecord> (*data.ArraysPTR);
-	DispPTR = new DBObjectLIST<DBObject> ("Data Display");
-	LinkedDataPTR = (DBObjData *)  NULL;
-	for (table = TablesPTR->First ();table != (DBObjTable *) NULL;table = TablesPTR->Next ())
-		{
-		fields = table->Fields ();
-		for (record = table->First ();record != (DBObjRecord *) NULL;record = table->Next ())
-			{
-			for (field = fields->First ();field != (DBObjTableField *) NULL;field = fields->Next ())
-				switch (field->Type ())
-					{
-					case DBTableFieldTableRec:
-					case DBTableFieldDataRec:
-						if ((obj = field->Record (record)) != NULL) field->Record (record,(DBObjRecord *) ((char *) NULL + obj->RowID ()));
-						else field->Record (record,(DBObjRecord *) DBFault);
-						break;
-					}
-			}
-		}
-	BuildFields ();
-	}
+DBObjTable *_DBCreateDataBlockPolygons();
 
-void DBObjData::Type (DBInt type)
+DBObjTable *_DBCreateDataBlockNetBasins();
 
-	{
-	DBInt realData = true;
-	DBDataHeader::Type (type);
-	switch (type)
-		{
-		case DBTypeVectorPoint:
-			{
-			DBObjTable *items, *symbols;
-			DBObjTableField *symFLD;
-			TablesPTR->Add (symbols = _DBCreateDataBlockSymbols());
-			TablesPTR->Add (items   = _DBCreateDataBlockPoints	());
-			symFLD = items->Field (DBrNSymbol);	symFLD->RecordProp (symbols->RowID ());
-			break;
-			}
-		case DBTypeVectorLine:
-			{
-			DBObjTable *items, *nodes, *symbols;
-			DBObjTableField *symFLD;
-			DBObjTableField *fromNodeFLD;
-			DBObjTableField *toNodeFLD;
+DBObjTable *_DBCreateDataBlockNetCells();
 
-			TablesPTR->Add (symbols	= _DBCreateDataBlockSymbols ());
-			TablesPTR->Add (nodes	= _DBCreateDataBlockNodes	());
-			TablesPTR->Add (items 	= _DBCreateDataBlockLines	());
-			symFLD 		= items->Field (DBrNSymbol);		symFLD->RecordProp		(symbols->RowID ());
-			fromNodeFLD	= items->Field (DBrNFromNode);	fromNodeFLD->RecordProp (nodes->RowID ());
-			toNodeFLD	= items->Field (DBrNToNode);		toNodeFLD->RecordProp	(nodes->RowID ());
-			break;
-			}
-		case DBTypeVectorPolygon:
-			{
-			DBObjTable *items, *nodes, *lines, *symbols;
-			DBObjTableField *symFLD;
-			DBObjTableField *fromNodeFLD;
-			DBObjTableField *toNodeFLD;
-			DBObjTableField *nextLineFLD;
-			DBObjTableField *prevLineFLD;
-			DBObjTableField *leftPolyFLD;
-			DBObjTableField *rightPolyFLD;
-			DBObjTableField *firstLineFLD;
+DBObjTable *_DBCreateDataBlockGridLayers();
 
-			TablesPTR->Add (symbols = _DBCreateDataBlockSymbols  ());
-			TablesPTR->Add (nodes	= _DBCreateDataBlockNodes    ());
-			TablesPTR->Add (lines	= _DBCreateDataBlockContours ());
-			TablesPTR->Add (items   = _DBCreateDataBlockPolygons ());
+DBObjTable *_DBCreateDataBlockGridVariableStats();
 
-			symFLD		= items->Field (DBrNSymbol);		symFLD->RecordProp 		(symbols->RowID ());
-			fromNodeFLD	= lines->Field (DBrNFromNode);	fromNodeFLD->RecordProp (nodes->RowID ());
-			toNodeFLD	= lines->Field (DBrNToNode);		toNodeFLD->RecordProp	(nodes->RowID ());
-			nextLineFLD	= lines->Field (DBrNNextLine);	nextLineFLD->RecordProp	(lines->RowID ());
-			prevLineFLD	= lines->Field (DBrNPrevLine);	prevLineFLD->RecordProp	(lines->RowID ());
-			leftPolyFLD	= lines->Field (DBrNLeftPoly);	leftPolyFLD->RecordProp	(items->RowID ());
-			rightPolyFLD= lines->Field (DBrNRightPoly);	rightPolyFLD->RecordProp(items->RowID ());
-			firstLineFLD= items->Field (DBrNFirstLine);	firstLineFLD->RecordProp(lines->RowID ());
-			break;
-			}
-		case DBTypeNetwork:
-			{
-			DBObjTable *basins, *symbols;
-			DBObjTableField *symField;
-			TablesPTR->Add (symbols = _DBCreateDataBlockSymbols  ());
-			TablesPTR->Add (basins	= _DBCreateDataBlockNetBasins ());
-			TablesPTR->Add (_DBCreateDataBlockNetCells  ());
-			TablesPTR->Add (_DBCreateDataBlockGridLayers ());
-			symField = basins->Field  (DBrNSymbol);		symField->RecordProp (symbols->RowID ());
-			break;
-			}
-		case DBTypeGridContinuous:
-			{
-			TablesPTR->Add (_DBCreateDataBlockGridLayers ());
-			TablesPTR->Add (_DBCreateDataBlockGridVariableStats ());
-			break;
-			}
-		case DBTypeGridDiscrete:
-			{
-			DBObjTable *items, *symbols;
-			DBObjTableField *symFLD;
+DBObjTable *_DBCreateDataBlockGridCategoryTable();
 
-			TablesPTR->Add (symbols = _DBCreateDataBlockSymbols  ());
-			TablesPTR->Add (_DBCreateDataBlockGridLayers ());
-			TablesPTR->Add (items = _DBCreateDataBlockGridCategoryTable ());
-			symFLD		= items->Field (DBrNSymbol);		symFLD->RecordProp 		(symbols->RowID ());
-			break;
-			}
-		case	DBTypeTable:
-			TablesPTR->Add (new DBObjTable (DBrNItems));
-			break;
-		default:	realData = false;	break;
-		}
-	if (realData) TablesPTR->Add (_DBCreateDataBlockRelateTable ());
-	}
+DBObjTable *_DBCreateDataBlockRelateTable();
 
-void DBObjData::Document (const char *docName,const char *string)
+DBObjData::DBObjData(DBObjData &data) : DBObject(data), DBDataHeader(data._Header()) {
+    DBObjTable *table;
+    DBObjRecord *record, *obj;
+    DBObjTableField *field;
+    DBObjectLIST<DBObjTableField> *fields;
+    strcpy(FileNameSTR, "");
+    TablesPTR = new DBObjectLIST<DBObjTable>(*data.TablesPTR);
+    DocsPTR = new DBObjectLIST<DBObjRecord>(*data.DocsPTR);
+    ArraysPTR = new DBObjectLIST<DBObjRecord>(*data.ArraysPTR);
+    DispPTR = new DBObjectLIST<DBObject>("Data Display");
+    LinkedDataPTR = (DBObjData *) NULL;
+    for (table = TablesPTR->First(); table != (DBObjTable *) NULL; table = TablesPTR->Next()) {
+        fields = table->Fields();
+        for (record = table->First(); record != (DBObjRecord *) NULL; record = table->Next()) {
+            for (field = fields->First(); field != (DBObjTableField *) NULL; field = fields->Next())
+                switch (field->Type()) {
+                    case DBTableFieldTableRec:
+                    case DBTableFieldDataRec:
+                        if ((obj = field->Record(record)) != NULL)
+                            field->Record(record, (DBObjRecord *) ((char *) NULL + obj->RowID()));
+                        else field->Record(record, (DBObjRecord *) DBFault);
+                        break;
+                }
+        }
+    }
+    BuildFields();
+}
 
-	{
-	DBObjRecord *obj = DocsPTR->Item (docName);
+void DBObjData::Type(DBInt type) {
+    DBInt realData = true;
+    DBDataHeader::Type(type);
+    switch (type) {
+        case DBTypeVectorPoint: {
+            DBObjTable *items, *symbols;
+            DBObjTableField *symFLD;
+            TablesPTR->Add(symbols = _DBCreateDataBlockSymbols());
+            TablesPTR->Add(items = _DBCreateDataBlockPoints());
+            symFLD = items->Field(DBrNSymbol);
+            symFLD->RecordProp(symbols->RowID());
+            break;
+        }
+        case DBTypeVectorLine: {
+            DBObjTable *items, *nodes, *symbols;
+            DBObjTableField *symFLD;
+            DBObjTableField *fromNodeFLD;
+            DBObjTableField *toNodeFLD;
 
-	if (obj == (DBObjRecord *) NULL)
-		{
-		DocsPTR->Add (obj = new DBObjRecord (docName,sizeof (DBVarString)));
-		memset (obj->Data (),0,sizeof (DBVarString));
-		((DBVarString *) obj->Data ())->VString (string);
-		}
-	else ((DBVarString *) obj->Data ())->VString (string);
-	}
+            TablesPTR->Add(symbols = _DBCreateDataBlockSymbols());
+            TablesPTR->Add(nodes = _DBCreateDataBlockNodes());
+            TablesPTR->Add(items = _DBCreateDataBlockLines());
+            symFLD = items->Field(DBrNSymbol);
+            symFLD->RecordProp(symbols->RowID());
+            fromNodeFLD = items->Field(DBrNFromNode);
+            fromNodeFLD->RecordProp(nodes->RowID());
+            toNodeFLD = items->Field(DBrNToNode);
+            toNodeFLD->RecordProp(nodes->RowID());
+            break;
+        }
+        case DBTypeVectorPolygon: {
+            DBObjTable *items, *nodes, *lines, *symbols;
+            DBObjTableField *symFLD;
+            DBObjTableField *fromNodeFLD;
+            DBObjTableField *toNodeFLD;
+            DBObjTableField *nextLineFLD;
+            DBObjTableField *prevLineFLD;
+            DBObjTableField *leftPolyFLD;
+            DBObjTableField *rightPolyFLD;
+            DBObjTableField *firstLineFLD;
 
-char *DBObjData::Document (const char *docName)
+            TablesPTR->Add(symbols = _DBCreateDataBlockSymbols());
+            TablesPTR->Add(nodes = _DBCreateDataBlockNodes());
+            TablesPTR->Add(lines = _DBCreateDataBlockContours());
+            TablesPTR->Add(items = _DBCreateDataBlockPolygons());
 
-	{
-	DBObjRecord *obj = DocsPTR->Item (docName);
-	if (obj == (DBObjRecord *) NULL)
-		{
-		if ((strcmp (docName,DBDocSubject) == 0) || (strcmp (docName,DBDocGeoDomain) == 0))
-			{ Document (docName,(char *) "unspecified"); return ((char *) "unspecified"); }
-		else return ((char *) "");
-		}
-	return (((DBVarString *) obj->Data ())->VString ());
-	}
+            symFLD = items->Field(DBrNSymbol);
+            symFLD->RecordProp(symbols->RowID());
+            fromNodeFLD = lines->Field(DBrNFromNode);
+            fromNodeFLD->RecordProp(nodes->RowID());
+            toNodeFLD = lines->Field(DBrNToNode);
+            toNodeFLD->RecordProp(nodes->RowID());
+            nextLineFLD = lines->Field(DBrNNextLine);
+            nextLineFLD->RecordProp(lines->RowID());
+            prevLineFLD = lines->Field(DBrNPrevLine);
+            prevLineFLD->RecordProp(lines->RowID());
+            leftPolyFLD = lines->Field(DBrNLeftPoly);
+            leftPolyFLD->RecordProp(items->RowID());
+            rightPolyFLD = lines->Field(DBrNRightPoly);
+            rightPolyFLD->RecordProp(items->RowID());
+            firstLineFLD = items->Field(DBrNFirstLine);
+            firstLineFLD->RecordProp(lines->RowID());
+            break;
+        }
+        case DBTypeNetwork: {
+            DBObjTable *basins, *symbols;
+            DBObjTableField *symField;
+            TablesPTR->Add(symbols = _DBCreateDataBlockSymbols());
+            TablesPTR->Add(basins = _DBCreateDataBlockNetBasins());
+            TablesPTR->Add(_DBCreateDataBlockNetCells());
+            TablesPTR->Add(_DBCreateDataBlockGridLayers());
+            symField = basins->Field(DBrNSymbol);
+            symField->RecordProp(symbols->RowID());
+            break;
+        }
+        case DBTypeGridContinuous: {
+            TablesPTR->Add(_DBCreateDataBlockGridLayers());
+            TablesPTR->Add(_DBCreateDataBlockGridVariableStats());
+            break;
+        }
+        case DBTypeGridDiscrete: {
+            DBObjTable *items, *symbols;
+            DBObjTableField *symFLD;
 
-DBRegion DBObjData::Extent (DBObjRecord *record)
+            TablesPTR->Add(symbols = _DBCreateDataBlockSymbols());
+            TablesPTR->Add(_DBCreateDataBlockGridLayers());
+            TablesPTR->Add(items = _DBCreateDataBlockGridCategoryTable());
+            symFLD = items->Field(DBrNSymbol);
+            symFLD->RecordProp(symbols->RowID());
+            break;
+        }
+        case    DBTypeTable:
+            TablesPTR->Add(new DBObjTable(DBrNItems));
+            break;
+        default:
+            realData = false;
+            break;
+    }
+    if (realData) TablesPTR->Add(_DBCreateDataBlockRelateTable());
+}
 
-	{
-	DBRegion extent;
-	DBCoordinate coord;
-	DBFloat delta;
-	DBObjTable *items;
-	DBObjTableField *field;
+void DBObjData::Document(const char *docName, const char *string) {
+    DBObjRecord *obj = DocsPTR->Item(docName);
 
-	if (record == (DBObjRecord *) NULL) return (Extent ());
+    if (obj == (DBObjRecord *) NULL) {
+        DocsPTR->Add(obj = new DBObjRecord(docName, sizeof(DBVarString)));
+        memset(obj->Data(), 0, sizeof(DBVarString));
+        ((DBVarString *) obj->Data())->VString(string);
+    }
+    else ((DBVarString *) obj->Data())->VString(string);
+}
 
-	switch (Type ())
-		{
-		case DBTypeVectorPoint:
-			delta = pow ((double) 10.0,(double) Precision ());
-			items = TablesPTR->Item (DBrNItems);
-			field  = items->Field (DBrNCoord);
-			coord = field->Coordinate (record);
-			extent.Expand (coord + delta); extent.Expand (coord - delta);
-			return (extent);
-		case DBTypeVectorLine:
-		case DBTypeVectorPolygon:
-			items = TablesPTR->Item (DBrNItems);
-			field = items->Field (DBrNRegion);
-			return (field->Region (record));
-		case DBTypeGridDiscrete:
-		case DBTypeGridContinuous:	return (Extent ());
-		case DBTypeNetwork:
-			{
-			DBInt cellID, cellNum;
-			DBObjRecord *cellRec;
-			DBNetworkIF *netIF = new DBNetworkIF (this);
+char *DBObjData::Document(const char *docName) {
+    DBObjRecord *obj = DocsPTR->Item(docName);
+    if (obj == (DBObjRecord *) NULL) {
+        if ((strcmp(docName, DBDocSubject) == 0) || (strcmp(docName, DBDocGeoDomain) == 0)) {
+            Document(docName, (char *) "unspecified");
+            return ((char *) "unspecified");
+        }
+        else return ((char *) "");
+    }
+    return (((DBVarString *) obj->Data())->VString());
+}
 
-			cellRec = netIF->MouthCell (record);
-			cellNum = netIF->CellBasinCells (cellRec) + cellRec->RowID ();
-			for (cellID = cellRec->RowID ();cellID < cellNum;++cellID)
-				{
-				cellRec = netIF->Cell (cellID);
-				extent.Expand (netIF->Center (cellRec) + (netIF->CellSize () / 2.0));
-				extent.Expand (netIF->Center (cellRec) - (netIF->CellSize () / 2.0));
-				}
-			delete netIF;
-			} return (extent);
-		case DBTypeTable:
-		default:	return (extent);
-		}
-	}
+DBRegion DBObjData::Extent(DBObjRecord *record) {
+    DBRegion extent;
+    DBCoordinate coord;
+    DBFloat delta;
+    DBObjTable *items;
+    DBObjTableField *field;
 
-void DBObjData::RecalcExtent ()
-	{
-	DBRegion extent;
+    if (record == (DBObjRecord *) NULL) return (Extent());
 
-	switch (Type ())
-		{
-		case DBTypeVectorPoint:
-		case DBTypeVectorLine:
-		case DBTypeVectorPolygon:
-			{
-			DBVectorIF *vectorIF = new DBVectorIF (this);
-			DBInt recordID;
-			for (recordID = 0;recordID < vectorIF->ItemNum ();++recordID)
-				extent.Expand (Extent (vectorIF->Item (recordID)));
-			delete vectorIF;
-			}
-			break;
-		case DBTypeGridDiscrete:
-		case DBTypeGridContinuous:
-			{
-			DBGridIF *gridIF = new DBGridIF (this);
-			extent.LowerLeft = Extent ().LowerLeft;
-			extent.UpperRight.X = extent.LowerLeft.X + gridIF->ColNum () * gridIF->CellWidth ();
-			extent.UpperRight.Y = extent.LowerLeft.Y + gridIF->RowNum () * gridIF->CellHeight ();
-			delete gridIF;
-			}
-			break;
-		case DBTypeNetwork:
-			{
-			DBNetworkIF *netIF = new DBNetworkIF (this);
-			extent.LowerLeft = Extent ().LowerLeft;
-			extent.UpperRight.X = extent.LowerLeft.X + netIF->ColNum () * netIF->CellWidth ();
-			extent.UpperRight.Y = extent.LowerLeft.Y + netIF->RowNum () * netIF->CellHeight ();
-			delete netIF;
-			}
-			break;
-		case DBTypeTable:
-		default:	return;
-		}
-	Extent (extent);
-	}
+    switch (Type()) {
+        case DBTypeVectorPoint:
+            delta = pow((double) 10.0, (double) Precision());
+            items = TablesPTR->Item(DBrNItems);
+            field = items->Field(DBrNCoord);
+            coord = field->Coordinate(record);
+            extent.Expand(coord + delta);
+            extent.Expand(coord - delta);
+            return (extent);
+        case DBTypeVectorLine:
+        case DBTypeVectorPolygon:
+            items = TablesPTR->Item(DBrNItems);
+            field = items->Field(DBrNRegion);
+            return (field->Region(record));
+        case DBTypeGridDiscrete:
+        case DBTypeGridContinuous:
+            return (Extent());
+        case DBTypeNetwork: {
+            DBInt cellID, cellNum;
+            DBObjRecord *cellRec;
+            DBNetworkIF *netIF = new DBNetworkIF(this);
 
-DBInt DBObjData::SelectObject (DBObjRecord *record,DBInt select)
+            cellRec = netIF->MouthCell(record);
+            cellNum = netIF->CellBasinCells(cellRec) + cellRec->RowID();
+            for (cellID = cellRec->RowID(); cellID < cellNum; ++cellID) {
+                cellRec = netIF->Cell(cellID);
+                extent.Expand(netIF->Center(cellRec) + (netIF->CellSize() / 2.0));
+                extent.Expand(netIF->Center(cellRec) - (netIF->CellSize() / 2.0));
+            }
+            delete netIF;
+        }
+            return (extent);
+        case DBTypeTable:
+        default:
+            return (extent);
+    }
+}
 
-	{
-	DBObjTable *items = TablesPTR->Item (DBrNItems);
+void DBObjData::RecalcExtent() {
+    DBRegion extent;
 
-	if (record == (DBObjRecord *) NULL) return (false);
-	if (items->Item (record->RowID ()) != record) return (false);
+    switch (Type()) {
+        case DBTypeVectorPoint:
+        case DBTypeVectorLine:
+        case DBTypeVectorPolygon: {
+            DBVectorIF *vectorIF = new DBVectorIF(this);
+            DBInt recordID;
+            for (recordID = 0; recordID < vectorIF->ItemNum(); ++recordID)
+                extent.Expand(Extent(vectorIF->Item(recordID)));
+            delete vectorIF;
+        }
+            break;
+        case DBTypeGridDiscrete:
+        case DBTypeGridContinuous: {
+            DBGridIF *gridIF = new DBGridIF(this);
+            extent.LowerLeft = Extent().LowerLeft;
+            extent.UpperRight.X = extent.LowerLeft.X + gridIF->ColNum() * gridIF->CellWidth();
+            extent.UpperRight.Y = extent.LowerLeft.Y + gridIF->RowNum() * gridIF->CellHeight();
+            delete gridIF;
+        }
+            break;
+        case DBTypeNetwork: {
+            DBNetworkIF *netIF = new DBNetworkIF(this);
+            extent.LowerLeft = Extent().LowerLeft;
+            extent.UpperRight.X = extent.LowerLeft.X + netIF->ColNum() * netIF->CellWidth();
+            extent.UpperRight.Y = extent.LowerLeft.Y + netIF->RowNum() * netIF->CellHeight();
+            delete netIF;
+        }
+            break;
+        case DBTypeTable:
+        default:
+            return;
+    }
+    Extent(extent);
+}
 
-	record->Flags (DBObjectFlagSelected,select);
-	if (Type () == DBTypeNetwork)
-		{
-		DBInt cellID;
-		DBObjRecord *cellRec;
-		DBNetworkIF *netIF = new DBNetworkIF (this);
+DBInt DBObjData::SelectObject(DBObjRecord *record, DBInt select) {
+    DBObjTable *items = TablesPTR->Item(DBrNItems);
 
-		for (cellID = 0;cellID < netIF->CellNum ();++cellID)
-			{
-			cellRec = netIF->Cell (cellID);
-			if (netIF->CellBasinID (cellRec) == record->RowID () + 1)
-				cellRec->Flags (DBObjectFlagSelected,select);
-			}
-		delete netIF;
-		}
-	return (DBSuccess);
-	}
+    if (record == (DBObjRecord *) NULL) return (false);
+    if (items->Item(record->RowID()) != record) return (false);
 
-char *DBDataTypeString (int dataType)
+    record->Flags(DBObjectFlagSelected, select);
+    if (Type() == DBTypeNetwork) {
+        DBInt cellID;
+        DBObjRecord *cellRec;
+        DBNetworkIF *netIF = new DBNetworkIF(this);
 
-	{
-	char *typeString;
-	switch (dataType)
-		{
-		case DBTypeVectorPoint: 	typeString = (char *) "Point";      break;
-		case DBTypeVectorLine:		typeString = (char *) "Line";       break;
-		case DBTypeVectorPolygon:	typeString = (char *) "Polygon";    break;
-		case DBTypeGridContinuous:	typeString = (char *) "Continuous"; break;
-		case DBTypeGridDiscrete:	typeString = (char *) "Discrete";   break;
-		case DBTypeNetwork:			typeString = (char *) "Network";    break;
-		case DBTypeTable:           typeString = (char *) "Tabular";    break;
-		default:                    typeString = (char *) "UNKNOWN";    break;
-		}
-	return (typeString);
-	}
+        for (cellID = 0; cellID < netIF->CellNum(); ++cellID) {
+            cellRec = netIF->Cell(cellID);
+            if (netIF->CellBasinID(cellRec) == record->RowID() + 1)
+                cellRec->Flags(DBObjectFlagSelected, select);
+        }
+        delete netIF;
+    }
+    return (DBSuccess);
+}
+
+char *DBDataTypeString(int dataType) {
+    char *typeString;
+    switch (dataType) {
+        case DBTypeVectorPoint:
+            typeString = (char *) "Point";
+            break;
+        case DBTypeVectorLine:
+            typeString = (char *) "Line";
+            break;
+        case DBTypeVectorPolygon:
+            typeString = (char *) "Polygon";
+            break;
+        case DBTypeGridContinuous:
+            typeString = (char *) "Continuous";
+            break;
+        case DBTypeGridDiscrete:
+            typeString = (char *) "Discrete";
+            break;
+        case DBTypeNetwork:
+            typeString = (char *) "Network";
+            break;
+        case DBTypeTable:
+            typeString = (char *) "Tabular";
+            break;
+        default:
+            typeString = (char *) "UNKNOWN";
+            break;
+    }
+    return (typeString);
+}

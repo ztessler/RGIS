@@ -15,11 +15,9 @@ bfekete@ccny.cuny.edu
 #include <unistd.h>
 #include <DB.H>
 
-DBInt DBFileSize (const char *fileName)
+DBInt DBFileSize(const char *fileName) {
+    struct stat fileStat;
 
-	{
-	struct stat fileStat;
-	
-	if (stat (fileName,&fileStat) == DBFault)	return (DBFault);
-	return (fileStat.st_size);
-	}
+    if (stat(fileName, &fileStat) == DBFault) return (DBFault);
+    return (fileStat.st_size);
+}

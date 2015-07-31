@@ -14,20 +14,19 @@ bfekete@ccny.cuny.edu
 
 static int _UILoopStop = false;
 
-int UILoop ()
+int UILoop() {
+    XEvent event;
 
-	{
-	XEvent event;
-	
-	XtAppNextEvent (UIApplicationContext (),&event);
-	XtDispatchEvent (&event);
-	
-	if (_UILoopStop) { _UILoopStop = false; return (false); }
-	else return (true);
-	}
+    XtAppNextEvent(UIApplicationContext(), &event);
+    XtDispatchEvent(&event);
 
-void UILoopStopCBK (Widget widget,void *data,XmAnyCallbackStruct *callData)
+    if (_UILoopStop) {
+        _UILoopStop = false;
+        return (false);
+    }
+    else return (true);
+}
 
-	{
-	_UILoopStop = true;
-	}
+void UILoopStopCBK(Widget widget, void *data, XmAnyCallbackStruct *callData) {
+    _UILoopStop = true;
+}

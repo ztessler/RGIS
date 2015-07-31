@@ -25,135 +25,146 @@ bfekete@ccny.cuny.edu
 #define CORNER 0
 #define CENTER 1
 
-int DBImportASCIINet (DBObjData *netData,const char *fileName)
+int DBImportASCIINet(DBObjData *netData, const char *fileName) {
+    FILE *file;
+    char buffer[81];
+    char nameSTR[DBStringLength];
+    DBInt i, j, rowNum, colNum, cornerType, noData, gridVal;
+    DBFloat cellSize;
+    DBPosition pos;
+    DBCoordinate coord;
+    DBRegion extent;
+    DBObjTable *basinTable = netData->Table(DBrNItems);
+    DBObjTable *cellTable = netData->Table(DBrNCells);
+    DBObjTable *layerTable = netData->Table(DBrNLayers);
 
-	{
-	FILE *file;
-	char buffer [81];
-	char nameSTR [DBStringLength];
-	DBInt i, j, rowNum, colNum, cornerType, noData, gridVal;
-	DBFloat cellSize;
-	DBPosition pos;
-	DBCoordinate coord;
-	DBRegion extent;
-	DBObjTable *basinTable = netData->Table (DBrNItems);
-	DBObjTable *cellTable  = netData->Table (DBrNCells);
-	DBObjTable *layerTable = netData->Table (DBrNLayers);
+    DBObjTableField *mouthPosFLD = basinTable->Field(DBrNMouthPos);
+    DBObjTableField *colorFLD = basinTable->Field(DBrNColor);
 
-	DBObjTableField *mouthPosFLD  = basinTable->Field (DBrNMouthPos);
-	DBObjTableField *colorFLD		= basinTable->Field (DBrNColor);
+    DBObjTableField *positionFLD = cellTable->Field(DBrNPosition);
+    DBObjTableField *toCellFLD = cellTable->Field(DBrNToCell);
+    DBObjTableField *fromCellFLD = cellTable->Field(DBrNFromCell);
+    DBObjTableField *orderFLD = cellTable->Field(DBrNOrder);
+    DBObjTableField *basinFLD = cellTable->Field(DBrNBasin);
+    DBObjTableField *basinCellsFLD = cellTable->Field(DBrNBasinCells);
+    DBObjTableField *travelFLD = cellTable->Field(DBrNTravel);
+    DBObjTableField *upCellPosFLD = cellTable->Field(DBrNUpCellPos);
+    DBObjTableField *cellAreaFLD = cellTable->Field(DBrNCellArea);
+    DBObjTableField *subbasinLengthFLD = cellTable->Field(DBrNSubbasinLength);
+    DBObjTableField *subbasinAreaFLD = cellTable->Field(DBrNSubbasinArea);
 
-	DBObjTableField *positionFLD	= cellTable->Field (DBrNPosition);
-	DBObjTableField *toCellFLD		= cellTable->Field (DBrNToCell);
-	DBObjTableField *fromCellFLD	= cellTable->Field (DBrNFromCell);
-	DBObjTableField *orderFLD		= cellTable->Field (DBrNOrder);
-	DBObjTableField *basinFLD		= cellTable->Field (DBrNBasin);
-	DBObjTableField *basinCellsFLD= cellTable->Field (DBrNBasinCells);
-	DBObjTableField *travelFLD		= cellTable->Field (DBrNTravel);
-	DBObjTableField *upCellPosFLD	= cellTable->Field (DBrNUpCellPos);
-	DBObjTableField *cellAreaFLD	= cellTable->Field (DBrNCellArea);
-	DBObjTableField *subbasinLengthFLD = cellTable->Field (DBrNSubbasinLength);
-	DBObjTableField *subbasinAreaFLD = cellTable->Field (DBrNSubbasinArea);
+    DBObjTableField *rowNumFLD = layerTable->Field(DBrNRowNum);
+    DBObjTableField *colNumFLD = layerTable->Field(DBrNColNum);
+    DBObjTableField *cellWidthFLD = layerTable->Field(DBrNCellWidth);
+    DBObjTableField *cellHeightFLD = layerTable->Field(DBrNCellHeight);
+    DBObjTableField *valueTypeFLD = layerTable->Field(DBrNValueType);
+    DBObjTableField *valueSizeFLD = layerTable->Field(DBrNValueSize);
+    DBObjTableField *layerFLD = layerTable->Field(DBrNLayer);
 
-	DBObjTableField *rowNumFLD = layerTable->Field (DBrNRowNum);
-	DBObjTableField *colNumFLD = layerTable->Field (DBrNColNum);
-	DBObjTableField *cellWidthFLD = layerTable->Field (DBrNCellWidth);
-	DBObjTableField *cellHeightFLD = layerTable->Field (DBrNCellHeight);
-	DBObjTableField *valueTypeFLD = layerTable->Field (DBrNValueType);
-	DBObjTableField *valueSizeFLD = layerTable->Field (DBrNValueSize);
-	DBObjTableField *layerFLD = layerTable->Field (DBrNLayer);
+    DBObjRecord *layerRec, *dataRec, *cellRec, *basinRec;
+    DBNetworkIF *netIF;
 
-	DBObjRecord *layerRec, *dataRec, *cellRec, *basinRec;
-	DBNetworkIF *netIF;
+    if ((file = fopen(fileName, "r")) == NULL) {
+        CMmsgPrint(CMmsgSysError, "File Opening Error in: %s %d", __FILE__, __LINE__);
+        return (DBFault);
+    }
 
-	if ((file = fopen (fileName,"r")) == NULL)
-		{ CMmsgPrint (CMmsgSysError, "File Opening Error in: %s %d",__FILE__,__LINE__); return (DBFault); }
+    for (i = 0; i < 6; ++i)
+        if (fgets(buffer, sizeof(buffer), file) == (char *) NULL) {
+            CMmsgPrint(CMmsgSysError, "File Reading Error in: %s %d", __FILE__, __LINE__);
+            return (DBFault);
+        }
+        else {
+            for (j = 0; (j < (int) strlen(buffer)) && (buffer[j] != ' '); ++j)
+                buffer[j] = tolower(buffer[j]);
+            if (strncmp(buffer, NCOLS, strlen(NCOLS)) == 0)
+                sscanf(buffer + strlen(NCOLS), "%d", &colNum);
+            if (strncmp(buffer, NROWS, strlen(NROWS)) == 0)
+                sscanf(buffer + strlen(NROWS), "%d", &rowNum);
+            if (strncmp(buffer, XLLCORNER, strlen(XLLCORNER)) == 0) {
+                sscanf(buffer + strlen(XLLCORNER), "%lf", &(coord.X));
+                cornerType = CORNER;
+            }
+            if (strncmp(buffer, YLLCORNER, strlen(YLLCORNER)) == 0) {
+                sscanf(buffer + strlen(YLLCORNER), "%lf", &(coord.Y));
+                cornerType = CORNER;
+            }
+            if (strncmp(buffer, XLLCENTER, strlen(XLLCENTER)) == 0) {
+                sscanf(buffer + strlen(XLLCENTER), "%lf", &(coord.X));
+                cornerType = CENTER;
+            }
+            if (strncmp(buffer, YLLCENTER, strlen(YLLCENTER)) == 0) {
+                sscanf(buffer + strlen(YLLCENTER), "%lf", &(coord.Y));
+                cornerType = CENTER;
+            }
+            if (strncmp(buffer, CELLSIZE, strlen(CELLSIZE)) == 0)
+                sscanf(buffer + strlen(CELLSIZE), "%lf", &cellSize);
+            if (strncmp(buffer, NODATA, strlen(NODATA)) == 0)
+                sscanf(buffer + strlen(NODATA), "%d", &noData);
+        }
+    layerTable->Add(DBrNLookupGrid);
+    if ((layerRec = layerTable->Item(DBrNLookupGrid)) == (DBObjRecord *) NULL) {
+        CMmsgPrint(CMmsgAppError, "Network Layer Creation Error in: %s %d", __FILE__, __LINE__);
+        return (DBFault);
+    }
 
-	for (i = 0;i < 6;++i)
-		if (fgets (buffer,sizeof (buffer),file) == (char *) NULL)
-			{ CMmsgPrint (CMmsgSysError, "File Reading Error in: %s %d",__FILE__,__LINE__); return (DBFault); }
-		else
-			{
-			for (j = 0;(j < (int) strlen (buffer)) && (buffer [j] != ' ');++j)
-				buffer [j] = tolower (buffer [j]);
-			if (strncmp (buffer,NCOLS,strlen (NCOLS)) == 0)
-				sscanf (buffer + strlen (NCOLS),"%d",&colNum);
-			if (strncmp (buffer,NROWS,strlen (NROWS)) == 0)
-				sscanf (buffer + strlen (NROWS),"%d",&rowNum);
-			if (strncmp (buffer,XLLCORNER,strlen (XLLCORNER)) == 0)
-				{ sscanf (buffer + strlen (XLLCORNER),"%lf",&(coord.X)); cornerType = CORNER;}
-			if (strncmp (buffer,YLLCORNER,strlen (YLLCORNER)) == 0)
-				{ sscanf (buffer + strlen (YLLCORNER),"%lf",&(coord.Y)); cornerType = CORNER;}
-			if (strncmp (buffer,XLLCENTER,strlen (XLLCENTER)) == 0)
-				{ sscanf (buffer + strlen (XLLCENTER),"%lf",&(coord.X)); cornerType = CENTER;}
-			if (strncmp (buffer,YLLCENTER,strlen (YLLCENTER)) == 0)
-				{ sscanf (buffer + strlen (YLLCENTER),"%lf",&(coord.Y)); cornerType = CENTER;}
-			if (strncmp (buffer,CELLSIZE,strlen (CELLSIZE)) == 0)
-				sscanf (buffer + strlen (CELLSIZE),"%lf",&cellSize);
-			if (strncmp (buffer,NODATA,strlen (NODATA)) == 0)
-				sscanf (buffer + strlen (NODATA),"%d",&noData);
-			}
-	layerTable->Add (DBrNLookupGrid);
-	if ((layerRec = layerTable->Item (DBrNLookupGrid)) == (DBObjRecord *) NULL)
-		{ CMmsgPrint (CMmsgAppError, "Network Layer Creation Error in: %s %d",__FILE__,__LINE__); return (DBFault); }
+    cellWidthFLD->Float(layerRec, cellSize);
+    cellHeightFLD->Float(layerRec, cellSize);
+    valueTypeFLD->Int(layerRec, DBTableFieldInt);
+    valueSizeFLD->Int(layerRec, sizeof(DBInt));
+    rowNumFLD->Int(layerRec, rowNum);
+    colNumFLD->Int(layerRec, colNum);
+    if ((dataRec = new DBObjRecord("NetLookupGridRecord", ((size_t) rowNum) * colNum * sizeof(DBInt), sizeof(DBInt))) ==
+        (DBObjRecord *) NULL)
+        return (DBFault);
+    layerFLD->Record(layerRec, dataRec);
+    (netData->Arrays())->Add(dataRec);
+    for (pos.Row = rowNum - 1; pos.Row >= 0; --pos.Row)
+        for (pos.Col = 0; pos.Col < colNum; ++pos.Col) {
+            if (fscanf(file, "%d", &gridVal) != 1) {
+                CMmsgPrint(CMmsgUsrError, "Warning: Incomplete network grid!");
+                goto Stop;
+            }
+            else {
+                if (gridVal == noData)
+                    ((DBInt *) dataRec->Data())[pos.Row * colNum + pos.Col] = DBFault;
+                else {
+                    sprintf(nameSTR, "GHAASCell:%d", cellTable->ItemNum());
+                    cellRec = cellTable->Add(nameSTR);
+                    positionFLD->Position(cellRec, pos);
+                    toCellFLD->Int(cellRec, gridVal);
+                    fromCellFLD->Int(cellRec, (DBInt) 0);
+                    orderFLD->Int(cellRec, (DBInt) 0);
+                    basinFLD->Int(cellRec, (DBInt) 0);
+                    basinCellsFLD->Int(cellRec, (DBInt) 0);
+                    travelFLD->Int(cellRec, (DBInt) 0);
+                    upCellPosFLD->Position(cellRec, pos);
+                    cellAreaFLD->Float(cellRec, (DBFloat) 0.0);
+                    subbasinLengthFLD->Float(cellRec, (DBFloat) 0.0);
+                    subbasinAreaFLD->Float(cellRec, (DBFloat) 0.0);
 
-	cellWidthFLD->Float  (layerRec,cellSize);
-	cellHeightFLD->Float (layerRec,cellSize);
-	valueTypeFLD->Int (layerRec,DBTableFieldInt);
-	valueSizeFLD->Int (layerRec,sizeof (DBInt));
-	rowNumFLD->Int (layerRec,rowNum);
-	colNumFLD->Int (layerRec,colNum);
-	if ((dataRec = new DBObjRecord ("NetLookupGridRecord",((size_t) rowNum) * colNum * sizeof (DBInt),sizeof (DBInt))) == (DBObjRecord *) NULL)
-		return (DBFault);
-	layerFLD->Record (layerRec,dataRec);
-	(netData->Arrays ())->Add (dataRec);
-	for (pos.Row = rowNum - 1;pos.Row >= 0;--pos.Row)
-		for (pos.Col = 0;pos.Col < colNum;++pos.Col)
-			{
-			if (fscanf (file,"%d", &gridVal) != 1)
-				{ CMmsgPrint (CMmsgUsrError, "Warning: Incomplete network grid!"); goto Stop; }
-			else
-				{
-				if (gridVal == noData)
-					((DBInt *) dataRec->Data ()) [pos.Row * colNum + pos.Col] = DBFault;
-				else
-					{
-					sprintf (nameSTR,"GHAASCell:%d",cellTable->ItemNum ());
-					cellRec = cellTable->Add (nameSTR);
-					positionFLD->Position(cellRec,pos);
-					toCellFLD->Int			(cellRec,gridVal);
-					fromCellFLD->Int		(cellRec,(DBInt) 0);
-					orderFLD->Int			(cellRec,(DBInt) 0);
-					basinFLD->Int			(cellRec,(DBInt) 0);
-					basinCellsFLD->Int	(cellRec,(DBInt) 0);
-					travelFLD->Int			(cellRec,(DBInt) 0);
-					upCellPosFLD->Position	(cellRec,pos);
-					cellAreaFLD->Float	(cellRec,(DBFloat) 0.0);
-					subbasinLengthFLD->Float(cellRec,(DBFloat) 0.0);
-					subbasinAreaFLD->Float	(cellRec,(DBFloat) 0.0);
-
-					((DBInt *) dataRec->Data ()) [pos.Row * colNum + pos.Col] = cellRec->RowID ();
-					}
-				}
-			}
-Stop:
-	sprintf (nameSTR,"GHAASBasin%d",(DBInt) 0);
-	basinRec = basinTable->Add (nameSTR);
-	mouthPosFLD->Position	(basinRec,positionFLD->Position (cellTable->Item (0)));
-	colorFLD->Int				(basinRec,0);
-	netData->Precision (cellSize / 25.0);
-	coord.X = coord.X - cornerType * cellSize / 2.0;
-	coord.Y = coord.Y - cornerType * cellSize / 2.0;
-	extent.Expand (coord);
-	coord.X += colNum * cellSize;
-	coord.Y += rowNum * cellSize;
-	extent.Expand (coord);
-	netData->Extent (extent);
-	netData->Projection (DBMathGuessProjection (extent));
-	netData->Precision  (DBMathGuessPrecision  (extent));
-	netIF = new DBNetworkIF (netData);
-	netIF->Build ();
-	delete netIF;
-	fclose (file);
-	return (DBSuccess);
-	}
+                    ((DBInt *) dataRec->Data())[pos.Row * colNum + pos.Col] = cellRec->RowID();
+                }
+            }
+        }
+    Stop:
+    sprintf(nameSTR, "GHAASBasin%d", (DBInt) 0);
+    basinRec = basinTable->Add(nameSTR);
+    mouthPosFLD->Position(basinRec, positionFLD->Position(cellTable->Item(0)));
+    colorFLD->Int(basinRec, 0);
+    netData->Precision(cellSize / 25.0);
+    coord.X = coord.X - cornerType * cellSize / 2.0;
+    coord.Y = coord.Y - cornerType * cellSize / 2.0;
+    extent.Expand(coord);
+    coord.X += colNum * cellSize;
+    coord.Y += rowNum * cellSize;
+    extent.Expand(coord);
+    netData->Extent(extent);
+    netData->Projection(DBMathGuessProjection(extent));
+    netData->Precision(DBMathGuessPrecision(extent));
+    netIF = new DBNetworkIF(netData);
+    netIF->Build();
+    delete netIF;
+    fclose(file);
+    return (DBSuccess);
+}

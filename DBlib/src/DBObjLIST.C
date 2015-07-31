@@ -13,10 +13,10 @@ bfekete@ccny.cuny.edu
 #include <string.h>
 #include <DB.H>
 
-int _DBObjectLISTNameSort (const DBObject **obj0,const DBObject **obj1)
+int _DBObjectLISTNameSort(const DBObject **obj0, const DBObject **obj1) {
+    return (strcmp((*obj0)->Name(), (*obj1)->Name()));
+}
 
-	{ return (strcmp ((*obj0)->Name (),(*obj1)->Name ())); }
-
-int _DBObjectLISTNameReversedSort (const DBObject **obj0,const DBObject **obj1)
-
-	{ return (strcmp ((*obj1)->Name (),(*obj0)->Name ())); }
+int _DBObjectLISTNameReversedSort(const DBObject **obj0, const DBObject **obj1) {
+    return (strcmp((*obj1)->Name(), (*obj0)->Name()));
+}

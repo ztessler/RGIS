@@ -4,6 +4,7 @@
 static bool _NCdebug = false;
 
 void SetDebug() { _NCdebug = true; }
+
 bool GetDebug() { return (_NCdebug); }
 
 #ifdef NCDEBUG

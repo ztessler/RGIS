@@ -18,7 +18,9 @@ typedef enum { false = 0, true = 1 } bool;
 
 #endif
 
-typedef enum { NCsucceeded =  0, NCfailed    = -1, NCundefined = -2 } NCstate; 
+typedef enum {
+    NCsucceeded = 0, NCfailed = -1, NCundefined = -2
+} NCstate;
 
 
 #define NCcoreEpsilon   0.000001

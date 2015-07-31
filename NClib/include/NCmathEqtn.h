@@ -2,44 +2,48 @@
 
 // *** STRUCTURES USED
 
-typedef enum { CONST, VAR, OPER, FUNC, NOTP } Type;
-typedef enum { ADD, SUB, MUL, DIV, MOD, EXP, NOOP } Oper;
-typedef enum { FALSE, TRUE, AND, OR, LT, LTE, EQ, NE, GTE, GT, NOEQ } Equal;
+typedef enum {
+    CONST, VAR, OPER, FUNC, NOTP
+} Type;
+typedef enum {
+    ADD, SUB, MUL, DIV, MOD, EXP, NOOP
+} Oper;
+typedef enum {
+    FALSE, TRUE, AND, OR, LT, LTE, EQ, NE, GTE, GT, NOEQ
+} Equal;
 
-typedef struct TreeNode
-{
-	Type type;
-	union {
-		double cons;
-		double *var;
-		Oper oper;
-		double (*func)(double);
-	};
-	struct TreeNode *left, *right;
+typedef struct TreeNode {
+    Type type;
+
+    union {
+        double cons;
+        double *var;
+        Oper oper;
+
+        double (*func)(double);
+    };
+
+    struct TreeNode *left, *right;
 } TreeNode_t;
 
-typedef struct IneqNode
-{
-	Equal equal;
-	bool lTree, rTree;
-	union
-	{
-		TreeNode_t *lhead;
-		struct IneqNode *left;
-	};
-	union
-	{
-		TreeNode_t *rhead;
-		struct IneqNode *right;
-	};
+typedef struct IneqNode {
+    Equal equal;
+    bool lTree, rTree;
+    union {
+        TreeNode_t *lhead;
+        struct IneqNode *left;
+    };
+    union {
+        TreeNode_t *rhead;
+        struct IneqNode *right;
+    };
 } IneqNode_t;
 
-typedef struct Variable
-{
-	char *name;
-	bool vary;
-	int colnum;
-	double val;
+typedef struct Variable {
+    char *name;
+    bool vary;
+    int colnum;
+    double val;
 } Variable_t;
 /* Use this structure if your equation has variable names in it.
  * the way to use it is the following:
@@ -58,7 +62,7 @@ typedef struct Variable
 // *** VARIABLES USED
 
 #define numFunc 11 // this number must correspond to the size of the array of *funcNames[]
-                   // and *functions[]
+// and *functions[]
 
 extern Variable_t *_Vars;
 extern int _VarNum;
@@ -66,25 +70,41 @@ extern int _VarNum;
 // *** FUNCTIONS
 
 bool isIneq(char [], int *); // returns true if the given equation has an inequality, and sets
-                             // int to it's location. If your equation has an inequality, you
-                             // must use the functions with an 'I' at the end.
+// int to it's location. If your equation has an inequality, you
+// must use the functions with an 'I' at the end.
 int NCmathGetVarNum();
+
 int NCmathAddVar(int colnum, char *name, bool vary);
+
 int NCmathGetVarColNum(int varID);
+
 void NCmathSetVarVal(int varID, double value);
+
 double NCmathGetVarVal(int varID);
+
 bool NCmathGetVarVary(int varID);
+
 char *NCmathGetVarName(int varID);
+
 void NCmathFreeVars();
+
 void setLisp(); // Enable extra parentheses while using printInorder() or printInorderI()
 void unsetLisp();
-TreeNode_t* mkTree(char []);
-IneqNode_t* mkTreeI(char []);
-void printInorder(TreeNode_t *,FILE *);
+
+TreeNode_t *mkTree(char []);
+
+IneqNode_t *mkTreeI(char []);
+
+void printInorder(TreeNode_t *, FILE *);
+
 void printInorderI(IneqNode_t *, FILE *);
+
 void NCmathEqtnFixTree(TreeNode_t **); // simplifies the equation the best it can
 void NCmathEqtnFixTreeI(IneqNode_t *); // simplifies the expression the best it can
 double Calculate(TreeNode_t *);
-bool   CalculateI(IneqNode_t *);
+
+bool CalculateI(IneqNode_t *);
+
 void delTree(TreeNode_t *);
+
 void delTreeI(IneqNode_t *);
