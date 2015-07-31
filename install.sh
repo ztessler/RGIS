@@ -29,7 +29,11 @@ fi
 
 mkdir ${build_dir}
 cd    ${build_dir}
- cmake -DCMAKE_INSTALL_PREFIX="${install_dir}" "${source_dir}"
- make install
-[ -e  ${install_dir}/ghaas/bin/rgis ] || ln -s ${install_dir}/ghaas/Scripts/rgis.sh ${install_dir}/ghaas/bin/rgis
+cmake -DCMAKE_INSTALL_PREFIX="${install_dir}" "${source_dir}"
+make install
+chmod ugo+x ${install_dir}/ghaas/Scripts/rgis.sh
+if ! [ -e  ${install_dir}/ghaas/bin/rgis ]
+then
+    ln -s ${install_dir}/ghaas/Scripts/rgis.sh ${install_dir}/ghaas/bin/rgis
+fi
 rm -rf "${build_dir}"
