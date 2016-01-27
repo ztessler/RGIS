@@ -33,7 +33,7 @@ cmake -DCMAKE_INSTALL_PREFIX="${install_dir}" "${source_dir}"
 make install
 chmod ugo+x ${install_dir}/ghaas/Scripts/rgis.sh
 chmod ugo+x ${install_dir}/ghaas/f/*
-chmod -R ugo+r /usr/local/share/ghaas
+chmod -R ugo+r ${install_dir}/ghaas
 if ! [ -e  ${install_dir}/ghaas/bin/rgis ]
 then
     ln -s ${install_dir}/ghaas/Scripts/rgis.sh ${install_dir}/ghaas/bin/rgis
