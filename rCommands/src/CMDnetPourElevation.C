@@ -4,7 +4,7 @@ GHAAS RiverGIS Utilities V1.0
 Global Hydrologic Archive and Analysis System
 Copyright 1994-2016, UNH - CCNY/CUNY
 
-CMDgrdAppendLayers.C
+CMDnetPouorElevation.C
 
 bfekete@ccny.cuny.edu
 
@@ -16,22 +16,13 @@ bfekete@ccny.cuny.edu
 #include <RG.H>
 
 int main(int argc, char *argv[]) {
-    int argPos, argNum = argc, ret, data, dataNum = 0, verbose = false;
+    int argPos, argNum = argc, ret, verbose = false;
     char *title = (char *) NULL, *subject = (char *) NULL;
     char *domain = (char *) NULL, *version = (char *) NULL;
-    char *output = (char *) NULL, **dataList = (char **) NULL;
-    DBObjData *grdData, *appData;
+    DBObjData *netData;
+    DBNetworkIF *netIF;
 
     for (argPos = 1; argPos < argNum;) {
-        if (CMargTest (argv[argPos], "-o", "--output")) {
-            if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) {
-                CMmsgPrint(CMmsgUsrError, "Missing output grid!");
-                return (CMfailed);
-            }
-            output = argv[argPos];
-            if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
-            continue;
-        }
         if (CMargTest (argv[argPos], "-t", "--title")) {
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) {
                 CMmsgPrint(CMmsgUsrError, "Missing title!");
@@ -74,12 +65,11 @@ int main(int argc, char *argv[]) {
             continue;
         }
         if (CMargTest (argv[argPos], "-h", "--help")) {
-            CMmsgPrint(CMmsgInfo, "%s [options] <append grid0> ..... <append gridN>", CMfileName(argv[0]));
-            CMmsgPrint(CMmsgInfo, "     -o,--output    [ouptput grid]");
-            CMmsgPrint(CMmsgInfo, "     -t,--title     [dataset title]");
-            CMmsgPrint(CMmsgInfo, "     -u,--subject   [subject]");
-            CMmsgPrint(CMmsgInfo, "     -d,--domain    [domain]");
-            CMmsgPrint(CMmsgInfo, "     -v,--version   [version]");
+            CMmsgPrint(CMmsgInfo, "%s [options] <input network> <output network>", CMfileName(argv[0]));
+            CMmsgPrint(CMmsgInfo, "     -t,--title       [dataset title]");
+            CMmsgPrint(CMmsgInfo, "     -u,--subject     [subject]");
+            CMmsgPrint(CMmsgInfo, "     -d,--domain      [domain]");
+            CMmsgPrint(CMmsgInfo, "     -v,--version     [version]");
             CMmsgPrint(CMmsgInfo, "     -V,--verbose");
             CMmsgPrint(CMmsgInfo, "     -h,--help");
             return (DBSuccess);
@@ -91,50 +81,33 @@ int main(int argc, char *argv[]) {
         argPos++;
     }
 
-    if (argNum < 2) {
-        CMmsgPrint(CMmsgUsrError, "Nothing to append");
-        return (DBFault);
-    }
-    dataNum = argNum - 1;
-    if ((dataList = (char **) realloc(dataList, dataNum * sizeof(char *))) == (char **) NULL) {
-        CMmsgPrint(CMmsgSysError, "Memory allocation error in: %s %d", __FILE__, __LINE__);
-        return (DBFault);
-    }
-    for (data = 0; data < dataNum; ++data) {
-        dataList[data] = argv[data + 1];
+    if (argNum > 3) {
+        CMmsgPrint(CMmsgUsrError, "Extra arguments!");
+        return (CMfailed);
     }
     if (verbose) RGlibPauseOpen(argv[0]);
 
-    grdData = new DBObjData();
-    ret = (strcmp(dataList[0], "-") != 0) ? grdData->Read(dataList[0]) : grdData->Read(stdin);
-    if ((ret == DBFault) || ((grdData->Type() & DBTypeGrid) != DBTypeGrid)) {
-        delete grdData;
+    netData = new DBObjData();
+
+    ret = (argNum > 1) && (strcmp(argv[1], "-") != 0) ? netData->Read(argv[1]) : netData->Read(stdin);
+    if (netData->Type() != DBTypeNetwork) {
+        CMmsgPrint(CMmsgUsrError, "Not a network input!");
+        delete netData;
         return (CMfailed);
     }
+    if (title != (char *) NULL) netData->Name(title);
+    if (subject != (char *) NULL) netData->Document(DBDocSubject, subject);
+    if (domain != (char *) NULL) netData->Document(DBDocGeoDomain, domain);
+    if (version != (char *) NULL) netData->Document(DBDocVersion, version);
 
-    if (title != (char *) NULL) grdData->Name(title);
-    if (subject != (char *) NULL) grdData->Document(DBDocSubject, subject);
-    if (domain != (char *) NULL) grdData->Document(DBDocGeoDomain, domain);
-    if (version != (char *) NULL) grdData->Document(DBDocVersion, version);
+    netIF = new DBNetworkIF(netData);
+    ret = netIF->Trim();
+    delete netIF;
 
-    for (data = 1; data < dataNum; ++data) {
-        appData = new DBObjData();
-        if (appData->Read(dataList[data]) == DBFault) {
-            delete grdData;
-            delete appData;
-            return (CMfailed);
-        }
-        if (DBGridAppend(grdData, appData) == DBFault) {
-            delete grdData;
-            delete appData;
-            return (CMfailed);
-        }
-        delete appData;
-    }
+    if (ret == DBSuccess)
+        ret = (argNum > 2) && (strcmp(argv[2], "-") != 0) ? netData->Write(argv[2]) : netData->Write(stdout);
 
-    ret = (output != (char *) NULL) && (strcmp(argv[2], "-") != 0) ? grdData->Write(output) : grdData->Write(stdout);
-
-    delete grdData;
+    delete netData;
     if (verbose) RGlibPauseClose();
     return (ret);
 }
