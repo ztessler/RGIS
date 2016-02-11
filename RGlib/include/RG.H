@@ -131,6 +131,10 @@ DBInt RGlibNetworkHeadStats(DBObjData *, DBObjData *, DBObjData *, DBInt);
 
 DBInt RGlibNetworkHistogram(DBObjData *, DBObjData *, DBObjData *);
 
+DBInt RGlibNetworkPourElevation (DBObjData *, const char *, const char *);
+
+DBInt RGlibNetworkReservoir (DBObjData *, const char *, const char *, const char *, const char *);
+
 DBInt RGlibNetworkPsmRouting(DBObjData *, DBObjData *, DBObjData *, DBInt, DBFloat, DBObjData *);
 
 DBInt RGlibNetworkDefragment(DBObjData *, DBObjData *, DBFloat, DBFloat, bool);

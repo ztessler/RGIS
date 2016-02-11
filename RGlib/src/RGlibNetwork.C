@@ -1152,16 +1152,16 @@ DBInt RGlibNetworkHeadStats(DBObjData *netData, DBObjData *grdData, DBObjData *t
 
     table = tblData->Table(DBrNItems);
     netIF = new DBNetworkIF(netData);
-    table->AddField(basinIDFLD = new DBObjTableField(DBrNBasin, DBTableFieldInt, "%8d", sizeof(DBInt)));
-    table->AddField(layerIDFLD = new DBObjTableField("LayerID", DBTableFieldInt, "%4d", sizeof(DBShort)));
+    table->AddField(basinIDFLD   = new DBObjTableField(DBrNBasin, DBTableFieldInt, "%8d", sizeof(DBInt)));
+    table->AddField(layerIDFLD   = new DBObjTableField("LayerID", DBTableFieldInt, "%4d", sizeof(DBShort)));
     table->AddField(layerNameFLD = new DBObjTableField("LayerName", DBTableFieldString, "%s", DBStringLength));
-    table->AddField(averageFLD = new DBObjTableField(divideOnly ? RGISDivideMean : RGISHeadMean, DBTableFieldFloat,
+    table->AddField(averageFLD   = new DBObjTableField(divideOnly ? RGISDivideMean : RGISHeadMean, DBTableFieldFloat,
                                                      gridIF->ValueFormat(), sizeof(DBFloat4)));
-    table->AddField(minimumFLD = new DBObjTableField(divideOnly ? RGISDivideMin : RGISHeadMin, DBTableFieldFloat,
+    table->AddField(minimumFLD   = new DBObjTableField(divideOnly ? RGISDivideMin : RGISHeadMin, DBTableFieldFloat,
                                                      gridIF->ValueFormat(), sizeof(DBFloat4)));
-    table->AddField(maximumFLD = new DBObjTableField(divideOnly ? RGISDivideMax : RGISHeadMax, DBTableFieldFloat,
+    table->AddField(maximumFLD   = new DBObjTableField(divideOnly ? RGISDivideMax : RGISHeadMax, DBTableFieldFloat,
                                                      gridIF->ValueFormat(), sizeof(DBFloat4)));
-    table->AddField(stdDevFLD = new DBObjTableField(divideOnly ? RGISDivideStdDev : RGISHeadStdDev, DBTableFieldFloat,
+    table->AddField(stdDevFLD    = new DBObjTableField(divideOnly ? RGISDivideStdDev : RGISHeadStdDev, DBTableFieldFloat,
                                                     gridIF->ValueFormat(), sizeof(DBFloat4)));
 
     maxProgress = netIF->CellNum() * layerNum;
@@ -1255,10 +1255,10 @@ DBInt RGlibNetworkHistogram(DBObjData *netData, DBObjData *grdData, DBObjData *t
     DBObjRecord *cellRec, *tblRec;
     DBObjectLIST<DBObjTableField> *fields;
 
-    itemTable->AddField(basinIDFLD = new DBObjTableField(DBrNBasin, DBTableFieldInt, "%8d", sizeof(DBInt)));
-    itemTable->AddField(areaFLD = new DBObjTableField("Area", DBTableFieldFloat, "%10.1f", sizeof(DBFloat4)));
-    itemTable->AddField(elevationFLD = new DBObjTableField("Elevation", DBTableFieldFloat, "%8.1f", sizeof(DBFloat4)));
-    itemTable->AddField(percentFLD = new DBObjTableField("Percent", DBTableFieldFloat, "%6.2f", sizeof(DBFloat4)));
+    itemTable->AddField(basinIDFLD    = new DBObjTableField(DBrNBasin,  DBTableFieldInt,   "%8d",    sizeof(DBInt)));
+    itemTable->AddField(areaFLD      = new DBObjTableField("Area",      DBTableFieldFloat, "%10.1f", sizeof(DBFloat4)));
+    itemTable->AddField(elevationFLD = new DBObjTableField("Elevation", DBTableFieldFloat, "%8.1f",  sizeof(DBFloat4)));
+    itemTable->AddField(percentFLD   = new DBObjTableField("Percent",   DBTableFieldFloat, "%6.2f",  sizeof(DBFloat4)));
     netIF = new DBNetworkIF(netData);
     gridIF = new DBGridIF(grdData);
 
@@ -1353,16 +1353,16 @@ DBInt RGlibNetworkBasinDistrib(DBObjData *netData, DBObjData *grdData, DBObjData
 
     table = tblData->Table(DBrNItems);
     netIF = new DBNetworkIF(netData);
-    table->AddField(basinIDFLD = new DBObjTableField(DBrNBasin, DBTableFieldInt, "%8d", sizeof(DBInt)));
-    table->AddField(layerIDFLD = new DBObjTableField("LayerID", DBTableFieldInt, "%4d", sizeof(DBShort)));
-    table->AddField(layerNameFLD = new DBObjTableField("LayerName", DBTableFieldString, "%s", DBStringLength));
-    table->AddField(categoryIDFLD = new DBObjTableField(DBrNCategoryID, DBTableFieldInt, "%2d", sizeof(DBShort)));
-    table->AddField(categoryFLD = new DBObjTableField(DBrNCategory, DBTableFieldString, "%s", DBStringLength));
-    table->AddField(percentFLD = new DBObjTableField(DBrNPercent, DBTableFieldFloat, "%6.2f", sizeof(DBFloat4)));
-    table->AddField(areaFLD = new DBObjTableField(DBrNArea, DBTableFieldFloat, "%10.1f", sizeof(DBFloat4)));
-    table->AddField(cellNumFLD = new DBObjTableField("CellNum", DBTableFieldInt, "%8d", sizeof(DBInt)));
+    table->AddField(basinIDFLD    = new DBObjTableField(DBrNBasin,      DBTableFieldInt,    "%8d",    sizeof(DBInt)));
+    table->AddField(layerIDFLD    = new DBObjTableField("LayerID",      DBTableFieldInt,    "%4d",    sizeof(DBShort)));
+    table->AddField(layerNameFLD  = new DBObjTableField("LayerName",    DBTableFieldString, "%s",     DBStringLength));
+    table->AddField(categoryIDFLD = new DBObjTableField(DBrNCategoryID, DBTableFieldInt,    "%2d",    sizeof(DBShort)));
+    table->AddField(categoryFLD   = new DBObjTableField(DBrNCategory,   DBTableFieldString, "%s",     DBStringLength));
+    table->AddField(percentFLD    = new DBObjTableField(DBrNPercent,    DBTableFieldFloat,  "%6.2f",  sizeof(DBFloat4)));
+    table->AddField(areaFLD       = new DBObjTableField(DBrNArea,       DBTableFieldFloat,  "%10.1f", sizeof(DBFloat4)));
+    table->AddField(cellNumFLD    = new DBObjTableField("CellNum",      DBTableFieldInt,    "%8d",    sizeof(DBInt)));
 
-    gridTable = grdData->Table(DBrNItems);
+    gridTable    = grdData->Table(DBrNItems);
     gridValueFLD = gridTable->Field(DBrNGridValue);
 
     if (histogram == (Histogram *) NULL) histogram = (Histogram *) malloc(gridTable->ItemNum() * sizeof(Histogram));
@@ -1432,6 +1432,122 @@ DBInt RGlibNetworkBasinDistrib(DBObjData *netData, DBObjData *grdData, DBObjData
     delete netIF;
     delete gridIF;
     return (progress == maxProgress ? DBSuccess : DBFault);
+}
+
+DBInt RGlibNetworkPourElevation (DBObjData *netData, const char *elevStr, const char *pourStr) {
+    DBInt cellID, cellNum;
+    DBObjTable *cellTable = netData->Table(DBrNCells);
+    DBObjTableField *elevFLD = cellTable->Field(elevStr);
+    DBObjTableField *pourFLD = cellTable->Field(pourStr);
+    DBNetworkIF     *netIF   = new DBNetworkIF (netData);
+    DBObjRecord *cellRec, *toCell;
+    DBFloat elev, pour;
+
+    if (pourFLD == (DBObjTableField *) NULL)
+        cellTable->AddField(pourFLD = new DBObjTableField(pourStr, elevFLD->Type(), elevFLD->Format (),  elevFLD->Length ()));
+
+    cellNum = netIF->CellNum ();
+    for (cellID = 0; cellID < cellNum; cellID++) {
+        cellRec = netIF->Cell (cellID);
+        pourFLD->Float (cellRec, MAXFLOAT);
+    }
+    for (cellID = cellNum; cellID > 0; cellID--) {
+        if (DBPause((cellNum - cellID) * 100 / cellNum)) goto Stop;
+        cellRec = netIF->Cell (cellID - 1);
+        elev = elevFLD->Float (cellRec);
+        if (netIF->FromCell( cellRec) == (DBObjRecord *) NULL) {
+            pour = elev;
+            pourFLD->Float (cellRec,pour);
+        }
+        else pour = pourFLD->Float (cellRec);
+        if (((toCell = netIF->ToCell (cellRec)) != (DBObjRecord *) NULL) && (netIF->CellOrder (toCell) - netIF->CellOrder (cellRec) >= 0)) {
+            if (pour < pourFLD->Float (toCell)) pourFLD->Float (toCell, pour);
+        }
+    }
+    Stop:
+    delete netIF;
+    return (cellID == 0 ? DBSuccess : DBFault);
+}
+
+static DBInt _RGlibNetworkResorvior(void *, DBObjRecord *);
+
+class VolumeCalc {
+private:
+    DBObjTableField *ElevFLD;
+    DBObjTableField *HeightFLD;
+    DBObjTableField *VolFLD;
+    DBObjTableField *AreaFLD;
+    DBNetworkIF     *NetIF;
+    DBFloat LevelVAR, VolumeVAR, AreaVAR;
+public:
+    VolumeCalc (DBObjData *netData, const char *elevStr, const char *heightStr, const char *volStr, const char *areaStr) {
+        DBInt cellID, cellNum;
+        DBObjRecord *cellRec;
+        DBObjTable *cellTable = netData->Table(DBrNCells);
+
+        ElevFLD   = cellTable->Field(elevStr);
+        HeightFLD = cellTable->Field(heightStr);
+        VolFLD    = cellTable->Field(volStr);
+        AreaFLD   = cellTable->Field(areaStr);
+        if (VolFLD == (DBObjTableField *) NULL)
+            cellTable->AddField(VolFLD  = new DBObjTableField(volStr,  ElevFLD->Type(), ElevFLD->Format (), ElevFLD->Length ()));
+        if (AreaFLD == (DBObjTableField *) NULL)
+            cellTable->AddField(AreaFLD = new DBObjTableField(areaStr, ElevFLD->Type(), ElevFLD->Format (), ElevFLD->Length ()));
+
+        NetIF     = new DBNetworkIF (netData);
+
+        cellNum = CellNum ();
+        for (cellID = 0; cellID < cellNum; cellID++) {
+            VolFLD->Float  (NetIF->Cell (cellID),0.0);
+            AreaFLD->Float (NetIF->Cell (cellID),0.0);
+        }
+    };
+    DBInt CellNum () { return (NetIF->CellNum ()); }
+    ~VolumeCalc () { delete NetIF; };
+    void Action (DBInt cellID) {
+        DBObjRecord *cellRec = NetIF->Cell(cellID);
+        LevelVAR  = HeightFLD->Float (cellRec);
+        VolumeVAR = 0.0;
+        AreaVAR   = 0.0;
+        NetIF->UpStreamSearch(cellRec, (DBNetworkACTION) _RGlibNetworkResorvior);
+        VolFLD->Float  (cellRec, VolumeVAR);
+        AreaFLD->Float (cellRec, AreaVAR);
+    };
+    DBInt Volume (DBObjRecord *cellRec) {
+        DBFloat elev, height, cellArea = NetIF->CellArea (cellRec);
+
+        elev       = ElevFLD->Float (cellRec);
+        if (elev < LevelVAR)  {
+            height = LevelVAR - elev;
+            AreaVAR   += cellArea;
+            VolumeVAR += cellArea * height;
+            return (true);
+        }
+        return (false);
+    };
+};
+
+static class VolumeCalc *_RGlibNetworkVolumeCalc;
+
+static DBInt _RGlibNetworkResorvior(void *io, DBObjRecord *cellRec) {
+
+    return (_RGlibNetworkVolumeCalc->Volume (cellRec));
+}
+
+DBInt RGlibNetworkReservoir (DBObjData *netData, const char *elevStr, const char *heightStr, const char *volStr, const char *areaStr) {
+    DBInt cellID, cellNum;
+
+    _RGlibNetworkVolumeCalc = new VolumeCalc (netData, elevStr, heightStr, volStr, areaStr);
+
+    cellNum = _RGlibNetworkVolumeCalc->CellNum ();
+    for (cellID = 0; cellID < cellNum; cellID++) {
+        if (DBPause((cellNum - cellID) * 100 / cellNum)) goto Stop;
+        _RGlibNetworkVolumeCalc->Action (cellID);
+    }
+    Stop:
+    delete _RGlibNetworkVolumeCalc;
+    return (cellID == cellNum ? DBSuccess : DBFault);
+
 }
 
 DBInt RGlibNetworkPsmRouting(DBObjData *netData,

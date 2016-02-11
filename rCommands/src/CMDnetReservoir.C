@@ -4,7 +4,7 @@ GHAAS RiverGIS Utilities V1.0
 Global Hydrologic Archive and Analysis System
 Copyright 1994-2016, UNH - CCNY/CUNY
 
-CMDnetPouorElevation.C
+CMDnetReservoir.C
 
 bfekete@ccny.cuny.edu
 
@@ -17,7 +17,8 @@ bfekete@ccny.cuny.edu
 
 int main(int argc, char *argv[]) {
     int argPos, argNum = argc, ret, verbose = false;
-    char *elev  = (char *) "Elevation", *pour    = (char *) "PourElev";
+    char *elev  = (char *) "Elevation", *height  = (char *) "PourElev";
+    char *vol   = (char *) "ResVolume", *area    = (char *) "ResArea";
     char *title = (char *) NULL,        *subject = (char *) NULL;
     char *domain = (char *) NULL,       *version = (char *) NULL;
     DBObjData *netData;
@@ -32,12 +33,30 @@ int main(int argc, char *argv[]) {
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
             continue;
         }
-        if (CMargTest (argv[argPos], "-p", "--pour")) {
+        if (CMargTest (argv[argPos], "-h", "--height")) {
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) {
-                CMmsgPrint(CMmsgUsrError, "Missing pour elevation field!");
+                CMmsgPrint(CMmsgUsrError, "Missing height field!");
                 return (CMfailed);
             }
-            pour = argv[argPos];
+            height = argv[argPos];
+            if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
+            continue;
+        }
+        if (CMargTest (argv[argPos], "-V", "--volume")) {
+            if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) {
+                CMmsgPrint(CMmsgUsrError, "Missing volume field!");
+                return (CMfailed);
+            }
+            vol = argv[argPos];
+            if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
+            continue;
+        }
+        if (CMargTest (argv[argPos], "-a", "--area")) {
+            if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) {
+                CMmsgPrint(CMmsgUsrError, "Missing area field!");
+                return (CMfailed);
+            }
+            area = argv[argPos];
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
             continue;
         }
@@ -84,8 +103,10 @@ int main(int argc, char *argv[]) {
         }
         if (CMargTest (argv[argPos], "-h", "--help")) {
             CMmsgPrint(CMmsgInfo, "%s [options] <input network> <output network>", CMfileName(argv[0]));
-            CMmsgPrint(CMmsgInfo, "     -e,--elevation   [elevation field]");
-            CMmsgPrint(CMmsgInfo, "     -p,--pourelev    [pour elevation field]");
+            CMmsgPrint(CMmsgInfo, "     -e,--elevation   [elevation (input) field]");
+            CMmsgPrint(CMmsgInfo, "     -h,--height      [height (input) field]");
+            CMmsgPrint(CMmsgInfo, "     -V,--volume      [volume (output) field]");
+            CMmsgPrint(CMmsgInfo, "     -a,--area        [area   (output) field]");
             CMmsgPrint(CMmsgInfo, "     -t,--title       [dataset title]");
             CMmsgPrint(CMmsgInfo, "     -u,--subject     [subject]");
             CMmsgPrint(CMmsgInfo, "     -d,--domain      [domain]");
@@ -120,7 +141,7 @@ int main(int argc, char *argv[]) {
     if (domain  != (char *) NULL) netData->Document(DBDocGeoDomain, domain);
     if (version != (char *) NULL) netData->Document(DBDocVersion, version);
 
-    if ((ret = RGlibNetworkPourElevation (netData,elev,pour)) == DBSuccess)
+    if ((ret = RGlibNetworkReservoir (netData, elev, height, vol, area)) == DBSuccess)
         ret = (argNum > 2) && (strcmp(argv[2], "-") != 0) ? netData->Write(argv[2]) : netData->Write(stdout);
 
     delete netData;
