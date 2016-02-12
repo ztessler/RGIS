@@ -1460,7 +1460,7 @@ DBInt RGlibNetworkPourElevation (DBObjData *netData, const char *elevStr, const 
             pourFLD->Float (cellRec,pour);
         }
         else pour = pourFLD->Float (cellRec);
-        if (((toCell = netIF->ToCell (cellRec)) != (DBObjRecord *) NULL) && (netIF->CellOrder (toCell) - netIF->CellOrder (cellRec) >= 0)) {
+        if (((toCell = netIF->ToCell (cellRec)) != (DBObjRecord *) NULL) && (netIF->CellOrder (toCell) - netIF->CellOrder (cellRec) < 8)) {
             if (pour < pourFLD->Float (toCell)) pourFLD->Float (toCell, pour);
         }
     }
