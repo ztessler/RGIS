@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
             continue;
         }
-        if (CMargTest (argv[argPos], "-h", "--height")) {
+        if (CMargTest (argv[argPos], "-H", "--height")) {
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) {
                 CMmsgPrint(CMmsgUsrError, "Missing height field!");
                 return (CMfailed);
@@ -104,7 +104,7 @@ int main(int argc, char *argv[]) {
         if (CMargTest (argv[argPos], "-h", "--help")) {
             CMmsgPrint(CMmsgInfo, "%s [options] <input network> <output network>", CMfileName(argv[0]));
             CMmsgPrint(CMmsgInfo, "     -e,--elevation   [elevation (input) field]");
-            CMmsgPrint(CMmsgInfo, "     -h,--height      [height (input) field]");
+            CMmsgPrint(CMmsgInfo, "     -H,--height      [height (input) field]");
             CMmsgPrint(CMmsgInfo, "     -V,--volume      [volume (output) field]");
             CMmsgPrint(CMmsgInfo, "     -a,--area        [area   (output) field]");
             CMmsgPrint(CMmsgInfo, "     -t,--title       [dataset title]");
