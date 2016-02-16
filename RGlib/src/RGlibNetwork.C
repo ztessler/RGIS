@@ -1449,7 +1449,7 @@ DBInt RGlibNetworkPourElevation (DBObjData *netData, const char *elevStr, const 
     cellNum = netIF->CellNum ();
     for (cellID = 0; cellID < cellNum; cellID++) {
         cellRec = netIF->Cell (cellID);
-        pourFLD->Float (cellRec, MAXFLOAT);
+        pourFLD->Float (cellRec, DBHugeVal);
     }
     for (cellID = cellNum; cellID > 0; cellID--) {
         if (DBPause((cellNum - cellID) * 100 / cellNum)) goto Stop;
