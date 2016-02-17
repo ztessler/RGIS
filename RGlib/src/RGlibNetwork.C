@@ -84,7 +84,7 @@ DBInt RGlibNetworkToGrid(DBObjData *netData, DBObjTableField *field, DBObjData *
                     if ((intVal = field->Int(cellRec)) == field->IntNoData())
                         gridIF->Value(netIF->CellPosition(cellRec), DBFault);
                     else {
-                        sprintf(nameStr, "Category%08d", intVal);
+                        sprintf(nameStr, "Category%04d", intVal);
                         if ((itemRec = itemTable->Item(nameStr)) == (DBObjRecord *) NULL) {
                             if ((itemRec = itemTable->Add(nameStr)) == (DBObjRecord *) NULL) {
                                 CMmsgPrint(CMmsgAppError, "Item Object Creation Error in: %s %d", __FILE__, __LINE__);
