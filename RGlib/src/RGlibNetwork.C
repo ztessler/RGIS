@@ -1441,7 +1441,7 @@ DBInt RGlibNetworkPourElevation (DBObjData *netData, const char *elevStr, const 
     DBObjTableField *pourFLD = cellTable->Field(pourStr);
     DBNetworkIF     *netIF   = new DBNetworkIF (netData);
     DBObjRecord *cellRec, *toCell;
-    DBFloat elev, pour, minDiff;
+    DBFloat elev, pour;
 
     if (pourFLD == (DBObjTableField *) NULL)
         cellTable->AddField(pourFLD = new DBObjTableField(pourStr, elevFLD->Type(), elevFLD->Format (),  elevFLD->Length ()));
