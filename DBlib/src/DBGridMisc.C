@@ -75,7 +75,7 @@ void DBGridIF::Initialize(DBObjData *data, bool flat) {
     Flat = flat;
 }
 
-void DBGridIF::RenameLayer(DBObjRecord *layerRec, char *name) {
+void DBGridIF::RenameLayer(DBObjRecord *layerRec, const char *name) {
     DBObjRecord *dataRec;
 
     layerRec = LayerTable->Item(layerRec->RowID());
@@ -88,7 +88,7 @@ void DBGridIF::RenameLayer(DBObjRecord *layerRec, char *name) {
     }
 }
 
-DBObjRecord *DBGridIF::AddLayer(char *layerName) {
+DBObjRecord *DBGridIF::AddLayer(const char *layerName) {
     DBInt index;
     DBObjRecord *firstLayer, *layerRec, *dataRec;
     DBObjTableField *rowNumFLD = LayerTable->Field(DBrNRowNum);

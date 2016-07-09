@@ -164,6 +164,42 @@ char *MFDateGetCurrent () {
 	return (time);
 }
 
+char *MFDateGetNext () {
+	static char time [MFDateStringLength];
+	static struct MFDate_s date;
+	int month;
+
+	date.Year  = _MFCurrentDate.Year;
+	date.Month = _MFCurrentDate.Month;
+	date.Day   = _MFCurrentDate.Day + 1;
+
+	if (date.Day > _MFDateMonthLength (date.Year, date.Month)) {
+		date.Day = 1;
+		date.Month++;
+		if (date.Month > 12) {
+			date.Month = 1;
+			if (date.Year == MFDefaultMissingInt) return ((char *) NULL);
+			date.Year++;
+		}
+	}
+
+	date.DayOfYear = 0;
+	for (month = 1;month < _MFCurrentDate.Month;++month)
+		date.DayOfYear += _MFDateMonthLength (date.Year,month);
+	date.DayOfYear += date.Day;
+
+	if (_MFDateCompare (&date,&_MFEndDate) > 0) return ((char *) NULL);
+
+	if (date.Year != MFDefaultMissingInt) sprintf (time,"%4d",date.Year);
+	else strcpy (time,MFDateClimatologyStr);
+
+	if (date.Month   == MFDefaultMissingInt) return (time);
+	sprintf (time + strlen (time),"-%02d",date.Month);
+	if (date.Day     == MFDefaultMissingInt) return (time);
+	sprintf (time + strlen (time),"-%02d",date.Day);
+	return (time);
+}
+
 bool MFDateCompare (char *time0,char *time1,bool initial) {
 	int pos, len;
 	pos = initial ||

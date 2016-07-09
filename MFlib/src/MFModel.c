@@ -313,7 +313,7 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*conf) ()) {
 						ret = CMfailed;
 					}
 					else if (var->Initial) {
-						while (MFDataStreamRead (var) == MFContinue);
+						while (MFDataStreamRead (var,(const char *) NULL) == MFContinue); // TODO
 						MFDataStreamClose (var->InStream);
 						var->InPath = (char *) NULL;
 						var->InStream = (MFDataStream_t *) NULL;
@@ -362,7 +362,7 @@ static bool _MFModelReadInput (char *time)
 			var->Set = true;
 			if (MFDateCompare (time,var->Header.Date,var->Initial)) continue;
 			do	{
-				switch (MFDataStreamRead (var)) {
+				switch (MFDataStreamRead (var, (const char *) NULL)) { // TODO
 					case CMfailed:
 						CMmsgPrint (CMmsgAppError,"Error: Variable [%s] reading error!",var->Name);
 						return (MFStop);
@@ -411,7 +411,7 @@ static void _MFUserFunc (void *commonPtr,void *threadData, size_t taskId) {
 
 int MFModelRun (int argc, char *argv [], int argNum, int (*conf) ()) {
 	int i, iFunc, varID, dlink, taskId;
-	char *timeCur, timeWritten [MFDateStringLength];
+	char *timeCur, *timeNext, timeWritten [MFDateStringLength];
 	MFVariable_t *var;
 	time_t sec;
 	size_t threadsNum = CMthreadProcessorNum ();
@@ -420,15 +420,14 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*conf) ()) {
 
 	if (_MFModelParse (argc,argv,argNum,conf) == CMfailed) return (CMfailed);
 
-	timeCur = MFDateGetCurrent ();
-
+	timeCur  = MFDateGetCurrent ();
 	time(&sec);
 	CMmsgPrint (CMmsgInfo, "Model run started at... %s  started at %.24s", timeCur, ctime(&sec));
 	if (_MFModelReadInput (timeCur) == MFStop) {
 		CMmsgPrint (CMmsgInfo, "MFModelReadInput(%s) returned MFStop in: %s:%d",timeCur,__FILE__,__LINE__);
 		return (CMfailed);
 	}
-	if (team != (CMthreadTeam_p) NULL) {
+	if (team != (CMthreadTeam_p) NULL) /* Multiple CPU */ {
 		if ((job  = CMthreadJobCreate (team, (void *) NULL, _MFDomain->ObjNum, _MFUserFunc)) == (CMthreadJob_p) NULL) {
 			CMmsgPrint (CMmsgAppError, "Job creation error in %s:%d",__FILE__,__LINE__);
 			CMthreadTeamDestroy (team);
@@ -441,8 +440,10 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*conf) ()) {
 			CMthreadJobTaskDependent (job, taskId, dlink);
 		}
 		do {
-			CMmsgPrint (CMmsgDebug, "Computing: %s", timeCur);
+			timeNext = MFDateGetNext ();
+			if (_MFModelReadInput (timeNext) == MFStop) break;
 
+			CMmsgPrint (CMmsgDebug, "Computing: %s", timeCur);
 			CMthreadJobExecute (team, job);
 
 			for (var = MFVarGetByID (varID = 1);var != (MFVariable_t *) NULL;var = MFVarGetByID (++varID)) {
@@ -450,16 +451,20 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*conf) ()) {
 					if (var->State != true) MFDataStreamWrite (var, timeCur);
 				}
 			}
-		} while ((timeCur = MFDateAdvance ()) != (char *) NULL ? _MFModelReadInput (timeCur) : MFStop);
+		} while ((timeCur = MFDateAdvance ()) != (char *) NULL);
 		CMthreadJobDestroy  (job);
 		CMthreadTeamDestroy (team);
 	}
-	else // TODO Single CPU
+	else /* Single CPU */
 		do	{
 			int link, uLink;
 			double value;
 
+			timeNext = MFDateGetNext ();
+			if (_MFModelReadInput (timeNext) == MFStop) break;
+
 			CMmsgPrint (CMmsgDebug, "Computing: %s", timeCur);
+
 			for (var = MFVarGetByID (varID = 1);var != (MFVariable_t *) NULL;var = MFVarGetByID (++varID))
 				if (var->Route) { for (i = 0;i < _MFDomain->ObjNum; ++i)  MFVarSetFloat (varID, i, 0.0); }
 

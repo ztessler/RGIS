@@ -95,7 +95,7 @@ MFVariable_t *MFVarSetPath (const char *name,const char *path, bool state, int t
 			strcpy (var->InPath,path);
 			if ((var->InStream = MFDataStreamOpen (path,"r")) == (MFDataStream_t *) NULL)
 				return ((MFVariable_t *) NULL);
-			if (MFDataStreamRead (var) == CMfailed) return ((MFVariable_t *) NULL);	
+			if (MFDataStreamRead (var, (const char *) NULL) == CMfailed) return ((MFVariable_t *) NULL);	// TODO
 			switch (strlen (var->Header.Date)) {
 				default:
 				case  4: var->TStep = MFTimeStepYear;  break;

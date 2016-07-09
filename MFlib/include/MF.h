@@ -38,9 +38,9 @@ enum {
 };
 
 enum {
-    MFTimeStepDay = (0x01 << 0x00),
+    MFTimeStepDay   = (0x01 << 0x00),
     MFTimeStepMonth = (0x01 << 0x01),
-    MFTimeStepYear = (0x01 << 0x02)
+    MFTimeStepYear  = (0x01 << 0x02)
 };
 
 #define MFDateClimatologyStr "XXXX"
@@ -87,7 +87,7 @@ typedef struct MFVariable_s {
     char Unit[MFNameLength];
     bool Flux, Initial, Set, Route, State;
     short TStep;
-    void *Data;
+    void *Data, *DataIn, *DataOut, *DataProc;
 
     void (*Func)(int);
 
@@ -100,7 +100,7 @@ typedef void (*MFFunction)(int);
 
 MFDataStream_t *MFDataStreamOpen(const char *, const char *);
 int MFDataStreamClose(MFDataStream_t *);
-int MFDataStreamRead(MFVariable_t *);
+int MFDataStreamRead(MFVariable_t *, const char *);
 int MFDataStreamWrite(MFVariable_t *, const char *);
 
 int MFVarGetID(char *, char *, int, bool, bool);
@@ -159,6 +159,7 @@ void MFDomainFree(MFDomain_t *);
 
 bool MFDateCompare(char *, char *, bool);
 char *MFDateGetCurrent();
+char *MFDateGetNext ();
 int MFDateGetDayOfYear();
 int MFDateGetDayOfMonth();
 int MFDateGetMonthLength();

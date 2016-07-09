@@ -69,7 +69,7 @@ int MFDataStreamClose (MFDataStream_t *dStream)
 	return (CMsucceeded);
 }
 
-int MFDataStreamRead (MFVariable_t *var) {
+int MFDataStreamRead (MFVariable_t *var, const char *timeStr) {
 	int i, sLen;
 	MFVarHeader_t header;
 
@@ -136,7 +136,7 @@ int MFDataStreamRead (MFVariable_t *var) {
 			CMmsgPrint (CMmsgAppError,"Record Size Missmatch [%d,%d] in: %s:%d\n", header.ItemNum,  var->Header.ItemNum, __FILE__,__LINE__);
 			return (CMfailed);
 		}
-		if ((int) fread (var->Data,MFVarItemSize (header.DataType),header.ItemNum,var->InStream->Handle.File) != header.ItemNum) {
+		if ((int) fread (var->DataIn,MFVarItemSize (header.DataType),header.ItemNum,var->InStream->Handle.File) != header.ItemNum) {
 			CMmsgPrint (CMmsgSysError,"Data Reading error in: %s:%d\n",__FILE__,__LINE__);
 			
 			return (CMfailed);

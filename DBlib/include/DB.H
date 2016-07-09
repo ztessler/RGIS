@@ -364,7 +364,6 @@ public:
     }
 
     void Shrink(DBRegion region) {
-// TODO	Expand (region);
         if (LowerLeft.X < region.LowerLeft.X) LowerLeft.X = region.LowerLeft.X;
         if (LowerLeft.Y < region.LowerLeft.Y) LowerLeft.Y = region.LowerLeft.Y;
         if (UpperRight.X > region.UpperRight.X) UpperRight.X = region.UpperRight.X;
@@ -452,7 +451,7 @@ public:
 
 class DBDate {
 private:
-    DBShort MonthsVAR;
+    DBShort  MonthsVAR;
     DBUShort MinutesVAR;
     DBShort FlagsVAR;
 public:
@@ -1543,7 +1542,7 @@ public:
 
     void Extent(DBRegion extent) { ExtentVAR = extent; }
 
-    DBDate LastModification();
+    DBDate LastModification() { return (LastModVAR); };
 
     DBDataHeader();
 
@@ -1636,12 +1635,12 @@ public:
 #define DBrNPercent             ((char *) "Percent")
 
 #define DBDocSubject            ((char *) "Subject")
-#define DBDocGeoDomain            ((char *) "GeoDomain")
+#define DBDocGeoDomain          ((char *) "GeoDomain")
 #define DBDocVersion            ((char *) "Version")
 #define DBDocCitationRef        ((char *) "Citation Reference")
-#define DBDocCitationInst        ((char *) "Citation Institue")
-#define DBDocSourceInst        ((char *) "Source Institue")
-#define DBDocSourcePerson        ((char *) "Source Person")
+#define DBDocCitationInst       ((char *) "Citation Institue")
+#define DBDocSourceInst         ((char *) "Source Institue")
+#define DBDocSourcePerson       ((char *) "Source Person")
 #define DBDocOwnerPerson        ((char *) "Contact Person")
 #define DBDocComment            ((char *) "Comment")
 

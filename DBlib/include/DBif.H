@@ -251,11 +251,11 @@ public:
 
     void Initialize(DBObjData *, bool);
 
-    void RenameLayer(DBObjRecord *, char *);
+    void RenameLayer(DBObjRecord *,const char *);
 
-    void RenameLayer(char *name) { RenameLayer(LayerTable->Item(), name); }
+    void RenameLayer(const char *name) { RenameLayer(LayerTable->Item(), name); }
 
-    DBObjRecord *AddLayer(char *);
+    DBObjRecord *AddLayer(const char *);
 
     DBInt DeleteLayer(char *);
 

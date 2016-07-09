@@ -11,6 +11,7 @@ bfekete@ccny.cuny.edu
 *******************************************************************************/
 
 #include <DB.H>
+#include <time.h>
 
 int DBVarString::Read(FILE *file, int swap) {
     if (fread(&LengthVAR, sizeof(LengthVAR), 1, file) != 1) {
@@ -268,8 +269,11 @@ int DBDataHeader::Read(FILE *file) {
 }
 
 int DBDataHeader::Write(FILE *file) {
+    time_t curTime = time (NULL);
+    struct tm *tmStruct = localtime (&curTime);
+    LastModVAR.Set (tmStruct->tm_year + 1900,tmStruct->tm_mon,tmStruct->tm_mday,tmStruct->tm_hour, tmStruct->tm_min);
     MajorVAR = 2;
-    MinorVAR = 0;
+    MinorVAR = 2;
     if (fwrite(this, sizeof(DBDataHeader), 1, file) != 1) {
         CMmsgPrint(CMmsgSysError, "File Writing Error in: %s %d", __FILE__, __LINE__);
         return (DBFault);

@@ -355,7 +355,8 @@ DBInt UIDataHeaderForm(DBObjData *data) {
                                         XmNlabelString, string,
                                         NULL);
         XmStringFree(string);
-        string = XmStringCreate((char *) "Not Set", UICharSetNormal);
+        string = XmStringCreate(data->LastModification().Year() < 1900 ? (char *) "Not Set" : data->LastModification ().Get(), UICharSetNormal);
+//      string = XmStringCreate((char *) "Not Set", UICharSetNormal);
         XtVaCreateManagedWidget("UIDataHeaderFormVersion", xmLabelGadgetClass, mainForm,
                                 XmNtopAttachment, XmATTACH_WIDGET,
                                 XmNtopWidget, srcInstTextF,
