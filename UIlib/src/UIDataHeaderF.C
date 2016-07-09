@@ -77,7 +77,7 @@ DBInt UIDataHeaderForm(DBObjData *data) {
     DBUnsigned var;
     static DBInt dataType, save, changed[10];
     static Widget dShell = NULL;
-    static Widget nameTextF, subjectTextF, geoDomTextF, versionTextF;
+    static Widget nameTextF, subjectTextF, geoDomTextF, versionTextF, lastModL;
     static Widget citRefText, citInstTextF, srcInstTextF, srcPersTextF, commentText;
     static Widget typeMenu;
 
@@ -355,9 +355,8 @@ DBInt UIDataHeaderForm(DBObjData *data) {
                                         XmNlabelString, string,
                                         NULL);
         XmStringFree(string);
-        string = XmStringCreate(data->LastModification().Year() < 1900 ? (char *) "Not Set" : data->LastModification ().Get(), UICharSetNormal);
-//      string = XmStringCreate((char *) "Not Set", UICharSetNormal);
-        XtVaCreateManagedWidget("UIDataHeaderFormVersion", xmLabelGadgetClass, mainForm,
+        string = XmStringCreate((char *) "Not Set", UICharSetNormal);
+        lastModL = XtVaCreateManagedWidget("UIDataHeaderFormVersion", xmLabelGadgetClass, mainForm,
                                 XmNtopAttachment, XmATTACH_WIDGET,
                                 XmNtopWidget, srcInstTextF,
                                 XmNtopOffset, 5,
@@ -445,6 +444,9 @@ DBInt UIDataHeaderForm(DBObjData *data) {
     XtVaSetValues(commentText, XmNuserData, data->Document(DBDocComment), NULL);
     XmTextSetString(commentText, data->Document(DBDocComment));
     XmTextSetEditable(commentText, edit);
+
+    if (data->LastModification().Year() > 1900)
+        UIAuxSetLabelString (lastModL, data->LastModification().Get());
 
     save = false;
     XmProcessTraversal(nameTextF, XmTRAVERSE_CURRENT);
