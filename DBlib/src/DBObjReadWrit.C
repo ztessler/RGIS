@@ -271,7 +271,7 @@ int DBDataHeader::Read(FILE *file) {
 int DBDataHeader::Write(FILE *file) {
     time_t curTime = time (NULL);
     struct tm *tmStruct = localtime (&curTime);
-    LastModVAR.Set (tmStruct->tm_year + 1900,tmStruct->tm_mon - 1,tmStruct->tm_mday - 1,tmStruct->tm_hour, tmStruct->tm_min);
+    LastModVAR.Set (tmStruct->tm_year + 1900,tmStruct->tm_mon,tmStruct->tm_mday - 1,tmStruct->tm_hour, tmStruct->tm_min);
     MajorVAR = 2;
     MinorVAR = 2;
     if (fwrite(this, sizeof(DBDataHeader), 1, file) != 1) {
