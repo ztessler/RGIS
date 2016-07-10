@@ -77,7 +77,7 @@ DBInt UIDataHeaderForm(DBObjData *data) {
     DBUnsigned var;
     static DBInt dataType, save, changed[10];
     static Widget dShell = NULL;
-    static Widget nameTextF, subjectTextF, geoDomTextF, versionTextF, lastModL;
+    static Widget nameTextF, subjectTextF, geoDomTextF, versionTextF, lastModL, ownerL;
     static Widget citRefText, citInstTextF, srcInstTextF, srcPersTextF, commentText;
     static Widget typeMenu;
 
@@ -355,18 +355,66 @@ DBInt UIDataHeaderForm(DBObjData *data) {
                                         XmNlabelString, string,
                                         NULL);
         XmStringFree(string);
-        string = XmStringCreate((char *) "Not Set", UICharSetNormal);
+        string = XmStringCreate((char *) " ", UICharSetNormal);
         lastModL = XtVaCreateManagedWidget("UIDataHeaderFormVersion", xmLabelGadgetClass, mainForm,
-                                XmNtopAttachment, XmATTACH_WIDGET,
-                                XmNtopWidget, srcInstTextF,
-                                XmNtopOffset, 5,
-                                XmNleftAttachment, XmATTACH_WIDGET,
-                                XmNleftWidget, label,
-                                XmNleftOffset, 5,
-                                XmNwidth, 100,
-                                XmNrecomputeSize, false,
-                                XmNlabelString, string,
-                                NULL);
+                                           XmNtopAttachment, XmATTACH_WIDGET,
+                                           XmNtopWidget, srcInstTextF,
+                                           XmNtopOffset, 5,
+                                           XmNleftAttachment, XmATTACH_WIDGET,
+                                           XmNleftWidget, label,
+                                           XmNleftOffset, 5,
+                                           XmNwidth, 100,
+                                           XmNrecomputeSize, false,
+                                           XmNlabelString, string,
+                                           NULL);
+        XmStringFree(string);
+        string = XmStringCreate((char *) "Last Modification:", UICharSetBold);
+        label = XtVaCreateManagedWidget("UIDataHeaderFormVersion", xmLabelWidgetClass, mainForm,
+                                        XmNtopAttachment, XmATTACH_WIDGET,
+                                        XmNtopWidget, srcInstTextF,
+                                        XmNtopOffset, 5,
+                                        XmNleftAttachment, XmATTACH_WIDGET,
+                                        XmNleftWidget, srcPersTextF,
+                                        XmNleftOffset, 10,
+                                        XmNlabelString, string,
+                                        NULL);
+        XmStringFree(string);
+        string = XmStringCreate((char *) " ", UICharSetNormal);
+        lastModL = XtVaCreateManagedWidget("UIDataHeaderFormVersion", xmLabelGadgetClass, mainForm,
+                                           XmNtopAttachment, XmATTACH_WIDGET,
+                                           XmNtopWidget, srcInstTextF,
+                                           XmNtopOffset, 5,
+                                           XmNleftAttachment, XmATTACH_WIDGET,
+                                           XmNleftWidget, label,
+                                           XmNleftOffset, 5,
+                                           XmNwidth, 100,
+                                           XmNrecomputeSize, false,
+                                           XmNlabelString, string,
+                                           NULL);
+        XmStringFree(string);
+        string = XmStringCreate((char *) "Owner:", UICharSetBold);
+        label = XtVaCreateManagedWidget("UIDataHeaderFormVersion", xmLabelWidgetClass, mainForm,
+                                        XmNtopAttachment, XmATTACH_WIDGET,
+                                        XmNtopWidget, lastModL,
+                                        XmNtopOffset, 5,
+                                        XmNleftAttachment, XmATTACH_WIDGET,
+                                        XmNleftWidget, srcPersTextF,
+                                        XmNleftOffset, 10,
+                                        XmNlabelString, string,
+                                        NULL);
+        XmStringFree(string);
+        string = XmStringCreate((char *) " ", UICharSetNormal);
+        ownerL = XtVaCreateManagedWidget("UIDataHeaderFormVersion", xmLabelGadgetClass, mainForm,
+                                           XmNtopAttachment, XmATTACH_WIDGET,
+                                           XmNtopWidget, lastModL,
+                                           XmNtopOffset, 5,
+                                           XmNleftAttachment, XmATTACH_WIDGET,
+                                           XmNleftWidget, label,
+                                           XmNleftOffset, 5,
+                                           XmNwidth, 100,
+                                           XmNrecomputeSize, false,
+                                           XmNlabelString, string,
+                                           NULL);
         XmStringFree(string);
         string = XmStringCreate((char *) "Comment:", UICharSetBold);
         label = XtVaCreateManagedWidget("UIDataHeaderFormCommentLabel", xmLabelWidgetClass, mainForm,
@@ -445,8 +493,10 @@ DBInt UIDataHeaderForm(DBObjData *data) {
     XmTextSetString(commentText, data->Document(DBDocComment));
     XmTextSetEditable(commentText, edit);
 
-    if (data->LastModification().Year() > 1900)
+    if (data->LastModification().Year() != DBDefaultMissingIntVal)
         UIAuxSetLabelString (lastModL, data->LastModification().Get());
+    if ((data->Document(DBDocOwnerPerson) != (char *) NULL) && (strlen(data->Document(DBDocOwnerPerson)) > 0))
+        UIAuxSetLabelString (ownerL, data->Document(DBDocOwnerPerson));
 
     save = false;
     XmProcessTraversal(nameTextF, XmTRAVERSE_CURRENT);

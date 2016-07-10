@@ -12,6 +12,8 @@ bfekete@ccny.cuny.edu
 
 #include <DB.H>
 #include <time.h>
+#include <sys/types.h>
+#include <pwd.h>
 
 int DBVarString::Read(FILE *file, int swap) {
     if (fread(&LengthVAR, sizeof(LengthVAR), 1, file) != 1) {
@@ -377,7 +379,11 @@ int DBObjData::Write(FILE *file) {
 int DBObjData::_Write(FILE *file) {
     DBInt id, userFlags;
     DBObjRecord *docRec;
+    struct passwd *pwd = getpwuid(geteuid());
 
+    if ((pwd != (struct passwd *) NULL) && (pwd->pw_gecos != (char *) NULL) && (strlen (pwd->pw_gecos) > 0)) {
+        Document(DBDocOwnerPerson, pwd->pw_gecos);
+    }
     userFlags = Flags() & DBDataFlagUserModeFlags;
     Flags(DBDataFlagUserModeFlags, DBClear);
     if (DBObject::Write(file) == DBFault) return (DBFault);
