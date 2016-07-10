@@ -496,11 +496,11 @@ DBInt UIDataHeaderForm(DBObjData *data) {
     if (data->LastModification().Year() != DBDefaultMissingIntVal)
         UIAuxSetLabelString (lastModL, data->LastModification().Get());
     else
-        UIAuxSetLabelString (lastModL, " ");
+        UIAuxSetLabelString (lastModL, (char *) " ");
     if ((data->Document(DBDocOwnerPerson) != (char *) NULL) && (strlen(data->Document(DBDocOwnerPerson)) > 0))
         UIAuxSetLabelString (ownerL, data->Document(DBDocOwnerPerson));
     else
-        UIAuxSetLabelString (ownerL, " ");
+        UIAuxSetLabelString (ownerL, (char  *) " ");
     save = false;
     XmProcessTraversal(nameTextF, XmTRAVERSE_CURRENT);
     UIDialogFormPopup(dShell);
