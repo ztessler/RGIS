@@ -419,7 +419,7 @@ DBInt UIDataHeaderForm(DBObjData *data) {
         string = XmStringCreate((char *) "Comment:", UICharSetBold);
         label = XtVaCreateManagedWidget("UIDataHeaderFormCommentLabel", xmLabelWidgetClass, mainForm,
                                         XmNtopAttachment, XmATTACH_WIDGET,
-                                        XmNtopWidget, srcPersTextF,
+                                        XmNtopWidget, ownerL,
                                         XmNtopOffset, 5,
                                         XmNrightAttachment, XmATTACH_WIDGET,
                                         XmNrightWidget, nameTextF,
@@ -429,7 +429,7 @@ DBInt UIDataHeaderForm(DBObjData *data) {
         XmStringFree(string);
         commentText = XtVaCreateManagedWidget("UIDataHeaderFormCommentText", xmTextWidgetClass, mainForm,
                                               XmNtopAttachment, XmATTACH_WIDGET,
-                                              XmNtopWidget, srcPersTextF,
+                                              XmNtopWidget, ownerL,
                                               XmNtopOffset, 5,
                                               XmNleftAttachment, XmATTACH_WIDGET,
                                               XmNleftWidget, label,
@@ -495,9 +495,12 @@ DBInt UIDataHeaderForm(DBObjData *data) {
 
     if (data->LastModification().Year() != DBDefaultMissingIntVal)
         UIAuxSetLabelString (lastModL, data->LastModification().Get());
+    else
+        UIAuxSetLabelString (lastModL, " ");
     if ((data->Document(DBDocOwnerPerson) != (char *) NULL) && (strlen(data->Document(DBDocOwnerPerson)) > 0))
         UIAuxSetLabelString (ownerL, data->Document(DBDocOwnerPerson));
-
+    else
+        UIAuxSetLabelString (ownerL, " ");
     save = false;
     XmProcessTraversal(nameTextF, XmTRAVERSE_CURRENT);
     UIDialogFormPopup(dShell);
