@@ -201,7 +201,7 @@ int main(int argc, char *argv[]) {
     if (citation  != (char *) NULL) dbData->Document(DBDocCitationRef,  citation);
     if (comment   != (char *) NULL) dbData->Document(DBDocComment,      comment);
     if (source    != (char *) NULL) dbData->Document(DBDocSourceInst,   source);
-    if (shadeSet  != DBFault)       dbData->Flags(shadeSet, DBSet);
+    if (shadeSet  != DBFault)  { dbData->Flags (DBDataFlagDispModeContShadeSets,DBClear); dbData->Flags(shadeSet, DBSet); }
     if (display   != DBFault)       dbData->Flags(DBDataFlagDisplay,display);
 
     ret = (argNum > 2) && (strcmp(argv[2], "-") != 0) ? dbData->Write(argv[2]) : dbData->Write(stdout);
