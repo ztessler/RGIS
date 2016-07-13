@@ -183,13 +183,16 @@ function RGISlookupSubject ()
 		(soil_moisture_change)                      # 56
 			echo "SoilMoistureChange"
 		;;
-		(vegetables_crop_fraction)                  # 57
+		(surface_air_pressure)                      # 57
+			echo "AirPressure"
+		;;
+		(vegetables_crop_fraction)                  # 58
 			echo "CropFraction-Vegetables"
 		;;
-		(wilting_point)                             # 58
+		(wilting_point)                             # 59
 			echo "Soil-WiltingPoint"
 		;;
-		(wind_speed)                                # 59
+		(wind_speed)                                # 60
 			echo "WindSpeed"
 		;;
 		(*)
@@ -375,13 +378,16 @@ function _RGISlookupFullName ()
 		(soil_moisture_change)                      # 56
 			echo "Soil Moisture Change"
 		;;
-		(vegetables_crop_fraction)                  # 57
+		(surface_air_pressure)                      # 57
+			echo "Air Pressure"
+		;;
+		(vegetables_crop_fraction)                  # 58
 			echo "Vegetables Crop Fraction"
 		;;
-		(wilting_point)                             # 58
+		(wilting_point)                             # 59
 			echo "Wilting Point"
 		;;
-		(wind_speed)                                # 59
+		(wind_speed)                                # 60
 			echo "Wind Speed"
 		;;
 		(*)
@@ -554,13 +560,16 @@ function RGISlookupShadeset ()
 		(soil_moisture_change)                      # 56
 			echo "blue-to-red"
 		;;
-		(vegetables_crop_fraction)                  # 57
+		(surface_air_pressure)                      # 57
 			echo "grey"
 		;;
-		(wilting_point)                             # 58
+		(vegetables_crop_fraction)                  # 58
 			echo "grey"
 		;;
-		(wind_speed)                                # 59
+		(wilting_point)                             # 59
+			echo "grey"
+		;;
+		(wind_speed)                                # 60
 			echo "grey"
 		;;
 		(*)
@@ -733,13 +742,16 @@ function RGISlookupAggrMethod ()
 		(soil_moisture_change)                      # 56
 			echo "avg"
 		;;
-		(vegetables_crop_fraction)                  # 57
+		(surface_air_pressure)                      # 57
 			echo "avg"
 		;;
-		(wilting_point)                             # 58
+		(vegetables_crop_fraction)                  # 58
 			echo "avg"
 		;;
-		(wind_speed)                                # 59
+		(wilting_point)                             # 59
+			echo "avg"
+		;;
+		(wind_speed)                                # 60
 			echo "avg"
 		;;
 		(*)

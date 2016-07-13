@@ -18,6 +18,9 @@ bfekete@ccny.cuny.edu
 
 static DBFloat _CMDheatIndex (DBFloat airT, DBFloat dewT) {
     DBFloat eSat, eAir, H, T, A, B, hi;
+    /* Anderson, G. B., M. L. Bell, and R. D. Peng (2013), Review Methods to Calculate the Heat Index as an
+     * Exposure Metric in Environmental Health Research, Environmental Health Perspectives, 121(10), 1111–1119. */
+
 
     eSat = airT >= (DBFloat) 0.0 ? 0.611 * exp ( 17.27 * airT / (237.3 + airT)) : 0.611 * exp ( 21.87 * airT / (265.5 + airT));
     eAir = dewT >= (DBFloat) 0.0 ? 0.611 * exp ( 17.27 * dewT / (237.3 + dewT)) : 0.611 * exp ( 21.87 * dewT / (265.5 + dewT));
