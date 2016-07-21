@@ -79,31 +79,30 @@ typedef struct varEntry_s {
 	char *Path;
 } varEntry_t;
 
-static varEntry_t *_MFModelVarEntryNew (varEntry_t *varEntries, int *varEntryNum, const char *name, const char *path) {
-	varEntries = (varEntry_t *) realloc (varEntries,sizeof (varEntry_t)  * (*varEntryNum + 1));
+static varEntry_t *_MFModelVarEntryNew (varEntry_t *varEntries, int entryID, const char *name, const char *path) {
+	varEntries = (varEntry_t *) realloc (varEntries,sizeof (varEntry_t)  * (entryID + 1));
 	if (varEntries == (varEntry_t *) NULL) {
 		CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d\n",__FILE__,__LINE__);
 		return ((varEntry_t *) NULL);
 	}
-	varEntries [*varEntryNum].Name  = (char *) malloc (strlen (name) + 1);
-	varEntries [*varEntryNum].Path  = (char *) malloc (strlen (path) + 1);
-	if ((varEntries [*varEntryNum].Name == (char *) NULL) || (varEntries [*varEntryNum].Path == (char *) NULL)) {
+	varEntries [entryID].Name  = (char *) malloc (strlen (name) + 1);
+	varEntries [entryID].Path  = (char *) malloc (strlen (path) + 1);
+	if ((varEntries [entryID].Name == (char *) NULL) || (varEntries [entryID].Path == (char *) NULL)) {
 		CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d\n",__FILE__,__LINE__);
         return ((varEntry_t *) NULL);
 	}
-	strcpy (varEntries [*varEntryNum].Name, name);
-	strcpy (varEntries [*varEntryNum].Path, path);
-	varEntries [*varEntryNum].Name  = CMbufStripDQuotes (CMbufStripSQuotes (CMbufTrim (varEntries [*varEntryNum].Name)));
-	varEntries [*varEntryNum].Path  = CMbufStripDQuotes (CMbufStripSQuotes (CMbufTrim (varEntries [*varEntryNum].Path)));
-	varEntries [*varEntryNum].InUse = false;
-    (*varEntryNum)++;
+	strcpy (varEntries [entryID].Name, name);
+	strcpy (varEntries [entryID].Path, path);
+	varEntries [entryID].Name  = CMbufStripDQuotes (CMbufStripSQuotes (CMbufTrim (varEntries [entryID].Name)));
+	varEntries [entryID].Path  = CMbufStripDQuotes (CMbufStripSQuotes (CMbufTrim (varEntries [entryID].Path)));
+	varEntries [entryID].InUse = false;
 	return (varEntries);
 }
 
 static varEntry_t *_MFModelVarEntryFind (varEntry_t *varEntries, int varEntryNum, const char *name) {
 	int i;
 
-	for (i = 0; i < varEntryNum; ++i) if (strcpy (varEntries [i].Name,name) == 0) return (varEntries + i);
+	for (i = 0; i < varEntryNum; ++i) if (strcmp (varEntries [i].Name,name) == 0) return (varEntries + i);
 	return ((varEntry_t *) NULL);
 }
 
@@ -118,16 +117,15 @@ static void _MFModelVarEntriesFree (varEntry_t *varEntries, int varEntryNum) {
 	}
 }
 
-static void _MFModelVarPrintOut () {
-    int i, varID;
+static void _MFModelVarPrintOut (const char *label) {
+    int varID;
     MFVariable_t *var;
 
-    CMmsgPrint (CMmsgInfo, "ID  %10s %30s[%10s] %6s %5s NStep %3s %4s %8s Output",
-                "Variable","Unit","Type", "TStep", "Set", "Flux", "Initial");
+    CMmsgPrint (CMmsgInfo, "ID  %10s %30s[%10s] %6s %5s NStep %3s %4s %8s Output", label, "Variable","Unit","Type", "TStep", "Set", "Flux", "Initial");
     for (var = MFVarGetByID (varID = 1);var != (MFVariable_t *) NULL;var = MFVarGetByID (++varID))
         if ((strncmp (var->Name,"__",2) != 0) || var->Initial)
             CMmsgPrint (CMmsgInfo, "%3i %10s %30s[%10s] %6s %5s %5d %3s %4s %8s %6s",
-                        varID, var->Name,var->Unit,MFVarTypeString (var->Type),MFDateTimeStepString (var->TStep),var->NStep,
+                        varID,var->Date,var->Name,var->Unit,MFVarTypeString (var->Type),MFDateTimeStepString (var->TStep),var->NStep,
                         CMyesNoString (var->Set),CMyesNoString (var->Flux),CMyesNoString (var->Initial), CMyesNoString (var->OutputPath != (char *) NULL));
 }
 
@@ -139,11 +137,11 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 	varEntry_t *outputVars = (varEntry_t *) NULL;
 	varEntry_t *stateVars  = (varEntry_t *) NULL;
 	varEntry_t *varEntry;
-	static int inputVarNum = 0, outputVarNum = 0, stateVarNum = 0;
+	int inputVarNum = 0, outputVarNum = 0, stateVarNum = 0;
 	MFVariable_t *var;
     bool _MFOptionTestInUse ();
 
-	for (argPos = 1;argPos < argNum;) {
+    for (argPos = 1;argPos < argNum;) {
 		if (CMargTest (argv [argPos],"-i","--input")) {
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) < 1) {
 				CMmsgPrint (CMmsgUsrError,"Missing input argument!\n");
@@ -155,8 +153,8 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 				return (CMfailed);
 			}
 			argv [argPos][i] = '\0';
-			inputVars = _MFModelVarEntryNew (inputVars, &inputVarNum, argv [argPos],argv [argPos] + i + 1);
-			if (inputVars == (struct varEntry_s *) NULL) return (CMfailed);
+			inputVars = _MFModelVarEntryNew (inputVars, inputVarNum, argv [argPos],argv [argPos] + i + 1);
+			if (inputVars == (varEntry_t *) NULL) return (CMfailed); else inputVarNum++;
 			if ((argNum = CMargShiftLeft(argPos,argv,argNum)) <= argPos) break;
 			continue;
 		}
@@ -171,8 +169,8 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 				return (CMfailed);
 			}
 			argv [argPos][i] = '\0';
-			outputVars = _MFModelVarEntryNew (outputVars, &outputVarNum, argv [argPos],argv [argPos] + i + 1);
-			if (outputVars == (struct varEntry_s *) NULL) return (CMfailed);
+			outputVars = _MFModelVarEntryNew (outputVars, outputVarNum, argv [argPos],argv [argPos] + i + 1);
+			if (outputVars == (varEntry_t *) NULL) return (CMfailed); else outputVarNum++;
 			if ((argNum = CMargShiftLeft(argPos,argv,argNum)) <= argPos) break;
 			continue;
 	 	}
@@ -187,8 +185,8 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 				return (CMfailed);
 			}
 			argv [argPos][i] = '\0';
-			stateVars = _MFModelVarEntryNew (stateVars, &stateVarNum, argv [argPos],argv [argPos] + i + 1);
-			if (stateVars == (struct varEntry_s *) NULL) return (CMfailed);
+			stateVars = _MFModelVarEntryNew (stateVars, stateVarNum, argv [argPos],argv [argPos] + i + 1);
+			if (stateVars == (varEntry_t *) NULL) return (CMfailed); else stateVarNum++;
 			if ((argNum = CMargShiftLeft(argPos,argv,argNum)) <= argPos) break;
 			continue;
 	 	}
@@ -288,11 +286,15 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 	}
 
 	for (var = MFVarGetByID (varID = 1);var != (MFVariable_t *) NULL;var = MFVarGetByID (++varID)) {
-		if ((varEntry = _MFModelVarEntryFind (inputVars,  inputVarNum,  var->Name))  != (struct varEntry_s *) NULL) {
-			if ((var->Type == MFOutput) && (var->Initial == false))
-				CMmsgPrint (CMmsgInfo,"Input variable [%s] is used for output before the reading the input!",var->Name);
+        if (var->Type != MFInput) strcpy (var->Date,"Calculated");
+		if ((varEntry = _MFModelVarEntryFind (inputVars,  inputVarNum,  var->Name))  != (varEntry_t *) NULL) {
+            if (var->Type != MFInput) var->Set = true;
+            if ((var->Type == MFOutput) && (var->Initial == false))
+				CMmsgPrint (CMmsgInfo,"Input variable [%s] is used for output before reading the input!\n",var->Name);
 			varEntry->InUse = true;
 			var->InputPath = varEntry->Path;
+            strcpy (var->Date,"From input");
+            var->Set = true;
 		}
 		else {
 			if ((var->Type == MFInput) && (var->Initial == false)) {
@@ -300,11 +302,11 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 				resolved = false;
 			}
 		}
-		if ((varEntry = _MFModelVarEntryFind (outputVars, outputVarNum, var->Name)) != (struct varEntry_s *) NULL) {
+		if ((varEntry = _MFModelVarEntryFind (outputVars, outputVarNum, var->Name)) != (varEntry_t *) NULL) {
 			varEntry->InUse = true;
 			var->OutputPath = varEntry->Path;
 		}
-		if ((varEntry = _MFModelVarEntryFind (stateVars, stateVarNum,   var->Name)) != (struct varEntry_s *) NULL) {
+		if ((varEntry = _MFModelVarEntryFind (stateVars, stateVarNum,   var->Name)) != (varEntry_t *) NULL) {
 			varEntry->InUse = true;
 			var->StatePath = varEntry->Path;
 		}
@@ -325,7 +327,7 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 	if ((argNum) < 2) { CMmsgPrint (CMmsgUsrError,"Missing Template Coverage!"); return (CMfailed); }
 	*domainFile = argv [1];
 
-	if (testOnly) _MFModelVarPrintOut ();
+	if (testOnly) { _MFModelVarPrintOut ("Source"); return (CMfailed); }
 	return (resolved ? CMsucceeded : CMfailed);
 }
 
@@ -348,12 +350,12 @@ static void _MFUserFunc (void *commonPtr,void *threadData, size_t taskId) {
 	for (iFunc = 0;iFunc < _MFFunctionNum; ++iFunc) (_MFFunctions [iFunc]) (objectId);
 }
 
-int MFModelRun (int argc, char *argv [], int argNum, int (*conf) ()) {
+int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
 	FILE *inFile;
 	int i, iFunc, varID, dlink, taskId, intVal, ret, timeStep = MFTimeStepDay;
 	float floatVal;
 	char *startDate = (char *) NULL, *endDate = (char *) NULL, *domainFileName = (char *) NULL;
-	char dateCur [MFDateStringLength], dateNext [MFDateStringLength];
+	char dateCur [MFDateStringLength], dateNext [MFDateStringLength], *climatologyStr;
     void *buffer;
 	MFVariable_t *var;
 	time_t sec;
@@ -362,17 +364,20 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*conf) ()) {
 	CMthreadJob_p  job;
     bool parallelIO;
 
-    parallelIO = strcmp (getenv ("GHAASparallelIO"), "true") != 0 ? true : false;
+    if ((buffer = getenv ("GHAASparallelIO")) != (char *) NULL) {
+        parallelIO = strcmp (buffer, "true") != 0 ? true : false;
+    }
+    else parallelIO = false;
 
-	if (_MFModelParse (argc,argv,argNum,conf, &startDate, &endDate, &domainFileName) == CMfailed) return (CMfailed);
+	if (_MFModelParse (argc,argv,argNum, mainDefFunc, &domainFileName, &startDate, &endDate) == CMfailed) return (CMfailed);
 
     switch (strlen (startDate)) {
-        case  4: timeStep = MFTimeStepYear;  break;
-        case  7: timeStep = MFTimeStepMonth; break;
-        case 10: timeStep = MFTimeStepDay;   break;
-        case 13: timeStep = MFTimeStepHour;  break;
+        case  4: timeStep = MFTimeStepYear;  climatologyStr = MFDateClimatologyYearStr;  break;
+        case  7: timeStep = MFTimeStepMonth; climatologyStr = MFDateClimatologyMonthStr; break;
+        case 10: timeStep = MFTimeStepDay;   climatologyStr = MFDateClimatologyDayStr;   break;
+        case 13: timeStep = MFTimeStepHour;  climatologyStr = MFDateClimatologyHourStr;  break;
         default:
-            CMmsgPrint (CMmsgUsrError,"Invalid date in data stream %s\n",var->Name);
+            CMmsgPrint (CMmsgUsrError,"Invalid date in model run %s\n", startDate);
             return (CMfailed);
     }
 
@@ -393,7 +398,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*conf) ()) {
 			}
 			else {
 				if (var->Initial) {
-					if (MFdsRecordRead (var, (char *) NULL) == CMfailed) return (CMfailed);
+					if (MFdsRecordRead (var,climatologyStr) == CMfailed) return (CMfailed);
 					if (MFDataStreamClose (var->InStream)   == CMfailed) return (CMfailed);
 					var->InStream = (MFDataStream_t *) NULL;
 				}
@@ -414,6 +419,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*conf) ()) {
 			case MFOutput:
 				var->Type = MFFloat;
 				var->Missing.Float = MFDefaultMissingFloat;
+                strcpy (var->Date,"calculated");
 			default:
                 if (parallelIO || (var->InBuffer == (void *) NULL)) {
                     if ((var->ProcBuffer = (void *) calloc (var->ItemNum,MFVarItemSize (var->Type))) == (void *) NULL) {
@@ -435,8 +441,9 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*conf) ()) {
             else var->OutBuffer = var->ProcBuffer;
         }
 	}
-    _MFModelVarPrintOut ();
+    _MFModelVarPrintOut ("Start date");
 	if (ret == CMfailed) return (CMfailed);
+
 	time(&sec);
     strcpy (dateCur,MFDateGetCurrent ());
 	CMmsgPrint (CMmsgInfo, "Model run started at... %s  started at %.24s", dateCur, ctime(&sec));
@@ -453,7 +460,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*conf) ()) {
 			taskId = _MFDomain->ObjNum - i - 1;
 			CMthreadJobTaskDependent (job, taskId, dlink);
 		}
-		while (strcmp (dateCur,endDate) != 0) {
+		while (strcmp (dateCur,endDate) <= 0) {
             CMmsgPrint (CMmsgDebug, "Computing: %s", dateCur);
 			strcpy (dateNext,MFDateGetNext ());
             if (parallelIO) {
@@ -482,7 +489,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*conf) ()) {
 	else {/* Single CPU */
         int link, uLink;
         double value;
-        while (strcmp(dateCur, endDate) != 0) {
+        while (strcmp(dateCur, endDate) <= 0) {
             CMmsgPrint(CMmsgDebug, "Computing: %s", dateCur);
             strcpy (dateNext,MFDateGetNext ());
             if (parallelIO) {

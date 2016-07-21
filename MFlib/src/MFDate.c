@@ -172,11 +172,17 @@ bool MFDateCompare (const char *time0,const char *time1) {
 	return (strncmp (time0 + pos,time1 + pos,len) == 0 ? true : false);
 }
 
-int  MFDateTimeStepLength (char *timeStr, int timeStep) {
+int  MFDateTimeStepLength (const char *timeStr, int timeStep) {
     int year, month, leapYear, monthLen;
     int nStep = 0;
     char scanStr [strlen (MFDateClimatologyYearStr) + 1];
 
+    switch (timeStep) {
+        case MFTimeStepYear:  if (strlen (timeStr) ==  4) return (1);
+        case MFTimeStepMonth: if (strlen (timeStr) ==  7) return (1);
+        case MFTimeStepDay:   if (strlen (timeStr) == 10) return (1);
+        case MFTimeStepHour:  if (strlen (timeStr) == 13) return (1);
+    }
     if (strncmp (timeStr,MFDateClimatologyYearStr,strlen (MFDateClimatologyYearStr)) == 0) {
         year = MFDefaultMissingInt;
         leapYear = 0;

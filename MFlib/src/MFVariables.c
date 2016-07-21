@@ -49,7 +49,7 @@ static MFVariable_t *_MFVarNewEntry (const char *name) {
 	var->ID = _MFVariableNum + 1;
 	strncpy (var->Name,name,sizeof (var->Name) - 1);
 	strcpy  (var->Unit,MFNoUnit);
-	strcpy  (var->Date,MFDateClimatologyYearStr);
+	strcpy  (var->Date,"NOT SET");
 	var->ItemNum  = 0;
 	var->Type = MFInput;
 	var->InBuffer   = (void *) NULL;
@@ -62,6 +62,7 @@ static MFVariable_t *_MFVarNewEntry (const char *name) {
 	var->InStream   = (MFDataStream_t *) NULL;
 	var->OutStream  = (MFDataStream_t *) NULL;
 	var->TStep      = MFTimeStepYear;
+    var->NStep      = 1;
 	var->Set        = false;
 	var->Flux       = false;
 	var->Initial    = false;
@@ -87,7 +88,7 @@ int MFVarGetID (char *name,char *unit,int type, bool flux, bool initial) {
 			return (CMfailed);
 		if (type == MFRoute) var->Route = true;
 		var->Type = type == MFInput ? MFInput : MFOutput;
-		var->Set      = type == MFInput ? initial : true;
+		var->Set  = type == MFInput ? initial : true;
 	}
 	switch (var->Type) {
 		case MFInput:		break;
@@ -113,7 +114,7 @@ int MFVarGetID (char *name,char *unit,int type, bool flux, bool initial) {
 				default:
 					if (type != var->Type)
 						CMmsgPrint (CMmsgWarning,"Warning: Ignoring type redefinition (%s,%s)\n",var->Name,MFVarTypeString (type));
-				case MFInput: var->Set = var->InStream != (MFDataStream_t *) NULL ? true : false; break;
+				case MFInput:
 				case MFRoute:
 				case MFOutput:	break;
 			}
@@ -280,7 +281,7 @@ int MFVarGetInt (int id,int itemID, int missingVal) {
 	return (var->Flux ? (val / var->NStep) : val);
 }	
 
-int MFVarItemSize (int type) {
+size_t MFVarItemSize (int type) {
 	switch (type) {
 		case MFByte:	return (sizeof (char));
 		case MFShort:	return (sizeof (short));
@@ -291,5 +292,5 @@ int MFVarItemSize (int type) {
 			CMmsgPrint (CMmsgAppError,"Error: Invalid type [%d] in: %s:%d\n",type,__FILE__,__LINE__);
 			break;
 	}
-	return (CMfailed);
+	return (0);
 }

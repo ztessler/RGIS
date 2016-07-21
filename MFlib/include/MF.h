@@ -150,7 +150,7 @@ void _MFDefLeaving(const char *, const char *);
 #define MFDefEntering(msg) _MFDefEntering(msg,__FILE__)
 #define MFDefLeaving(msg)  _MFDefLeaving(msg,__FILE__)
 
-int MFVarItemSize(int);
+size_t MFVarItemSize(int);
 
 typedef struct MFObject_s {
     int ID;
@@ -185,7 +185,7 @@ float MFModelGetArea(int);
 
 char *MFDateTimeStepString(int);
 char *MFDateTimeStepUnit(int);
-int   MFDateTimeStepLength(char *,int);
+int   MFDateTimeStepLength(const char *,int);
 
 float MFRungeKutta(float, float, float, float (*deltaFunc)(float, float));
 

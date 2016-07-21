@@ -96,7 +96,7 @@ CMreturn MFdsHeaderWrite (MFdsHeader_t *header,FILE *outFile) {
 }
 
 int MFdsRecordRead (MFVariable_t *var, const char *timeStr) {
-	int i, sLen, readNum = 0, timeStep, nStep;
+	int i, sLen, readNum = 0, timeStep;
     char *initTimeStr;
 	MFdsHeader_t header;
 
@@ -170,7 +170,7 @@ int MFdsRecordRead (MFVariable_t *var, const char *timeStr) {
 	}
 	else {
 		if (var->InStream->Handle.File == (FILE *) NULL) return (CMfailed);
-		if (!MFDateCompare(initTimeStr,timeStr) && MFDateCompare(var->Date,timeStr))  {
+		if (!MFDateCompare(timeStr, initTimeStr) && MFDateCompare(timeStr, var->Date))  {
 			strncpy (var->InBuffer,var->ProcBuffer, var->ItemNum * MFVarItemSize (var->Type));
 		}
 		else {
@@ -186,11 +186,12 @@ int MFdsRecordRead (MFVariable_t *var, const char *timeStr) {
 				}
 
 				if (var->InBuffer == (void *) NULL) {
+                    var->Type = header.Type;
 					if ((var->InBuffer = (void *) malloc (var->ItemNum * MFVarItemSize (var->Type))) == (void *) NULL) {
 						CMmsgPrint (CMmsgSysError,"Variable [%s] allocation error in: %s:%d\n",var->Name,__FILE__,__LINE__);
 						return (CMfailed);
 					}
-					var->Type = header.Type;
+
 					switch (var->Type) {
 						case MFByte:
 						case MFShort:
@@ -260,8 +261,7 @@ int MFdsRecordWrite (MFVariable_t *var, const char *date) {
 		default:	break;
 	}
 	if (MFdsHeaderWrite (&(header),var->OutStream->Handle.File) != CMsucceeded) return (CMfailed);
-	if ((int) fwrite (var->OutBuffer, (size_t) MFVarItemSize (var->Type), var->ItemNum, var->OutStream->Handle.File) !=
-		var->ItemNum) {
+	if (fwrite (var->OutBuffer, (size_t) MFVarItemSize (var->Type), var->ItemNum, var->OutStream->Handle.File) != var->ItemNum) {
 		CMmsgPrint (CMmsgSysError,"Data writing error in: %s:%d\n"__FILE__,__LINE__);
 		return (CMfailed);
 	}
