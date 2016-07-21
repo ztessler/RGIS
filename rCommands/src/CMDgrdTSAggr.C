@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
                 CMmsgPrint(CMmsgUsrError, "Missing time step!");
                 return (CMfailed);
             }
-            if ((timeStep = CMoptLookup(stepStrs, argv[argPos], true)) == DBFault) {
+            if ((timeStep = CMoptLookup(stepStrs, argv[argPos], true)) == CMfailed) {
                 CMmsgPrint(CMmsgUsrError, "Invalid time step!");
                 return (CMfailed);
             }
@@ -105,7 +105,7 @@ int main(int argc, char *argv[]) {
                 CMmsgPrint(CMmsgUsrError, "Missing shadeset!");
                 return (CMfailed);
             }
-            if ((shadeSet = CMoptLookup(shadeSets, argv[argPos], true)) == DBFault) {
+            if ((shadeSet = CMoptLookup(shadeSets, argv[argPos], true)) == CMfailed) {
                 CMmsgPrint(CMmsgUsrError, "Invalid shadeset!");
                 return (CMfailed);
             }

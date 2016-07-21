@@ -84,7 +84,6 @@ void MFOptionPrintList () {
 
 int MFOptionParse (int argc, char *argv []) {
 	int argNum = argc, argPos, i;
-	int MFLoadConfig (const char *,int (*) (const char *, const char *));
 
 	for (argPos = 1;argPos < argNum;) {
 		if (CMargTest (argv [argPos],"-p","--option")) {

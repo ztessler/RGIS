@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
     int argPos = 0, argNum = argc, ret = CMfailed, itemSize, itemID;
     FILE *inFile = stdin, *outFile = stdout;
     void *items = (void *) NULL;
-    MFVarHeader_t header;
+    MFdsHeader_t header;
 
     if (argNum < 2) goto Help;
 
@@ -65,9 +65,9 @@ int main(int argc, char *argv[]) {
         goto Stop;
     }
 
-    while (MFVarReadHeader(&header, inFile)) {
+    while (MFdsHeaderRead(&header, inFile)) {
         if (items == (void *) NULL) {
-            itemSize = MFVarItemSize(header.DataType);
+            itemSize = MFVarItemSize(header.Type);
             if ((items = (void *) calloc(header.ItemNum, itemSize)) == (void *) NULL) {
                 CMmsgPrint(CMmsgSysError, "Memory allocation error in: %s:%d", __FILE__, __LINE__);
                 goto Stop;
@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
             CMmsgPrint(CMmsgAppError, "Invalid Item id [%d]", itemID);
             continue;
         }
-        switch (header.DataType) {
+        switch (header.Type) {
             case MFByte:
                 if (((char *) items)[itemID] != header.Missing.Int)
                     fprintf(outFile, "%s\t%d\n", header.Date, (int) ((char *) items)[itemID]);

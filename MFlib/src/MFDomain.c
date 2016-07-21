@@ -28,7 +28,7 @@ void MFDomainFree (MFDomain_t *domain) {
 	free (domain);	
 }
 
-MFDomain_t *MFDomainGet (FILE *inFile) {
+MFDomain_t *MFDomainRead (FILE *inFile) {
 	int objID, i;
 	MFDomain_t *domain;
 
