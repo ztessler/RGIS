@@ -92,7 +92,7 @@ CMreturn MFdsHeaderWrite (MFdsHeader_t *header,FILE *outFile) {
 		CMmsgPrint (CMmsgSysError,"Header writing error in: %s:%d\n",__FILE__,__LINE__);
 		return (CMfailed);
 	}
-	return (CMfailed);
+	return (CMsucceeded);
 }
 
 int MFdsRecordRead (MFVariable_t *var, const char *timeStr) {

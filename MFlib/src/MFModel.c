@@ -352,7 +352,7 @@ static void _MFUserFunc (void *commonPtr,void *threadData, size_t taskId) {
 
 int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
 	FILE *inFile;
-	int i, iFunc, varID, dlink, taskId, intVal, ret, timeStep = MFTimeStepDay;
+	int i, iFunc, varID, dlink, taskId, intVal, ret = CMsucceeded, timeStep = MFTimeStepDay;
 	float floatVal;
 	char *startDate = (char *) NULL, *endDate = (char *) NULL, *domainFileName = (char *) NULL;
 	char dateCur [MFDateStringLength], dateNext [MFDateStringLength], *climatologyStr;
@@ -380,6 +380,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
             CMmsgPrint (CMmsgUsrError,"Invalid date in model run %s\n", startDate);
             return (CMfailed);
     }
+    if (!MFDateSetCurrent (startDate)) { CMmsgPrint (CMmsgUsrError,"Error: Invalid start date!\n"); ret = CMfailed; }
 
     if ((inFile = strcmp (domainFileName,"-") != 0 ? fopen (argv [1],"r") : stdin) == (FILE *) NULL) {
 		CMmsgPrint (CMmsgAppError,"%s: Template Coverage [%s] Opening error!",CMfileName (argv [0]),argv [1]);
@@ -462,6 +463,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
 		}
 		while (strcmp (dateCur,endDate) <= 0) {
             CMmsgPrint (CMmsgDebug, "Computing: %s", dateCur);
+            if (!MFDateSetCurrent (dateCur)) { CMmsgPrint (CMmsgUsrError,"Error: Invalid start date!\n"); ret = CMfailed; }
 			strcpy (dateNext,MFDateGetNext ());
             if (parallelIO) {
                 // TODO
@@ -491,6 +493,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
         double value;
         while (strcmp(dateCur, endDate) <= 0) {
             CMmsgPrint(CMmsgDebug, "Computing: %s", dateCur);
+            if (!MFDateSetCurrent (dateCur)) { CMmsgPrint (CMmsgUsrError,"Error: Invalid start date!\n"); ret = CMfailed; }
             strcpy (dateNext,MFDateGetNext ());
             if (parallelIO) {
                 // TODO
@@ -533,6 +536,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
 		if (var->OutStream != (MFDataStream_t *) NULL) MFDataStreamClose (var->OutStream);
         if (var->StatePath != (char *) NULL) {
             if ((var->OutStream = MFDataStreamOpen (var->StatePath,"w")) == (MFDataStream_t *) NULL) ret = CMfailed;
+            var->OutBuffer = var->ProcBuffer;
 			if (MFdsRecordWrite(var, dateCur) == CMfailed) {
                 CMmsgPrint (CMmsgAppError,"Variable (%s) writing error!\n",var->Name);
                 ret = CMfailed;

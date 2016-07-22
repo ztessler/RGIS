@@ -101,9 +101,7 @@ typedef struct MFVariable_s {
         double Float;
     } Missing;
     short TStep;
-    void *InBuffer, *OutBuffer, *ProcBuffer;
-
-    void (*Func)(int);
+    void *InBuffer,  *OutBuffer,  *ProcBuffer;
     char *InputPath, *OutputPath, *StatePath;
     int NStep;
     MFDataStream_t *InStream, *OutStream;

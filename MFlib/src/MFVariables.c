@@ -55,7 +55,6 @@ static MFVariable_t *_MFVarNewEntry (const char *name) {
 	var->InBuffer   = (void *) NULL;
 	var->OutBuffer  = (void *) NULL;
 	var->ProcBuffer = (void *) NULL;
-	var->Func       = (void (*) (int)) NULL;
 	var->InputPath  = (char *) NULL;
 	var->OutputPath = (char *) NULL;
 	var->StatePath  = (char *) NULL;

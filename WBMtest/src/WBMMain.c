@@ -32,7 +32,7 @@ int main (int argc,char *argv []) {
 		case MDbalance:      return (MFModelRun (argc,argv,argNum,MDWaterBalanceDef));
 		case MDwatertemp:    return (MFModelRun (argc,argv,argNum,MDWTempRiverRouteDef));
 		case MDthermal:		 return (MFModelRun (argc,argv,argNum,MDThermalInputsDef));		// RJS 013112
-		case MDthermal2:	   return (MFModelRun (argc,argv,argNum,MDThermalInputs2Def));	// RJS 062012
+		case MDthermal2:	 return (MFModelRun (argc,argv,argNum,MDThermalInputs2Def));	// RJS 062012
 		case MDthermal3:     return (MFModelRun (argc,argv,argNum,MDThermalInputs3Def));	// RJS 112712
 		case MDgeometry:     return (MFModelRun (argc,argv,argNum,MDRiverWidthDef));
 		case MDbgc:          return (MFModelRun (argc,argv,argNum,MDBgcRoutingDef));
@@ -41,7 +41,7 @@ int main (int argc,char *argv []) {
 		case MDbgc_DINPLUSBIOMASS:    return (MFModelRun (argc,argv,argNum,MDBgcDINPlusBiomassRoutingDef));
 		case MDDO2:			 return (MFModelRun (argc,argv,argNum,MDDO2Def));		// RJS 111612
 		case MDDIN: 		 return (MFModelRun (argc,argv,argNum,MDDINDef));		// RJS 042513
-		default: MFOptionMessage (optName, optStr, options); return (CMfailed);
+		default: MFOptionMessage (optName, optStr, options); break;
 	}
 	return (CMfailed);
 }
