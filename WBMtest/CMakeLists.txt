@@ -1,5 +1,5 @@
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
-FILE(GLOB sources src/*.C)
+FILE(GLOB sources src/*.c)
 add_executable(WBMtest.bin ${sources})
 if(${CMAKE_HOST_APPLE})
     target_link_libraries(WBMtest.bin CM10 MF10 m)

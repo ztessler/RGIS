@@ -36,7 +36,7 @@ static void _MDDischLevel1 (int itemID) {
 
 int MDDischLevel1Def() {
 
-   char *optStr;
+   const char *optStr;
    const char *options [] = { MDNoneStr, (char *) NULL };
 
    
