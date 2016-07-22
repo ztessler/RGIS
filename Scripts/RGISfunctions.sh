@@ -7,6 +7,13 @@ else
 	export RGIS_FUNCTIONS="sourced"
 fi
 
+if [[ "${1}" == "gzipped" ]]
+then
+    __RGIS_GZEXT=".gz"
+else
+    __RGIS_GZEXT=""
+fi
+
 function RGISlookupSubject ()
 {
 	local variable=$(echo "${1}" | tr "[A-Z]" "[a-z]")
@@ -1078,7 +1085,7 @@ function RGISfilePath ()
 	fi
 
 #	local  variableName=$(RGISlookupSubject "${variable}")
-	echo "${rgisDirectory}/${fileName}_${tstepStr}${tstepType}${timeRange}.${extension}"
+	echo "${rgisDirectory}/${fileName}_${tstepStr}${tstepType}${timeRange}.${extension}${__RGIS_GZEXT}"
 }
 
 function RGISfile ()
@@ -1149,7 +1156,7 @@ function RGISfile ()
 	fi
 
 #	local  variableName=$(RGISlookupSubject "${variable}")
-	echo "${rgisDirectory}/${fileName}_${tstepStr}${tstepType}${timeRange}.${extension}"
+	echo "${rgisDirectory}/${fileName}_${tstepStr}${tstepType}${timeRange}.${extension}${__RGIS_GZEXT}"
 }
 
 function RGIStitle ()
