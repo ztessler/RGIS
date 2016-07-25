@@ -92,7 +92,7 @@ typedef struct MFVariable_s {
     int  ID;
     char Name[MFNameLength];
     char Unit[MFNameLength];
-    char Date[MFDateStringLength];
+    char InDate[MFDateStringLength], CurDate[MFDateStringLength], OutDate[MFDateStringLength];
     bool Flux, Initial, Set, Route, State;
     int  Type;
     int  ItemNum;
@@ -105,6 +105,11 @@ typedef struct MFVariable_s {
     char *InputPath, *OutputPath, *StatePath;
     int NStep;
     MFDataStream_t *InStream, *OutStream;
+    pthread_t       InThread,  OutThread;
+    pthread_mutex_t InMutex,   OutMutex;
+    pthread_cond_t  InCond,    OutCond;
+    int             ReadRet,   WriteRet;
+    bool            Read,      WriteNext;
 } MFVariable_t;
 
 typedef void (*MFFunction)(int);
@@ -113,8 +118,8 @@ MFDataStream_t *MFDataStreamOpen(const char *, const char *);
 int MFDataStreamClose (MFDataStream_t *);
 CMreturn MFdsHeaderRead    (MFdsHeader_t *,FILE *);
 CMreturn MFdsHeaderWrite   (MFdsHeader_t *,FILE *);
-CMreturn MFdsRecordRead    (MFVariable_t *, const char *);
-CMreturn MFdsRecordWrite   (MFVariable_t *, const char *);
+CMreturn MFdsRecordRead    (MFVariable_t *);
+CMreturn MFdsRecordWrite   (MFVariable_t *);
 
 int MFVarGetID(char *, char *, int, bool, bool);
 MFVariable_t *MFVarGetByID(int);

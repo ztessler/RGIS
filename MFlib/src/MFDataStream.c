@@ -95,12 +95,12 @@ CMreturn MFdsHeaderWrite (MFdsHeader_t *header,FILE *outFile) {
 	return (CMsucceeded);
 }
 
-int MFdsRecordRead (MFVariable_t *var, const char *timeStr) {
+int MFdsRecordRead (MFVariable_t *var) {
 	int i, sLen, readNum = 0, timeStep;
     char *initTimeStr;
 	MFdsHeader_t header;
 
-    switch (strlen (timeStr)) {
+    switch (strlen (var->InDate)) {
         case  4: timeStep = MFTimeStepYear;  initTimeStr = MFDateClimatologyYearStr;  break;
         case  7: timeStep = MFTimeStepMonth; initTimeStr = MFDateClimatologyMonthStr; break;
         case 10: timeStep = MFTimeStepDay;   initTimeStr = MFDateClimatologyDayStr;   break;
@@ -147,7 +147,6 @@ int MFdsRecordRead (MFVariable_t *var, const char *timeStr) {
 				CMmsgPrint (CMmsgSysError,"Memory allocation error in: %s:%d",__FILE__,__LINE__);
 				return (CMfailed);
 			}
-			strcpy (var->Date,MFDateClimatologyYearStr);
 		}
 		switch (var->Type) {
 			case MFByte:
@@ -170,7 +169,7 @@ int MFdsRecordRead (MFVariable_t *var, const char *timeStr) {
 	}
 	else {
 		if (var->InStream->Handle.File == (FILE *) NULL) return (CMfailed);
-		if (!MFDateCompare(timeStr, initTimeStr) && MFDateCompare(timeStr, var->Date))  {
+		if (!MFDateCompare(var->InDate, initTimeStr) && MFDateCompare(var->CurDate, var->InDate) && (var->InBuffer != var->ProcBuffer))  {
 			strncpy (var->InBuffer,var->ProcBuffer, var->ItemNum * MFVarItemSize (var->Type));
 		}
 		else {
@@ -225,11 +224,10 @@ int MFdsRecordRead (MFVariable_t *var, const char *timeStr) {
 					CMmsgPrint (CMmsgSysError,"Data Reading error in: %s:%d\n",__FILE__,__LINE__);
 					return (CMfailed);
 				}
-			} while (strcmp (header.Date, timeStr) != 0);
+				strcpy (var->CurDate, header.Date);
+			} while (strcmp (header.Date, var->InDate) != 0);
 		}
-Stop:
-		strcpy (var->Date, header.Date);
-		if (header.Swap != 1)
+Stop:	if (header.Swap != 1)
 			switch (var->Type) {
 				case MFShort:  for (i = 0;i < var->ItemNum;++i) MFSwapHalfWord ((short *)  (var->InBuffer) + i); break;
 				case MFInt:    for (i = 0;i < var->ItemNum;++i) MFSwapWord     ((int *)    (var->InBuffer) + i); break;
@@ -237,7 +235,7 @@ Stop:
 				case MFDouble: for (i = 0;i < var->ItemNum;++i) MFSwapLongWord ((double *) (var->InBuffer) + i); break;
 				default:	break;
 			}
-        if ((var->NStep = MFDateTimeStepLength (timeStr,var->TStep)) == 0) {
+        if ((var->NStep = MFDateTimeStepLength (var->InDate,var->TStep)) == 0) {
             CMmsgPrint (CMmsgUsrError,"Invalid data stream in: %s, %d\n",__FILE__,__LINE__);
             return (CMfailed);
         }
@@ -245,13 +243,13 @@ Stop:
 	return (CMsucceeded);
 }
 
-int MFdsRecordWrite (MFVariable_t *var, const char *date) {
+int MFdsRecordWrite (MFVariable_t *var) {
 	MFdsHeader_t header;
 
 	header.Type    = var->Type;
 	header.ItemNum = var->ItemNum;
 	header.Swap    = 1;
-	strncpy (header.Date, date, sizeof (header.Date) - 1);
+	strncpy (header.Date, var->OutDate, sizeof (header.Date) - 1);
 	switch (var->Type) {
 		case MFByte:
 		case MFShort:

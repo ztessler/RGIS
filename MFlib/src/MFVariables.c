@@ -49,7 +49,9 @@ static MFVariable_t *_MFVarNewEntry (const char *name) {
 	var->ID = _MFVariableNum + 1;
 	strncpy (var->Name,name,sizeof (var->Name) - 1);
 	strcpy  (var->Unit,MFNoUnit);
-	strcpy  (var->Date,"NOT SET");
+	strcpy  (var->InDate,  "NOT SET");
+	strcpy  (var->OutDate, "NOT SET");
+	strcpy  (var->CurDate, "NOT SET");
 	var->ItemNum  = 0;
 	var->Type = MFInput;
 	var->InBuffer   = (void *) NULL;
@@ -66,6 +68,10 @@ static MFVariable_t *_MFVarNewEntry (const char *name) {
 	var->Flux       = false;
 	var->Initial    = false;
 	var->Route      = false;
+    var->ReadRet    = CMfailed;
+    var->WriteRet   = CMfailed;
+    var->Read       = false;
+    var->WriteNext  = false;
 	_MFVariableNum++;
 	return (var);
 }
