@@ -109,7 +109,7 @@ typedef struct MFVariable_s {
     pthread_mutex_t InMutex,   OutMutex;
     pthread_cond_t  InCond,    OutCond;
     int             ReadRet,   WriteRet;
-    bool            Read,      WriteNext;
+    bool            Read,      Write;
 } MFVariable_t;
 
 typedef void (*MFFunction)(int);

@@ -354,10 +354,10 @@ static void *_MFInputThreadWork (void *dataPtr) {
     MFVariable_t *var = (MFVariable_t *) dataPtr;
 
     pthread_mutex_lock(&(var->InMutex));
-    do {
-        if (var->Read) var->ReadRet = MFdsRecordRead(var);
+    while (var->Read) {
+        if ((var->ReadRet = MFdsRecordRead(var)) == CMfailed) break;
         pthread_cond_wait (&(var->InCond), &(var->InMutex));
-    } while (var->Read);
+    }
     pthread_mutex_unlock(&(var->InMutex));
     pthread_exit ((void *) NULL);
 }
@@ -366,10 +366,10 @@ static void *_MFOutputThreadWork (void *dataPtr) {
     MFVariable_t *var = (MFVariable_t *) dataPtr;
 
     pthread_mutex_lock(&(var->OutMutex));
-    do {
-        var->WriteRet = MFdsRecordRead(var);
+    while (var->Write) {
+        if ((var->WriteRet = MFdsRecordWrite(var)) == CMfailed) break;
         pthread_cond_wait (&(var->OutCond), &(var->OutMutex));
-    } while (var->WriteNext);
+    }
     pthread_mutex_unlock(&(var->OutMutex));
     pthread_exit ((void *) NULL);
 }
@@ -537,6 +537,10 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                 for (var = MFVarGetByID(varID = 1); var != (MFVariable_t *) NULL; var = MFVarGetByID(++varID))
                     if (var->InStream != (MFDataStream_t *) NULL) {
                         pthread_mutex_lock   (&(var->InMutex));
+                        if (var->ReadRet == CMfailed) {
+                            CMmsgPrint(CMmsgAppError, "Variable (%s) Reading error!\n", var->Name);
+                            break;
+                        }
                         strcpy (var->InDate, dateNext);
                         var->Read = strcmp (dateNext,endDate) <= 0 ? true : false;
                         buffer          = var->ProcBuffer;
@@ -563,7 +567,8 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                 strcpy (var->OutDate,dateCur);
                 if (var->OutStream != (MFDataStream_t *) NULL) {
                     if (parallelIO) {
-                        if (var->WriteNext == false) {
+                        if (var->Write == false) {
+                            var->Write = true;
                             pthread_attr_init(&thread_attr);
                             pthread_attr_setdetachstate(&thread_attr, PTHREAD_CREATE_JOINABLE);
                             pthread_mutex_init(&(var->InMutex), NULL);
@@ -578,7 +583,9 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                         }
                         else {
                             pthread_mutex_lock(&(var->OutMutex));
-                            var->WriteNext = strcmp(dateNext, endDate) <= 0 ? true : false;
+                            ret = var->ReadRet;
+                            if (ret == CMfailed)
+                                CMmsgPrint(CMmsgAppError, "Variable (%s) writing error!\n", var->Name);
                             buffer = var->ProcBuffer;
                             var->ProcBuffer = var->OutBuffer;
                             var->OutBuffer = buffer;
@@ -591,14 +598,21 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                 }
                 if ((parallelIO == false) && (strcmp (dateNext,endDate) <= 0) && (var->InStream != (MFDataStream_t *) NULL)) {
                     strcpy (var->InDate,dateNext);
-                    ret = MFdsRecordRead(var);
+                    if ((ret = MFdsRecordRead(var)) == CMfailed) {
+                        CMmsgPrint(CMmsgAppError, "Variable (%s) Reading error!\n", var->Name);
+                        break;
+                    };
                 }
             }
             strcpy (dateCur,dateNext);
         }
     }
 	for (var = MFVarGetByID (varID = 1);var != (MFVariable_t *) NULL;var = MFVarGetByID (++varID)) {
-        if (parallelIO) pthread_join (var->InThread, &status);
+/*      if (parallelIO) {
+            if (var->InStream != (MFDataStream_t *) NULL)  pthread_join (var->InThread, &status);
+            if (var->OutStream != (MFDataStream_t *) NULL) pthread_join (var->OutThread, &status);
+        }
+*/
 		if (var->InStream  != (MFDataStream_t *) NULL) MFDataStreamClose (var->InStream);
 		if (var->OutStream != (MFDataStream_t *) NULL) MFDataStreamClose (var->OutStream);
         if (var->StatePath != (char *) NULL) {
