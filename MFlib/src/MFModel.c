@@ -471,7 +471,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                 case MFOutput:
                     var->Type = MFFloat;
                     var->Missing.Float = MFDefaultMissingFloat;
-                    CMmsgPrint (CMmsgPrint,"This probably should never happen.");
+                    CMmsgPrint (CMmsgInfo,"This probably should never happen.");
                 default:
                     strcpy (var->InDate,"computed");
                     if ((var->ProcBuffer = (void *) calloc(var->ItemNum, MFVarItemSize(var->Type))) ==
