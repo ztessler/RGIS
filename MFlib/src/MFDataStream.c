@@ -97,18 +97,7 @@ CMreturn MFdsHeaderWrite (MFdsHeader_t *header,FILE *outFile) {
 
 int MFdsRecordRead (MFVariable_t *var) {
 	int i, sLen, readNum = 0, timeStep;
-    char *initTimeStr;
 	MFdsHeader_t header;
-
-    switch (strlen (var->InDate)) {
-        case  4: timeStep = MFTimeStepYear;  initTimeStr = MFDateClimatologyYearStr;  break;
-        case  7: timeStep = MFTimeStepMonth; initTimeStr = MFDateClimatologyMonthStr; break;
-        case 10: timeStep = MFTimeStepDay;   initTimeStr = MFDateClimatologyDayStr;   break;
-        case 13: timeStep = MFTimeStepHour;  initTimeStr = MFDateClimatologyHourStr;  break;
-        default:
-            CMmsgPrint (CMmsgUsrError,"Invalid date in data stream %s\n",var->Name);
-            return (CMfailed);
-    }
 
     if (var->InStream->Type == MFConst) {
 		if (var->InBuffer == (void *) NULL) {
@@ -171,16 +160,21 @@ int MFdsRecordRead (MFVariable_t *var) {
 	}
 	else {
 		if (var->InStream->Handle.File == (FILE *) NULL) return (CMfailed);
-		if (!MFDateCompare(var->InDate, initTimeStr) && MFDateCompare(var->CurDate, var->InDate) && (var->InBuffer != var->ProcBuffer))  {
-			strncpy (var->InBuffer,var->ProcBuffer, var->ItemNum * MFVarItemSize (var->Type));
+		if (MFDateCompare(var->CurDate, var->InDate)) {
+            if (var->InBuffer != var->ProcBuffer) {
+                strncpy (var->InBuffer, var->ProcBuffer, var->ItemNum * MFVarItemSize(var->Type));
+            }
 		}
 		else {
 			do {
 				if (MFdsHeaderRead (&header,var->InStream->Handle.File) == CMfailed) {
-					if (readNum < 1) CMmsgPrint (CMmsgUsrError,"Data stream (%s) reading error\n",var->Name);
-					readNum++;
+					if (readNum < 1) {
+                        CMmsgPrint (CMmsgSysError,"Data stream (%s) reading error",var->Name);
+                        return (CMfailed);
+                    }
 					goto Stop;
 				}
+                readNum++;
 				if (var->ItemNum != header.ItemNum) {
 					CMmsgPrint(CMmsgUsrError,"Variable [%] has inconsistent data stream (%d != %d)\n",header.ItemNum,var->ItemNum);
 					return (CMfailed);
