@@ -944,9 +944,9 @@ function _RGIStStepDir ()
 	local tStepType="${1}"
 	local     tStep="${2}"
 
-	case "${tstepType}" in
+	case "${tStepType}" in
 		(TS)
-			case "${tstep}" in
+			case "${tStep}" in
 				(hourly)
 					echo "Hourly"
 				;;
@@ -966,7 +966,7 @@ function _RGIStStepDir ()
 					echo "Annual"
 				;;
 				(*)
-					echo "${tstep}"
+					echo "${tStep}"
 				;;
 			esac
 		;;
@@ -984,10 +984,10 @@ function RGISdirectoryPath ()
 	local   variable="${3}"
 	local    product="${4}"
 	local resolution="${5}"
-	local  tstepType="${6}"
-	local      tstep=$(echo "${7}" | tr "[A-Z]" "[a-z]")
+	local  tStepType="${6}"
+	local      tStep=$(echo "${7}" | tr "[A-Z]" "[a-z]")
 
-	local        dir=$(_RGIStStepDir ${tstepType} ${tstep})
+	local        dir=$(_RGIStStepDir ${tStepType} ${tStep})
 	local     varDir=$(RGISlookupSubject "${variable}")
 
 	echo "${archive}/${domain}/${varDir}/${product}/${resolution}/${dir}"
@@ -1000,10 +1000,10 @@ function RGISdirectory ()
 	local   variable="${3}"
 	local    product="${4}"
 	local resolution="${5}"
-	local  tstepType="${6}"
-	local      tstep=$(echo "${7}" | tr "[A-Z]" "[a-z]")
+	local  tStepType="${6}"
+	local      tStep=$(echo "${7}" | tr "[A-Z]" "[a-z]")
 
-	local dir=$(_RGIStStepDir ${tstepType} ${tstep})
+	local dir=$(_RGIStStepDir ${tStepType} ${tStep})
 
 	local resDir=$(_RGISresolutionDir "${archive}" "${domain}" "${variable}" "${product}" "${resolution}")
 	if [ "${resDir}" == "" ]
@@ -1022,34 +1022,34 @@ function RGISfilePath ()
 	local     variable="${3}"
 	local      product="${4}"
 	local   resolution="${5}"
-	local    tstepType="${6}"
-	local        tstep=$(echo "${7}" | tr "[A-Z]" "[a-z]")
+	local    tStepType="${6}"
+	local        tStep=$(echo "${7}" | tr "[A-Z]" "[a-z]")
 	local    timeRange="${8}"
 
-	case "${tstep}" in
+	case "${tStep}" in
 		(hourly)
-			local tstepStr="h"
+			local tStepStr="h"
 		;;
 		(3hourly)
-			local tstepStr="3h"
+			local tStepStr="3h"
 		;;
 		(6hourly)
-			local tstepStr="6h"
+			local tStepStr="6h"
 		;;
 		(daily)
-			local tstepStr="d"
+			local tStepStr="d"
 		;;
 		(monthly)
-			local tstepStr="m"
+			local tStepStr="m"
 		;;
 		(annual)
-			local tstepStr="a"
+			local tStepStr="a"
 		;;
 		("")
-			local tstepStr=""
+			local tStepStr=""
 		;;
 		(*)
-			echo "Unknown time step ${tstep}" > /dev/stderr
+			echo "Unknown time step ${tStep}" > /dev/stderr
 			return 1
 		;;
 	esac
@@ -1069,8 +1069,8 @@ function RGISfilePath ()
 		;;
 	esac
 
-	local rgisDirectory=$(RGISdirectoryPath  "${archive}" "${domain}" "${variable}" "${product}" "${resolution}" "${tstepType}" "${tstep}")
-	local      fileName=$(RGISdirectoryPath            "" "${domain}" "${variable}" "${product}" "${resolution}" "${tstepType}" "${tstep}")
+	local rgisDirectory=$(RGISdirectoryPath  "${archive}" "${domain}" "${variable}" "${product}" "${resolution}" "${tStepType}" "${tStep}")
+	local      fileName=$(RGISdirectoryPath            "" "${domain}" "${variable}" "${product}" "${resolution}" "${tStepType}" "${tStep}")
 	local      fileName=$(echo ${fileName} | sed "s:/::" | sed "s:/:_:g" )
 	local      fileName=${fileName%_*}
 	if [ "${rgisDirectory}" == "" ]
@@ -1078,14 +1078,14 @@ function RGISfilePath ()
 		echo ""
 		return 1
 	fi
-	if [[ "${tstepType}" == "static" ]]
+	if [[ "${tStepType}" == "static" ]]
 	then
-		local tstepType="Static"
-		local tstepStr=""
+		local tStepType="Static"
+		local tStepStr=""
 	fi
 
 #	local  variableName=$(RGISlookupSubject "${variable}")
-	echo "${rgisDirectory}/${fileName}_${tstepStr}${tstepType}${timeRange}.${extension}${__RGIS_GZEXT}"
+	echo "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.${extension}${__RGIS_GZEXT}"
 }
 
 function RGISfile ()
@@ -1095,34 +1095,34 @@ function RGISfile ()
 	local     variable="${3}"
 	local      product="${4}"
 	local   resolution="${5}"
-	local    tstepType="${6}"
-	local        tstep=$(echo "${7}" | tr "[A-Z]" "[a-z]")
+	local    tStepType="${6}"
+	local        tStep=$(echo "${7}" | tr "[A-Z]" "[a-z]")
 	local    timeRange="${8}"
 
-	case "${tstep}" in
+	case "${tStep}" in
 		(hourly)
-			local tstepStr="h"
+			local tStepStr="h"
 		;;
 		(3hourly)
-			local tstepStr="3h"
+			local tStepStr="3h"
 		;;
 		(6hourly)
-			local tstepStr="6h"
+			local tStepStr="6h"
 		;;
 		(daily)
-			local tstepStr="d"
+			local tStepStr="d"
 		;;
 		(monthly)
-			local tstepStr="m"
+			local tStepStr="m"
 		;;
 		(annual)
-			local tstepStr="a"
+			local tStepStr="a"
 		;;
 		("")
-			local tstepStr=""
+			local tStepStr=""
 		;;
 		(*)
-			echo "Unknown time step ${tstep}" > /dev/stderr
+			echo "Unknown time step ${tStep}" > /dev/stderr
 			return 1
 		;;
 	esac
@@ -1142,21 +1142,21 @@ function RGISfile ()
 		;;
 	esac
 
-	local rgisDirectory=$(RGISdirectory      "${archive}" "${domain}" "${variable}" "${product}" "${resolution}" "${tstepType}" "${tstep}")
+	local rgisDirectory=$(RGISdirectory      "${archive}" "${domain}" "${variable}" "${product}" "${resolution}" "${tStepType}" "${tStep}")
 	local      fileName=$(_RGISresolutionDir "${archive}" "${domain}" "${variable}" "${product}" "${resolution}" | sed "s:/:_:g" )
 	if [ "${rgisDirectory}" == "" ]
 	then
 		echo ""
 		return 1
 	fi
-	if [[ "${tstepType}" == "static" ]]
+	if [[ "${tStepType}" == "static" ]]
 	then
-		local tstepType="Static"
-		local tstepStr=""
+		local tStepType="Static"
+		local tStepStr=""
 	fi
 
 #	local  variableName=$(RGISlookupSubject "${variable}")
-	echo "${rgisDirectory}/${fileName}_${tstepStr}${tstepType}${timeRange}.${extension}${__RGIS_GZEXT}"
+	echo "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.${extension}${__RGIS_GZEXT}"
 }
 
 function RGIStitle ()
@@ -1165,50 +1165,50 @@ function RGIStitle ()
 	local   variable="${2}"
 	local    product="${3}"
 	local resolution="${4}"
-	local  tstepType="${5}"
-	local      tstep=$(echo "${6}" | tr "[A-Z]" "[a-z]")
+	local  tStepType="${5}"
+	local      tStep=$(echo "${6}" | tr "[A-Z]" "[a-z]")
 	local  timeRange="${7}"
 	local    version="${8}"
 
 	
 	local variableFullName=$(_RGISlookupFullName "${variable}")
 
-	if [[ "${tstepType}" == "static" ]]
+	if [[ "${tStepType}" == "static" ]]
 	then
-		local tstepString=""
+		local tStepString=""
 	else
-		case "${tstep}" in
+		case "${tStep}" in
 			(hourly)
-				local tstepStr="Hourly"
+				local tStepStr="Hourly"
 			;;
 			(3hourly)
-				local tstepStr="3Hourly"
+				local tStepStr="3Hourly"
 			;;
 			(6hourly)
-				local tstepStr="6Hourly"
+				local tStepStr="6Hourly"
 			;;
 			(daily)
-				local tstepStr="Daily"
+				local tStepStr="Daily"
 			;;
 			(monthly)
-				local tstepStr="Monthly"
+				local tStepStr="Monthly"
 			;;
 			(annual)
-				local tstepStr="Annual"
+				local tStepStr="Annual"
 			;;
 			(*)
-				echo "Unknown time step ${tstep}"  > /dev/stderr
+				echo "Unknown time step ${tStep}"  > /dev/stderr
 				return 1
 			;;
 		esac
 		if [[ "${timeRange}" == "" ]]
 		then
-			local tstepString=", ${tstepStr}${tstepType}"
+			local tStepString=", ${tStepStr}${tStepType}"
 		else
-			local tstepString=", ${tstepStr}${tstepType}, ${timeRange}"
+			local tStepString=", ${tStepStr}${tStepType}, ${timeRange}"
 		fi
 	fi
-	echo "${domain}, ${product} ${variableFullName} (${resolution}${tstepString}) V${version}"
+	echo "${domain}, ${product} ${variableFullName} (${resolution}${tStepString}) V${version}"
 	return 0
 }
 
@@ -1222,20 +1222,20 @@ function RGISAppend ()
    local    version="${6}"
 	local  startyear="${7}"
 	local    endyear="${8}"
-   local      tstep="${9}"
+   local      tStep="${9}"
 
  	local      files=""
 	local  separator=" "
 
 	for (( year = ${startyear}; year <= ${endyear}; ++year ))
 	do
-		local  filename=$(RGISfile "${archive}" "${domain}" "${variable}" "${product}" "${resolution}" "TS" "${tstep}" "${year}")
+		local  filename=$(RGISfile "${archive}" "${domain}" "${variable}" "${product}" "${resolution}" "TS" "${tStep}" "${year}")
 		local     files="${files}${separator}${filename}"
 		local separator=" "
 	done
 
-	local filename=$(RGISfile  "${archive}" "${domain}" "${variable}" "${product}" "${resolution}" "TS" "${tstep}" "${startyear}-${endyear}")
-	local    title=$(RGIStitle              "${domain}" "${variable}" "${product}" "${resolution}" "TS" "${tstep}" "${startyear}-${endyear}" "${version}")
+	local filename=$(RGISfile  "${archive}" "${domain}" "${variable}" "${product}" "${resolution}" "TS" "${tStep}" "${startyear}-${endyear}")
+	local    title=$(RGIStitle              "${domain}" "${variable}" "${product}" "${resolution}" "TS" "${tStep}" "${startyear}-${endyear}" "${version}")
 	local  subject=$(RGISlookupSubject  "${variable}")
    local shadeset=$(RGISlookupShadeset "${variable}")
 
@@ -1252,22 +1252,22 @@ function RGISAggregateTS ()
 	local    version="${6}"
 	local  startyear="${7}"
 	local    endyear="${8}"
-	local  fromTStep="${9}"
-	local    toTStep="${10}"
+	local  fromtStep="${9}"
+	local    totStep="${10}"
 
    local     files=""
    local separator=""
 
    for ((year = ${startyear}; year <= ${endyear} ; ++year))
    do
-      local fromFile=$(RGISfile "${archive}" "${domain}" "${variable}" "${product}" "${resolution}" "TS" "${fromTStep}" "${year}")
-      local   toFile=$(RGISfile "${archive}" "${domain}" "${variable}" "${product}" "${resolution}" "TS" "${toTStep}"   "${year}")
-      local    title=$(RGIStitle "${domain}" "${variable}" "${product}" "${resolution}" "TS" "${toTStep}" "${year}" "${version}")
+      local fromFile=$(RGISfile "${archive}" "${domain}" "${variable}" "${product}" "${resolution}" "TS" "${fromtStep}" "${year}")
+      local   toFile=$(RGISfile "${archive}" "${domain}" "${variable}" "${product}" "${resolution}" "TS" "${totStep}"   "${year}")
+      local    title=$(RGIStitle "${domain}" "${variable}" "${product}" "${resolution}" "TS" "${totStep}" "${year}" "${version}")
       local  subject=$(RGISlookupSubject    "${variable}")
       local shadeset=$(RGISlookupShadeset   "${variable}")
 		local   method=$(RGISlookupAggrMethod "${variable}")
 
-      grdTSAggr -a "${method}" -e "$(RGISlookupTimeStep ${toTStep})" -t "${title}" -d "${domain}" -u "${subject}" -s "${shadeset}" "${fromFile}" "${toFile}" || return 1
+      grdTSAggr -a "${method}" -e "$(RGISlookupTimeStep ${totStep})" -t "${title}" -d "${domain}" -u "${subject}" -s "${shadeset}" "${fromFile}" "${toFile}" || return 1
    done
 }
 

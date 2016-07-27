@@ -165,6 +165,8 @@ int MFdsRecordRead (MFVariable_t *var) {
 				for (i = 0; i < var->ItemNum; ++i)
 					((float *) (var->InBuffer)) [i]  = (float)  (var->InStream->Handle.Float);
 				break;
+            default:
+                break;
 		}
 	}
 	else {

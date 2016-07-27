@@ -142,13 +142,13 @@ static void _MDRainSMoistChg (int itemID) {
 	//	printf("balance = %f, gm = %f, impAreaFrac = %f, runofftoPerv(basin) = %f, runofftoPerv(perv) = %f\n", balance, gm, impAreaFrac, runoffToPerv * (1.00 - impAreaFrac), runoffToPerv);
 	//}
 
-if (fabs(balance) > 0.001) {
+/*if (fabs(balance) > 0.001) {
 	printf("**** itemID = %d, month = %d, day = %d, airT = %f, surplus = %f, stormRunoff = %f, intercept = %f\n", itemID, MFDateGetCurrentMonth (), MFDateGetCurrentDay (), airT, precip - sPackChg - evapotrans - sMoistChg - stormRunoffTotal, stormRunoffTotal, intercept);
 	printf("Alpha = %f, sMoist = %f, sMoistChg = %f, precip = %f, transp = %f, waterIn = %f\n", _MDSoilMoistALPHA, sMoist, sMoistChg, precip, evapotrans, waterIn);
 	printf("pet = %f, awCap = %f, precip = %f, sPackChg = %f, excess = %f, airT = %f\n", pet, awCap, precip, sPackChg, excess, airT);
 	printf("balance = %f, gm = %f, impAreaFrac = %f, runofftoPerv(basin) = %f, runofftoPerv(perv) = %f\n", balance, gm, impAreaFrac, runoffToPerv * (1.00 - impAreaFrac), runoffToPerv);
 	}
-	
+*/
 //if ((itemID == 486)) printf("y = %d, m = %d, d = %d, ******* precip = %f, transp = %f, sPackChg = %f, sMoist = %f, sMoistChg = %f, awCap = %f, excess = %f\n", MFDateGetCurrentYear(), MFDateGetCurrentMonth(), MFDateGetCurrentDay(), precip, evapotrans, sPackChg, sMoist, sMoistChg, awCap, excess);	//RJS 071511
 
 	MFVarSetFloat (_MDOutEvaptrsNotScaledID,  itemID, evapotrans);	// RJS 082812
