@@ -320,4 +320,3 @@ void CMthreadUnlock (void *teamPtr) {
 	CMthreadTeam_t *team = (CMthreadTeam_t *) teamPtr;
 	pthread_mutex_unlock (&(team->Mutex));
 }
-
