@@ -71,7 +71,7 @@ static MFVariable_t *_MFVarNewEntry (const char *name) {
     var->ReadRet    = CMfailed;
     var->WriteRet   = CMfailed;
     var->Read       = false;
-    var->Write      = false;
+    var->LastWrite  = true;
 	_MFVariableNum++;
 	return (var);
 }
@@ -149,13 +149,11 @@ int MFVarGetTStep (int id) {
 static bool _MFVarTestMissingVal (MFVariable_t *var,int itemID)
 	{
 	switch (var->Type) {
-		case MFByte:	return ((int) (((char *)  var->ProcBuffer) [itemID]) == var->Missing.Int);
-		case MFShort:	return ((int) (((short *) var->ProcBuffer) [itemID]) == var->Missing.Int);
-		case MFInt:		return ((int) (((int *)   var->ProcBuffer) [itemID]) == var->Missing.Int);
-		case MFFloat:
-			return (CMmathEqualValues ((((float *)  var->ProcBuffer) [itemID]),var->Missing.Float));
-		case MFDouble:
-			return (CMmathEqualValues ((((double *) var->ProcBuffer) [itemID]),var->Missing.Float));
+		case MFByte:   return ((int) (((char *)  var->ProcBuffer) [itemID]) == var->Missing.Int);
+		case MFShort:  return ((int) (((short *) var->ProcBuffer) [itemID]) == var->Missing.Int);
+		case MFInt:	   return ((int) (((int *)   var->ProcBuffer) [itemID]) == var->Missing.Int);
+		case MFFloat:  return (CMmathEqualValues ((((float *)  var->ProcBuffer) [itemID]),var->Missing.Float));
+		case MFDouble: return (CMmathEqualValues ((((double *) var->ProcBuffer) [itemID]),var->Missing.Float));
 	}
 	CMmsgPrint (CMmsgAppError,"Error: Invalid variable [%s,%d] type [%d] in %s:%d\n",var->Name, itemID, var->Type,__FILE__,__LINE__);
 	return (true);
