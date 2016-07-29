@@ -89,7 +89,7 @@ static void _MDRainSMoistChg (int itemID) {
 	float waterTableDepthParameter =1.0;
 	int i;
 	float isInitial = MFVarGetFloat(_MDInIsInitialID,itemID,0.0);
-	float rootDepth;			//in mm to be consistent with old WBMtest data!
+	float rootDepth;			//in mm to be consistent with old WBMstable data!
 // Local
 	float liquidIn;
  
