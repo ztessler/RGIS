@@ -257,7 +257,7 @@ CMreturn CMthreadJobExecute (CMthreadTeam_p team, CMthreadJob_p job) {
 
 		for (threadId = 0; threadId < team->ThreadNum; ++threadId) {
 			if ((ret = pthread_create (&(team->Threads [threadId].Thread), &thread_attr,_CMthreadWork,(void *) (team->Threads + threadId))) != 0) {
-				CMmsgPrint (CMmsgSysError,"Thread creation returned with error [%d] in %s:%d\n",ret,__FILE__,__LINE__);
+				CMmsgPrint (CMmsgSysError,"Thread creation returned with error [%d] in %s:%d",ret,__FILE__,__LINE__);
 				free (team->Threads);
 				free (team);
 				return (CMfailed);
@@ -278,11 +278,11 @@ CMthreadTeam_p CMthreadTeamCreate (size_t threadNum) {
 
 	if (threadNum < 2) return (team);
 	if ((team = (CMthreadTeam_p) malloc (sizeof (CMthreadTeam_t))) == (CMthreadTeam_p) NULL) {
-		CMmsgPrint (CMmsgSysError,"Memory Allocation error in %s:%d\n",__FILE__,__LINE__);
+		CMmsgPrint (CMmsgSysError,"Memory Allocation error in %s:%d",__FILE__,__LINE__);
 		return ((CMthreadTeam_p) NULL);
 	}
 	if ((team->Threads = (CMthreadData_p) calloc (threadNum, sizeof(CMthreadData_t))) == (CMthreadData_p) NULL) {
-		CMmsgPrint (CMmsgSysError,"Memory Allocation error in %s:%d\n",__FILE__,__LINE__);
+		CMmsgPrint (CMmsgSysError,"Memory Allocation error in %s:%d",__FILE__,__LINE__);
 		free (team);
 		return ((CMthreadTeam_p) NULL);
 	}

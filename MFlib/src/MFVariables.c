@@ -33,7 +33,7 @@ char *MFVarTypeString (int type) {
 		case MFInt:    return ("int");
 		case MFFloat:  return ("float");
 		case MFDouble: return ("double");
-		default: CMmsgPrint (CMmsgAppError,"Error: Invalide Type [%d] in: %s:%d\n",__FILE__,__LINE__); break;
+		default: CMmsgPrint (CMmsgAppError,"Error: Invalide Type [%d] in: %s:%d",__FILE__,__LINE__); break;
 	}
 	return ("");
 }
@@ -42,7 +42,7 @@ static MFVariable_t *_MFVarNewEntry (const char *name) {
 	MFVariable_t *var;
 	_MFVariables = (MFVariable_t *) realloc (_MFVariables,(_MFVariableNum + 1) * sizeof (MFVariable_t));
 	if (_MFVariables == (MFVariable_t *) NULL) {
-	 	CMmsgPrint (CMmsgSysError,"Error: Memory allocation error in: %s:%d\n",__FILE__,__LINE__);
+	 	CMmsgPrint (CMmsgSysError,"Error: Memory allocation error in: %s:%d",__FILE__,__LINE__);
 		return ((MFVariable_t *) NULL);
 	}
 	var = _MFVariables + _MFVariableNum;
@@ -118,7 +118,7 @@ int MFVarGetID (char *name,char *unit,int type, bool flux, bool initial) {
 			switch (type) {
 				default:
 					if (type != var->Type)
-						CMmsgPrint (CMmsgWarning,"Warning: Ignoring type redefinition (%s,%s)\n",var->Name,MFVarTypeString (type));
+						CMmsgPrint (CMmsgWarning,"Warning: Ignoring type redefinition (%s,%s)",var->Name,MFVarTypeString (type));
 				case MFInput:
 				case MFRoute:
 				case MFOutput:	break;
@@ -127,16 +127,16 @@ int MFVarGetID (char *name,char *unit,int type, bool flux, bool initial) {
 
 	if (initial != var->Initial) {
 		if (initial) var->Initial = initial;
-		else CMmsgPrint (CMmsgWarning,"Warning: Ignoring initial redefinition (%s [%s])!\n",var->Name,var->Unit);
+		else CMmsgPrint (CMmsgWarning,"Warning: Ignoring initial redefinition (%s [%s])!",var->Name,var->Unit);
 	}
 
 	if (strncmp (unit,var->Unit,strlen (unit)) != 0) {
 		if (strcmp (var->Unit,MFNoUnit) == 0) strncpy (var->Unit,unit,sizeof (var->Unit) - 1);
-		else CMmsgPrint (CMmsgWarning,"Warning: Ignoring Unit redefinition (%s [%s],%d)!\n",var->Name,var->Unit,type);
+		else CMmsgPrint (CMmsgWarning,"Warning: Ignoring Unit redefinition (%s [%s],%d)!",var->Name,var->Unit,type);
 	}
 	if (flux != var->Flux) {
 		if (flux)  var->Flux = flux;
-		else CMmsgPrint (CMmsgWarning,"Warning: Ignoring flux redefinition (%s [%s])!\n",var->Name,var->Unit);
+		else CMmsgPrint (CMmsgWarning,"Warning: Ignoring flux redefinition (%s [%s])!",var->Name,var->Unit);
 	}
 	return (var->ID);
 }
@@ -155,7 +155,7 @@ static bool _MFVarTestMissingVal (MFVariable_t *var,int itemID)
 		case MFFloat:  return (CMmathEqualValues ((((float *)  var->ProcBuffer) [itemID]),var->Missing.Float));
 		case MFDouble: return (CMmathEqualValues ((((double *) var->ProcBuffer) [itemID]),var->Missing.Float));
 	}
-	CMmsgPrint (CMmsgAppError,"Error: Invalid variable [%s,%d] type [%d] in %s:%d\n",var->Name, itemID, var->Type,__FILE__,__LINE__);
+	CMmsgPrint (CMmsgAppError,"Error: Invalid variable [%s,%d] type [%d] in %s:%d",var->Name, itemID, var->Type,__FILE__,__LINE__);
 	return (true);
 }
 
@@ -164,11 +164,11 @@ bool MFVarTestMissingVal (int id,int itemID)
 	MFVariable_t *var;
 
 	if ((var = MFVarGetByID (id)) == (MFVariable_t *) NULL)  {
-		CMmsgPrint (CMmsgAppError,"Error: Invalid variable [%d] in: %s:%d\n",id,__FILE__,__LINE__);
+		CMmsgPrint (CMmsgAppError,"Error: Invalid variable [%d] in: %s:%d",id,__FILE__,__LINE__);
 		return (true);
 	}
 	if ((itemID < 0) || (itemID >= var->ItemNum)) {
-		CMmsgPrint (CMmsgAppError,"Error: Invalid item [%s,%d] in: %s:%d\n",var->Name,itemID,__FILE__,__LINE__);
+		CMmsgPrint (CMmsgAppError,"Error: Invalid item [%s,%d] in: %s:%d",var->Name,itemID,__FILE__,__LINE__);
 		return (true);
 	}
 	return  (_MFVarTestMissingVal (var,itemID));

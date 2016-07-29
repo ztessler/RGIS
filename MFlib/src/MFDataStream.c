@@ -176,14 +176,14 @@ int MFdsRecordRead (MFVariable_t *var) {
 				}
                 readNum++;
 				if (var->ItemNum != header.ItemNum) {
-					CMmsgPrint(CMmsgUsrError,"Variable [%] has inconsistent data stream (%d != %d)\n",header.ItemNum,var->ItemNum);
+					CMmsgPrint(CMmsgUsrError,"Variable [%] has inconsistent data stream (%d != %d)",header.ItemNum,var->ItemNum);
 					return (CMfailed);
 				}
 
 				if (var->InBuffer == (void *) NULL) {
                     var->Type = header.Type;
 					if ((var->InBuffer = (void *) malloc (var->ItemNum * MFVarItemSize (var->Type))) == (void *) NULL) {
-						CMmsgPrint (CMmsgSysError,"Variable [%s] allocation error in: %s:%d\n",var->Name,__FILE__,__LINE__);
+						CMmsgPrint (CMmsgSysError,"Variable [%s] allocation error in: %s:%d",var->Name,__FILE__,__LINE__);
 						return (CMfailed);
 					}
 
@@ -200,24 +200,24 @@ int MFdsRecordRead (MFVariable_t *var) {
 						case 10: var->TStep = MFTimeStepDay;   break;
 						case 13: var->TStep = MFTimeStepHour;  break;
 						default:
-							CMmsgPrint (CMmsgUsrError,"Invalid date in data stream %s\n",var->Name);
+							CMmsgPrint (CMmsgUsrError,"Invalid date in data stream %s",var->Name);
 							return (CMfailed);
 					}
 				}
 				else if (header.ItemNum != var->ItemNum) {
-					CMmsgPrint (CMmsgUsrError,"Item number Missmatch %s != %d in varName %s \n", header.ItemNum, var->ItemNum, var->Name);
+					CMmsgPrint (CMmsgUsrError,"Item number Missmatch %s != %d in varName %s", header.ItemNum, var->ItemNum, var->Name);
 					return (CMfailed);
 				}
 				else	if (header.Type != var->Type) {
-					CMmsgPrint (CMmsgAppError,"Record Type Missmatch [%d,%d] in: %s:%d varName %s \n", header.Type, var->Type,__FILE__,__LINE__, var->Name);
+					CMmsgPrint (CMmsgAppError,"Record Type Missmatch [%d,%d] in: %s:%d varName %s", header.Type, var->Type,__FILE__,__LINE__, var->Name);
 					return (CMfailed);
 				}
 				else  if (header.ItemNum  != var->ItemNum) {
-					CMmsgPrint (CMmsgAppError,"Record Size Missmatch [%d,%d] in: %s:%d\n", header.ItemNum,  var->ItemNum, __FILE__,__LINE__);
+					CMmsgPrint (CMmsgAppError,"Record Size Missmatch [%d,%d] in: %s:%d", header.ItemNum,  var->ItemNum, __FILE__,__LINE__);
 					return (CMfailed);
 				}
 				if ((int) fread (var->InBuffer,MFVarItemSize (var->Type),var->ItemNum,var->InStream->Handle.File) != var->ItemNum) {
-					CMmsgPrint (CMmsgSysError,"Data Reading error in: %s:%d\n",__FILE__,__LINE__);
+					CMmsgPrint (CMmsgSysError,"Data Reading error in: %s:%d",__FILE__,__LINE__);
 					return (CMfailed);
 				}
 				strcpy (var->CurDate, header.Date);
@@ -232,7 +232,7 @@ Stop:	if (header.Swap != 1)
 				default:	break;
 			}
         if ((var->NStep = MFDateTimeStepLength (var->InDate,var->TStep)) == 0) {
-            CMmsgPrint (CMmsgUsrError,"Invalid data stream in: %s, %d\n",__FILE__,__LINE__);
+            CMmsgPrint (CMmsgUsrError,"Invalid data stream in: %s, %d",__FILE__,__LINE__);
             return (CMfailed);
         }
     }
@@ -256,7 +256,7 @@ int MFdsRecordWrite (MFVariable_t *var) {
 	}
 	if (MFdsHeaderWrite (&(header),var->OutStream->Handle.File) != CMsucceeded) return (CMfailed);
 	if (fwrite (var->OutBuffer, (size_t) MFVarItemSize (var->Type), var->ItemNum, var->OutStream->Handle.File) != var->ItemNum) {
-		CMmsgPrint (CMmsgSysError,"Data writing error in: %s:%d\n"__FILE__,__LINE__);
+		CMmsgPrint (CMmsgSysError,"Data writing error in: %s:%d"__FILE__,__LINE__);
 		return (CMfailed);
 	}
 	return (CMsucceeded);

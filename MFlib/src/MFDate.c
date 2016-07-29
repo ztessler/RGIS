@@ -65,7 +65,7 @@ char *MFDateTimeStepUnit (int tStep) {
 		case MFTimeStepMonth: return ("mo");
 		case MFTimeStepDay:   return ("d");
         case MFTimeStepHour:  return ("hr");
-		default: CMmsgPrint (CMmsgAppError,"Error: Invalid time step [%d] in: %s:%d\n",tStep,__FILE__,__LINE__); break;
+		default: CMmsgPrint (CMmsgAppError,"Error: Invalid time step [%d] in: %s:%d",tStep,__FILE__,__LINE__); break;
 	}
 	return ("");
 }
@@ -75,20 +75,20 @@ static bool _MFDateSet (struct MFDate_s *date,char *dateString) {
 	date->Year = date->Month = date->Day = MFDefaultMissingInt;
 	if ((strncmp (dateString,MFDateClimatologyYearStr,strlen (MFDateClimatologyYearStr)) != 0) &&
 		 (sscanf (dateString,"%d",&(date->Year)) != 1)) {
-		CMmsgPrint (CMmsgAppError,"Error: Invalid date [%s] in: %s:%d\n",dateString,__FILE__,__LINE__);
+		CMmsgPrint (CMmsgAppError,"Error: Invalid date [%s] in: %s:%d",dateString,__FILE__,__LINE__);
 		return (false);
 	}
 	date->DayOfYear = 183;
 	if (strlen (dateString) == 4) return (true);
 	if (sscanf (dateString + 5,"%d",&(date->Month)) != 1) {
-		CMmsgPrint (CMmsgAppError,"Error: Invalid date [%s] in: %s:%d\n",dateString,__FILE__,__LINE__);
+		CMmsgPrint (CMmsgAppError,"Error: Invalid date [%s] in: %s:%d",dateString,__FILE__,__LINE__);
 		return (false);
 	}
 	date->DayOfYear = 0;
 	for (month = 1;month < date->Month;++month) date->DayOfYear += _MFDateMonthLength (date->Year,month);
 	if (strlen (dateString) == 7) { date->DayOfYear +=_MFDateMonthLength (date->Year,month) / 2; return (true); }
 	if (sscanf (dateString + 8,"%d",&(date->Day)) != 1) {
-		CMmsgPrint (CMmsgAppError,"Error: Invalid date [%s] in: %s:%d\n",dateString,__FILE__,__LINE__);
+		CMmsgPrint (CMmsgAppError,"Error: Invalid date [%s] in: %s:%d",dateString,__FILE__,__LINE__);
 		return (false);
 	}
 	date->DayOfYear += date->Day;
@@ -190,7 +190,7 @@ int  MFDateTimeStepLength (const char *timeStr, int timeStep) {
     else {
         strncpy (scanStr,timeStr,strlen (MFDateClimatologyYearStr));
         if (sscanf (scanStr,"%d", &year) != 1) {
-            CMmsgPrint (CMmsgUsrError,"Date scanning error in: %s:%d\n",__FILE__,__LINE__);
+            CMmsgPrint (CMmsgUsrError,"Date scanning error in: %s:%d",__FILE__,__LINE__);
             return (0);
         }
         leapYear = _MFDateLeapYear (year);
@@ -198,7 +198,7 @@ int  MFDateTimeStepLength (const char *timeStr, int timeStep) {
     if (strlen (timeStr) > strlen (MFDateClimatologyYearStr)) {
         strncpy (scanStr,timeStr + strlen (MFDateClimatologyYearStr) + 1,2);
         if (sscanf (scanStr,"%d", &month) != 1) {
-            CMmsgPrint (CMmsgUsrError,"Date scanning error in: %s:%d\n",__FILE__,__LINE__);
+            CMmsgPrint (CMmsgUsrError,"Date scanning error in: %s:%d",__FILE__,__LINE__);
             return (0);
         }
         monthLen = _MFDateMonthLength(year,month);

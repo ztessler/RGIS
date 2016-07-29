@@ -24,7 +24,7 @@ static int _MFFunctionNum = 0;
 int MFModelAddFunction (MFFunction func) {
 
 	if ((_MFFunctions = (MFFunction *) realloc (_MFFunctions, (_MFFunctionNum + 1) * sizeof (MFFunction))) == (MFFunction *) NULL) {
-		CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d\n",__FILE__,__LINE__);
+		CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d",__FILE__,__LINE__);
 		return (CMfailed);
 	}
 	_MFFunctions [_MFFunctionNum] = func;
@@ -82,13 +82,13 @@ typedef struct varEntry_s {
 static varEntry_t *_MFModelVarEntryNew (varEntry_t *varEntries, int entryID, const char *name, const char *path) {
 	varEntries = (varEntry_t *) realloc (varEntries,sizeof (varEntry_t)  * (entryID + 1));
 	if (varEntries == (varEntry_t *) NULL) {
-		CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d\n",__FILE__,__LINE__);
+		CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d",__FILE__,__LINE__);
 		return ((varEntry_t *) NULL);
 	}
 	varEntries [entryID].Name  = (char *) malloc (strlen (name) + 1);
 	varEntries [entryID].Path  = (char *) malloc (strlen (path) + 1);
 	if ((varEntries [entryID].Name == (char *) NULL) || (varEntries [entryID].Path == (char *) NULL)) {
-		CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d\n",__FILE__,__LINE__);
+		CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d",__FILE__,__LINE__);
         return ((varEntry_t *) NULL);
 	}
 	strcpy (varEntries [entryID].Name, name);
@@ -144,12 +144,12 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
     for (argPos = 1;argPos < argNum;) {
 		if (CMargTest (argv [argPos],"-i","--input")) {
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) < 1) {
-				CMmsgPrint (CMmsgUsrError,"Missing input argument!\n");
+				CMmsgPrint (CMmsgUsrError,"Missing input argument!");
 				return (CMfailed);
 			}
 			for (i = 0;i < (int) strlen (argv[argPos]);++i) if (argv [argPos][i] == '=') break;
 			if (i == (int) strlen (argv [argPos])) {
-				CMmsgPrint  (CMmsgUsrError,"Illformed input variable [%s] in: %s:%d\n",argv [argPos],__FILE__,__LINE__);
+				CMmsgPrint  (CMmsgUsrError,"Illformed input variable [%s] in: %s:%d",argv [argPos],__FILE__,__LINE__);
 				return (CMfailed);
 			}
 			argv [argPos][i] = '\0';
@@ -165,7 +165,7 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 			}
 			for (i = 0;i < (int) strlen (argv[argPos]);++i) if (argv [argPos][i] == '=') break;
 			if (i == (int) strlen (argv [argPos])) {
-				CMmsgPrint (CMmsgUsrError,"Illformed _MFModelOutput variable [%s]!\n",argv [argPos]);
+				CMmsgPrint (CMmsgUsrError,"Illformed _MFModelOutput variable [%s]!",argv [argPos]);
 				return (CMfailed);
 			}
 			argv [argPos][i] = '\0';
@@ -181,7 +181,7 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 			}
 			for (i = 0;i < (int) strlen (argv[argPos]);++i) if (argv [argPos][i] == '=') break;
 			if (i == (int) strlen (argv [argPos])) {
-				CMmsgPrint (CMmsgUsrError,"Illformed _MFModelOutput variable [%s]!\n",argv [argPos]);
+				CMmsgPrint (CMmsgUsrError,"Illformed _MFModelOutput variable [%s]!",argv [argPos]);
 				return (CMfailed);
 			}
 			argv [argPos][i] = '\0';
@@ -192,7 +192,7 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 	 	}
 		if (CMargTest (argv [argPos],"-s","--start")) {
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) < 1) {
-				CMmsgPrint (CMmsgUsrError,"Missing start time!\n");
+				CMmsgPrint (CMmsgUsrError,"Missing start time!");
 				return (CMfailed);
 			}
 			*startDate = argv [argPos];
@@ -201,7 +201,7 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 		}
 		if (CMargTest (argv [argPos],"-n","--end")) {
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) < 1) {
-				CMmsgPrint (CMmsgUsrError,"Missing end time!\n");
+				CMmsgPrint (CMmsgUsrError,"Missing end time!");
 				return (CMfailed);
 			}
 			*endDate = argv [argPos];
@@ -219,12 +219,12 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 			const char *modes [] = { "file:", "on", "off", (char *) NULL };
 
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) < 1) {
-				CMmsgPrint (CMmsgUsrError,"Missing message argument!\n");
+				CMmsgPrint (CMmsgUsrError,"Missing message argument!");
 				return (CMfailed);
 			}
 
 			if ((type = CMoptLookup (types,argv [argPos],false)) == CMfailed) {
-				CMmsgPrint (CMmsgWarning,"Ignoring illformed message [%s]!\n",argv [argPos]);
+				CMmsgPrint (CMmsgWarning,"Ignoring illformed message [%s]!",argv [argPos]);
 			}
 			else {
 				switch (CMoptLookup (modes, argv [argPos] + strlen (types [type]) + 1, false)) {
@@ -232,7 +232,7 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 					case 1: CMmsgSetStatus     (msgTypes [type], true);  break;
 					case 2: CMmsgSetStatus     (msgTypes [type], false); break;
 					default:
-						CMmsgPrint (CMmsgWarning,"Ignoring illformed message [%s]!\n",argv [argPos]);
+						CMmsgPrint (CMmsgWarning,"Ignoring illformed message [%s]!",argv [argPos]);
 						break;
 				}
 			}
@@ -241,20 +241,20 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 		}
 		if (CMargTest (argv [argPos],"-h","--help")) {
 			help = true;
-			CMmsgPrint (CMmsgInfo,"%s [options] <domain>\n",CMfileName (argv [0]));
-			CMmsgPrint (CMmsgInfo,"     -s,  --start      [start date in the form of \"yyyy-mm-dd\"]\n");
-			CMmsgPrint (CMmsgInfo,"     -n,  --end        [end date in the form of \"yyyy-mm-dd\"]\n");
-			CMmsgPrint (CMmsgInfo,"     -i,  --input      [variable=source]\n");
-			CMmsgPrint (CMmsgInfo,"     -o,  --output     [variable=destination]\n");
-			CMmsgPrint (CMmsgInfo,"     -t,  --state      [variable=statefile]\n");
-			CMmsgPrint (CMmsgInfo,"     -p,  --option     [option=content]\n");
-			CMmsgPrint (CMmsgInfo,"     -T,  --testonly\n");
-			CMmsgPrint (CMmsgInfo,"     -m,  --message    [sys_error|app_error|usr_error|debug|warning|info]=[on|off|file=<filename>]\n");
-			CMmsgPrint (CMmsgInfo,"     -h,  --help\n");
+			CMmsgPrint (CMmsgInfo,"%s [options] <domain>",CMfileName (argv [0]));
+			CMmsgPrint (CMmsgInfo,"     -s,  --start      [start date in the form of \"yyyy-mm-dd\"]");
+			CMmsgPrint (CMmsgInfo,"     -n,  --end        [end date in the form of \"yyyy-mm-dd\"]");
+			CMmsgPrint (CMmsgInfo,"     -i,  --input      [variable=source]");
+			CMmsgPrint (CMmsgInfo,"     -o,  --output     [variable=destination]");
+			CMmsgPrint (CMmsgInfo,"     -t,  --state      [variable=statefile]");
+			CMmsgPrint (CMmsgInfo,"     -p,  --option     [option=content]");
+			CMmsgPrint (CMmsgInfo,"     -T,  --testonly");
+			CMmsgPrint (CMmsgInfo,"     -m,  --message    [sys_error|app_error|usr_error|debug|warning|info]=[on|off|file=<filename>]");
+			CMmsgPrint (CMmsgInfo,"     -h,  --help");
 			break;
 		}
 		if ((argv [argPos][0] == '-') && (strlen (argv [argPos]) > 1)) {
-			CMmsgPrint (CMmsgUsrError,"Unknown option [%s]!\n",argv [argPos]);
+			CMmsgPrint (CMmsgUsrError,"Unknown option [%s]!",argv [argPos]);
 			_MFModelVarEntriesFree(inputVars,  inputVarNum);
 			_MFModelVarEntriesFree(outputVars, outputVarNum);
 			_MFModelVarEntriesFree(stateVars,  stateVarNum);
@@ -266,8 +266,8 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 	if (*startDate == (char *) NULL) *startDate = "XXXX-01-01";
 	if (*endDate   == (char *) NULL) *endDate   = "XXXX-12-31";
 
-    if (!MFDateSetCurrent (*startDate)) { CMmsgPrint (CMmsgUsrError,"Error: Invalid start date!\n"); ret = CMfailed; }
-    if (!MFDateSetCurrent (*endDate))   { CMmsgPrint (CMmsgAppError,"Error: Invalid end date!\n");   ret = CMfailed; }
+    if (!MFDateSetCurrent (*startDate)) { CMmsgPrint (CMmsgUsrError,"Error: Invalid start date!"); ret = CMfailed; }
+    if (!MFDateSetCurrent (*endDate))   { CMmsgPrint (CMmsgAppError,"Error: Invalid end date!");   ret = CMfailed; }
 	if (ret == CMfailed) {
 		_MFModelVarEntriesFree(inputVars,  inputVarNum);
 		_MFModelVarEntriesFree(outputVars, outputVarNum);
@@ -468,7 +468,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
         case 13: timeStep = MFTimeStepHour;  climatologyStr = MFDateClimatologyHourStr;  break;
         default: CMmsgPrint (CMmsgUsrError,"Invalid date in model run %s\n", startDate); return (CMfailed);
     }
-    if (!MFDateSetCurrent (startDate)) { CMmsgPrint (CMmsgUsrError,"Error: Invalid start date!\n"); ret = CMfailed; }
+    if (!MFDateSetCurrent (startDate)) { CMmsgPrint (CMmsgUsrError,"Error: Invalid start date!"); ret = CMfailed; }
     if ((inFile = strcmp (domainFileName,"-") != 0 ? fopen (argv [1],"r") : stdin) == (FILE *) NULL) {
 		CMmsgPrint (CMmsgAppError,"%s: Template Coverage [%s] Opening error!",CMfileName (argv [0]),argv [1]);
 		return (CMfailed);
@@ -579,7 +579,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
     while ((strcmp(dateCur, endDate) <= 0) && (ret == CMsucceeded)) {
         CMmsgPrint(CMmsgDebug, "Computing: %s", dateCur);
         if (!MFDateSetCurrent(dateCur)) {
-            CMmsgPrint(CMmsgUsrError, "Error: Invalid start date!\n");
+            CMmsgPrint(CMmsgUsrError, "Error: Invalid start date!");
             ret = CMfailed;
         }
         strcpy (dateNext, MFDateGetNext());
@@ -616,7 +616,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                         }
                         pthread_mutex_lock(&(var->InMutex));
                         if (var->ReadRet == CMfailed) {
-                            CMmsgPrint(CMmsgAppError, "Variable (%s) Reading error!\n", var->Name);
+                            CMmsgPrint(CMmsgAppError, "Variable (%s) Reading error!", var->Name);
                             return (CMfailed);
                         }
                         buffer          = var->ProcBuffer;
@@ -695,7 +695,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                     if (var->OutStream != (MFDataStream_t *) NULL) {
                         if (var->OutBuffer == (void *) NULL) {
                             if ((var->OutBuffer = (void *) malloc(var->ItemNum * MFVarItemSize(var->Type))) == (void *) NULL) {
-                                CMmsgPrint(CMmsgSysError, "Variable [%s] allocation error in: %s:%d\n", var->Name, __FILE__,__LINE__);
+                                CMmsgPrint(CMmsgSysError, "Variable [%s] allocation error in: %s:%d", var->Name, __FILE__,__LINE__);
                                 return (CMfailed);
                             }
                             strcpy (var->OutDate, dateCur);
@@ -711,7 +711,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                                                       &thread_attr,
                                                       _MFOutputMultiThreadWork,
                                                       (void *) var)) != 0) {
-                                CMmsgPrint(CMmsgSysError, "Thread creation returned with error!\n");
+                                CMmsgPrint(CMmsgSysError, "Thread creation returned with error!");
                                 return (CMfailed);
                             }
                             pthread_attr_destroy(&thread_attr);
@@ -719,7 +719,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                         else {
                             pthread_mutex_lock(&(var->OutMutex));
                             if (var->WriteRet == CMfailed) {
-                                CMmsgPrint(CMmsgAppError, "Variable (%s) writing error!\n", var->Name);
+                                CMmsgPrint(CMmsgAppError, "Variable (%s) writing error!", var->Name);
                                 return (CMfailed); // TODO this should be more civilized
                             }
                             buffer = var->ProcBuffer;
@@ -738,14 +738,14 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                     strcpy (var->OutDate, dateCur);
                     if (var->OutStream != (MFDataStream_t *) NULL) {
                         if ((ret = MFdsRecordWrite(var)) == CMfailed) {
-                            CMmsgPrint(CMmsgAppError, "Variable (%s) writing error!\n", var->Name);
+                            CMmsgPrint(CMmsgAppError, "Variable (%s) writing error!", var->Name);
                             return (CMfailed);
                         }
                     }
                     if ((var->InStream != (MFDataStream_t *) NULL) && (strcmp(dateNext, endDate) <= 0)) {
                         strcpy (var->InDate, dateNext);
                         if ((ret = MFdsRecordRead(var)) == CMfailed) {
-                            CMmsgPrint(CMmsgAppError, "Variable (%s) Reading error!\n", var->Name);
+                            CMmsgPrint(CMmsgAppError, "Variable (%s) Reading error!", var->Name);
                             return (CMfailed);
                         }
                     }
@@ -767,7 +767,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
             var->OutBuffer = var->ProcBuffer;
             strcpy (var->OutDate,dateCur);
 			if (MFdsRecordWrite(var) == CMfailed) {
-                CMmsgPrint (CMmsgAppError,"Variable (%s) writing error!\n",var->Name);
+                CMmsgPrint (CMmsgAppError,"Variable (%s) writing error!",var->Name);
                 ret = CMfailed;
             }
 			MFDataStreamClose (var->OutStream);
