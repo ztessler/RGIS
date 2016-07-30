@@ -22,7 +22,7 @@ char *CMstrAppend    (char *string, const char *append, const char *separator) {
 	separatorLen = separator == (char *) NULL ? 0 : strlen (separator);
 	stringLen    = string    == (char *) NULL ? 0 : strlen (string);
 	if ((string = (char *) realloc (string, stringLen + separatorLen + strlen (append) + 1)) == (char *) NULL) {
-		CMmsgPrint (CMmsgSysError, "Memory allocation error in %s:%d\n",__FILE__,__LINE__);
+		CMmsgPrint (CMmsgSysError, "Memory allocation error in %s:%d",__FILE__,__LINE__);
 		return ((char *) NULL);
 	}
 	if (separatorLen > 0) strcpy (string + stringLen, separator);
@@ -36,7 +36,7 @@ char *CMstrDuplicate (const char *inString)
 
 	if (inString == (const char *) NULL) return ((char *) NULL);
 	if ((outString = (char *) malloc (strlen (inString) + 1)) == (char *) NULL) {
-	   CMmsgPrint (CMmsgSysError, "Error: Memory allocation in: %s:%d\n",__FILE__,__LINE__);
+	   CMmsgPrint (CMmsgSysError, "Error: Memory allocation in: %s:%d",__FILE__,__LINE__);
 		perror ("Perror:");
 	   return ((char *) NULL);
 	}

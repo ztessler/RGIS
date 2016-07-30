@@ -21,7 +21,7 @@ int main(int argv, char *argc[]) {
 
     team = CMthreadTeamCreate(threadNum);
     if ((job = CMthreadJobCreate(team, (void *) NULL, taskNum, _UserFunc)) == (CMthreadJob_p) NULL) {
-        CMmsgPrint(CMmsgAppError, "Job creation error in %s:%d\n", __FILE__, __LINE__);
+        CMmsgPrint(CMmsgAppError, "Job creation error in %s:%d", __FILE__, __LINE__);
         CMthreadTeamDestroy(team);
         return (CMfailed);
     }
