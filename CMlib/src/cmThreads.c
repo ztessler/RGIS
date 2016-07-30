@@ -38,14 +38,25 @@ static CMreturn _CMthreadTaskGroupInitialize (CMthreadTaskGroup_p group, size_t 
 		group->Start = (size_t *) NULL;
 		return (CMfailed);
 	}
-    pos = start;
-    num   = taskNum > threadNum ? (int) (ceil ((float) taskNum / (float) threadNum)) : 1;
-    for (threadId = 0;threadId < threadNum; threadId++) {
-        if (start + taskNum < pos + num) num = start + taskNum - pos;
-        group->Start [threadId] = pos;
-        group->End   [threadId] = pos + num;
-        pos = pos + num;
+    if (taskNum > 2 * threadNum) {
+        pos = start;
+        num   = taskNum > threadNum ? (int) (ceil ((float) taskNum / (float) threadNum)) : 1;
+        for (threadId = 0;threadId < threadNum; threadId++) {
+            if (start + taskNum < pos + num) num = start + taskNum - pos;
+            group->Start [threadId] = pos;
+            group->End   [threadId] = pos + num;
+            pos = pos + num;
+        }
     }
+    else {
+        group->Start [0] = start;
+        group->End   [0] = start + taskNum;
+        for (threadId = 1;threadId < threadNum; threadId++) {
+            group->Start [threadId] = pos + taskNum;
+            group->End   [threadId] = pos + taskNum;
+        }
+    }
+    num   = taskNum > threadNum ? (int) (ceil ((float) taskNum / (float) threadNum)) : 1;
 	return (CMsucceeded);
 }
 
