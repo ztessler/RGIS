@@ -220,6 +220,7 @@ static void *_CMthreadWork (void *dataPtr) {
 
     pthread_mutex_lock (&(team->Mutex));
     do {
+        usleep(1);
         pthread_cond_wait (&(team->Cond), &(team->Mutex));
         job = team->JobPtr;
         if (job != (CMthreadJob_p) NULL) {
