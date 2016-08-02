@@ -91,8 +91,8 @@ typedef struct CMthreadData_s {
 typedef struct CMthreadTeam_s {
     CMthreadData_p Threads;
     size_t ThreadNum;
-    pthread_mutex_t Mutex;
-    pthread_cond_t  Cond;
+    pthread_mutex_t SMutex, MMutex;
+    pthread_cond_t  SCond,  MCond;
     void *JobPtr;
     clock_t Time;
 } CMthreadTeam_t, *CMthreadTeam_p;

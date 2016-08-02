@@ -218,23 +218,26 @@ static void *_CMthreadWork (void *dataPtr) {
 	CMthreadTeam_p team = (CMthreadTeam_p) data->TeamPtr;
 	CMthreadJob_p  job;
 
-    pthread_mutex_lock (&(team->Mutex));
+    pthread_mutex_lock (&(team->SMutex));
     do {
-        usleep(10);
-        pthread_cond_wait (&(team->Cond), &(team->Mutex));
+        pthread_cond_wait (&(team->SCond), &(team->SMutex));
         job = team->JobPtr;
         if (job != (CMthreadJob_p) NULL) {
             start = job->Groups[job->Group].Start [data->Id];
             end   = job->Groups[job->Group].End   [data->Id];
-            pthread_mutex_unlock(&(team->Mutex));
+            pthread_mutex_unlock(&(team->SMutex));
             for (taskId = start; taskId < end; taskId++)
                 job->UserFunc(job->CommonData, job->Data[data->Id], job->SortedTasks[taskId]->Id);
-            pthread_mutex_lock (&(team->Mutex));
+            pthread_mutex_lock (&(team->SMutex));
             job->Completed++;
-            if (job->Completed == team->ThreadNum) pthread_cond_signal (&(team->Cond));
+            if (job->Completed == team->ThreadNum) {
+                pthread_mutex_lock   (&(team->MMutex));
+                pthread_cond_signal  (&(team->MCond));
+                pthread_mutex_unlock (&(team->MMutex));
+            }
         }
     } while (job != (CMthreadJob_p) NULL);
-    pthread_mutex_unlock (&(team->Mutex));
+    pthread_mutex_unlock (&(team->SMutex));
     pthread_exit ((void *) NULL);
 }
 
@@ -253,9 +256,10 @@ CMreturn CMthreadJobExecute (CMthreadTeam_p team, CMthreadJob_p job) {
         team->JobPtr = (void *) job;
         for (job->Group = 0; job->Group < job->GroupNum; job->Group++) {
             job->Completed = 0;
-            pthread_cond_broadcast (&(team->Cond));
-            usleep(10);
-            pthread_cond_wait (&(team->Cond), &(team->Mutex));
+            pthread_mutex_lock     (&(team->SMutex));
+            pthread_cond_broadcast (&(team->SCond));
+            pthread_mutex_unlock   (&(team->SMutex));
+            pthread_cond_wait (&(team->MCond), &(team->MMutex));
         }
     }
 	return (CMsucceeded);
@@ -286,8 +290,10 @@ CMthreadTeam_p CMthreadTeamCreate (size_t threadNum) {
     pthread_attr_setdetachstate(&thread_attr, PTHREAD_CREATE_JOINABLE);
 
     if (team->ThreadNum > 1) {
-        pthread_mutex_init (&(team->Mutex), NULL);
-        pthread_cond_init  (&(team->Cond),  NULL);
+        pthread_mutex_init (&(team->MMutex), NULL);
+        pthread_cond_init  (&(team->MCond),  NULL);
+        pthread_mutex_init (&(team->SMutex), NULL);
+        pthread_cond_init  (&(team->SCond),  NULL);
         for (threadId = 0; threadId < team->ThreadNum; ++threadId) {
             team->Threads[threadId].Id = threadId;
             team->Threads[threadId].TeamPtr = (void *) team;
@@ -300,8 +306,7 @@ CMthreadTeam_p CMthreadTeamCreate (size_t threadNum) {
             }
         }
         pthread_attr_destroy(&thread_attr);
-        usleep(10);
-        pthread_mutex_lock (&(team->Mutex));
+        pthread_mutex_lock (&(team->MMutex));
     }
 	return (team);
 }
@@ -313,13 +318,16 @@ void CMthreadTeamDestroy (CMthreadTeam_p team) {
     team->JobPtr = (CMthreadJob_p) NULL;
     team->Time = clock() - team->Time;
     if (team->ThreadNum > 1) {
-        pthread_mutex_unlock   (&(team->Mutex));
-        pthread_cond_broadcast (&(team->Cond));
+        pthread_mutex_lock     (&(team->SMutex));
+        pthread_cond_broadcast (&(team->SCond));
+        pthread_mutex_unlock   (&(team->SMutex));
         for (threadId = 0; threadId < team->ThreadNum; ++threadId) {
             pthread_join(team->Threads[threadId].Thread, &status);
         }
-        pthread_mutex_destroy(&(team->Mutex));
-        pthread_cond_destroy (&(team->Cond));
+        pthread_mutex_unlock   (&(team->MMutex));
+        pthread_mutex_destroy(&(team->MMutex));
+        pthread_mutex_destroy(&(team->SMutex));
+        pthread_cond_destroy (&(team->SCond));
     }
     free(team->Threads);
     free(team);
