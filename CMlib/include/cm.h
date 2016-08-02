@@ -83,7 +83,7 @@ bool CMmathIsInteger(const char *);
 #define CMyesNoString(cond) (cond ? "yes" : "no")
 
 typedef struct CMthreadData_s {
-    size_t Id;
+    size_t    Id;
     pthread_t Thread;
     void *TeamPtr;
 } CMthreadData_t, *CMthreadData_p;
@@ -92,7 +92,7 @@ typedef struct CMthreadTeam_s {
     CMthreadData_p Threads;
     size_t ThreadNum;
     pthread_mutex_t Mutex;
-    pthread_cond_t Cond;
+    pthread_cond_t  Cond;
     void *JobPtr;
     clock_t Time;
 } CMthreadTeam_t, *CMthreadTeam_p;
@@ -113,13 +113,11 @@ typedef struct CMthreadTask_s {
 } CMthreadTask_t, *CMthreadTask_p;
 
 typedef struct CMthreadTaskGroup_s {
-    size_t Id;
     size_t *Start;
     size_t *End;
 } CMthreadTaskGroup_t, *CMthreadTaskGroup_p;
 
 typedef struct CMthreadJob_s {
-    size_t ThreadNum;
     bool Sorted;
     CMthreadTask_p Tasks;
     CMthreadTask_p *SortedTasks;

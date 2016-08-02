@@ -444,7 +444,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
 	MFVariable_t *var;
 	time_t sec;
 	size_t threadsNum = CMthreadProcessorNum ();
-	CMthreadTeam_p team = threadsNum > 0 ? CMthreadTeamCreate (threadsNum) : (CMthreadTeam_p) NULL;
+	CMthreadTeam_p team = CMthreadTeamCreate (threadsNum);
 	CMthreadJob_p  job;
     int parallelIO = MFparIOnone;
     pthread_attr_t thread_attr;
@@ -563,18 +563,16 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
     strcpy (dateCur,MFDateGetCurrent ());
 	CMmsgPrint (CMmsgInfo, "Model run started at... %s  started at %.24s", dateCur, ctime(&sec));
 
-	if (team != (CMthreadTeam_p) NULL) /* Multiple CPU */ {
-        if ((job = CMthreadJobCreate(team, (void *) NULL, _MFDomain->ObjNum, _MFUserFunc)) == (CMthreadJob_p) NULL) {
-            CMmsgPrint(CMmsgAppError, "Job creation error in %s:%d", __FILE__, __LINE__);
-            CMthreadTeamDestroy(team);
-            return (CMfailed);
-        }
-        for (i = 0; i < _MFDomain->ObjNum; ++i) {
-            dlink = _MFDomain->Objects[i].DLinkNum == 1 ? _MFDomain->Objects[i].DLinks[0] : i;
-            dlink = _MFDomain->ObjNum - dlink - 1;
-            taskId = _MFDomain->ObjNum - i - 1;
-            CMthreadJobTaskDependent(job, taskId, dlink);
-        }
+    if ((job = CMthreadJobCreate(team, (void *) NULL, _MFDomain->ObjNum, _MFUserFunc)) == (CMthreadJob_p) NULL) {
+        CMmsgPrint(CMmsgAppError, "Job creation error in %s:%d", __FILE__, __LINE__);
+        CMthreadTeamDestroy(team);
+        return (CMfailed);
+    }
+    for (i = 0; i < _MFDomain->ObjNum; ++i) {
+        dlink = _MFDomain->Objects[i].DLinkNum == 1 ? _MFDomain->Objects[i].DLinks[0] : i;
+        dlink = _MFDomain->ObjNum - dlink - 1;
+        taskId = _MFDomain->ObjNum - i - 1;
+        CMthreadJobTaskDependent(job, taskId, dlink);
     }
     while ((strcmp(dateCur, endDate) <= 0) && (ret == CMsucceeded)) {
         CMmsgPrint(CMmsgDebug, "Computing: %s", dateCur);
@@ -630,22 +628,8 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                 break;
             default: break;
         }
-        if (team == (CMthreadTeam_p) NULL) { /* Single CPU */
-            for (i = _MFDomain->ObjNum - 1; i >= 0; --i) {
-                for (var = MFVarGetByID(varID = 1); var != (MFVariable_t *) NULL; var = MFVarGetByID(++varID)) {
-                    if (var->Route) {
-                        value = 0.0;
-                        for (link = 0; link < _MFDomain->Objects[i].ULinkNum; ++link) {
-                            uLink = _MFDomain->Objects[i].ULinks[link];
-                            value += MFVarGetFloat(varID, uLink, 0.0);
-                        }
-                        MFVarSetFloat(varID, i, value);
-                    }
-                }
-                for (iFunc = 0; iFunc < _MFFunctionNum; ++iFunc) (_MFFunctions[iFunc])(i);
-            }
-        }
-        else CMthreadJobExecute(team, job); /* Multiple CPU */
+
+        CMthreadJobExecute(team, job);
 
         switch (parallelIO) {
             case MFparIOsingle:
@@ -686,8 +670,8 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                             strcpy (var->OutDate, dateCur);
                         }
                         outIO.Cont = strcmp(dateNext, endDate) <= 0 ? true : false;
-                        pthread_cond_broadcast(&(outIO.Cond));
-                        pthread_mutex_unlock  (&(outIO.Mutex));
+                        pthread_cond_signal  (&(outIO.Cond));
+                        pthread_mutex_unlock (&(outIO.Mutex));
                 }
                 break;
             case MFparIOmulti:
@@ -727,8 +711,8 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                             var->OutBuffer  = buffer;
                             var->LastWrite = strcmp(dateNext, endDate) == 0 ? true : false;
                             strcpy (var->OutDate, dateCur);
-                            pthread_cond_broadcast(&(var->OutCond));
-                            pthread_mutex_unlock  (&(var->OutMutex));
+                            pthread_cond_signal  (&(var->OutCond));
+                            pthread_mutex_unlock (&(var->OutMutex));
                         }
                     }
                 }

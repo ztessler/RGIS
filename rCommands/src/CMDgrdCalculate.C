@@ -311,7 +311,7 @@ public:
                 CMthreadTeamDestroy(team);
                 return ((DBObjData *) NULL);
             }
-            for (threadId = 0; threadId < job->ThreadNum; ++threadId)
+            for (threadId = 0; threadId < team->ThreadNum; ++threadId)
                 if ((job->Data[threadId] = (void *) (Table->Add("TEMPRecord"))) == (void *) NULL) {
                     CMthreadTeamDestroy(team);
                     return ((DBObjData *) NULL);
