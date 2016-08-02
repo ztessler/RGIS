@@ -253,7 +253,7 @@ CMreturn CMthreadJobExecute (CMthreadTeam_p team, CMthreadJob_p job) {
         for (job->Group = 0; job->Group < job->GroupNum; job->Group++) {
             job->Completed = 0;
             pthread_cond_broadcast (&(team->Cond));
-            usleep(1);
+            usleep(10);
             pthread_cond_wait (&(team->Cond), &(team->Mutex));
         }
     }
@@ -299,7 +299,7 @@ CMthreadTeam_p CMthreadTeamCreate (size_t threadNum) {
             }
         }
         pthread_attr_destroy(&thread_attr);
-        usleep(1);
+        usleep(10);
         pthread_mutex_lock (&(team->Mutex));
     }
 	return (team);
@@ -314,12 +314,11 @@ void CMthreadTeamDestroy (CMthreadTeam_p team) {
     if (team->ThreadNum > 1) {
         pthread_mutex_unlock   (&(team->Mutex));
         pthread_cond_broadcast (&(team->Cond));
-/*        for (threadId = 0; threadId < team->ThreadNum; ++threadId) {
+        for (threadId = 0; threadId < team->ThreadNum; ++threadId) {
             pthread_join(team->Threads[threadId].Thread, &status);
         }
-*/
         pthread_mutex_destroy(&(team->Mutex));
-        pthread_cond_destroy(&(team->Cond));
+        pthread_cond_destroy (&(team->Cond));
     }
     free(team->Threads);
     free(team);
