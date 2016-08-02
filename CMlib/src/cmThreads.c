@@ -253,6 +253,7 @@ CMreturn CMthreadJobExecute (CMthreadTeam_p team, CMthreadJob_p job) {
         for (job->Group = 0; job->Group < job->GroupNum; job->Group++) {
             job->Completed = 0;
             pthread_cond_broadcast (&(team->Cond));
+            usleep(1);
             pthread_cond_wait (&(team->Cond), &(team->Mutex));
         }
     }
