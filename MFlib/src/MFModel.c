@@ -602,7 +602,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                             }
                         }
                         if (var->NStep > 1)
-                            memcpy (var->ProcBuffer,var->InBuffer, var->ItemNum * MFVarItemSize(var->Type));
+                            memcpy (var->ProcBuffer, var->InBuffer, var->ItemNum * MFVarItemSize(var->Type));
                         else {
                             buffer          = var->ProcBuffer;
                             var->ProcBuffer = var->InBuffer;
@@ -664,9 +664,9 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                         if (var->Initial)
                             memcpy (var->OutBuffer,var->ProcBuffer,var->ItemNum * MFVarItemSize(var->Type));
                         else {
-                            buffer = var->ProcBuffer;
+                            buffer          = var->ProcBuffer;
                             var->ProcBuffer = var->OutBuffer;
-                            var->OutBuffer = buffer;
+                            var->OutBuffer  = buffer;
                         }
                         strcpy (var->OutDate, dateCur);
                     }
@@ -702,7 +702,6 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                             CMmsgPrint(CMmsgAppError, "Variable (%s) writing error!", var->Name);
                             return (CMfailed); // TODO this should be more civilized
                         }
-                        strcpy (var->OutDate, dateCur);
                         if (var->Initial)
                             memcpy (var->OutBuffer,var->ProcBuffer,var->ItemNum * MFVarItemSize(var->Type));
                         else {
@@ -710,6 +709,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                             var->ProcBuffer = var->OutBuffer;
                             var->OutBuffer  = buffer;
                         }
+                        strcpy (var->OutDate, dateCur);
                         var->LastWrite = strcmp(dateNext, endDate) == 0 ? true : false;
                         pthread_cond_signal  (&(var->OutCond));
                         pthread_mutex_unlock (&(var->OutMutex));
@@ -746,7 +746,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
             break;
         case MFparIOmulti:
             for (var = MFVarGetByID (varID = 1);var != (MFVariable_t *) NULL;var = MFVarGetByID (++varID)) {
-//              if (var->InStream != (MFDataStream_t *) NULL)  pthread_join (var->InThread,  &status);
+                if (var->InStream  != (MFDataStream_t *) NULL) pthread_join (var->InThread,  &status);
                 if (var->OutStream != (MFDataStream_t *) NULL) pthread_join (var->OutThread, &status);
             }
             break;

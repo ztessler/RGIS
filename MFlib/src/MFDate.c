@@ -178,10 +178,10 @@ int  MFDateTimeStepLength (const char *timeStr, int timeStep) {
     char scanStr [strlen (MFDateClimatologyYearStr) + 1];
 
     switch (timeStep) {
-        case MFTimeStepYear:  if (strlen (timeStr) ==  4) return (1);
-        case MFTimeStepMonth: if (strlen (timeStr) ==  7) return (1);
-        case MFTimeStepDay:   if (strlen (timeStr) == 10) return (1);
-        case MFTimeStepHour:  if (strlen (timeStr) == 13) return (1);
+        case MFTimeStepYear:  if (strlen (timeStr) ==  4) return (1); break;
+        case MFTimeStepMonth: if (strlen (timeStr) ==  7) return (1); break;
+        case MFTimeStepDay:   if (strlen (timeStr) == 10) return (1); break;
+        case MFTimeStepHour:  if (strlen (timeStr) == 13) return (1); break;
     }
     if (strncmp (timeStr,MFDateClimatologyYearStr,strlen (MFDateClimatologyYearStr)) == 0) {
         year = MFDefaultMissingInt;
@@ -214,9 +214,8 @@ int  MFDateTimeStepLength (const char *timeStr, int timeStep) {
         case 7:
             switch (timeStep) {
                 case MFTimeStepYear:  nStep  = 12; break;
-                case MFTimeStepMonth:  nStep =  1; break;
-                default:               nStep =  0; break;
-                    break;
+                case MFTimeStepMonth: nStep  =  1; break;
+                default:              nStep  =  0; break;
             }
             break;
         case 10:
@@ -234,7 +233,6 @@ int  MFDateTimeStepLength (const char *timeStr, int timeStep) {
                 case MFTimeStepDay:   nStep = 24;                     break;
                 case MFTimeStepHour:  nStep = 1;                      break;
                 default:              nStep = 0;                      break;
-
             }
             break;
     }
