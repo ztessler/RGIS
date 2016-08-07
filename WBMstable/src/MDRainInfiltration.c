@@ -60,14 +60,13 @@ int MDRainInfiltrationDef () {
 	if (((optStr = MFOptionGet (MDParInfiltrationFrac))  != (char *) NULL) && (sscanf (optStr,"%f",&par) == 1)) _MDInfiltrationFrac = par;		//RJS 082812, Gamma wasn't read in until this edit
 	
 	const char *soilMoistureOptions [] = { "bucket", "layers", (char *) NULL };
-		int soilMoistureOptionID;
-		 //TODO Add baseflow from layered SM to infiltration!
-			if (((optStr = MFOptionGet (MDOptSoilMoisture))  == (char *) NULL) || ((soilMoistureOptionID = CMoptLookup (soilMoistureOptions, optStr, true)) == CMfailed)) {
-						CMmsgPrint(CMmsgUsrError," Soil Moisture mode not specifed! Options = 'bucket' or 'layers'\n");
-						return CMfailed;
-					}
-		
-	
+	int soilMoistureOptionID;
+	//TODO Add baseflow from layered SM to infiltration!
+	if (((optStr = MFOptionGet (MDOptSoilMoisture))  == (char *) NULL) || ((soilMoistureOptionID = CMoptLookup (soilMoistureOptions, optStr, true)) == CMfailed)) {
+		CMmsgPrint(CMmsgUsrError," Soil Moisture mode not specifed! Options = 'bucket' or 'layers'\n");
+		return CMfailed;
+	}
+
 	MFDefEntering ("Rainfed Infiltration");
 	 
 	if ((optStr = MFOptionGet (optName)) != (char *) NULL) optID = CMoptLookup (options, optStr, true);

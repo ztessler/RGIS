@@ -20,7 +20,7 @@ int main(int argv, char *argc[]) {
     printf("%d %d %d %d\n", (int) threadNum, (int) taskNum, (int) _Iteration, (int) loopNum);
 
     team = CMthreadTeamCreate(threadNum);
-    if ((job = CMthreadJobCreate(team, (void *) NULL, taskNum, _UserFunc)) == (CMthreadJob_p) NULL) {
+    if ((job = CMthreadJobCreate(taskNum, _UserFunc, (void *) NULL)) == (CMthreadJob_p) NULL) {
         CMmsgPrint(CMmsgAppError, "Job creation error in %s:%d", __FILE__, __LINE__);
         CMthreadTeamDestroy(team);
         return (CMfailed);

@@ -89,7 +89,7 @@ CMreturn MFdsHeaderWrite (MFdsHeader_t *header,FILE *outFile) {
 
 	header->Swap = 1;
 	if (fwrite (header,sizeof (MFdsHeader_t),1,outFile) != 1) {
-		CMmsgPrint (CMmsgSysError,"Header writing error in: %s:%d\n",__FILE__,__LINE__);
+		CMmsgPrint (CMmsgSysError,"Header writing error in: %s:%d",__FILE__,__LINE__);
 		return (CMfailed);
 	}
 	return (CMsucceeded);
@@ -160,12 +160,7 @@ int MFdsRecordRead (MFVariable_t *var) {
 	}
 	else {
 		if (var->InStream->Handle.File == (FILE *) NULL) return (CMfailed);
-		if (MFDateCompare(var->CurDate, var->InDate)) {
-            if (var->InBuffer != var->ProcBuffer) {
-                strncpy (var->InBuffer, var->ProcBuffer, var->ItemNum * MFVarItemSize(var->Type));
-            }
-		}
-		else {
+		if (!MFDateCompare(var->CurDate, var->InDate)) {
 			do {
 				if (MFdsHeaderRead (&header,var->InStream->Handle.File) == CMfailed) {
 					if (readNum < 1) {
@@ -217,11 +212,11 @@ int MFdsRecordRead (MFVariable_t *var) {
 					return (CMfailed);
 				}
 				if ((int) fread (var->InBuffer,MFVarItemSize (var->Type),var->ItemNum,var->InStream->Handle.File) != var->ItemNum) {
-					CMmsgPrint (CMmsgSysError,"Data Reading error in: %s:%d",__FILE__,__LINE__);
+					CMmsgPrint (CMmsgSysError,"Data Reading error (%s:%d)!",__FILE__,__LINE__);
 					return (CMfailed);
 				}
 				strcpy (var->CurDate, header.Date);
-			} while (strcmp (header.Date, var->InDate) != 0);
+			} while (strcmp (header.Date, var->InDate) < 0);
 		}
 Stop:	if (header.Swap != 1)
 			switch (var->Type) {
@@ -256,7 +251,7 @@ int MFdsRecordWrite (MFVariable_t *var) {
 	}
 	if (MFdsHeaderWrite (&(header),var->OutStream->Handle.File) != CMsucceeded) return (CMfailed);
 	if (fwrite (var->OutBuffer, (size_t) MFVarItemSize (var->Type), var->ItemNum, var->OutStream->Handle.File) != var->ItemNum) {
-		CMmsgPrint (CMmsgSysError,"Data writing error in: %s:%d"__FILE__,__LINE__);
+		CMmsgPrint (CMmsgSysError,"Data writing error (%s:%d)!"__FILE__,__LINE__);
 		return (CMfailed);
 	}
 	return (CMsucceeded);

@@ -103,18 +103,17 @@ void CMthreadTeamDestroy(CMthreadTeam_p);
 
 size_t CMthreadProcessorNum();
 
-typedef void  (*CMthreadUserExecFunc)(void *, void *, size_t);
+typedef void  (*CMthreadUserExecFunc)(size_t, size_t, void *);
 
 typedef struct CMthreadTask_s {
     size_t Id;
     size_t DependLevel;
-    size_t DependNum;
     struct CMthreadTask_s *Dependent;
 } CMthreadTask_t, *CMthreadTask_p;
 
 typedef struct CMthreadTaskGroup_s {
-    size_t *Start;
-    size_t *End;
+    size_t Start;
+    size_t End;
 } CMthreadTaskGroup_t, *CMthreadTaskGroup_p;
 
 typedef struct CMthreadJob_s {
@@ -128,10 +127,9 @@ typedef struct CMthreadJob_s {
     size_t Completed;
     CMthreadUserExecFunc UserFunc;
     void *CommonData;
-    void **Data;
 } CMthreadJob_t, *CMthreadJob_p;
 
-CMthreadJob_p CMthreadJobCreate(CMthreadTeam_p, void *, size_t, CMthreadUserExecFunc);
+CMthreadJob_p CMthreadJobCreate(size_t, CMthreadUserExecFunc, void *);
 
 void CMthreadJobDestroy(CMthreadJob_p);
 

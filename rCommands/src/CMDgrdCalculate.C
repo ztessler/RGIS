@@ -222,6 +222,7 @@ public:
         delete Variables;
         delete Table;
     }
+    DBObjRecord *Record (DBInt recID) { return (Table->Item(recID)); }
 
     CMreturn AddExpression(char *varName, char *exprStr) {
         DBObjTableField *fieldPTR = new DBObjTableField(varName, DBVariableFloat, "%10.3f", sizeof(DBFloat), false);
@@ -305,14 +306,14 @@ public:
         GridIF = new DBGridIF(data);
 
         if (team != (CMthreadTeam_p) NULL) {
-            if ((job = CMthreadJobCreate(team, (void *) this, GridIF->RowNum() * GridIF->ColNum(), userFunc)) ==
+            if ((job = CMthreadJobCreate(GridIF->RowNum() * GridIF->ColNum(), userFunc, (void *) this)) ==
                 (CMthreadJob_p) NULL) {
                 CMmsgPrint(CMmsgAppError, "Job creation error in %s:%d", __FILE__, __LINE__);
                 CMthreadTeamDestroy(team);
                 return ((DBObjData *) NULL);
             }
             for (threadId = 0; threadId < team->ThreadNum; ++threadId)
-                if ((job->Data[threadId] = (void *) (Table->Add("TEMPRecord"))) == (void *) NULL) {
+                if ((record = Table->Add("TEMPRecord")) == (DBObjRecord *) NULL) {
                     CMthreadTeamDestroy(team);
                     return ((DBObjData *) NULL);
                 }
@@ -364,10 +365,10 @@ public:
     }
 };
 
-static void _CMDgrdCalculateUserFunc(void *commonPtr, void *dataPtr, size_t taskId) {
+static void _CMDgrdCalculateUserFunc(size_t threadId, size_t taskId, void *commonPtr) {
     DBPosition pos;
     CMDgrdThreadData *threadData = (CMDgrdThreadData *) commonPtr;
-    DBObjRecord *record = (DBObjRecord *) dataPtr;
+    DBObjRecord *record = threadData->Record (threadId);
 
     threadData->ComputeTask(record, taskId);
 }

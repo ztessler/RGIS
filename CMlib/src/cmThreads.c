@@ -24,44 +24,7 @@ size_t CMthreadProcessorNum () {
 	return (0);
 }
 
-static CMreturn _CMthreadTaskGroupInitialize (CMthreadTaskGroup_p group, size_t id, size_t threadNum, size_t taskNum, size_t start) {
-	size_t threadId, pos, num;
-
-	if ((group->Start = (size_t *) realloc (group->Start, threadNum * sizeof (size_t))) == (size_t *) NULL) {
-		CMmsgPrint (CMmsgSysError,"Memory allocation error in: %s %d\n",__FILE__,__LINE__);
-		return (CMfailed);
-	}
-	if ((group->End  = (size_t *) realloc  (group->End, threadNum * sizeof (size_t))) == (size_t *) NULL) {
-		CMmsgPrint (CMmsgSysError,"Memory allocation error in: %s %d\n",__FILE__,__LINE__);
-		free (group->Start);
-		group->Start = (size_t *) NULL;
-		return (CMfailed);
-	}
-    if (taskNum > 2 * threadNum) {
-        pos = start;
-        num   = taskNum > threadNum ? (int) (ceil ((float) taskNum / (float) threadNum)) : 1;
-        for (threadId = 0;threadId < threadNum; threadId++) {
-            if (start + taskNum < pos + num) num = start + taskNum - pos;
-            group->Start [threadId] = pos;
-            group->End   [threadId] = pos + num;
-            pos = pos + num;
-        }
-    }
-    else {
-        group->Start [0] = start;
-        group->End   [0] = start + taskNum;
-        for (threadId = 1;threadId < threadNum; threadId++) {
-            group->Start [threadId] = pos + taskNum;
-            group->End   [threadId] = pos + taskNum;
-        }
-    }
-	return (CMsucceeded);
-}
-
-CMthreadJob_p CMthreadJobCreate (CMthreadTeam_p team,
-		                         void *commonData,
-		                         size_t taskNum,
-		                         CMthreadUserExecFunc  execFunc) {
+CMthreadJob_p CMthreadJobCreate (size_t taskNum, CMthreadUserExecFunc execFunc, void *commonData) {
 	size_t taskId, threadId, threadNum;
 	CMthreadJob_p job;
 
@@ -87,17 +50,9 @@ CMthreadJob_p CMthreadJobCreate (CMthreadTeam_p team,
 		free (job);
 		return ((CMthreadJob_p) NULL);
 	}
-    job->Groups [0].Start = (size_t *) NULL;
-    job->Groups [0].End   = (size_t *) NULL;
-	threadNum = (team != (CMthreadTeam_p) NULL) ? team->ThreadNum : 1;
-	if (_CMthreadTaskGroupInitialize (job->Groups + 0, 0, threadNum, taskNum, 0) != CMsucceeded) {
-		CMmsgPrint (CMmsgSysError, "Memory allocation error in %s:%d",__FILE__,__LINE__);
-		free (job->Groups);
-		free (job->SortedTasks);
-		free (job->Tasks);
-		free (job);
-		return ((CMthreadJob_p) NULL);
-	}
+    job->Groups [0].Start = 0;
+    job->Groups [0].End   = taskNum;
+
 	job->GroupNum  = 1;
 	job->Group     = 0;
 	job->Completed = 0;
@@ -108,17 +63,9 @@ CMthreadJob_p CMthreadJobCreate (CMthreadTeam_p team,
 		job->Tasks [taskId].Id          = taskId;
 		job->Tasks [taskId].Dependent   = (CMthreadTask_p) NULL;
 		job->Tasks [taskId].DependLevel = 0;
-		job->Tasks [taskId].DependNum   = 0;
 	}
 	job->UserFunc = execFunc;
 	job->CommonData = (void *) commonData;
-	
-	if ((job->Data = (void **) calloc (threadNum, sizeof (void *))) == (void **) NULL) {
-		CMmsgPrint (CMmsgSysError, "Memory allocation error in %s:%d",__FILE__,__LINE__);
-		free (job);
-		return ((CMthreadJob_p) NULL);
-		}
-	for (threadId = 0;threadId < threadNum;++threadId) job->Data [threadId] = (void *) NULL;
 	return (job);
 }
 
@@ -158,15 +105,14 @@ static int _CMthreadJobTaskCompare (const void *lPtr,const void *rPtr) {
 	return (-1);
 }
 
-CMreturn _CMthreadJobTaskSort (CMthreadJob_p job, int threadNum) {
+CMreturn _CMthreadJobTaskSort (CMthreadJob_p job) {
 	size_t taskId, start;
 	size_t group;
 	CMthreadTask_p dependent;
 
 	for (taskId = 0;taskId < job->TaskNum; ++taskId) {
 		group = 1;
-		if (job->Tasks [taskId].Dependent != (CMthreadTask_p) NULL) job->Tasks [taskId].Dependent->DependNum++;
-		for (dependent = job->Tasks + taskId; dependent->Dependent != (CMthreadTask_p) NULL; dependent = dependent->Dependent) {
+        for (dependent = job->Tasks + taskId; dependent->Dependent != (CMthreadTask_p) NULL; dependent = dependent->Dependent) {
 			if (dependent->Dependent->DependLevel < group) {
 				dependent->Dependent->DependLevel = group;
 				group++;
@@ -174,7 +120,7 @@ CMreturn _CMthreadJobTaskSort (CMthreadJob_p job, int threadNum) {
 			else break;
 		}
 	}
-	qsort (job->SortedTasks,job->TaskNum,sizeof (CMthreadTask_p),_CMthreadJobTaskCompare);
+    qsort (job->SortedTasks,job->TaskNum,sizeof (CMthreadTask_p),_CMthreadJobTaskCompare);
 	job->GroupNum = job->SortedTasks [job->TaskNum - 1]->DependLevel;
 	if ((job->Groups = (CMthreadTaskGroup_p) realloc (job->Groups, job->GroupNum * sizeof (CMthreadTaskGroup_t))) == (CMthreadTaskGroup_p) NULL) {
 		CMmsgPrint (CMmsgSysError,"Memory allocation error in: %s:%d",__FILE__,__LINE__);
@@ -184,14 +130,8 @@ CMreturn _CMthreadJobTaskSort (CMthreadJob_p job, int threadNum) {
 	start = 0;
 	for (taskId = 0;taskId < job->TaskNum; ++taskId) {
 		if (group != job->SortedTasks [taskId]->DependLevel) {
-            if (group > 0) {
-                job->Groups [group].Start = (size_t *) NULL;
-                job->Groups [group].End   = (size_t *) NULL;
-            }
-			if (_CMthreadTaskGroupInitialize (job->Groups + group, group, threadNum, taskId - start, start) != CMsucceeded) {
-				CMmsgPrint (CMmsgAppError,"Task group initialization error in: %s:%d",__FILE__,__LINE__);
-				return (CMfailed);
-			}
+			job->Groups [group].Start = (size_t) start;
+			job->Groups [group].End   = (size_t) taskId;
 			group = job->SortedTasks [taskId]->DependLevel;
 			start = taskId;
 		}
@@ -202,13 +142,8 @@ CMreturn _CMthreadJobTaskSort (CMthreadJob_p job, int threadNum) {
 void CMthreadJobDestroy (CMthreadJob_p job) {
 	size_t group;
 
-	for (group = 0; group < job->GroupNum; group++) {
-		if (job->Groups [group].Start != (size_t *) NULL) free (job->Groups [group].Start);
-		if (job->Groups [group].End   != (size_t *) NULL) free (job->Groups [group].End);
-	}
 	if (job->Groups != (CMthreadTaskGroup_p) NULL) free (job->Groups);
 	free (job->Tasks);
-	free (job->Data);
 	free (job);
 }
 
@@ -223,11 +158,12 @@ static void *_CMthreadWork (void *dataPtr) {
         pthread_cond_wait (&(team->SCond), &(team->SMutex));
         job = team->JobPtr;
         if (job != (CMthreadJob_p) NULL) {
-            start = job->Groups[job->Group].Start [data->Id];
-            end   = job->Groups[job->Group].End   [data->Id];
+            start = job->Groups[job->Group].Start;
+            end   = job->Groups[job->Group].End;
             pthread_mutex_unlock(&(team->SMutex));
-            for (taskId = start; taskId < end; taskId++)
-                job->UserFunc(job->CommonData, job->Data[data->Id], job->SortedTasks[taskId]->Id);
+            for (taskId = start; taskId < end; taskId += team->ThreadNum)
+                if (taskId + data->Id < end)
+                    job->UserFunc(data->Id, job->SortedTasks[taskId + data->Id]->Id, job->CommonData);
             pthread_mutex_lock (&(team->SMutex));
             job->Completed++;
             if (job->Completed == team->ThreadNum) {
@@ -244,12 +180,12 @@ static void *_CMthreadWork (void *dataPtr) {
 CMreturn CMthreadJobExecute (CMthreadTeam_p team, CMthreadJob_p job) {
     int taskId, threadId;
 
-    if (job->Sorted == false) { _CMthreadJobTaskSort(job,team == (CMthreadTeam_p) NULL ? 1 : team->ThreadNum ); job->Sorted = true; }
+    if (job->Sorted == false) { _CMthreadJobTaskSort(job); job->Sorted = true; }
 
     if ((team == (CMthreadTeam_p) NULL) || (team->ThreadNum < 2)) {
         for (job->Group = 0; job->Group < job->GroupNum; job->Group++) {
-            for (taskId = job->Groups[job->Group].Start[0]; taskId < job->Groups[job->Group].End[0]; ++taskId)
-                job->UserFunc(job->CommonData, job->Data, taskId);
+            for (taskId = job->Groups[job->Group].Start; taskId < job->Groups[job->Group].End; ++taskId)
+                job->UserFunc(1, taskId, job->CommonData);
         }
     }
     else {
@@ -286,10 +222,10 @@ CMthreadTeam_p CMthreadTeamCreate (size_t threadNum) {
 	team->JobPtr         = (void *) NULL;
 	team->Time           = clock ();
 
-    pthread_attr_init (&thread_attr);
-    pthread_attr_setdetachstate(&thread_attr, PTHREAD_CREATE_JOINABLE);
-
     if (team->ThreadNum > 1) {
+        pthread_attr_init (&thread_attr);
+        pthread_attr_setdetachstate(&thread_attr, PTHREAD_CREATE_JOINABLE);
+
         pthread_mutex_init (&(team->MMutex), NULL);
         pthread_cond_init  (&(team->MCond),  NULL);
         pthread_mutex_init (&(team->SMutex), NULL);

@@ -84,9 +84,7 @@ typedef struct MFdsHeader_s {
 #define MFfileStr  "file:"
 #define MFpipeStr  "pipe:"
 
-enum {
-    MFConst, MFFile, MFPipe
-};
+enum { MFConst, MFFile, MFPipe };
 
 typedef struct MFVariable_s {
     int  ID;
@@ -97,13 +95,13 @@ typedef struct MFVariable_s {
     int  Type;
     int  ItemNum;
     union {
-        int Int;
+        int    Int;
         double Float;
     } Missing;
     short TStep;
     void *InBuffer,  *OutBuffer,  *ProcBuffer;
     char *InputPath, *OutputPath, *StatePath;
-    int NStep;
+    int   NStep;
     MFDataStream_t *InStream, *OutStream;
     pthread_t       InThread,  OutThread;
     pthread_mutex_t InMutex,   OutMutex;
