@@ -218,6 +218,8 @@ int MFdsRecordRead (MFVariable_t *var) {
 				strcpy (var->CurDate, header.Date);
 			} while (strcmp (header.Date, var->InDate) < 0);
 		}
+        else return (CMsucceeded);
+
 Stop:	if (header.Swap != 1)
 			switch (var->Type) {
 				case MFShort:  for (i = 0;i < var->ItemNum;++i) MFSwapHalfWord ((short *)  (var->InBuffer) + i); break;

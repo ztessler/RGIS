@@ -94,11 +94,11 @@ static int _CMthreadJobTaskCompare (const void *lPtr,const void *rPtr) {
 	CMthreadTask_p lTask = lTaskInit;
 	CMthreadTask_p rTask = rTaskInit;
 
-	if ((ret = lTask->DependLevel - rTask->DependLevel) != 0) return (ret);
+	if ((ret = (int) lTask->DependLevel - (int) rTask->DependLevel) != 0) return (ret);
 
 	while (((lTask = lTask->Dependent) != (CMthreadTask_p) NULL) &&
 	       ((rTask = rTask->Dependent) != (CMthreadTask_p) NULL)) {
-		if ((ret = lTask->DependLevel - rTask->DependLevel) != 0) return (ret);
+		if ((ret = (int) lTask->DependLevel - (int) rTask->DependLevel) != 0) return (ret);
 	}
 	if (lTask == rTask) return (0);
 	if (lTask != (CMthreadTask_p) NULL) return (1);
@@ -136,6 +136,7 @@ CMreturn _CMthreadJobTaskSort (CMthreadJob_p job) {
 			start = taskId;
 		}
 	}
+    job->Sorted = true;
 	return (CMsucceeded);
 }
 
@@ -161,9 +162,8 @@ static void *_CMthreadWork (void *dataPtr) {
             start = job->Groups[job->Group].Start;
             end   = job->Groups[job->Group].End;
             pthread_mutex_unlock(&(team->SMutex));
-            for (taskId = start; taskId < end; taskId += team->ThreadNum)
-                if (taskId + data->Id < end)
-                    job->UserFunc(data->Id, job->SortedTasks[taskId + data->Id]->Id, job->CommonData);
+            for (taskId = start + data->Id; taskId < end; taskId += team->ThreadNum)
+                    job->UserFunc(data->Id, job->SortedTasks[taskId]->Id, job->CommonData);
             pthread_mutex_lock (&(team->SMutex));
             job->Completed++;
             if (job->Completed == team->ThreadNum) {
@@ -178,9 +178,9 @@ static void *_CMthreadWork (void *dataPtr) {
 }
 
 CMreturn CMthreadJobExecute (CMthreadTeam_p team, CMthreadJob_p job) {
-    int taskId, threadId;
+    int taskId;
 
-    if (job->Sorted == false) { _CMthreadJobTaskSort(job); job->Sorted = true; }
+    if (job->Sorted == false) _CMthreadJobTaskSort(job);
 
     if ((team == (CMthreadTeam_p) NULL) || (team->ThreadNum < 2)) {
         for (job->Group = 0; job->Group < job->GroupNum; job->Group++) {
@@ -189,10 +189,10 @@ CMreturn CMthreadJobExecute (CMthreadTeam_p team, CMthreadJob_p job) {
         }
     }
     else {
-        team->JobPtr = (void *) job;
         for (job->Group = 0; job->Group < job->GroupNum; job->Group++) {
-            job->Completed = 0;
             pthread_mutex_lock     (&(team->SMutex));
+            job->Completed = 0;
+            team->JobPtr = (void *) job;
             pthread_cond_broadcast (&(team->SCond));
             pthread_mutex_unlock   (&(team->SMutex));
             pthread_cond_wait (&(team->MCond), &(team->MMutex));

@@ -500,13 +500,9 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                 switch (parallelIO) {
                     case MFparIOsingle: break;
                     case MFparIOmulti:
-                        var->Type = MFFloat;
                         pthread_mutex_init(&(var->InMutex), NULL);
                         pthread_cond_init (&(var->InCond), NULL);
-                        if ((ret = pthread_create(&(var->InThread),
-                                                  &thread_attr,
-                                                  _MFInputMultiThreadWork,
-                                                  (void *) var)) != 0) {
+                        if (pthread_create(&(var->InThread), &thread_attr, _MFInputMultiThreadWork, (void *) var) != 0) {
                             CMmsgPrint(CMmsgSysError, "Thread creation returned with error (%s:%d).",__FILE__,__LINE__);
                             return (CMfailed);
                         }
@@ -519,7 +515,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
             }
         }
 		else {
-            var->TStep = timeStep;
+            var->TStep = (short) timeStep;
             switch (var->Type) {
                 case MFInput:
                     CMmsgPrint (CMmsgAppError, "Error: Unresolved variable (%s [%s] %s)!",var->Name,var->Unit, MFVarTypeString (var->Type));
@@ -531,8 +527,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                     var->Missing.Float = MFDefaultMissingFloat;
                 default: strcpy (var->InDate,"computed"); break;
             }
-            if ((var->ProcBuffer = (void *) calloc(var->ItemNum, MFVarItemSize(var->Type))) ==
-                (void *) NULL) {
+            if ((var->ProcBuffer = (void *) calloc(var->ItemNum, MFVarItemSize(var->Type))) == (void *) NULL) {
                 CMmsgPrint(CMmsgSysError, "Memory Allocation Error in: %s:%d", __FILE__, __LINE__);
                 return (CMfailed);
             }
@@ -547,19 +542,13 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
         inIO.Cont = true;
         pthread_mutex_init(&(inIO.Mutex), NULL);
         pthread_cond_init (&(inIO.Cond),  NULL);
-        if ((ret = pthread_create(&(inIO.Thread),
-                                  &thread_attr,
-                                  _MFInputSingleThreadWork,
-                                  (void *) (&inIO))) != 0) {
+        if (pthread_create(&(inIO.Thread), &thread_attr, _MFInputSingleThreadWork, (void *) (&inIO)) != 0) {
             CMmsgPrint(CMmsgSysError, "Thread creation returned with error (%s:%d).",__FILE__,__LINE__);
             return (CMfailed);
         }
         pthread_mutex_init(&(outIO.Mutex), NULL);
         pthread_cond_init (&(outIO.Cond),  NULL);
-        if ((ret = pthread_create(&(outIO.Thread),
-                                  &thread_attr,
-                                  _MFOutputSingleThreadWork,
-                                  (void *) (&outIO))) != 0) {
+        if (pthread_create(&(outIO.Thread), &thread_attr, _MFOutputSingleThreadWork, (void *) (&outIO)) != 0) {
             CMmsgPrint(CMmsgSysError, "Thread creation returned with error (%s:%d).",__FILE__,__LINE__);
             return (CMfailed);
         }
@@ -686,12 +675,8 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                             }
                             pthread_mutex_init(&(var->OutMutex), NULL);
                             pthread_cond_init (&(var->OutCond), NULL);
-                            if ((ret = pthread_create(&(var->OutThread),
-                                                      &thread_attr,
-                                                      _MFOutputMultiThreadWork,
-                                                      (void *) var)) != 0) {
-                                CMmsgPrint(CMmsgSysError, "Thread creation returned with error (%s:%d)!", __FILE__,
-                                           __LINE__);
+                            if (pthread_create(&(var->OutThread), &thread_attr, _MFOutputMultiThreadWork, (void *) var) != 0) {
+                                CMmsgPrint(CMmsgSysError, "Thread creation returned with error (%s:%d)!", __FILE__, __LINE__);
                                 return (CMfailed);
                             }
                             usleep (10);
@@ -710,7 +695,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                             var->OutBuffer  = buffer;
                         }
                         strcpy (var->OutDate, dateCur);
-                        var->LastWrite = strcmp(dateNext, endDate) == 0 ? true : false;
+                        var->LastWrite = strcmp(dateCur, endDate) == 0 ? true : false;
                         pthread_cond_signal  (&(var->OutCond));
                         pthread_mutex_unlock (&(var->OutMutex));
                     }
