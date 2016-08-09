@@ -200,7 +200,7 @@ private:
     CMDExpression **Expressions;
     CMDgrdVariable **GrdVar;
     DBObjectLIST<DBObject> *Variables;
-    DBObjTable *Table;
+    DBObjTable    *Table;
     DBMathOperand *Operand;
 public:
     CMDgrdThreadData() {
