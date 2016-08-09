@@ -70,8 +70,6 @@ CMthreadJob_p CMthreadJobCreate (size_t taskNum, CMthreadUserExecFunc execFunc, 
 }
 
 CMreturn CMthreadJobTaskDependent (CMthreadJob_p job, size_t taskId, size_t dependent) {
-	job->Sorted = false;
-
 	if (taskId    > job->TaskNum) {
 		CMmsgPrint (CMmsgAppError,"Invalid task in %s%d",__FILE__,__LINE__);
 		return (CMfailed);
@@ -81,9 +79,8 @@ CMreturn CMthreadJobTaskDependent (CMthreadJob_p job, size_t taskId, size_t depe
 		return (CMfailed);
 	}
 	if (taskId == dependent) return (CMsucceeded);
-
-	if (taskId < dependent) job->Tasks [taskId].Dependent = job->Tasks + dependent;
-	else CMmsgPrint (CMmsgWarning,"Invalid dependence [%d:%d] ignored!", dependent, taskId);
+	job->Tasks [taskId].Dependent = job->Tasks + dependent;
+    job->Sorted = false;
 	return (CMsucceeded);
 }
 
@@ -94,48 +91,49 @@ static int _CMthreadJobTaskCompare (const void *lPtr,const void *rPtr) {
 	CMthreadTask_p lTask = lTaskInit;
 	CMthreadTask_p rTask = rTaskInit;
 
-	if ((ret = (int) lTask->DependLevel - (int) rTask->DependLevel) != 0) return (ret);
+	if ((ret = (int) rTask->DependLevel - (int) lTask->DependLevel) != 0) return (ret);
 
-	while (((lTask = lTask->Dependent) != (CMthreadTask_p) NULL) &&
-	       ((rTask = rTask->Dependent) != (CMthreadTask_p) NULL)) {
-		if ((ret = (int) lTask->DependLevel - (int) rTask->DependLevel) != 0) return (ret);
+	while (((rTask = rTask->Dependent) != (CMthreadTask_p) NULL) &&
+           ((lTask = lTask->Dependent) != (CMthreadTask_p) NULL)) {
+		if ((ret = (int) rTask->DependLevel - (int) lTask->DependLevel) != 0) return (ret);
 	}
-	if (lTask == rTask) return (0);
-	if (lTask != (CMthreadTask_p) NULL) return (1);
+	if (rTask == lTask) return (0);
+	if (rTask != (CMthreadTask_p) NULL) return (1);
 	return (-1);
 }
 
 CMreturn _CMthreadJobTaskSort (CMthreadJob_p job) {
 	size_t taskId, start;
-	size_t group;
+	size_t level;
 	CMthreadTask_p dependent;
 
 	for (taskId = 0;taskId < job->TaskNum; ++taskId) {
-		group = 1;
+		level = 0;
         for (dependent = job->Tasks + taskId; dependent->Dependent != (CMthreadTask_p) NULL; dependent = dependent->Dependent) {
-			if (dependent->Dependent->DependLevel < group) {
-				dependent->Dependent->DependLevel = group;
-				group++;
-			}
-			else break;
+            level++;
 		}
+        job->Tasks [taskId].DependLevel = level;
 	}
     qsort (job->SortedTasks,job->TaskNum,sizeof (CMthreadTask_p),_CMthreadJobTaskCompare);
-	job->GroupNum = job->SortedTasks [job->TaskNum - 1]->DependLevel;
+	job->GroupNum = job->SortedTasks [0]->DependLevel + 1;
 	if ((job->Groups = (CMthreadTaskGroup_p) realloc (job->Groups, job->GroupNum * sizeof (CMthreadTaskGroup_t))) == (CMthreadTaskGroup_p) NULL) {
 		CMmsgPrint (CMmsgSysError,"Memory allocation error in: %s:%d",__FILE__,__LINE__);
 		return (CMfailed);
 	}
-	group = 0;
+	level = 0;
 	start = 0;
 	for (taskId = 0;taskId < job->TaskNum; ++taskId) {
-		if (group != job->SortedTasks [taskId]->DependLevel) {
-			job->Groups [group].Start = (size_t) start;
-			job->Groups [group].End   = (size_t) taskId;
-			group = job->SortedTasks [taskId]->DependLevel;
+		if (level != job->GroupNum - job->SortedTasks [taskId]->DependLevel - 1) {
+			job->Groups [level].Start = (size_t) start;
+			job->Groups [level].End   = (size_t) taskId;
+//            printf ("%3d/%3d %5d  %5d %5d\n",level,job->GroupNum, job->Groups [level].End - job->Groups [level].Start, job->Groups [level].Start,job->Groups [level].End);
+			level = job->GroupNum - job->SortedTasks [taskId]->DependLevel - 1;
 			start = taskId;
 		}
 	}
+    job->Groups [level].Start = (size_t) start;
+    job->Groups [level].End   = (size_t) taskId;
+//    printf ("%3d/%3d %5d  %5d %5d\n",level,job->GroupNum, job->Groups [level].End - job->Groups [level].Start, job->Groups [level].Start,job->Groups [level].End);
     job->Sorted = true;
 	return (CMsucceeded);
 }
@@ -163,7 +161,7 @@ static void *_CMthreadWork (void *dataPtr) {
             end   = job->Groups[job->Group].End;
             pthread_mutex_unlock(&(team->SMutex));
             for (taskId = start + data->Id; taskId < end; taskId += team->ThreadNum)
-                    job->UserFunc(data->Id, job->SortedTasks[taskId]->Id, job->CommonData);
+                job->UserFunc(data->Id, job->SortedTasks[taskId]->Id, job->CommonData);
             pthread_mutex_lock (&(team->SMutex));
             job->Completed++;
             if (job->Completed == team->ThreadNum) {
@@ -185,7 +183,7 @@ CMreturn CMthreadJobExecute (CMthreadTeam_p team, CMthreadJob_p job) {
     if ((team == (CMthreadTeam_p) NULL) || (team->ThreadNum < 2)) {
         for (job->Group = 0; job->Group < job->GroupNum; job->Group++) {
             for (taskId = job->Groups[job->Group].Start; taskId < job->Groups[job->Group].End; ++taskId)
-                job->UserFunc(1, taskId, job->CommonData);
+                job->UserFunc(1, job->SortedTasks[taskId]->Id, job->CommonData);
         }
     }
     else {

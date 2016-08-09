@@ -346,13 +346,11 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 	return (resolved ? CMsucceeded : CMfailed);
 }
 
-static void _MFUserFunc (size_t threadId, size_t taskId, void *commonPtr) {
-	int iFunc, varID, link, uLink, objectId;
+static void _MFUserFunc (size_t threadId, size_t objectId, void *commonPtr) {
+	int iFunc, varID, link, uLink;
 	MFVariable_t *var;
 	double value;
 
-	objectId = _MFDomain->ObjNum - taskId - 1;
-	
 	for (var = MFVarGetByID (varID = 1);var != (MFVariable_t *) NULL;var = MFVarGetByID (++varID))
 		if (var->Route) {
 			value = 0.0;
@@ -531,6 +529,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                 CMmsgPrint(CMmsgSysError, "Memory Allocation Error in: %s:%d", __FILE__, __LINE__);
                 return (CMfailed);
             }
+            for (i = 0; i < var->ItemNum; ++i) MFVarSetFloat(var->ID,i,0.0);
         }
         if (var->Flux) sprintf (var->Unit + strlen(var->Unit), "/%s", MFDateTimeStepUnit(var->TStep));
         if (var->OutputPath != (char *) NULL) {
@@ -561,10 +560,8 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
         CMthreadTeamDestroy(team);
         return (CMfailed);
     }
-    for (i = 0; i < _MFDomain->ObjNum; ++i) {
-        dlink  = _MFDomain->Objects[i].DLinkNum == 1 ? _MFDomain->Objects[i].DLinks[0] : i;
-        dlink  = _MFDomain->ObjNum - dlink - 1;
-        taskId = _MFDomain->ObjNum - i - 1;
+    for (taskId = 0; taskId < _MFDomain->ObjNum; ++taskId) {
+        dlink  = _MFDomain->Objects[taskId].DLinkNum > 0 ? _MFDomain->Objects[taskId].DLinks[0] : taskId;
         CMthreadJobTaskDependent(job, taskId, dlink);
     }
     time(&sec);

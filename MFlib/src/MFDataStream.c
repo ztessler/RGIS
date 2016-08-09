@@ -95,7 +95,7 @@ CMreturn MFdsHeaderWrite (MFdsHeader_t *header,FILE *outFile) {
 	return (CMsucceeded);
 }
 
-int MFdsRecordRead (MFVariable_t *var) {
+CMreturn MFdsRecordRead (MFVariable_t *var) {
 	int i, sLen, readNum = 0, timeStep;
 	MFdsHeader_t header;
 
@@ -162,81 +162,97 @@ int MFdsRecordRead (MFVariable_t *var) {
 		if (var->InStream->Handle.File == (FILE *) NULL) return (CMfailed);
 		if (!MFDateCompare(var->CurDate, var->InDate)) {
 			do {
-				if (MFdsHeaderRead (&header,var->InStream->Handle.File) == CMfailed) {
+				if (MFdsHeaderRead(&header, var->InStream->Handle.File) == CMfailed) {
 					if (readNum < 1) {
-                        CMmsgPrint (CMmsgSysError,"Data stream (%s) reading error",var->Name);
-                        return (CMfailed);
-                    }
-					goto Stop;
+						CMmsgPrint(CMmsgSysError, "Data stream (%s) reading error", var->Name);
+						return (CMfailed);
+					}
+					break;
 				}
-                readNum++;
+				readNum++;
 				if (var->ItemNum != header.ItemNum) {
-					CMmsgPrint(CMmsgUsrError,"Variable [%] has inconsistent data stream (%d != %d)",header.ItemNum,var->ItemNum);
+					CMmsgPrint(CMmsgUsrError, "Variable [%] has inconsistent data stream (%d != %d)", header.ItemNum,
+							   var->ItemNum);
 					return (CMfailed);
 				}
 
 				if (var->InBuffer == (void *) NULL) {
-                    var->Type = header.Type;
-					if ((var->InBuffer = (void *) malloc (var->ItemNum * MFVarItemSize (var->Type))) == (void *) NULL) {
-						CMmsgPrint (CMmsgSysError,"Variable [%s] allocation error in: %s:%d",var->Name,__FILE__,__LINE__);
+					var->Type = header.Type;
+					if ((var->InBuffer = (void *) malloc(var->ItemNum * MFVarItemSize(var->Type))) == (void *) NULL) {
+						CMmsgPrint(CMmsgSysError, "Variable [%s] allocation error in: %s:%d", var->Name, __FILE__,
+								   __LINE__);
 						return (CMfailed);
 					}
 
 					switch (var->Type) {
 						case MFByte:
 						case MFShort:
-						case MFInt:		var->Missing.Int 	= header.Missing.Int;	break;
+						case MFInt:
+							var->Missing.Int = header.Missing.Int;
+							break;
 						case MFFloat:
-						case MFDouble:	var->Missing.Float	= header.Missing.Float; break;
+						case MFDouble:
+							var->Missing.Float = header.Missing.Float;
+							break;
 					}
-					switch (strlen (header.Date)) {
-						case  4: var->TStep = MFTimeStepYear;  break;
-						case  7: var->TStep = MFTimeStepMonth; break;
-						case 10: var->TStep = MFTimeStepDay;   break;
-						case 13: var->TStep = MFTimeStepHour;  break;
+					switch (strlen(header.Date)) {
+						case 4:
+							var->TStep = MFTimeStepYear;
+							break;
+						case 7:
+							var->TStep = MFTimeStepMonth;
+							break;
+						case 10:
+							var->TStep = MFTimeStepDay;
+							break;
+						case 13:
+							var->TStep = MFTimeStepHour;
+							break;
 						default:
-							CMmsgPrint (CMmsgUsrError,"Invalid date in data stream %s",var->Name);
+							CMmsgPrint(CMmsgUsrError, "Invalid date in data stream %s", var->Name);
 							return (CMfailed);
 					}
 				}
 				else if (header.ItemNum != var->ItemNum) {
-					CMmsgPrint (CMmsgUsrError,"Item number Missmatch %s != %d in varName %s", header.ItemNum, var->ItemNum, var->Name);
+					CMmsgPrint(CMmsgUsrError, "Item number Missmatch %s != %d in varName %s", header.ItemNum,
+							   var->ItemNum, var->Name);
 					return (CMfailed);
 				}
-				else	if (header.Type != var->Type) {
-					CMmsgPrint (CMmsgAppError,"Record Type Missmatch [%d,%d] in: %s:%d varName %s", header.Type, var->Type,__FILE__,__LINE__, var->Name);
+				else if (header.Type != var->Type) {
+					CMmsgPrint(CMmsgAppError, "Record Type Missmatch [%d,%d] in: %s:%d varName %s", header.Type,
+							   var->Type, __FILE__, __LINE__, var->Name);
 					return (CMfailed);
 				}
-				else  if (header.ItemNum  != var->ItemNum) {
-					CMmsgPrint (CMmsgAppError,"Record Size Missmatch [%d,%d] in: %s:%d", header.ItemNum,  var->ItemNum, __FILE__,__LINE__);
+				else if (header.ItemNum != var->ItemNum) {
+					CMmsgPrint(CMmsgAppError, "Record Size Missmatch [%d,%d] in: %s:%d", header.ItemNum, var->ItemNum,
+							   __FILE__, __LINE__);
 					return (CMfailed);
 				}
-				if ((int) fread (var->InBuffer,MFVarItemSize (var->Type),var->ItemNum,var->InStream->Handle.File) != var->ItemNum) {
-					CMmsgPrint (CMmsgSysError,"Data Reading error (%s:%d)!",__FILE__,__LINE__);
+				if ((int) fread(var->InBuffer, MFVarItemSize(var->Type), var->ItemNum, var->InStream->Handle.File) !=
+					var->ItemNum) {
+					CMmsgPrint(CMmsgSysError, "Data Reading error (%s:%d)!", __FILE__, __LINE__);
 					return (CMfailed);
 				}
 				strcpy (var->CurDate, header.Date);
-			} while (strcmp (header.Date, var->InDate) < 0);
-		}
-        else return (CMsucceeded);
-
-Stop:	if (header.Swap != 1)
-			switch (var->Type) {
-				case MFShort:  for (i = 0;i < var->ItemNum;++i) MFSwapHalfWord ((short *)  (var->InBuffer) + i); break;
-				case MFInt:    for (i = 0;i < var->ItemNum;++i) MFSwapWord     ((int *)    (var->InBuffer) + i); break;
-				case MFFloat:  for (i = 0;i < var->ItemNum;++i) MFSwapWord     ((float *)  (var->InBuffer) + i); break;
-				case MFDouble: for (i = 0;i < var->ItemNum;++i) MFSwapLongWord ((double *) (var->InBuffer) + i); break;
-				default:	break;
+			} while (strcmp(header.Date, var->InDate) < 0);
+			if (header.Swap != 1)
+				switch (var->Type) {
+					case MFShort:  for (i = 0; i < var->ItemNum; ++i) MFSwapHalfWord((short *)  (var->InBuffer) + i); break;
+					case MFInt:    for (i = 0; i < var->ItemNum; ++i) MFSwapWord((int *)        (var->InBuffer) + i); break;
+					case MFFloat:  for (i = 0; i < var->ItemNum; ++i) MFSwapWord((float *)      (var->InBuffer) + i); break;
+					case MFDouble: for (i = 0; i < var->ItemNum; ++i) MFSwapLongWord((double *) (var->InBuffer) + i); break;
+					default: break;
+				}
+			if ((var->NStep = MFDateTimeStepLength(var->InDate, var->TStep)) == 0) {
+				CMmsgPrint(CMmsgUsrError, "Invalid data stream in: %s, %d", __FILE__, __LINE__);
+				return (CMfailed);
 			}
-        if ((var->NStep = MFDateTimeStepLength (var->InDate,var->TStep)) == 0) {
-            CMmsgPrint (CMmsgUsrError,"Invalid data stream in: %s, %d",__FILE__,__LINE__);
-            return (CMfailed);
-        }
-    }
+		}
+	}
 	return (CMsucceeded);
 }
 
-int MFdsRecordWrite (MFVariable_t *var) {
+CMreturn MFdsRecordWrite (MFVariable_t *var) {
 	MFdsHeader_t header;
 
 	header.Type    = var->Type;
