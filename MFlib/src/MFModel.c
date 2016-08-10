@@ -12,7 +12,6 @@ bfekete@ccny.cuny.edu
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
 #include <cm.h>
 #include <MF.h>
@@ -410,6 +409,7 @@ static void *_MFInputMultiThreadWork (void *dataPtr) {
     MFVariable_t *var = (MFVariable_t *) dataPtr;
 
     pthread_mutex_lock(&(var->InMutex));
+    var->Pending = false;
     while (var->Read) {
         var->ReadRet = MFdsRecordRead(var);
         pthread_cond_wait (&(var->InCond), &(var->InMutex));
@@ -676,7 +676,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                                 CMmsgPrint(CMmsgSysError, "Thread creation returned with error (%s:%d)!", __FILE__, __LINE__);
                                 return (CMfailed);
                             }
-                            usleep (10);
+                            while (var->Pending);
                             var->WriteRet = CMsucceeded;
                         }
                         pthread_mutex_lock(&(var->OutMutex));

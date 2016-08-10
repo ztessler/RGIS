@@ -72,6 +72,7 @@ static MFVariable_t *_MFVarNewEntry (const char *name) {
     var->WriteRet   = CMfailed;
     var->Read       = false;
     var->LastWrite  = true;
+	var->Pending    = true;
 	_MFVariableNum++;
 	return (var);
 }
