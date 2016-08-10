@@ -31,7 +31,7 @@ bool _MFOptionTestInUse () {
 
 	for (opt = 0;opt < _MFOptionNum;++opt)
 		if (_MFOptions [opt].InUse == false) {
-			CMmsgPrint (CMmsgWarning,"Warning: Unused option [%s]!\n",_MFOptions [opt].Name);
+			CMmsgPrint (CMmsgWarning,"Warning: Unused option [%s]!",_MFOptions [opt].Name);
 			ret = false;
 		}
 	return (ret);
@@ -42,22 +42,22 @@ static int _MFOptionNew (const char *name,const char *content) {
 
 	for (opt = 0;opt < _MFOptionNum;++opt)
 		if (strcmp (_MFOptions [opt].Name,name) == 0) {
-			CMmsgPrint (CMmsgWarning,"Waring: Ignoring redefinition of option [%s]!\n",name);
+			CMmsgPrint (CMmsgWarning,"Waring: Ignoring redefinition of option [%s]!",name);
 			return (CMfailed);
 		}
 	if ((_MFOptions = (MFOption_t *) realloc (_MFOptions,(_MFOptionNum + 1) * sizeof (MFOption_t))) == (MFOption_t *) NULL) {
-		CMmsgPrint (CMmsgSysError,"Memory allocation error in: %s:%d\n",__FILE__,__LINE__);
+		CMmsgPrint (CMmsgSysError,"Memory allocation error in: %s:%d",__FILE__,__LINE__);
 		return (CMfailed);
 	}
 	_MFOptions [_MFOptionNum].Name = _MFOptions [_MFOptionNum].Content = (char *) NULL;
 	if ((_MFOptions [_MFOptionNum].Name    = malloc (strlen (name)    + 1)) == (char *) NULL) {
-		CMmsgPrint (CMmsgSysError,"Memory allocation error in: %s:%d\n",__FILE__,__LINE__);
+		CMmsgPrint (CMmsgSysError,"Memory allocation error in: %s:%d",__FILE__,__LINE__);
 		return (CMfailed);
 	}
 	strcpy (_MFOptions [_MFOptionNum].Name,    name);
 	if (content != (char *) NULL) {
 		if ((_MFOptions [_MFOptionNum].Content = malloc (strlen (content) + 1)) == (char *) NULL) {
-			CMmsgPrint (CMmsgSysError,"Memory allocation error in: %s:%d\n",__FILE__,__LINE__);
+			CMmsgPrint (CMmsgSysError,"Memory allocation error in: %s:%d",__FILE__,__LINE__);
 			return (CMfailed);
 		}
 		strcpy (_MFOptions [_MFOptionNum].Content, content);
@@ -84,17 +84,16 @@ void MFOptionPrintList () {
 
 int MFOptionParse (int argc, char *argv []) {
 	int argNum = argc, argPos, i;
-	int MFLoadConfig (const char *,int (*) (const char *, const char *));
 
 	for (argPos = 1;argPos < argNum;) {
 		if (CMargTest (argv [argPos],"-p","--option")) {
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) < 1) {
-				CMmsgPrint (CMmsgUsrError,"Missing option argument!\n");
+				CMmsgPrint (CMmsgUsrError,"Missing option argument!");
 				return (CMfailed);
 			}
 			for (i = 0;i < (int) strlen (argv[argPos]);++i) if (argv [argPos][i] == '=') break;
 			if (i == (int) strlen (argv [argPos])) {
-				CMmsgPrint (CMmsgAppError,"Illformed option [%s]!\n",argv [argPos]);
+				CMmsgPrint (CMmsgAppError,"Illformed option [%s]!",argv [argPos]);
 				return (CMfailed);
 			}
 			argv [argPos][i] = '\0';

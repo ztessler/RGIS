@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
     float *output = (float *) NULL;
     int *bins = (int *) NULL;
     double value, binSize, binMax, binMin, percentMin; /* percentMax */
-    MFVarHeader_t header, outHeader;
+    MFdsHeader_t header, outHeader;
 
     if (argNum < 2) goto Help;
 
@@ -98,9 +98,9 @@ int main(int argc, char *argv[]) {
         goto Stop;
     }
 
-    while (MFVarReadHeader(&header, inFile)) {
+    while (MFdsHeaderRead(&header, inFile)) {
         if (items == (void *) NULL) {
-            itemSize = MFVarItemSize(header.DataType);
+            itemSize = MFVarItemSize(header.Type);
             if ((items = (void *) calloc(header.ItemNum, itemSize)) == (void *) NULL) {
                 CMmsgPrint(CMmsgSysError, "Memory allocation error in: %s:%d", __FILE__, __LINE__);
                 goto Stop;
@@ -127,7 +127,7 @@ int main(int argc, char *argv[]) {
                 for (bin = 0; bin < binNum; ++bin) bins[bin * header.ItemNum + i] = 0;
             }
             outHeader.Swap = 1;
-            outHeader.DataType = MFFloat;
+            outHeader.Type = MFFloat;
             outHeader.ItemNum = header.ItemNum;
             outHeader.Missing.Float = MFDefaultMissingFloat;
         }
@@ -135,7 +135,7 @@ int main(int argc, char *argv[]) {
             CMmsgPrint(CMmsgSysError, "Input reading error in: %s:%d", __FILE__, __LINE__);
             goto Stop;
         }
-        switch (header.DataType) {
+        switch (header.Type) {
             case MFByte:
                 for (i = 0; i < header.ItemNum; i++) {
                     if (((char *) items)[i] == header.Missing.Int) continue;
@@ -183,12 +183,12 @@ int main(int argc, char *argv[]) {
         }
     }
     rewind(inFile);
-    while (MFVarReadHeader(&header, inFile)) {
+    while (MFdsHeaderRead (&header, inFile)) {
         if ((int) fread(items, itemSize, header.ItemNum, inFile) != header.ItemNum) {
             CMmsgPrint(CMmsgSysError, "Input reading error in: %s:%d", __FILE__, __LINE__);
             goto Stop;
         }
-        switch (header.DataType) {
+        switch (header.Type) {
             case MFByte:
                 for (i = 0; i < header.ItemNum; i++) {
                     if (((char *) items)[i] == header.Missing.Int) continue;
@@ -262,7 +262,7 @@ int main(int argc, char *argv[]) {
                 }
             }
             sprintf(outHeader.Date, "%3d", percent + 1);
-            if (MFVarWriteHeader(&outHeader, outFile) == false) {
+            if (MFdsHeaderWrite (&outHeader, outFile) == false) {
                 CMmsgPrint(CMmsgSysError, "Output writing error in: %s:%d", __FILE__, __LINE__);
                 goto Stop;
             }
@@ -275,12 +275,12 @@ int main(int argc, char *argv[]) {
     }
     else {
         rewind(inFile);
-        while (MFVarReadHeader(&header, inFile)) {
+        while (MFdsHeaderRead (&header, inFile)) {
             if ((int) fread(items, itemSize, header.ItemNum, inFile) != header.ItemNum) {
                 CMmsgPrint(CMmsgSysError, "Input reading error in: %s:%d", __FILE__, __LINE__);
                 goto Stop;
             }
-            switch (header.DataType) {
+            switch (header.Type) {
                 case MFByte:
                     for (i = 0; i < header.ItemNum; i++) {
                         if (((char *) items)[i] == header.Missing.Int) output[i] = outHeader.Missing.Float;
@@ -344,7 +344,7 @@ int main(int argc, char *argv[]) {
                     break;
             }
             strcpy(outHeader.Date, header.Date);
-            if (MFVarWriteHeader(&outHeader, outFile) == false) {
+            if (MFdsHeaderWrite(&outHeader, outFile) == false) {
                 CMmsgPrint(CMmsgSysError, "Output writing error in: %s:%d", __FILE__, __LINE__);
                 goto Stop;
             }

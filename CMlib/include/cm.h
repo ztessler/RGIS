@@ -83,7 +83,7 @@ bool CMmathIsInteger(const char *);
 #define CMyesNoString(cond) (cond ? "yes" : "no")
 
 typedef struct CMthreadData_s {
-    size_t Id;
+    size_t    Id;
     pthread_t Thread;
     void *TeamPtr;
 } CMthreadData_t, *CMthreadData_p;
@@ -91,8 +91,8 @@ typedef struct CMthreadData_s {
 typedef struct CMthreadTeam_s {
     CMthreadData_p Threads;
     size_t ThreadNum;
-    pthread_mutex_t Mutex;
-    pthread_cond_t Cond;
+    pthread_mutex_t SMutex, MMutex;
+    pthread_cond_t  SCond,  MCond;
     void *JobPtr;
     clock_t Time;
 } CMthreadTeam_t, *CMthreadTeam_p;
@@ -103,23 +103,20 @@ void CMthreadTeamDestroy(CMthreadTeam_p);
 
 size_t CMthreadProcessorNum();
 
-typedef void  (*CMthreadUserExecFunc)(void *, void *, size_t);
+typedef void  (*CMthreadUserExecFunc)(size_t, size_t, void *);
 
 typedef struct CMthreadTask_s {
     size_t Id;
     size_t DependLevel;
-    size_t DependNum;
     struct CMthreadTask_s *Dependent;
 } CMthreadTask_t, *CMthreadTask_p;
 
 typedef struct CMthreadTaskGroup_s {
-    size_t Id;
-    size_t *Start;
-    size_t *End;
+    size_t Start;
+    size_t End;
 } CMthreadTaskGroup_t, *CMthreadTaskGroup_p;
 
 typedef struct CMthreadJob_s {
-    size_t ThreadNum;
     bool Sorted;
     CMthreadTask_p Tasks;
     CMthreadTask_p *SortedTasks;
@@ -130,10 +127,9 @@ typedef struct CMthreadJob_s {
     size_t Completed;
     CMthreadUserExecFunc UserFunc;
     void *CommonData;
-    void **Data;
 } CMthreadJob_t, *CMthreadJob_p;
 
-CMthreadJob_p CMthreadJobCreate(CMthreadTeam_p, void *, size_t, CMthreadUserExecFunc);
+CMthreadJob_p CMthreadJobCreate(size_t, CMthreadUserExecFunc, void *);
 
 void CMthreadJobDestroy(CMthreadJob_p);
 

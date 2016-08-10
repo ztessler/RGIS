@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
     int argPos = 0, argNum = argc, ret = CMfailed, itemSize, i, step = CMfailed, mode = CMfailed;
     FILE *inFile = stdin, *outFile = stdout;
     char date[MFDateStringLength];
-    MFVarHeader_t header, outHeader;
+    MFdsHeader_t header, outHeader;
     void *items = (void *) NULL;
     double *array = (double *) NULL;
     float *record = (float *) NULL;
@@ -99,10 +99,10 @@ int main(int argc, char *argv[]) {
         goto Stop;
     }
 
-    while (MFVarReadHeader(&header, inFile)) {
+    while (MFdsHeaderRead(&header, inFile)) {
         if (strncmp(date, header.Date, step) != 0) {
             if (items == (void *) NULL) {
-                itemSize = MFVarItemSize(header.DataType);
+                itemSize = MFVarItemSize(header.Type);
                 if ((items = (void *) calloc(header.ItemNum, itemSize)) == (void *) NULL) {
                     CMmsgPrint(CMmsgSysError, "Memory allocation error in: %s:%d", __FILE__, __LINE__);
                     goto Stop;
@@ -120,10 +120,10 @@ int main(int argc, char *argv[]) {
                     goto Stop;
                 }
                 outHeader.Swap = 1;
-                outHeader.DataType = MFFloat;
+                outHeader.Type = MFFloat;
                 outHeader.ItemNum = header.ItemNum;
                 outHeader.Missing.Float =
-                        (header.DataType == MFFloat) || (header.DataType == MFDouble) ? header.Missing.Float
+                        (header.Type == MFFloat) || (header.Type == MFDouble) ? header.Missing.Float
                                                                                       : MFDefaultMissingFloat;
                 for (i = 0; i < header.ItemNum; i++) obsNum[i] = 0;
                 for (i = 0; i < header.ItemNum; i++) array[i] = 0.0;
@@ -144,7 +144,7 @@ int main(int argc, char *argv[]) {
                 }
                 strncpy(outHeader.Date, date, step);
                 outHeader.Date[step] = '\0';
-                if (MFVarWriteHeader(&outHeader, outFile)) {
+                if (MFdsHeaderRead(&outHeader, outFile)) {
                     if ((int) fwrite(record, sizeof(float), outHeader.ItemNum, outFile) != outHeader.ItemNum) {
                         CMmsgPrint(CMmsgSysError, "Output writing error in: %s:%d", __FILE__, __LINE__);
                         goto Stop;
@@ -162,7 +162,7 @@ int main(int argc, char *argv[]) {
             goto Stop;
         }
         for (i = 0; i < header.ItemNum; i++) {
-            switch (header.DataType) {
+            switch (header.Type) {
                 case MFByte:
                     if (((char *) items)[i] != header.Missing.Int) {
                         array[i] += ((char *) items)[i];
@@ -218,7 +218,7 @@ int main(int argc, char *argv[]) {
     }
     strncpy(outHeader.Date, header.Date, step);
     outHeader.Date[step] = '\0';
-    if (MFVarWriteHeader(&outHeader, outFile)) {
+    if (MFdsHeaderWrite(&outHeader, outFile)) {
         if ((int) fwrite(record, sizeof(float), outHeader.ItemNum, outFile) != outHeader.ItemNum) {
             CMmsgPrint(CMmsgSysError, "Output writing error in: %s:%d", __FILE__, __LINE__);
             goto Stop;

@@ -1460,16 +1460,18 @@ DBInt RGlibNetworkPourElevation (DBObjData *netData, const char *elevStr, const 
             pourFLD->Float (cellRec,pour);
         }
         else pour = pourFLD->Float (cellRec);
-        if (((toCell = netIF->ToCell (cellRec)) != (DBObjRecord *) NULL) && (netIF->CellOrder (toCell) - netIF->CellOrder (cellRec) < 8)) {
-            if (pour < pourFLD->Float (toCell)) pourFLD->Float (toCell, pour);
+        if (((toCell = netIF->ToCell (cellRec)) != (DBObjRecord *) NULL) &&
+            (netIF->CellOrder (toCell) - netIF->CellOrder (cellRec) < 5) &&
+            (pourFLD->Float (toCell) > pour)) {
+            pourFLD->Float(toCell, pour);
         }
     }
-    Stop:
+Stop:
     delete netIF;
     return (cellID == 0 ? DBSuccess : DBFault);
 }
 
-static DBInt _RGlibNetworkResorvior(void *, DBObjRecord *);
+static DBInt _RGlibNetworkResorvoir(void *, DBObjRecord *);
 
 class VolumeCalc {
 private:
@@ -1509,7 +1511,7 @@ public:
         LevelVAR  = HeightFLD->Float (cellRec);
         VolumeVAR = 0.0;
         AreaVAR   = 0.0;
-        NetIF->UpStreamSearch(cellRec, (DBNetworkACTION) _RGlibNetworkResorvior);
+        NetIF->UpStreamSearch(cellRec, (DBNetworkACTION) _RGlibNetworkResorvoir);
         VolFLD->Float  (cellRec, VolumeVAR);
         AreaFLD->Float (cellRec, AreaVAR);
     };
@@ -1520,7 +1522,7 @@ public:
         if (elev < LevelVAR)  {
             height = LevelVAR - elev;
             AreaVAR   += cellArea;
-            VolumeVAR += cellArea * height;
+            VolumeVAR += cellArea * height * 0.001;
             return (true);
         }
         return (false);
@@ -1529,7 +1531,7 @@ public:
 
 static class VolumeCalc *_RGlibNetworkVolumeCalc;
 
-static DBInt _RGlibNetworkResorvior(void *io, DBObjRecord *cellRec) {
+static DBInt _RGlibNetworkResorvoir(void *io, DBObjRecord *cellRec) {
 
     return (_RGlibNetworkVolumeCalc->Volume (cellRec));
 }

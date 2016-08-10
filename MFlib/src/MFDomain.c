@@ -28,7 +28,7 @@ void MFDomainFree (MFDomain_t *domain) {
 	free (domain);	
 }
 
-MFDomain_t *MFDomainGet (FILE *inFile) {
+MFDomain_t *MFDomainRead (FILE *inFile) {
 	int objID, i;
 	MFDomain_t *domain;
 
@@ -36,7 +36,7 @@ MFDomain_t *MFDomainGet (FILE *inFile) {
 	domain->Objects = (MFObject_t *) NULL;
 
 	if (fread (domain,sizeof (MFDomain_t) - sizeof (MFObject_t *),1,inFile) != 1) {
-		CMmsgPrint (CMmsgSysError,"File Reading Error in: %s:%d\n",__FILE__,__LINE__);
+		CMmsgPrint (CMmsgSysError,"File Reading Error in: %s:%d",__FILE__,__LINE__);
 		MFDomainFree (domain);
 		return ((MFDomain_t *) NULL);
 	}
@@ -45,7 +45,7 @@ MFDomain_t *MFDomainGet (FILE *inFile) {
 		MFSwapWord (&(domain->ObjNum));
 	}
 	if ((domain->Objects = (MFObject_t *) calloc (domain->ObjNum,sizeof (MFObject_t))) == (MFObject_t *) NULL) {
-		CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d\n",__FILE__,__LINE__);
+		CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d",__FILE__,__LINE__);
 		MFDomainFree (domain);
 		return ((MFDomain_t *) NULL);
 	}
@@ -55,7 +55,7 @@ MFDomain_t *MFDomainGet (FILE *inFile) {
 	}
 	for (objID = 0;objID < domain->ObjNum;++objID) {
 		if (fread (domain->Objects + objID,sizeof (MFObject_t) - 2 * sizeof (MFObject_t *),1,inFile) != 1) {
-			CMmsgPrint (CMmsgSysError,"File Reading Error in: %s:%d\n",__FILE__,__LINE__);
+			CMmsgPrint (CMmsgSysError,"File Reading Error in: %s:%d",__FILE__,__LINE__);
 			MFDomainFree (domain);
 			return ((MFDomain_t *) NULL);
 		}
@@ -73,7 +73,7 @@ MFDomain_t *MFDomainGet (FILE *inFile) {
 		if (domain->Objects [objID].DLinkNum > 0) {
 			domain->Objects [objID].DLinks = (size_t *) calloc (domain->Objects [objID].DLinkNum,sizeof (size_t *));
 			if (domain->Objects [objID].DLinks == (size_t *) NULL) {
-				CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d\n",__FILE__,__LINE__);
+				CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d",__FILE__,__LINE__);
 				MFDomainFree (domain);
 				return ((MFDomain_t *) NULL);
 			}
@@ -83,7 +83,7 @@ MFDomain_t *MFDomainGet (FILE *inFile) {
 						MFSwapWord (domain->Objects [objID].DLinks + i);
 			}
 			else {
-				CMmsgPrint (CMmsgSysError,"File Reading Error in: %s:%d\n",__FILE__,__LINE__);
+				CMmsgPrint (CMmsgSysError,"File Reading Error in: %s:%d",__FILE__,__LINE__);
 				MFDomainFree (domain);
 				return ((MFDomain_t *) NULL);
 			}
@@ -91,7 +91,7 @@ MFDomain_t *MFDomainGet (FILE *inFile) {
 		if (domain->Objects [objID].ULinkNum > 0) {
 			domain->Objects [objID].ULinks = (size_t *) calloc (domain->Objects [objID].ULinkNum,sizeof (size_t));
 			if (domain->Objects [objID].ULinks == (size_t *) NULL) {
-				CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d\n",__FILE__,__LINE__);
+				CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d",__FILE__,__LINE__);
 				MFDomainFree (domain);
 				return ((MFDomain_t *) NULL);
 			}
@@ -101,7 +101,7 @@ MFDomain_t *MFDomainGet (FILE *inFile) {
 						MFSwapWord (domain->Objects [objID].ULinks + i);
 			}
 			else {
-				CMmsgPrint (CMmsgSysError,"File Reading Error in: %s:%d\n",__FILE__,__LINE__);
+				CMmsgPrint (CMmsgSysError,"File Reading Error in: %s:%d",__FILE__,__LINE__);
 				MFDomainFree (domain);
 				return ((MFDomain_t *) NULL);
 			}
@@ -115,24 +115,24 @@ int MFDomainWrite (MFDomain_t *domain,FILE *outFile) {
 
 	domain->Swap = 1;
 	if (fwrite (domain,sizeof (MFDomain_t) - sizeof (MFObject_t *),1,outFile) != 1) {
-		CMmsgPrint (CMmsgSysError,"File Writing Error in: %s:%d\n",__FILE__,__LINE__);
+		CMmsgPrint (CMmsgSysError,"File Writing Error in: %s:%d",__FILE__,__LINE__);
 		return (CMfailed);
 	}
 
 	for (objID = 0;objID < domain->ObjNum;++objID) {
 		if (fwrite (domain->Objects + objID,sizeof (MFObject_t) - 2 * sizeof (MFObject_t *),1,outFile) != 1) {
-			CMmsgPrint (CMmsgSysError,"File Writng Error in: %s:%d\n",__FILE__,__LINE__);
+			CMmsgPrint (CMmsgSysError,"File Writng Error in: %s:%d",__FILE__,__LINE__);
 			return (CMfailed);
 		}
 		if (domain->Objects [objID].DLinkNum > 0) {
 			if (fwrite (domain->Objects [objID].DLinks,sizeof (size_t),domain->Objects [objID].DLinkNum,outFile) != domain->Objects [objID].DLinkNum) {
-				CMmsgPrint (CMmsgSysError,"File Writing Error in: %s:%d\n",__FILE__,__LINE__);
+				CMmsgPrint (CMmsgSysError,"File Writing Error in: %s:%d",__FILE__,__LINE__);
 				return (CMfailed);
 			}
 		}
 		if (domain->Objects [objID].ULinkNum > 0) {
 			if (fwrite (domain->Objects [objID].ULinks,sizeof (size_t),domain->Objects [objID].ULinkNum,outFile) != domain->Objects [objID].ULinkNum) {
-				CMmsgPrint (CMmsgSysError,"File Writing Error in: %s:%d\n",__FILE__,__LINE__);
+				CMmsgPrint (CMmsgSysError,"File Writing Error in: %s:%d",__FILE__,__LINE__);
 				return (CMfailed);
 			}
 		}
