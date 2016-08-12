@@ -543,7 +543,7 @@ DBInt RGlibDataStream2RGIS(DBObjData *outData, DBObjData *tmplData, FILE *inFile
         case DBTypeGridDiscrete: {
             DBGridIF *gridIF = new DBGridIF(outData);
 
-            while (MFdsHeaderRead (&header, inFile)) {
+            while (MFdsHeaderRead (&header, inFile) == CMsucceeded) {
                 if (header.ItemNum != gridIF->RowNum() * gridIF->ColNum()) {
                     CMmsgPrint(CMmsgUsrError, "Error: Datastream inconsistency!");
                     return (DBFault);
@@ -606,7 +606,7 @@ DBInt RGlibDataStream2RGIS(DBObjData *outData, DBObjData *tmplData, FILE *inFile
             DBGridIF *gridIF = new DBGridIF(outData);
             DBNetworkIF *netIF = new DBNetworkIF(tmplData);
 
-            while (MFdsHeaderRead(&header, inFile)) {
+            while (MFdsHeaderRead(&header, inFile) == CMsucceeded) {
                 if (header.ItemNum != netIF->CellNum()) {
                     CMmsgPrint(CMmsgUsrError, "Error: Datastream inconsistency!");
                     return (DBFault);

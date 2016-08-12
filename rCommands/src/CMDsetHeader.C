@@ -168,7 +168,7 @@ int main(int argc, char *argv[]) {
             CMmsgPrint(CMmsgInfo, "       -u,--subject");
             CMmsgPrint(CMmsgInfo, "       -o,--source");
             CMmsgPrint(CMmsgInfo, "       -t,--title");
-            CMmsgPrint(CMmsgInfo, "       -y,--display");
+            CMmsgPrint(CMmsgInfo, "       -y,--display [on|off]");
             CMmsgPrint(CMmsgInfo, "       -v,--version");
             CMmsgPrint(CMmsgInfo, "       -V,--verbose");
             CMmsgPrint(CMmsgInfo, "       -h,--help");
