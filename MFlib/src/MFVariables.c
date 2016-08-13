@@ -20,7 +20,7 @@ static MFVariable_t *_MFVariables = (MFVariable_t *) NULL;
 static int _MFVariableNum = 0;
 
 MFVariable_t *MFVarGetByID (int id) {
-	return ((id > 0) && (id <= _MFVariableNum) ? _MFVariables + id - 1: (MFVariable_t *) NULL);
+	return ((id > 0) && (id <= _MFVariableNum) ? _MFVariables + id - 1: (MFVariable_t *) NULL); // TODO assert() !!
 }
 
 char *MFVarTypeString (int type) {
@@ -72,7 +72,6 @@ static MFVariable_t *_MFVarNewEntry (const char *name) {
     var->WriteRet   = CMfailed;
     var->Read       = false;
     var->LastWrite  = true;
-	var->Pending    = true;
 	_MFVariableNum++;
 	return (var);
 }

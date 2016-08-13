@@ -409,7 +409,6 @@ static void *_MFInputMultiThreadWork (void *dataPtr) {
     MFVariable_t *var = (MFVariable_t *) dataPtr;
 
     pthread_mutex_lock(&(var->InMutex));
-    var->Pending = false;
     while (var->Read) {
         var->ReadRet = MFdsRecordRead(var);
         pthread_cond_wait (&(var->InCond), &(var->InMutex));
@@ -676,7 +675,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                                 CMmsgPrint(CMmsgSysError, "Thread creation returned with error (%s:%d)!", __FILE__, __LINE__);
                                 return (CMfailed);
                             }
-                            while (var->Pending);
+                            while (pthread_kill (var->OutThread, 0) != 0); // TODO possibly sloppy
                             var->WriteRet = CMsucceeded;
                         }
                         pthread_mutex_lock(&(var->OutMutex));
