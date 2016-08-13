@@ -238,6 +238,7 @@ CMthreadTeam_p CMthreadTeamCreate (size_t threadNum) {
                 free(team);
                 return ((CMthreadTeam_p) NULL);
             }
+			while (pthread_kill(team->Threads[threadId].Thread,0) != 0); // TODO this might turn out to be sloppy
         }
         pthread_attr_destroy(&thread_attr);
         pthread_mutex_lock (&(team->MMutex));
