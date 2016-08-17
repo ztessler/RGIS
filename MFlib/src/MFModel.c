@@ -752,10 +752,9 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
 	}
     if ((parallelIO != MFparIOnone) || (team != (CMthreadTeam_p) NULL))
         pthread_attr_destroy(&thread_attr);
-
     if (team != (CMthreadTeam_p) NULL) {
+        CMmsgPrint (CMmsgInfo,"Processing time %.1f", CMthreadTeamDestroy (team));
         CMthreadJobDestroy  (job);
-        CMthreadTeamDestroy (team);
     }
 	return (ret);
 }

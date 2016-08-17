@@ -86,6 +86,7 @@ typedef struct CMthreadData_s {
     size_t    Id;
     pthread_t Thread;
     void *TeamPtr;
+    clock_t Time;
 } CMthreadData_t, *CMthreadData_p;
 
 typedef struct CMthreadTeam_s {
@@ -99,7 +100,7 @@ typedef struct CMthreadTeam_s {
 
 CMthreadTeam_p CMthreadTeamCreate(size_t threadNum);
 
-void CMthreadTeamDestroy(CMthreadTeam_p);
+float CMthreadTeamDestroy(CMthreadTeam_p);
 
 size_t CMthreadProcessorNum();
 

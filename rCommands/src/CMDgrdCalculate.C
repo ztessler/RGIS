@@ -200,7 +200,7 @@ private:
     CMDExpression **Expressions;
     CMDgrdVariable **GrdVar;
     DBObjectLIST<DBObject> *Variables;
-    DBObjTable    *Table;
+    DBObjTable *Table;
     DBMathOperand *Operand;
 public:
     CMDgrdThreadData() {
@@ -313,7 +313,7 @@ public:
                 return ((DBObjData *) NULL);
             }
             for (threadId = 0; threadId < team->ThreadNum; ++threadId)
-                if ((record = Table->Add("TEMPRecord")) == (DBObjRecord *) NULL) {
+                if (Table->Add("TEMPRecord") == (DBObjRecord *) NULL) {
                     CMthreadTeamDestroy(team);
                     return ((DBObjData *) NULL);
                 }
@@ -564,10 +564,10 @@ int main(int argc, char *argv[]) {
         return (CMfailed);
     }
 
-    if (title    == (char *) NULL) title   = (char *) "Grid Calculate Result";
-    if (subject  == (char *) NULL) subject = (char *) "GridCalc";
-    if (domain   == (char *) NULL) domain  = (char *) "Non-specified";
-    if (version  == (char *) NULL) version = (char *) "0.01pre";
+    if (title == (char *) NULL) title = (char *) "Grid Calculate Result";
+    if (subject == (char *) NULL) subject = (char *) "GridCalc";
+    if (domain == (char *) NULL) domain = (char *) "Non-specified";
+    if (version == (char *) NULL) version = (char *) "0.01pre";
     if (shadeSet == DBFault) shadeSet = DBDataFlagDispModeContGreyScale;
 
     if ((data = threadData->Compute(title, _CMDgrdCalculateUserFunc)) == (DBObjData *) NULL) {
