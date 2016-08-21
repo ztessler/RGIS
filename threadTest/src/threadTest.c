@@ -2,7 +2,7 @@
 
 static size_t _Iteration = 10000;
 
-static void _UserFunc(void *commonPtr, void *threadData, size_t taskId) {
+static void _UserFunc(size_t threadId, size_t taskId, void *commonPtr) {
     size_t count;
     for (count = 0; count < _Iteration; count++);
 }
@@ -10,7 +10,7 @@ static void _UserFunc(void *commonPtr, void *threadData, size_t taskId) {
 int main(int argv, char *argc[]) {
     int ret, threadNum = 1;
     size_t loopNum = 4, timeLoop, taskNum = 10000, taskId;
-    CMthreadTeam_p team = (CMthreadTeam_p) NULL;
+    CMthreadTeam_t team;
     CMthreadJob_p job;
 
     if ((argv > 1) && (sscanf(argc[1], "%d", &ret) == 1)) threadNum = (size_t) ret > 0 ? ret : 1;
@@ -19,10 +19,13 @@ int main(int argv, char *argc[]) {
     if ((argv > 4) && (sscanf(argc[4], "%d", &ret) == 1)) loopNum = (size_t) ret;
     printf("%d %d %d %d\n", (int) threadNum, (int) taskNum, (int) _Iteration, (int) loopNum);
 
-    team = CMthreadTeamCreate(threadNum);
+    if (CMthreadTeamInitialize(&team, threadNum) == (CMthreadTeam_p) NULL) {
+        CMmsgPrint (CMmsgUsrError,"Team initialization error %s, %d",__FILE__,__LINE__);
+        return (CMfailed);
+    }
     if ((job = CMthreadJobCreate(taskNum, _UserFunc, (void *) NULL)) == (CMthreadJob_p) NULL) {
         CMmsgPrint(CMmsgAppError, "Job creation error in %s:%d", __FILE__, __LINE__);
-        CMthreadTeamDestroy(team);
+        CMthreadTeamDestroy(&team);
         return (CMfailed);
     }
     for (taskId = 0; taskId < taskNum; ++taskId)
@@ -30,9 +33,13 @@ int main(int argv, char *argc[]) {
 
     for (timeLoop = 0; timeLoop < loopNum; ++timeLoop) {
         printf("Time %d\n", (int) timeLoop);
-        CMthreadJobExecute(team, job);
+        CMthreadJobExecute(&team, job);
     }
     CMthreadJobDestroy(job);
-    CMthreadTeamDestroy(team);
+    CMthreadTeamDestroy(&team);
+    CMmsgPrint (CMmsgInfo,"Total Time: %.1f, Execute Time: %.1f, Thread Time %.1f",
+                (float) team.TotTime  / 1000.0,
+                (float) team.ExecTime / 1000.0,
+                (float) team.Time     / 1000.0);
     return (0);
 }

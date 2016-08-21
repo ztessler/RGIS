@@ -296,25 +296,28 @@ public:
         DBObjData *data;
         DBObjRecord *record;
         size_t threadsNum = CMthreadProcessorNum();
-        CMthreadTeam_p team = threadsNum > 0 ? CMthreadTeamCreate(threadsNum) : (CMthreadTeam_p) NULL;
+        CMthreadTeam_t team;
         CMthreadJob_p job = (CMthreadJob_p) NULL;
 
-
+        if (CMthreadTeamInitialize(&team, threadsNum) == (CMthreadTeam_p) NULL) {
+            CMmsgPrint (CMmsgUsrError,"Team initialization error %s, %d",__FILE__,__LINE__);
+            return ((DBObjData *) NULL);
+        }
         if ((data = DBGridCreate(title, Extent, CellSize)) == (DBObjData *) NULL) return ((DBObjData *) NULL);
         data->Projection(GrdVar[0]->Projection()); // Taking projection from first grid variable
 
         GridIF = new DBGridIF(data);
 
-        if (team != (CMthreadTeam_p) NULL) {
+        if (team.ThreadNum > 0) {
             if ((job = CMthreadJobCreate(GridIF->RowNum() * GridIF->ColNum(), userFunc, (void *) this)) ==
                 (CMthreadJob_p) NULL) {
                 CMmsgPrint(CMmsgAppError, "Job creation error in %s:%d", __FILE__, __LINE__);
-                CMthreadTeamDestroy(team);
+                CMthreadTeamDestroy(&team);
                 return ((DBObjData *) NULL);
             }
-            for (threadId = 0; threadId < team->ThreadNum; ++threadId)
+            for (threadId = 0; threadId < team.ThreadNum; ++threadId)
                 if (Table->Add("TEMPRecord") == (DBObjRecord *) NULL) {
-                    CMthreadTeamDestroy(team);
+                    CMthreadTeamDestroy(&team);
                     return ((DBObjData *) NULL);
                 }
         }
@@ -335,7 +338,7 @@ public:
             LayerRec = GridIF->Layer(layerID);
             GridIF->RenameLayer(LayerRec, layerName);
 
-            if (job != (CMthreadJob_p) NULL) CMthreadJobExecute(team, job);
+            if (job != (CMthreadJob_p) NULL) CMthreadJobExecute(&team, job);
             else
                 for (pos.Row = 0; pos.Row < GridIF->RowNum(); ++pos.Row)
                     for (pos.Col = 0; pos.Col < GridIF->ColNum(); ++pos.Col) {
@@ -347,6 +350,7 @@ public:
             GridIF->RecalcStats(LayerRec);
         }
         delete GridIF;
+        CMthreadTeamDestroy(&team);
         return (data);
     }
 

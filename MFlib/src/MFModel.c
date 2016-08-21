@@ -442,12 +442,16 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
 	MFVariable_t *var;
 	time_t sec;
 	size_t threadsNum = CMthreadProcessorNum ();
-	CMthreadTeam_p team = CMthreadTeamCreate (threadsNum);
-	CMthreadJob_p  job;
+	CMthreadTeam_t team;
+ 	CMthreadJob_p  job;
     int parallelIO;
     pthread_attr_t thread_attr;
     MFsingleIO_t inIO, outIO;
 
+    if (CMthreadTeamInitialize (&team,threadsNum) == (CMthreadTeam_p) NULL){
+        CMmsgPrint (CMmsgUsrError,"Team initialization error %s, %d",__FILE__,__LINE__);
+        return (CMfailed);
+    }
     inIO.Ret  = CMsucceeded;
     outIO.Ret = CMsucceeded;
     if ((buffer = getenv ("GHAASparallelIO")) != (char *) NULL) {
@@ -457,7 +461,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
     }
     else parallelIO = MFparIOnone;
 
-    if ((parallelIO != MFparIOnone) || (team != (CMthreadTeam_p) NULL)) {
+    if (parallelIO != MFparIOnone) {
         pthread_attr_init (&thread_attr);
         pthread_attr_setdetachstate (&thread_attr, PTHREAD_CREATE_JOINABLE);
     }
@@ -556,7 +560,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
 
     if ((job = CMthreadJobCreate(_MFDomain->ObjNum, _MFUserFunc, (void *) NULL)) == (CMthreadJob_p) NULL) {
         CMmsgPrint(CMmsgAppError, "Job creation error in %s:%d", __FILE__, __LINE__);
-        CMthreadTeamDestroy(team);
+        CMthreadTeamDestroy(&team);
         return (CMfailed);
     }
     for (taskId = 0; taskId < _MFDomain->ObjNum; ++taskId) {
@@ -632,7 +636,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
             default: break;
         }
 
-        CMthreadJobExecute(team, job);
+        CMthreadJobExecute(&team, job);
 
         switch (parallelIO) {
             case MFparIOsingle:
@@ -750,11 +754,12 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
         if ((var->OutBuffer != (void *) NULL) && (var->OutBuffer != var->ProcBuffer)) free (var->OutBuffer);
 		free (var->ProcBuffer);
 	}
-    if ((parallelIO != MFparIOnone) || (team != (CMthreadTeam_p) NULL))
-        pthread_attr_destroy(&thread_attr);
-    if (team != (CMthreadTeam_p) NULL) {
-        CMmsgPrint (CMmsgInfo,"Processing time %.1f", CMthreadTeamDestroy (team));
-        CMthreadJobDestroy  (job);
-    }
+    CMthreadJobDestroy  (job);
+    if (parallelIO != MFparIOnone) pthread_attr_destroy(&thread_attr);
+    CMthreadTeamDestroy(&team);
+    CMmsgPrint (CMmsgInfo,"Total Time: %.1f, Execute Time: %.1f, Thread Time %.1f",
+                (float) team.TotTime  / 1000.0,
+                (float) team.ExecTime / 1000.0,
+                (float) team.Time     / 1000.0);
 	return (ret);
 }
