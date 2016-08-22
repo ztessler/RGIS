@@ -13,6 +13,7 @@ bfekete@ccny.cuny.edu
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/timeb.h>
+#include <signal.h>
 #include <cm.h>
 
 size_t CMthreadProcessorNum () {
@@ -184,7 +185,7 @@ static void *_CMthreadWork (void *dataPtr) {
 CMreturn CMthreadJobExecute (CMthreadTeam_p team, CMthreadJob_p job) {
     int taskId;
     struct timeb tbs;
-    long long startTime;
+    long long startTime, localStart;
 
     ftime (&tbs);
     startTime = tbs.time * 1000 + tbs.millitm;
@@ -197,19 +198,24 @@ CMreturn CMthreadJobExecute (CMthreadTeam_p team, CMthreadJob_p job) {
     startTime = tbs.time * 1000 + tbs.millitm;
 
     if (team->ThreadNum < 1) {
+        ftime (&tbs);
+        localStart = tbs.time * 1000 + tbs.millitm;
         for (job->Group = 0; job->Group < job->GroupNum; job->Group++) {
             # pragma opm parallel for
             for (taskId = job->Groups[job->Group].Start; taskId < job->Groups[job->Group].End; ++taskId)
                 job->UserFunc(0, job->SortedTasks[taskId]->Id, job->CommonData);
         }
         ftime (&tbs);
-        team->Time += (tbs.time * 1000 + tbs.millitm - startTime);
+        team->Time += (tbs.time * 1000 + tbs.millitm - localStart);
     }
     else {
         for (job->Group = 0; job->Group < job->GroupNum; job->Group++) {
-            if (job->Groups[job->Group].End - job->Groups[job->Group].Start < team->ThreadNum) {
+            if (job->Groups[job->Group].End - job->Groups[job->Group].Start < team->ThreadNum * 4) {
+                ftime (&tbs);
+                localStart = tbs.time * 1000 + tbs.millitm;
                 for (taskId = job->Groups[job->Group].Start; taskId < job->Groups[job->Group].End; ++taskId)
                     job->UserFunc(0, job->SortedTasks[taskId]->Id, job->CommonData);
+                team->Time += (tbs.time * 1000 + tbs.millitm - localStart);
             }
             else {
                 pthread_mutex_lock     (&(team->SMutex));
