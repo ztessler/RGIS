@@ -278,6 +278,7 @@ void CMthreadTeamDestroy (CMthreadTeam_p team) { // Does not free the team point
         for (threadId = 0; threadId < team->ThreadNum; ++threadId) {
             pthread_join(team->Threads[threadId].Thread, &status);
             team->Time += team->Threads[threadId].Time;
+            CMmsgPrint (CMmsgInfo,"Thread [%d]:%.1f",threadId, (float) team->Threads[threadId].Time / 1000.0);
         }
         pthread_mutex_unlock (&(team->MMutex));
         pthread_mutex_destroy(&(team->MMutex));
