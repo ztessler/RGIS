@@ -200,19 +200,25 @@ CMreturn CMthreadJobExecute (CMthreadTeam_p team, CMthreadJob_p job) {
         for (job->Group = 0; job->Group < job->GroupNum; job->Group++) {
             # pragma opm parallel for
             for (taskId = job->Groups[job->Group].Start; taskId < job->Groups[job->Group].End; ++taskId)
-                job->UserFunc(1, job->SortedTasks[taskId]->Id, job->CommonData);
+                job->UserFunc(0, job->SortedTasks[taskId]->Id, job->CommonData);
         }
         ftime (&tbs);
         team->Time += (tbs.time * 1000 + tbs.millitm - startTime);
     }
     else {
         for (job->Group = 0; job->Group < job->GroupNum; job->Group++) {
-            pthread_mutex_lock     (&(team->SMutex));
-            job->Completed = 0;
-            team->JobPtr = (void *) job;
-            pthread_cond_broadcast (&(team->SCond));
-            pthread_mutex_unlock   (&(team->SMutex));
-            pthread_cond_wait (&(team->MCond), &(team->MMutex));
+            if (job->Groups[job->Group].End - job->Groups[job->Group].Start < team->ThreadNum) {
+                for (taskId = job->Groups[job->Group].Start; taskId < job->Groups[job->Group].End; ++taskId)
+                    job->UserFunc(0, job->SortedTasks[taskId]->Id, job->CommonData);
+            }
+            else {
+                pthread_mutex_lock     (&(team->SMutex));
+                job->Completed = 0;
+                team->JobPtr = (void *) job;
+                pthread_cond_broadcast (&(team->SCond));
+                pthread_mutex_unlock   (&(team->SMutex));
+                pthread_cond_wait (&(team->MCond), &(team->MMutex));
+            }
         }
     }
     ftime (&tbs);
