@@ -7,6 +7,7 @@ ghaas*shadowThickness:	2
 
 ghaas*fontList:                       -adobe-times-medium-r-normal--12-120-*-*-p-*-iso8859-1=normal, \
                                       -adobe-times-bold-r-normal--12-120-*-*-p-*-iso8859-1=bold
+
 ghaas*XmPushButton.fontList:          -adobe-times-bold-r-normal--12-120-*-*-p-*-iso8859-1=bold, \
                                       -adobe-times-medium-r-normal--12-120-*-*-p-*-iso8859-1=normal,\
                                       -adobe-times-bold-i-normal--12-120-*-*-p-*-iso8859-1=italic
@@ -27,7 +28,7 @@ ghaas*XmToggleButtonGadget.fontList:  -adobe-times-medium-r-normal--12-120-*-*-p
                                       -adobe-times-bold-r-normal--12-120-*-*-p-*-iso8859-1=bold
 
 ghaas*GHAASMainMenu.XmCascadeButton*fontList: -adobe-times-bold-r-normal--14-140-*-*-p-*-iso8859-1=bold, \
-                                              -adobe-times-medium-r-normal--14-140-*-*-p-*-iso8859-1=normal, \
+                                              -adobe-times-medium-r-normal--14-140-*-*-p-*-iso8859-1=normal
 
 ghaas*UILargeFontList:                -adobe-times-bold-r-normal--18-180-*-*-p-*-iso8859-1=normal
 ghaas*UINormalFontList:               -adobe-times-medium-i-normal--12-120-*-*-p-*-iso8859-1=normal
