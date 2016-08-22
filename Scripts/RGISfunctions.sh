@@ -94,10 +94,10 @@ function RGISlookupSubject ()
 		(heatindex)                                 # 24
 			echo "Heatindex"
 		;;
-		(heatindex_maximum)                         # 25
+		(max_heatindex)                             # 25
 			echo "Heatindex-Max"
 		;;
-		(heatindex_minimum)                         # 26
+		(min_heatindex)                             # 26
 			echo "Heatindex-Min"
 		;;
 		(dewpoint_temperature)                      # 27
@@ -301,10 +301,10 @@ function _RGISlookupFullName ()
 		(heatindex)                                 # 24
 			echo "Heatindex"
 		;;
-		(heatindex)                                 # 25
+		(max_heatindex)                             # 25
 			echo "Maximum Heatindex"
 		;;
-		(heatindex)                                 # 26
+		(min_heatindex)                             # 26
 			echo "Minimum Heatindex"
 		;;
 		(dewpoint_temperature)                      # 27
@@ -495,10 +495,10 @@ function RGISlookupShadeset ()
 		(heatindex)                                 # 24
 			echo "blue-to-red"
 		;;
-		(heatindex_maximum)                         # 25
+		(max_heatindex)                             # 25
 			echo "blue-to-red"
 		;;
-		(heatindex_minimum)                         # 26
+		(min_heatindex)                             # 26
 			echo "blue-to-red"
 		;;
 		(dewpoint_temperature)                      # 27
@@ -689,10 +689,10 @@ function RGISlookupAggrMethod ()
 		(heatindex)                                 # 24
 			echo "avg"
 		;;
-		(heatindex_maximum)                         # 25
+		(max_heatindex)                             # 25
 			echo "avg"
 		;;
-		(heatindex_minimum)                         # 26
+		(min_heatindex)                             # 26
 			echo "avg"
 		;;
 		(dewpoint_temperature)                      # 27

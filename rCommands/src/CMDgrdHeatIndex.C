@@ -131,7 +131,6 @@ int main(int argc, char *argv[]) {
         if (CMargTest (argv[argPos], "-h", "--help")) {
             CMmsgPrint(CMmsgInfo, "%s [options] <air temperature grid> <output grid>", CMfileName(argv[0]));
             CMmsgPrint(CMmsgInfo, "     -e,--dewpoint  [dewpoint temperature grid]");
-            CMmsgPrint(CMmsgInfo, "     -o,--offset    [offset]");
             CMmsgPrint(CMmsgInfo, "     -t,--title     [dataset title]");
             CMmsgPrint(CMmsgInfo, "     -u,--subject   [subject]");
             CMmsgPrint(CMmsgInfo, "     -d,--domain    [domain]");
