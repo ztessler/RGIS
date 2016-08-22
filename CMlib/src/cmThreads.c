@@ -207,7 +207,7 @@ CMreturn CMthreadJobExecute (CMthreadTeam_p team, CMthreadJob_p job) {
     }
     else {
         for (job->Group = 0; job->Group < job->GroupNum; job->Group++) {
-            if (job->Groups[job->Group].End - job->Groups[job->Group].Start < team->ThreadNum) {
+            if (job->Groups[job->Group].End - job->Groups[job->Group].Start < team->ThreadNum * 16) {
                 for (taskId = job->Groups[job->Group].Start; taskId < job->Groups[job->Group].End; ++taskId)
                     job->UserFunc(0, job->SortedTasks[taskId]->Id, job->CommonData);
             }
