@@ -758,9 +758,10 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
     CMthreadJobDestroy  (job);
     if (parallelIO != MFparIOnone) pthread_attr_destroy(&thread_attr);
     CMthreadTeamDestroy(&team);
-    CMmsgPrint (CMmsgInfo,"Total Time: %.1f, Execute Time: %.1f, Thread Time %.1f",
-                (float) team.TotTime  / 1000.0,
-                (float) team.ExecTime / 1000.0,
-                (float) team.Time     / 1000.0);
+	CMmsgPrint (CMmsgInfo,"Total Time: %.1f, Execute Time: %.1f, Thread Time %.1f, Master Time %.1f",
+				(float) team.TotTime    / 1000.0,
+				(float) team.ExecTime   / 1000.0,
+				(float) team.ThreadTime / 1000.0,
+				(float) team.Time       / 1000.0);
 	return (ret);
 }

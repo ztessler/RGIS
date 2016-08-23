@@ -210,11 +210,12 @@ CMreturn CMthreadJobExecute (CMthreadTeam_p team, CMthreadJob_p job) {
     }
     else {
         for (job->Group = 0; job->Group < job->GroupNum; job->Group++) {
-            if (job->Groups[job->Group].End - job->Groups[job->Group].Start < team->ThreadNum * 2) {
+            if (job->Groups[job->Group].End - job->Groups[job->Group].Start < team->ThreadNum * 4) {
                 ftime (&tbs);
                 localStart = tbs.time * 1000 + tbs.millitm;
                 for (taskId = job->Groups[job->Group].Start; taskId < job->Groups[job->Group].End; ++taskId)
                     job->UserFunc(0, job->SortedTasks[taskId]->Id, job->CommonData);
+                ftime (&tbs);
                 team->Time += (tbs.time * 1000 + tbs.millitm - localStart);
             }
             else {
@@ -243,6 +244,7 @@ CMthreadTeam_p CMthreadTeamInitialize (CMthreadTeam_p team, size_t threadNum) {
 	team->ThreadNum      = threadNum;
 	team->JobPtr         = (void *) NULL;
     team->ExecTime       = 0;
+    team->ThreadTime     = 0;
     team->Time           = 0;
 
     if (team->ThreadNum > 0) {
@@ -289,7 +291,7 @@ void CMthreadTeamDestroy (CMthreadTeam_p team) { // Does not free the team point
         pthread_mutex_unlock   (&(team->SMutex));
         for (threadId = 0; threadId < team->ThreadNum; ++threadId) {
             pthread_join(team->Threads[threadId].Thread, &status);
-            team->Time += team->Threads[threadId].Time;
+            team->ThreadTime += team->Threads[threadId].Time;
             CMmsgPrint (CMmsgInfo,"Thread [%d]:%.1f",threadId, (float) team->Threads[threadId].Time / 1000.0);
         }
         pthread_mutex_unlock (&(team->MMutex));

@@ -95,7 +95,7 @@ typedef struct CMthreadTeam_s {
     pthread_mutex_t SMutex, MMutex;
     pthread_cond_t  SCond,  MCond;
     void *JobPtr;
-    long long TotTime, ExecTime, Time;
+    long long TotTime, ExecTime, ThreadTime, Time;
 } CMthreadTeam_t, *CMthreadTeam_p;
 
 CMthreadTeam_p CMthreadTeamInitialize(CMthreadTeam_p, size_t threadNum);
