@@ -210,7 +210,7 @@ CMreturn CMthreadJobExecute (CMthreadTeam_p team, CMthreadJob_p job) {
     }
     else {
         for (job->Group = 0; job->Group < job->GroupNum; job->Group++) {
-            if (job->Groups[job->Group].End - job->Groups[job->Group].Start < team->ThreadNum * 4) {
+            if (job->Groups[job->Group].End - job->Groups[job->Group].Start < team->ThreadNum * 8) {
                 ftime (&tbs);
                 localStart = tbs.time * 1000 + tbs.millitm;
                 for (taskId = job->Groups[job->Group].Start; taskId < job->Groups[job->Group].End; ++taskId)
@@ -292,7 +292,6 @@ void CMthreadTeamDestroy (CMthreadTeam_p team) { // Does not free the team point
         for (threadId = 0; threadId < team->ThreadNum; ++threadId) {
             pthread_join(team->Threads[threadId].Thread, &status);
             team->ThreadTime += team->Threads[threadId].Time;
-            CMmsgPrint (CMmsgInfo,"Thread [%d]:%.1f",threadId, (float) team->Threads[threadId].Time / 1000.0);
         }
         pthread_mutex_unlock (&(team->MMutex));
         pthread_mutex_destroy(&(team->MMutex));
