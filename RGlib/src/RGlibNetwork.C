@@ -1461,7 +1461,7 @@ DBInt RGlibNetworkPourElevation (DBObjData *netData, const char *elevStr, const 
         }
         else pour = pourFLD->Float (cellRec);
         if (((toCell = netIF->ToCell (cellRec)) != (DBObjRecord *) NULL) &&
-            (netIF->CellBasinArea (cellRec) * 10000.0 > netIF->CellBasinArea(toCell)) && // arbitrary ratio
+            (netIF->CellBasinArea (cellRec) * 2500.0 > netIF->CellBasinArea(toCell)) && // arbitrary ratio
             (pourFLD->Float (toCell) > pour)) {
             pourFLD->Float(toCell, pour);
         }
