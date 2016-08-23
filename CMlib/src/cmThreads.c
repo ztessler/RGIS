@@ -60,10 +60,11 @@ CMthreadJob_p CMthreadJobCreate (size_t taskNum, CMthreadUserExecFunc execFunc, 
 	job->Sorted    = true;
 	job->TaskNum   = taskNum;
 	for (taskId = 0;taskId < job->TaskNum; ++taskId) {
-		job->SortedTasks [taskId]       = job->Tasks + taskId;
-		job->Tasks [taskId].Id          = taskId;
-		job->Tasks [taskId].Dependent   = (CMthreadTask_p) NULL;
-		job->Tasks [taskId].DependLevel = 0;
+		job->SortedTasks [taskId]      = job->Tasks + taskId;
+		job->Tasks [taskId].Id         = taskId;
+		job->Tasks [taskId].Dependent  = (CMthreadTask_p) NULL;
+		job->Tasks [taskId].Travel     = 0;
+        job->Tasks [taskId].Rank       = 0;
 	}
 	job->UserFunc = execFunc;
 	job->CommonData = (void *) commonData;
@@ -92,11 +93,11 @@ static int _CMthreadJobTaskCompare (const void *lPtr,const void *rPtr) {
 	CMthreadTask_p lTask = lTaskInit;
 	CMthreadTask_p rTask = rTaskInit;
 
-	if ((ret = (int) rTask->DependLevel - (int) lTask->DependLevel) != 0) return (ret);
+	if ((ret = (int) rTask->Travel - (int) lTask->Travel) != 0) return (ret);
 
 	while (((rTask = rTask->Dependent) != (CMthreadTask_p) NULL) &&
            ((lTask = lTask->Dependent) != (CMthreadTask_p) NULL)) {
-		if ((ret = (int) rTask->DependLevel - (int) lTask->DependLevel) != 0) return (ret);
+		if ((ret = (int) rTask->Travel - (int) lTask->Travel) != 0) return (ret);
 	}
 	if (rTask == lTask) return (0);
 	if (rTask != (CMthreadTask_p) NULL) return (1);
@@ -105,36 +106,42 @@ static int _CMthreadJobTaskCompare (const void *lPtr,const void *rPtr) {
 
 CMreturn _CMthreadJobTaskSort (CMthreadJob_p job) {
 	size_t taskId, start;
-	size_t level;
+	size_t travel, maxTravel = 0, maxRank;
 	CMthreadTask_p dependent;
 
 	for (taskId = 0;taskId < job->TaskNum; ++taskId) {
-		level = 0;
+		travel = 0;
         for (dependent = job->Tasks + taskId; dependent->Dependent != (CMthreadTask_p) NULL; dependent = dependent->Dependent) {
-            level++;
+            travel += 1;
+            if (dependent->Rank < travel) {
+                dependent->Rank = travel;
+                if (maxRank < travel) maxRank = travel;
+            }
 		}
-        job->Tasks [taskId].DependLevel = level;
+        job->Tasks [taskId].Travel = travel;
+        if (maxTravel < travel) maxTravel = travel;
 	}
+
     qsort (job->SortedTasks,job->TaskNum,sizeof (CMthreadTask_p),_CMthreadJobTaskCompare);
-	job->GroupNum = job->SortedTasks [0]->DependLevel + 1;
+	job->GroupNum = job->SortedTasks [0]->Travel + 1;
 	if ((job->Groups = (CMthreadTaskGroup_p) realloc (job->Groups, job->GroupNum * sizeof (CMthreadTaskGroup_t))) == (CMthreadTaskGroup_p) NULL) {
 		CMmsgPrint (CMmsgSysError,"Memory allocation error in: %s:%d",__FILE__,__LINE__);
 		return (CMfailed);
 	}
-	level = 0;
+	travel = 0;
 	start = 0;
 	for (taskId = 0;taskId < job->TaskNum; ++taskId) {
-		if (level != job->GroupNum - job->SortedTasks [taskId]->DependLevel - 1) {
-			job->Groups [level].Start = (size_t) start;
-			job->Groups [level].End   = (size_t) taskId;
-//            printf ("%3d/%3d %5d  %5d %5d\n",level,job->GroupNum, job->Groups [level].End - job->Groups [level].Start, job->Groups [level].Start,job->Groups [level].End);
-			level = job->GroupNum - job->SortedTasks [taskId]->DependLevel - 1;
+		if (travel != job->GroupNum - job->SortedTasks [taskId]->Travel - 1) {
+			job->Groups [travel].Start = (size_t) start;
+			job->Groups [travel].End   = (size_t) taskId;
+//            printf ("%3d/%3d %5d  %5d %5d\n",travel,job->GroupNum, job->Groups [travel].End - job->Groups [travel].Start, job->Groups [travel].Start,job->Groups [travel].End);
+			travel = job->GroupNum - job->SortedTasks [taskId]->Travel - 1;
 			start = taskId;
 		}
 	}
-    job->Groups [level].Start = (size_t) start;
-    job->Groups [level].End   = (size_t) taskId;
-//    printf ("%3d/%3d %5d  %5d %5d\n",level,job->GroupNum, job->Groups [level].End - job->Groups [level].Start, job->Groups [level].Start,job->Groups [level].End);
+    job->Groups [travel].Start = (size_t) start;
+    job->Groups [travel].End   = (size_t) taskId;
+//    printf ("%3d/%3d %5d  %5d %5d\n",travel,job->GroupNum, job->Groups [travel].End - job->Groups [travel].Start, job->Groups [travel].Start,job->Groups [travel].End);
     job->Sorted = true;
 	return (CMsucceeded);
 }
