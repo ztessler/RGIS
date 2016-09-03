@@ -503,7 +503,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                     case MFparIOsingle: break;
                     case MFparIOmulti:
                         pthread_mutex_init(&(var->InMutex), NULL);
-                        pthread_cond_init (&(var->InCond), NULL);
+                        pthread_cond_init (&(var->InCond),  NULL);
                         if (pthread_create(&(var->InThread), &thread_attr, _MFInputMultiThreadWork, (void *) var) != 0) {
                             CMmsgPrint(CMmsgSysError, "Thread creation returned with error (%s:%d).",__FILE__,__LINE__);
                             return (CMfailed);
