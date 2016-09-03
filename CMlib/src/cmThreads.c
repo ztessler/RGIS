@@ -196,7 +196,7 @@ CMreturn CMthreadJobExecute (CMthreadTeam_p team, CMthreadJob_p job) {
 
     ftime (&tbs);
     startTime = tbs.time * 1000 + tbs.millitm;
-    job->Sorted = true;
+    
     if (job->Sorted == false) {
         _CMthreadJobTaskSort(job);
         ftime (&tbs);
