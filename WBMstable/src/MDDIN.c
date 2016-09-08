@@ -413,20 +413,20 @@ int MDDINDef () {
    // Input
 	if (
 		((_MDWTemp_QxTID 			= MDThermalInputs3Def ()) == CMfailed) ||		// comment out for no plants
-//		((_MDWTemp_QxTID 				= MDWTempRiverRouteDef()) == CMfailed) ||
-		((_MDInDischarge0ID             = MFVarGetID (MDVarDischarge0,    "m3/s",  MFRoute,  MFState, MFBoundary)) == CMfailed) ||					// RJS 01-06-09     includes local cells runoff
-	    ((_MDInDischargeID              = MFVarGetID (MDVarDischarge,     "m3/s",  MFRoute,  MFState, MFBoundary)) == CMfailed) ||
-	    ((_MDInRiverStorageID           = MFVarGetID (MDVarRiverStorage,           "m3/day",   MFInput,  MFState,  MFInitial)) == CMfailed)  ||		// RJS 01-06-09		m3/day instead of m3/s
-	    ((_MDInRiverStorageChgID        = MFVarGetID (MDVarRiverStorageChg,        "m3/day",   MFInput,  MFState,  MFBoundary)) == CMfailed)  ||     // RJS 01-06-09
-	    ((_MDInRiverOrderID          = MFVarGetID (MDVarRiverOrder,               "-",   MFInput,  MFState, MFBoundary)) == CMfailed)  ||			//RJS 112211
-	    ((_MDInRiverWidthID             = MDRiverWidthDef ())   == CMfailed) ||
+//		((_MDWTemp_QxTID 		    = MDWTempRiverRouteDef()) == CMfailed) ||
+		((_MDInDischarge0ID         = MFVarGetID (MDVarDischarge0,    "m3/s",  MFRoute,  MFState, MFBoundary)) == CMfailed) ||					// RJS 01-06-09     includes local cells runoff
+	    ((_MDInDischargeID          = MFVarGetID (MDVarDischarge,     "m3/s",  MFRoute,  MFState, MFBoundary)) == CMfailed) ||
+	    ((_MDInRiverStorageID       = MFVarGetID (MDVarRiverStorage,           "m3/day",   MFInput,  MFState,  MFInitial)) == CMfailed)  ||		// RJS 01-06-09		m3/day instead of m3/s
+	    ((_MDInRiverStorageChgID    = MFVarGetID (MDVarRiverStorageChg,        "m3/day",   MFInput,  MFState,  MFBoundary)) == CMfailed)  ||     // RJS 01-06-09
+	    ((_MDInRiverOrderID         = MFVarGetID (MDVarRiverOrder,               "-",   MFInput,  MFState, MFBoundary)) == CMfailed)  ||			//RJS 112211
+	    ((_MDInRiverWidthID         = MDRiverWidthDef ())   == CMfailed) ||
 	    ((_MDInRiverDepthID		    = MFVarGetID (MDVarRiverDepth,   	   	    "m",   MFInput,  MFState, MFBoundary)) == CMfailed)  ||
 	    ((_MDInLocalLoad_DINID	    = MDNitrogenInputsDef()) == CMfailed) ||	// RJS 091108
 	    ((_MDInVfAdjustID           = MFVarGetID (MDVfAdjust,   "-",   MFInput, MFState, MFBoundary)) == CMfailed) ||
-	    ((_MDFlux_DINID                 = MFVarGetID (MDVarFluxDIN,                "kg/day",   MFRoute,  MFFlux,  MFBoundary)) == CMfailed)  ||		// RJS 091408
-	    ((_MDStoreWater_DINID           = MFVarGetID (MDVarStoreWaterDIN,          "kg/day",   MFOutput,  MFState,  MFInitial)) == CMfailed)  ||		// RJS 091108
-	    ((_MDInRunoffVolID              = MFVarGetID (MDVarRunoffVolume, 		 "m3/s",   MFInput, MFState,  MFBoundary)) == CMfailed)  ||		// RJS 091108
-	    ((_MDInTnQ10ID		    = MFVarGetID (MDVarTnQ10,               "-",     MFInput, MFState,  MFBoundary)) == CMfailed)  || 	//RJS 102410
+	    ((_MDFlux_DINID             = MFVarGetID (MDVarFluxDIN,                "kg/day",   MFRoute,  MFFlux,  MFBoundary)) == CMfailed)  ||		// RJS 091408
+	    ((_MDStoreWater_DINID       = MFVarGetID (MDVarStoreWaterDIN,          "kg/day",   MFOutput,  MFState,  MFInitial)) == CMfailed)  ||		// RJS 091108
+	    ((_MDInRunoffVolID          = MFVarGetID (MDVarRunoffVolume, 		 "m3/s",   MFInput, MFState,  MFBoundary)) == CMfailed)  ||		// RJS 091108
+	    ((_MDInTnQ10ID		        = MFVarGetID (MDVarTnQ10,               "-",     MFInput, MFState,  MFBoundary)) == CMfailed)  || 	//RJS 102410
 
 
    // Output

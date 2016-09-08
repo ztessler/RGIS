@@ -710,7 +710,7 @@ int MDCParamGLMaxDef();
 int MDCParamLPMaxDef();
 int MDCParamZ0gDef();
 int MDDINDef();					// RJS 042513
-int MDNitrgoenInputsDef();		// RJS 042513
+int MDNitrogenInputsDef();		// RJS 042513
 int MDDischargeDef();
 int MDDischargeBFDef();
 int MDDischLevel1Def();

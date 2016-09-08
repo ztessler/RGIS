@@ -147,7 +147,7 @@ int DBImportASCIINet(DBObjData *netData, const char *fileName) {
                 }
             }
         }
-    Stop:
+Stop:
     sprintf(nameSTR, "GHAASBasin%d", (DBInt) 0);
     basinRec = basinTable->Add(nameSTR);
     mouthPosFLD->Position(basinRec, positionFLD->Position(cellTable->Item(0)));

@@ -196,7 +196,7 @@ CMreturn CMthreadJobExecute (CMthreadTeam_p team, CMthreadJob_p job) {
 
     ftime (&tbs);
     startTime = tbs.time * 1000 + tbs.millitm;
-    
+
     if (job->Sorted == false) {
         _CMthreadJobTaskSort(job);
         ftime (&tbs);
@@ -209,7 +209,7 @@ CMreturn CMthreadJobExecute (CMthreadTeam_p team, CMthreadJob_p job) {
         ftime (&tbs);
         localStart = tbs.time * 1000 + tbs.millitm;
         for (job->Group = 0; job->Group < job->GroupNum; job->Group++) {
-            # pragma opm parallel for
+            #pragma opm parallel for
             for (taskId = job->Groups[job->Group].Start; taskId < job->Groups[job->Group].End; ++taskId)
                 job->UserFunc(0, job->SortedTasks[taskId]->Id, job->CommonData);
         }
@@ -218,7 +218,7 @@ CMreturn CMthreadJobExecute (CMthreadTeam_p team, CMthreadJob_p job) {
     }
     else {
         for (job->Group = 0; job->Group < job->GroupNum; job->Group++) {
-            if (job->Groups[job->Group].End - job->Groups[job->Group].Start < team->ThreadNum) {
+            if (job->Groups[job->Group].End - job->Groups[job->Group].Start < team->ThreadNum * 80) {
                 ftime (&tbs);
                 localStart = tbs.time * 1000 + tbs.millitm;
                 for (taskId = job->Groups[job->Group].Start; taskId < job->Groups[job->Group].End; ++taskId)

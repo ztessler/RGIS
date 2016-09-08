@@ -144,7 +144,7 @@ DBObjRecord *DBNetworkIF::Cell(DBPosition pos, DBFloat area) const {
     if (pos.Col >= ColNum()) return ((DBObjRecord *) NULL);
     if (pos.Row >= RowNum()) return ((DBObjRecord *) NULL);
 
-    if ((cellID = ((DBInt *) DataRec->Data())[pos.Row * ColNum() + pos.Col]) == DBFault)
+    if ((cellID = ((DBInt *) DataRec->Data())[(size_t) pos.Row * (size_t) ColNum() + (size_t) pos.Col]) == DBFault)
         return ((DBObjRecord *) NULL);
     cellRec = CellTable->Item(cellID);
     delta = bestDelta = fabs(area - CellBasinArea(cellRec)) / (fabs(area) + fabs(CellBasinArea(cellRec)));
@@ -156,7 +156,7 @@ DBObjRecord *DBNetworkIF::Cell(DBPosition pos, DBFloat area) const {
         if ((dir == DBNetDirSE) || (dir == DBNetDirS) || (dir == DBNetDirSW)) cellPos.Row--;
         if ((dir == DBNetDirNE) || (dir == DBNetDirE) || (dir == DBNetDirSE)) cellPos.Col++;
         if ((dir == DBNetDirNW) || (dir == DBNetDirW) || (dir == DBNetDirSW)) cellPos.Col--;
-        if ((cellID = ((DBInt *) DataRec->Data())[cellPos.Row * ColNum() + cellPos.Col]) == DBFault) continue;
+        if ((cellID = ((DBInt *) DataRec->Data())[(size_t) cellPos.Row * (size_t) ColNum() + (size_t) cellPos.Col]) == DBFault) continue;
         cellRec = CellTable->Item(cellID);
         delta = fabs(area - CellBasinArea(cellRec)) / (fabs(area) + fabs(CellBasinArea(cellRec)));
         if (delta < bestDelta) {
@@ -272,11 +272,11 @@ DBObjRecord *DBNetworkIF::CellAdd(DBPosition pos) {
     if (pos.Col >= ColNum()) return ((DBObjRecord *) NULL);
     if (pos.Row >= RowNum()) return ((DBObjRecord *) NULL);
 
-    if (((DBInt *) DataRec->Data())[pos.Row * ColNum() + pos.Col] != DBFault) return ((DBObjRecord *) NULL);
+    if (((DBInt *) DataRec->Data())[(size_t) pos.Row * (size_t) ColNum() + pos.Col] != DBFault) return ((DBObjRecord *) NULL);
 
     sprintf(nameSTR, "Cell:%6d", CellNum());
     cellRec = CellTable->Add(nameSTR);
-    ((DBInt *) DataRec->Data())[pos.Row * ColNum() + pos.Col] = cellRec->RowID();
+    ((DBInt *) DataRec->Data())[(size_t) pos.Row * ColNum() + (size_t) pos.Col] = cellRec->RowID();
     PositionFLD->Position(cellRec, pos);
     ToCellFLD->Int(cellRec, DBNetDirN);
     fromDir = DBNull;
@@ -286,7 +286,7 @@ DBObjRecord *DBNetworkIF::CellAdd(DBPosition pos) {
         if ((dir == DBNetDirSE) || (dir == DBNetDirS) || (dir == DBNetDirSW)) fromPos.Row--;
         if ((dir == DBNetDirNE) || (dir == DBNetDirE) || (dir == DBNetDirSE)) fromPos.Col++;
         if ((dir == DBNetDirNW) || (dir == DBNetDirW) || (dir == DBNetDirSW)) fromPos.Col--;
-        if (((DBInt *) DataRec->Data())[fromPos.Row * ColNum() + fromPos.Col] != DBFault) fromDir |= dir;
+        if (((DBInt *) DataRec->Data())[(size_t) fromPos.Row * (size_t) ColNum () + (size_t)  fromPos.Col] != DBFault) fromDir |= dir;
     }
     FromCellFLD->Int(cellRec, fromDir);
     OrderFLD->Int(cellRec, 1);
@@ -322,7 +322,7 @@ DBInt DBNetworkIF::CellDelete(DBObjRecord *cellRec) {
 
     if (cellRec == (DBObjRecord *) NULL) return (DBFault);
     pos = PositionFLD->Position(cellRec);
-    ((DBInt *) DataRec->Data())[pos.Row * ColNum() + pos.Col] = DBFault;
+    ((DBInt *) DataRec->Data())[(size_t) pos.Row * (size_t) ColNum() + (size_t) pos.Col] = DBFault;
     return (DBSuccess);
 }
 
@@ -423,7 +423,7 @@ DBInt DBNetworkIF::Build() {
         cellRec = CellTable->Item(i);
         DBPause(10 + i * 10 / CellNum());
         pos = CellPosition(cellRec);
-        if (((DBInt *) DataRec->Data())[pos.Row * ColNum() + pos.Col] == DBFault) {
+        if (((DBInt *) DataRec->Data())[(size_t) pos.Row * (size_t) ColNum() + (size_t) pos.Col] == DBFault) {
             CellTable->Delete(cellRec);
             --i;
         }
@@ -464,12 +464,12 @@ DBInt DBNetworkIF::Build() {
         cellRec->Flags(DBObjectFlagLocked, DBClear);
         DBPause(20 + i * 10 / CellNum());
         pos = CellPosition(cellRec);
-        if (((DBInt *) DataRec->Data())[pos.Row * ColNum() + pos.Col] != DBFault) {
+        if (((DBInt *) DataRec->Data())[(size_t) pos.Row * (size_t) ColNum() + (size_t) pos.Col] != DBFault) {
             CellTable->Delete(cellRec);
             --i;
         }
         else
-            ((DBInt *) DataRec->Data())[pos.Row * ColNum() + pos.Col] = cellRec->RowID();
+            ((DBInt *) DataRec->Data())[(size_t) pos.Row * (size_t) ColNum() + (size_t) pos.Col] = cellRec->RowID();
     }
     DBPause(30);
 
@@ -489,7 +489,7 @@ DBInt DBNetworkIF::Build() {
         cellRec = CellTable->Item(i);
         DBPause(35 + i * 10 / CellNum());
         pos = CellPosition(cellRec);
-        ((DBInt *) DataRec->Data())[pos.Row * ColNum() + pos.Col] = cellRec->RowID();
+        ((DBInt *) DataRec->Data())[(size_t) pos.Row * (size_t) ColNum() + (size_t) pos.Col] = cellRec->RowID();
     }
     DBPause(50);
     basin = 0;
@@ -522,7 +522,7 @@ DBInt DBNetworkIF::Build() {
         cellRec = CellTable->Item(i);
         DBPause(70 + i * 10 / CellNum());
         pos = CellPosition(cellRec);
-        ((DBInt *) DataRec->Data())[pos.Row * ColNum() + pos.Col] = cellRec->RowID();
+        ((DBInt *) DataRec->Data())[(size_t) pos.Row * (size_t) ColNum() + (size_t) pos.Col] = cellRec->RowID();
         sprintf(nameStr, "GHAASCell:%d", cellRec->RowID() + 1);
         cellRec->Name(nameStr);
     }
@@ -627,7 +627,7 @@ int DBNetworkIF::Trim() {
     for (i = 0; i < CellNum(); ++i) {
         DBPause(67 + 33 * i / CellNum());
         pos = CellPosition(CellTable->Item(i));
-        ((DBInt *) DataRec->Data())[pos.Row * ColNum() + pos.Col] = cellRec->RowID();
+        ((DBInt *) DataRec->Data())[(size_t) pos.Row * (size_t) ColNum() + (size_t) pos.Col] = cellRec->RowID();
     }
 
     return (DBSuccess);
