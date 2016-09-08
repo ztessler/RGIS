@@ -114,9 +114,9 @@ int DBImportASCIINet(DBObjData *netData, const char *fileName) {
     valueSizeFLD->Int(layerRec, sizeof(DBInt));
     rowNumFLD->Int(layerRec, rowNum);
     colNumFLD->Int(layerRec, colNum);
-    if ((dataRec = new DBObjRecord("NetLookupGridRecord", (size_t) rowNum * (size_t) colNum * sizeof(DBInt), sizeof(DBInt))) ==
-        (DBObjRecord *) NULL)
-        return (DBFault);
+    dataRec = new DBObjRecord("NetLookupGridRecord", (size_t) rowNum * (size_t) colNum, sizeof(DBInt));
+    if (dataRec->Data () == (void *) NULL) { delete dataRec; return (DBFault); }
+
     layerFLD->Record(layerRec, dataRec);
     (netData->Arrays())->Add(dataRec);
     for (pos.Row = rowNum - 1; pos.Row >= 0; --pos.Row)

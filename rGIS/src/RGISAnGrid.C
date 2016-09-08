@@ -530,8 +530,8 @@ void RGISAnGContMergeCBK (Widget widget,RGISWorkspace *workspace,XmAnyCallbackSt
 			colNumFLD->Int (nLayerRec,pos.Col);
 			valueTypeFLD->Int (nLayerRec,gridIF->ValueType ());
 			valueSizeFLD->Int (nLayerRec,gridIF->ValueSize ());
-			if ((dataRec = new DBObjRecord (nLayerRec->Name (), pos.Col * pos.Row * valueSizeFLD->Int (nLayerRec),valueSizeFLD->Int (nLayerRec))) == (DBObjRecord *) NULL)
-				{ delete gridIF; delete nGridData; return; }
+			dataRec = new DBObjRecord (nLayerRec->Name (), (size_t) pos.Col * pos.Row,valueSizeFLD->Int (nLayerRec));
+			if (dataRec->Data() == (void *) NULL) { delete dataRec; delete gridIF; delete nGridData; return; }
 			(nGridData->Arrays ())->Add (dataRec);
 			layerFLD->Record (nLayerRec,dataRec);
 			itemTable->Add (nLayerRec->Name ());

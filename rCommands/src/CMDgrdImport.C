@@ -476,11 +476,11 @@ int main(int argc, char *argv[]) {
                 return 0;
         }
         valueSizeFLD->Int(layerRec, itemSize);
-        if ((dataRec = new DBObjRecord(layerRec->Name(), (DBUnsigned) colNum * (DBUnsigned) rowNum *
-                                                         (DBUnsigned) valueSizeFLD->Int(layerRec),
-                                       valueSizeFLD->Int(layerRec))) == (DBObjRecord *) NULL) {
-            fclose(inFILE);
+        dataRec = new DBObjRecord(layerRec->Name(), (DBUnsigned) colNum * (DBUnsigned) rowNum, valueSizeFLD->Int(layerRec));
+        if (dataRec->Data() == (void *) NULL) {
+            delete dataRec;
             delete grdData;
+            fclose(inFILE);
             return 0;
         }
         (grdData->Arrays())->Add(dataRec);
