@@ -127,7 +127,7 @@ int DBImportASCIINet(DBObjData *netData, const char *fileName) {
             }
             else {
                 if (gridVal == noData)
-                    ((DBInt *) dataRec->Data())[pos.Row * colNum + pos.Col] = DBFault;
+                    ((DBInt *) dataRec->Data())[(size_t) pos.Row * (size_t) colNum + (size_t) pos.Col] = DBFault;
                 else {
                     sprintf(nameSTR, "GHAASCell:%d", cellTable->ItemNum());
                     cellRec = cellTable->Add(nameSTR);
