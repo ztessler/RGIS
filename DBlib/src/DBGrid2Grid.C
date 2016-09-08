@@ -94,8 +94,9 @@ DBObjData *DBGridToGrid(DBObjData *srcGridData, DBInt type, DBInt valueType, DBI
         grdData->Flags(DBDataFlagDispModeContShadeSets, DBClear);
         grdData->Flags(srcGridData->Flags() & DBDataFlagDispModeContShadeSets, DBSet);
     }
-    if ((dataRec = new DBObjRecord(layerRec->Name(), ((size_t) gridIF->ColNum()) * gridIF->RowNum() * valueSize,
-                                   valueSize)) == (DBObjRecord *) NULL) {
+    dataRec = new DBObjRecord(layerRec->Name(), ((size_t) gridIF->ColNum()) * gridIF->RowNum(), valueSize);
+    if (dataRec->Data () == (void *) NULL) {
+        delete dataRec;
         delete gridIF;
         return ((DBObjData *) NULL);
     }
@@ -189,8 +190,9 @@ DBObjData *DBGridCreate(char *title, DBRegion extent, DBCoordinate cellSize, DBI
     }
     valueTypeFLD->Int(layerRec, varType);
     valueSizeFLD->Int(layerRec, varSize);
-    dataRec = new DBObjRecord(layerRec->Name(), ((size_t) colNum) * rowNum * varSize, varSize);
-    if (dataRec == (DBObjRecord *) NULL) {
+    dataRec = new DBObjRecord(layerRec->Name(), ((size_t) colNum) * rowNum, varSize);
+    if (dataRec->Data() == (void *) NULL) {
+        delete dataRec;
         delete data;
         return ((DBObjData *) NULL);
     }
@@ -231,7 +233,7 @@ DBInt DBGridAppend(DBObjData *grdData, DBObjData *appData) {
         return (DBFault);
 
     gridIF = new DBGridIF(grdData);
-    appIF = new DBGridIF(appData);
+    appIF  = new DBGridIF(appData);
 
     for (appLayerID = 0; appLayerID < appIF->LayerNum(); ++appLayerID) {
         appLayerRec = appIF->Layer(appLayerID);
@@ -356,7 +358,7 @@ DBObjData *DBGridMerge(DBObjData *grd0Data, DBObjData *grd1Data) {
     else {
         grd0CellTable = grd0Data->Table(DBrNCells);
         grd1CellTable = grd1Data->Table(DBrNCells);
-        if ((fieldID = grd0CellTable->FieldNum()) != grd1CellTable->FieldNum()) {
+        if (grd0CellTable->FieldNum() != grd1CellTable->FieldNum()) {
             CMmsgPrint(CMmsgUsrError, "Different cell table");
             goto Stop;
         }
@@ -501,9 +503,9 @@ DBObjData *DBGridMerge(DBObjData *grd0Data, DBObjData *grd1Data) {
                 valueSizeFLD->Int(layerRec, sizeof(DBInt));
                 colNumFLD->Int(layerRec, colNum);
                 rowNumFLD->Int(layerRec, rowNum);
-                if ((dataRec = new DBObjRecord("NetLookupGridRecord", ((size_t) rowNum) * colNum * sizeof(DBInt),
-                                               sizeof(DBInt))) == (DBObjRecord *) NULL) {
-                    CMmsgPrint(CMmsgAppError, "Look Grid Record creation error");
+                dataRec = new DBObjRecord("NetLookupGridRecord", ((size_t) rowNum) * colNum, sizeof(DBInt));
+                if (dataRec->Data() == (void *) NULL) {
+                    delete dataRec;
                     delete retData;
                     retData = (DBObjData *) NULL;
                     goto Stop;

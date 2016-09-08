@@ -731,8 +731,8 @@ public:
     }
 
     DBObjRecord(const char *name, size_t length, DBInt itemSize) : DBObject(name, sizeof(DBObjRecord)) {
-        DataPTR = length > 0 ? (DBAddress) ((char *) malloc(length) - (char *) NULL) : (DBAddress) NULL;
-        LengthVAR = DataPTR == (DBAddress) NULL ? 0 : length;
+        DataPTR = length > 0 ? (DBAddress) ((char *) malloc(length * itemSize) - (char *) NULL) : (DBAddress) NULL;
+        LengthVAR = DataPTR == (DBAddress) NULL ? 0 : length * itemSize;
         ItemSizeVAR = itemSize;
     }
 

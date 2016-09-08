@@ -768,8 +768,8 @@ void RGISToolsImportGridCBK (Widget widget,RGISWorkspace *workspace,XmAnyCallbac
 						return;
 					}
 				valueSizeFLD->Int (layerRec,itemSize);
-				if ((dataRec = new DBObjRecord (layerRec->Name (),(DBUnsigned) colNum * (DBUnsigned) rowNum * (DBUnsigned) valueSizeFLD->Int (layerRec),valueSizeFLD->Int (layerRec))) == (DBObjRecord *) NULL)
-					{ fclose (inFILE); delete grdData; return; }
+				dataRec = new DBObjRecord (layerRec->Name (),(size_t) colNum * (size_t) rowNum, valueSizeFLD->Int (layerRec));
+				if (dataRec == (void *) NULL) { delete dataRec, delete grdData; fclose (inFILE); return; }
 				(grdData->Arrays ())->Add (dataRec);
 				layerFLD->Record (layerRec,dataRec);
 				if (grdData->Type () == DBTypeGridContinuous)

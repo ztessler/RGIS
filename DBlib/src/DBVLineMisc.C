@@ -54,9 +54,11 @@ void DBVLineIF::Vertexes(DBObjRecord *lineRec, DBCoordinate *coord, DBInt vertex
     lineExtent.Expand(prevCoord);
     if (vertexNum > 0) {
         if ((dataRec = dataArrays->Item(lineRec->RowID())) == (DBObjRecord *) NULL) {
-            if ((dataRec = new DBObjRecord(lineRec->Name(), ((size_t) vertexNum) * sizeof(DBCoordinate),
-                                           sizeof(DBFloat))) == (DBObjRecord *) NULL)
+            dataRec = new DBObjRecord(lineRec->Name(), ((size_t) vertexNum), sizeof(DBCoordinate));
+            if (dataRec->Data() == (void *) NULL) {
+                delete dataRec;
                 return;
+            }
             dataArrays->Add(dataRec);
         }
         else dataRec->Realloc(vertexNum * sizeof(DBCoordinate));

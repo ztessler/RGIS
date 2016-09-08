@@ -108,9 +108,12 @@ DBObjRecord *DBGridIF::AddLayer(const char *layerName) {
     cellHeightFLD->Float(layerRec, cellHeightFLD->Float(firstLayer));
     valueTypeFLD->Int(layerRec, valueTypeFLD->Int(firstLayer));
     valueSizeFLD->Int(layerRec, valueSizeFLD->Int(firstLayer));
-    if ((dataRec = new DBObjRecord(layerName, ((size_t) rowNumFLD->Int(firstLayer)) * colNumFLD->Int(firstLayer) *
-                                              valueSizeFLD->Int(firstLayer), valueSizeFLD->Int(firstLayer))) ==
-        (DBObjRecord *) NULL) { return ((DBObjRecord *) NULL); }
+
+    dataRec = new DBObjRecord(layerName, (size_t) rowNumFLD->Int(firstLayer) * colNumFLD->Int(firstLayer), valueSizeFLD->Int(firstLayer));
+    if (dataRec->Data() == (void *) NULL) {
+        delete dataRec;
+        return ((DBObjRecord *) NULL);
+    }
     LayerFLD->Record(layerRec, dataRec);
     ((Data())->Arrays())->Add(dataRec);
     if (DataPTR->Type() == DBTypeGridContinuous) {

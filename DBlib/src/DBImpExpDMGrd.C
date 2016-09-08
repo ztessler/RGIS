@@ -272,9 +272,11 @@ public:
             cellHeightFLD->Float(layerRec, CellHeight());
             valueTypeFLD->Int(layerRec, ((DBInt) DBTypeGridDiscrete) == data->Type() ? DBTableFieldInt : valueType);
             valueSizeFLD->Int(layerRec, valueSize);
-            if ((dataRec = new DBObjRecord(layerName, ((size_t) ColNum()) * RowNum() * valueSize, valueSize)) ==
-                (DBObjRecord *) NULL)
+            dataRec = new DBObjRecord(layerName, ((size_t) ColNum()) * RowNum(), valueSize);
+            if (dataRec->Data() == (void *) NULL) {
+                delete dataRec;
                 return (DBFault);
+            }
             (data->Arrays())->Add(dataRec);
             layerFLD->Record(layerRec, dataRec);
         }

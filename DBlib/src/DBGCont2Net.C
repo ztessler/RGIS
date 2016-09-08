@@ -84,10 +84,10 @@ DBInt DBGridCont2Network(DBObjData *gridData, DBObjData *netData, bool downhill)
     rowNumFLD->Int(layerRec, gridIF->RowNum());
     colNumFLD->Int(layerRec, gridIF->ColNum());
 
-    dataRec = new DBObjRecord("NetLookupGridRecord", ((size_t) gridIF->RowNum()) * gridIF->ColNum() * sizeof(DBInt),
-                              sizeof(DBInt));
-    if (dataRec == (DBObjRecord *) NULL) {
+    dataRec = new DBObjRecord("NetLookupGridRecord", (size_t) gridIF->RowNum() * gridIF->ColNum(), sizeof(DBInt));
+    if (dataRec->Data () == (void *) NULL) {
         if (zGridIF != (DBGridIF *) NULL) delete zGridIF;
+        delete dataRec;
         return (DBFault);
     }
     layerFLD->Record(layerRec, dataRec);

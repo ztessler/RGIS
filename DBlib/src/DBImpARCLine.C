@@ -169,8 +169,7 @@ int DBImportARCLine(DBObjData *vecData, const char *arcCov) {
         linkNumFLD->Int(nodeRec, linkNumFLD->Int(nodeRec) + 1);
         if (arcRecord.NumOfPnts() > 2) {
             if ((dataRec = data->Item(lineRec->RowID())) == (DBObjRecord *) NULL) {
-                if ((dataRec = new DBObjRecord("LineData", 0, sizeof(DBFloat))) == (DBObjRecord *) NULL)
-                    return (DBFault);
+                dataRec = new DBObjRecord ("LineData", 0, sizeof(DBFloat));
                 data->Add(dataRec);
             }
             dataRec->Realloc((arcRecord.NumOfPnts() - 2) * sizeof(DBCoordinate));
