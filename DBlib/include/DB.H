@@ -743,7 +743,7 @@ public:
     }
 
     DBObjRecord(DBObjRecord &record) : DBObject(record) {
-        LengthVAR = record.LengthVAR;
+        LengthVAR   = record.LengthVAR;
         ItemSizeVAR = record.ItemSizeVAR;
         DataPTR = (DBAddress) ((char *) malloc(LengthVAR) - (char *) NULL);
         memcpy((char *) NULL + DataPTR, (char *) NULL + record.DataPTR, record.LengthVAR);
