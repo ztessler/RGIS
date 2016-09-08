@@ -209,7 +209,6 @@ CMreturn CMthreadJobExecute (CMthreadTeam_p team, CMthreadJob_p job) {
         ftime (&tbs);
         localStart = tbs.time * 1000 + tbs.millitm;
         for (job->Group = 0; job->Group < job->GroupNum; job->Group++) {
-            #pragma opm parallel for
             for (taskId = job->Groups[job->Group].Start; taskId < job->Groups[job->Group].End; ++taskId)
                 job->UserFunc(0, job->SortedTasks[taskId]->Id, job->CommonData);
         }
