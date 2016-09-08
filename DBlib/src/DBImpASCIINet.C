@@ -143,7 +143,7 @@ int DBImportASCIINet(DBObjData *netData, const char *fileName) {
                     subbasinLengthFLD->Float(cellRec, (DBFloat) 0.0);
                     subbasinAreaFLD->Float(cellRec, (DBFloat) 0.0);
 
-                    ((DBInt *) dataRec->Data())[pos.Row * colNum + pos.Col] = cellRec->RowID();
+                    ((DBInt *) dataRec->Data())[(size_t) pos.Row * colNum + pos.Col] = cellRec->RowID();
                 }
             }
         }
@@ -163,6 +163,7 @@ Stop:
     netData->Projection(DBMathGuessProjection(extent));
     netData->Precision(DBMathGuessPrecision(extent));
     netIF = new DBNetworkIF(netData);
+    netIF->Trim();
     netIF->Build();
     delete netIF;
     fclose(file);
