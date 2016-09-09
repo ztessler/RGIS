@@ -130,8 +130,8 @@ static void _MFModelVarPrintOut (const char *label) {
                         CMyesNoString (var->Set),CMyesNoString (var->Flux),CMyesNoString (var->Initial), CMyesNoString (var->OutputPath != (char *) NULL));
 }
 
-static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc) (), char **domainFile, char **startDate, char **endDate) {
-	bool testOnly = false, resolved = true;
+static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc) (), char **domainFile, char **startDate, char **endDate, bool *testOnly) {
+	bool resolved = true;
 	int argPos, ret, help = false;
 	int i, varID;
 	varEntry_t *inputVars  = (varEntry_t *) NULL;
@@ -142,6 +142,7 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 	MFVariable_t *var;
     bool _MFOptionTestInUse ();
 
+	*testOnly = false;
     for (argPos = 1;argPos < argNum;) {
 		if (CMargTest (argv [argPos],"-i","--input")) {
 			if ((argNum = CMargShiftLeft (argPos,argv,argNum)) < 1) {
@@ -210,7 +211,7 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 			continue;
 		}
 		if (CMargTest (argv [argPos],"-T","--testonly")) {
-			testOnly = true;
+			*testOnly = true;
 			if ((argNum = CMargShiftLeft(argPos,argv,argNum)) <= argPos) break;
 		}
 		if (CMargTest (argv [argPos],"-m","--message")) {
@@ -342,7 +343,7 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 	if ((argNum) < 2) { CMmsgPrint (CMmsgUsrError,"Missing Template Coverage!"); return (CMfailed); }
 	*domainFile = argv [1];
 
-	if (testOnly) { _MFModelVarPrintOut ("Source"); return (CMfailed); }
+	if (*testOnly) { _MFModelVarPrintOut ("Source"); return (CMfailed); }
 	return (resolved ? CMsucceeded : CMfailed);
 }
 
@@ -439,6 +440,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
     double value;
 	char *startDate = (char *) NULL, *endDate = (char *) NULL, *domainFileName = (char *) NULL;
 	char dateCur [MFDateStringLength], dateNext [MFDateStringLength], *climatologyStr;
+	bool testOnly;
     void *buffer, *status;
 	MFVariable_t *var;
 	time_t sec;
@@ -467,7 +469,9 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
         pthread_attr_setdetachstate (&thread_attr, PTHREAD_CREATE_JOINABLE);
     }
 
-    if (_MFModelParse (argc,argv,argNum, mainDefFunc, &domainFileName, &startDate, &endDate) == CMfailed) return (CMfailed);
+    if (_MFModelParse (argc,argv,argNum, mainDefFunc, &domainFileName, &startDate, &endDate, &testOnly) == CMfailed) return (CMfailed);
+
+	if (testOnly) return (CMsucceeded);
 
     switch (strlen (startDate)) {
         case  4: timeStep = MFTimeStepYear;  climatologyStr = MFDateClimatologyYearStr;  break;
