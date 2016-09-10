@@ -213,6 +213,7 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 		if (CMargTest (argv [argPos],"-T","--testonly")) {
 			*testOnly = true;
 			if ((argNum = CMargShiftLeft(argPos,argv,argNum)) <= argPos) break;
+            continue;
 		}
 		if (CMargTest (argv [argPos],"-m","--message")) {
 			const char *types [] = { "sys_error", "app_error", "usr_error", "debug", "warning", "info", (char *) NULL };
