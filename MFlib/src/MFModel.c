@@ -344,7 +344,7 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 	if ((argNum) < 2) { CMmsgPrint (CMmsgUsrError,"Missing Template Coverage!"); return (CMfailed); }
 	*domainFile = argv [1];
 
-	if (*testOnly) { _MFModelVarPrintOut ("Source"); return (CMfailed); }
+	if (*testOnly) { _MFModelVarPrintOut ("Source"); return (CMsucceeded); }
 	return (resolved ? CMsucceeded : CMfailed);
 }
 
