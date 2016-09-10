@@ -164,7 +164,7 @@ CMreturn MFdsRecordRead (MFVariable_t *var) {
 			do {
 				if (MFdsHeaderRead(&header, var->InStream->Handle.File) == CMfailed) {
 					if (readNum < 1) {
-						CMmsgPrint(CMmsgSysError, "Data stream (%s) reading error", var->Name);
+						CMmsgPrint(CMmsgSysError, "Data stream (%s %s %s) reading error", var->Name, var->CurDate, var->InDate);
 						return (CMfailed);
 					}
 					break;
@@ -234,7 +234,7 @@ CMreturn MFdsRecordRead (MFVariable_t *var) {
 					return (CMfailed);
 				}
 				strcpy (var->CurDate, header.Date);
-			} while (strcmp(header.Date, var->InDate) < 0);
+			} while (MFDateCompare(header.Date, var->InDate) < 0);
 			if (header.Swap != 1)
 				switch (var->Type) {
 					case MFShort:  for (i = 0; i < var->ItemNum; ++i) MFSwapHalfWord((short *)  (var->InBuffer) + i); break;

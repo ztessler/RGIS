@@ -168,7 +168,7 @@ bool MFDateCompare (const char *time0,const char *time1) {
 	pos = (strncmp (time0,MFDateClimatologyYearStr,strlen (MFDateClimatologyYearStr)) == 0) ||
           (strncmp (time1,MFDateClimatologyYearStr,strlen (MFDateClimatologyYearStr)) == 0) ? 4 : 0;
 	len = strlen (time0 + pos) < strlen (time1 + pos) ? strlen (time0 + pos) : strlen (time1 + pos);
-	if ((strcmp (time0 + pos, "-02-29") == 0) && (strcmp (time1 + pos, "-02-28") == 0)) return (true);
+	if ((pos > 0) && (strcmp (time0 + pos, "-02-29") == 0) && (strcmp (time1 + pos, "-02-28") == 0)) return (true);
 	return (strncmp (time0 + pos,time1 + pos,len) == 0 ? true : false);
 }
 

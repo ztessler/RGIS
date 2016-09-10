@@ -183,7 +183,7 @@ function FwArguments()
 			;;
 			(-P|--processors)
 				shift
-				if (( "${1}" < 0 || "${1}" > 16 ))
+				if (( "${1}" < 0 || "${1}" > 64 ))
 				then
 					echo "Invalid --process number [${1}]"
 				else
