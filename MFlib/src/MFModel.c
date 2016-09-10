@@ -296,7 +296,7 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
                 strcpy (var->InDate, "From input");
             }
             else if (var->Set) {
-                CMmsgPrint(CMmsgInfo, "Ignoring input for computed variable [%s].", var->Name);
+                if (!testOnly) CMmsgPrint(CMmsgInfo, "Ignoring input for computed variable [%s].", var->Name);
             }
             else {
                 var->InputPath = varEntry->Path;
@@ -307,7 +307,7 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
         }
         else if (var->Set) strcpy (var->InDate,"Computed");
         else {
-            CMmsgPrint (CMmsgInfo,"Unresolved variable: %s", var->Name);
+            if (!testOnly) CMmsgPrint (CMmsgInfo,"Unresolved variable: %s", var->Name);
             resolved = false;
 		}
 		if ((varEntry = _MFModelVarEntryFind (outputVars, outputVarNum, var->Name)) != (varEntry_t *) NULL) {
@@ -321,11 +321,11 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
                 var->Set = true;
             }
             else {
-                CMmsgPrint (CMmsgInfo,"Unused state file output for non initial variable %s", var->Name);
+                if (!testOnly) CMmsgPrint (CMmsgInfo,"Unused state file output for non initial variable %s", var->Name);
             }
 		}
         else {
-            if (var->Initial) CMmsgPrint (CMmsgInfo,"Missing output file for initial variable %s",var->Name);
+            if (var->Initial && !testOnly) CMmsgPrint (CMmsgInfo,"Missing output file for initial variable %s",var->Name);
         }
 	}
     _MFOptionTestInUse ();
