@@ -314,7 +314,7 @@ function FwOptions()
 		echo "$(_fwOptionList)"
 		return 1
 	fi
-	local fwLINES=($(${_fwModelBIN} ${_fwGDSDomainFILE} $(_fwOptionList) -T ${fwMessageOPTIONS} | grep "\[.*\]"  | cut -c15-45,58-64,77-80,81-85,86-94))
+	local fwLINES=($(${_fwModelBIN} ${_fwGDSDomainFILE} $(_fwOptionList) -T ${fwMessageOPTIONS} | grep "\[.*\]"  | sed "1d" | cut -c15-45,58-64,77-80,81-85,86-94))
 	for (( fwVARnum = 0; fwVARnum < ${#fwLINES[@]} / 5 ; ++fwVARnum ))
 	do
 		_fwVariableITEM="${fwLINES[(( fwVARnum * 5    ))]}"
