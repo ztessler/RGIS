@@ -160,7 +160,7 @@ CMreturn MFdsRecordRead (MFVariable_t *var) {
 	}
 	else {
 		if (var->InStream->Handle.File == (FILE *) NULL) return (CMfailed);
-		if (!MFDateCompare(var->CurDate, var->InDate)) {
+		if (MFDateCompare(var->CurDate, var->InDate) != 0) {
 			do {
 				if (MFdsHeaderRead(&header, var->InStream->Handle.File) == CMfailed) {
 					if (readNum < 1) {

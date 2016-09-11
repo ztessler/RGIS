@@ -436,8 +436,7 @@ enum { MFparIOnone, MFparIOsingle, MFparIOmulti };
 
 int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
 	FILE *inFile;
-	int i, iFunc, varID, dlink, taskId, ret = CMsucceeded, timeStep = MFTimeStepDay;
-    int link, uLink;
+	int i, varID, dlink, taskId, ret = CMsucceeded, timeStep, dateOffset = 0;
     double value;
 	char *startDate = (char *) NULL, *endDate = (char *) NULL, *domainFileName = (char *) NULL;
 	char dateCur [MFDateStringLength], dateNext [MFDateStringLength], *climatologyStr;
@@ -471,7 +470,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
     }
 
     if (_MFModelParse (argc,argv,argNum, mainDefFunc, &domainFileName, &startDate, &endDate, &testOnly) == CMfailed) return (CMfailed);
-
+    if (strncmp (endDate,"XXXX",4) == 0) dateOffset = 4;
 	if (testOnly) return (CMsucceeded);
 
     switch (strlen (startDate)) {
@@ -574,16 +573,16 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
         CMthreadJobTaskDependent(job, taskId, dlink);
     }
     time(&sec);
-    strcpy (dateCur,MFDateGetCurrent ());
+    strcpy (dateCur,  MFDateGetCurrent ());
+    strcpy (dateNext, MFDateGetNext ());
     CMmsgPrint (CMmsgInfo, "Model run started at... %s  started at %.24s", dateCur, ctime(&sec));
 
-    while ((strcmp(dateCur, endDate) <= 0) && (ret == CMsucceeded)) {
+    while ((MFDateCompare(startDate, dateNext) < 0) && (MFDateCompare (dateNext,endDate) <= 0) && (ret == CMsucceeded)) {
         CMmsgPrint(CMmsgDebug, "Computing: %s", dateCur);
         if (!MFDateSetCurrent(dateCur)) {
             CMmsgPrint(CMmsgUsrError, "Error: Invalid start date!");
             ret = CMfailed;
         }
-        strcpy (dateNext, MFDateGetNext());
         switch (parallelIO) {
             case MFparIOsingle:
                 pthread_mutex_lock(&(inIO.Mutex));
@@ -607,7 +606,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                     }
                     else strcpy (var->CurDate, dateCur);
                 }
-                inIO.Cont = strcmp (dateNext,endDate) <= 0 ? true : false;
+                inIO.Cont = (MFDateCompare(startDate, dateNext) < 0) && (MFDateCompare (dateNext,endDate) <= 0) ? true : false;
                 pthread_cond_broadcast(&(inIO.Cond));
                 pthread_mutex_unlock  (&(inIO.Mutex));
                 break;
@@ -633,7 +632,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                             var->InBuffer   = buffer;
                         }
                         strcpy (var->InDate,  dateNext);
-                        var->Read = strcmp(dateNext, endDate) <= 0 ? true : false;
+                        var->Read = (MFDateCompare(startDate, dateNext) < 0) && (MFDateCompare (dateNext, endDate) <= 0) ? true : false;
                         pthread_cond_signal (&(var->InCond));
                         pthread_mutex_unlock(&(var->InMutex));
                     }
@@ -665,7 +664,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                         }
                         strcpy (var->OutDate, dateCur);
                     }
-                outIO.Cont = strcmp(dateCur, endDate) < 0 ? true : false;
+                outIO.Cont = (MFDateCompare(startDate, dateNext) < 0) && (MFDateCompare (dateCur, endDate) < 0) ? true : false;
                 pthread_cond_signal  (&(outIO.Cond));
                 pthread_mutex_unlock (&(outIO.Mutex));
                 break;
@@ -701,7 +700,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                             var->OutBuffer  = buffer;
                         }
                         strcpy (var->OutDate, dateCur);
-                        var->LastWrite = strcmp(dateCur, endDate) == 0 ? true : false;
+                        var->LastWrite = MFDateCompare (dateCur,endDate) == 0 ? true : false;
                         pthread_cond_signal  (&(var->OutCond));
                         pthread_mutex_unlock (&(var->OutMutex));
                     }
@@ -716,7 +715,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                             return (CMfailed);
                         }
                     }
-                    if ((var->InStream != (MFDataStream_t *) NULL) && (strcmp(dateNext, endDate) <= 0)) {
+                    if ((var->InStream != (MFDataStream_t *) NULL) && (MFDateCompare(startDate, dateNext) < 0) && (MFDateCompare(dateNext,endDate) <= 0)) {
                         strcpy (var->InDate, dateNext);
                         if ((ret = MFdsRecordRead(var)) == CMfailed) {
                             CMmsgPrint(CMmsgAppError, "Variable (%s) Reading error!", var->Name);
@@ -728,7 +727,8 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                 }
                 break;
         }
-        strcpy (dateCur, dateNext);
+        strcpy (dateCur,  dateNext);
+        strcpy (dateNext, MFDateGetNext ());
     }
     switch (parallelIO) {
         case MFparIOsingle:

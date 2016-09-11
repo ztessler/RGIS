@@ -171,7 +171,7 @@ MFDomain_t *MFDomainRead (FILE *);
 int  MFDomainWrite(MFDomain_t *, FILE *);
 void MFDomainFree(MFDomain_t *);
 
-bool  MFDateCompare (const char *, const char *);
+int  MFDateCompare (const char *, const char *);
 char *MFDateGetCurrent ();
 bool  MFDateSetCurrent (char *);
 char *MFDateGetNext ();
