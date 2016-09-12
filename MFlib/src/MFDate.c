@@ -110,26 +110,6 @@ char *MFDateGetCurrent () {
     return (time);
 }
 
-static int _MFDateCompare (struct MFDate_s *date0,struct MFDate_s *date1) {
-	if ((date0->Year != MFDefaultMissingInt) && (date1->Year != MFDefaultMissingInt)) {
-		if (date0->Year < date1->Year) return (-1);
-		if (date0->Year > date1->Year) return  (1);
-	}
-	if (date0->Month == MFDefaultMissingInt) return (date1->Month == MFDefaultMissingInt ? 0 : -1);
-	else {
-		if (date1->Month == MFDefaultMissingInt) return (0);
-		if (date0->Month < date1->Month) return (-1);
-		if (date0->Month > date1->Month) return  (1);
-	}
-	if (date0->Day   == MFDefaultMissingInt) return (date1->Day   == MFDefaultMissingInt ? 0 : -1);
-	else {
-		if (date1->Day   == MFDefaultMissingInt) return (0);
-		if (date0->Day   < date1->Day)   return (-1);
-		if (date0->Day   > date1->Day)   return  (1);
-	}
-	return (0);
-}
-
 char *MFDateGetNext () {
 	static char time [MFDateStringLength];
 	static struct MFDate_s date;

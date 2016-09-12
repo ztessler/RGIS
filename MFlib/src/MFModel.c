@@ -577,12 +577,8 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
     strcpy (dateNext, MFDateGetNext ());
     CMmsgPrint (CMmsgInfo, "Model run started at... %s  started at %.24s", dateCur, ctime(&sec));
 
-    while ((MFDateCompare(startDate, dateNext) < 0) && (MFDateCompare (dateNext,endDate) <= 0) && (ret == CMsucceeded)) {
+    while ((MFDateCompare(startDate, dateNext) < 0) && (MFDateCompare (dateCur,endDate) <= 0) && (ret == CMsucceeded)) {
         CMmsgPrint(CMmsgDebug, "Computing: %s", dateCur);
-        if (!MFDateSetCurrent(dateCur)) {
-            CMmsgPrint(CMmsgUsrError, "Error: Invalid start date!");
-            ret = CMfailed;
-        }
         switch (parallelIO) {
             case MFparIOsingle:
                 pthread_mutex_lock(&(inIO.Mutex));
@@ -728,6 +724,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                 break;
         }
         strcpy (dateCur,  dateNext);
+        MFDateSetCurrent(dateCur);
         strcpy (dateNext, MFDateGetNext ());
     }
     switch (parallelIO) {
