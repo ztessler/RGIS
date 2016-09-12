@@ -577,7 +577,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
     strcpy (dateNext, MFDateGetNext ());
     CMmsgPrint (CMmsgInfo, "Model run started at... %s  started at %.24s", dateCur, ctime(&sec));
 
-    while ((MFDateCompare(startDate, dateNext) < 0) && (MFDateCompare (dateCur,endDate) <= 0) && (ret == CMsucceeded)) {
+    do {
         CMmsgPrint(CMmsgDebug, "Computing: %s", dateCur);
         switch (parallelIO) {
             case MFparIOsingle:
@@ -660,7 +660,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                         }
                         strcpy (var->OutDate, dateCur);
                     }
-                outIO.Cont = (MFDateCompare(startDate, dateNext) < 0) && (MFDateCompare (dateCur, endDate) < 0) ? true : false;
+                outIO.Cont = (MFDateCompare (dateCur, endDate) < 0) ? true : false;
                 pthread_cond_signal  (&(outIO.Cond));
                 pthread_mutex_unlock (&(outIO.Mutex));
                 break;
@@ -726,7 +726,8 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
         strcpy (dateCur,  dateNext);
         MFDateSetCurrent(dateCur);
         strcpy (dateNext, MFDateGetNext ());
-    }
+    } while ((ret == CMsucceeded) && (MFDateCompare(startDate, dateCur) < 0) && (MFDateCompare (dateCur,endDate) <= 0));
+
     switch (parallelIO) {
         case MFparIOsingle:
             pthread_join (inIO.Thread,  &status);
