@@ -23,6 +23,7 @@ if(${CMAKE_HOST_APPLE})
     if(EXISTS "/sw/include")
         include_directories(/sw/include)
     endif(EXISTS "/sw/include")
+    set(CMAKE_EXE_LINKER_FLAGS   "${CMAKE_EXE_LINKER_FLAGS} -flat_namespace")
 endif(${CMAKE_HOST_APPLE})
 
 add_subdirectory(CMlib)
