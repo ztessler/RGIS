@@ -99,7 +99,11 @@ int main(int argc, char *argv[]) {
         goto Stop;
     }
 
-    while (MFdsHeaderRead(&header, inFile)) {
+    do {
+        if (MFdsHeaderRead(&header, inFile) == CMfailed) {
+            CMmsgPrint(CMmsgSysError, "Input file reading error in: %s %d", __FILE__, __LINE__);
+            goto Stop;
+        }
         if (strncmp(date, header.Date, step) != 0) {
             if (items == (void *) NULL) {
                 itemSize = MFVarItemSize(header.Type);
@@ -204,7 +208,7 @@ int main(int argc, char *argv[]) {
                     break;
             }
         }
-    }
+    } while (feof(inFile) == false);
     switch (mode) {
         default:
         case AVG:
@@ -226,10 +230,10 @@ int main(int argc, char *argv[]) {
     }
     ret = CMsucceeded;
     Stop:
-    if (items != (void *) NULL) free(items);
+    if (items != (void *)   NULL) free(items);
     if (array != (double *) NULL) free(array);
-    if (obsNum != (int *) NULL) free(obsNum);
-    if (inFile != stdin) fclose(inFile);
+    if (obsNum != (int *)   NULL) free(obsNum);
+    if (inFile  != stdin)  fclose(inFile);
     if (outFile != stdout) fclose(outFile);
     return (ret);
 }
