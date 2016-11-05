@@ -205,11 +205,6 @@ int main(int argc, char *argv[]) {
             }
         }
     }
-    if (ferror (inFile) != 0) {
-        CMmsgPrint(CMmsgSysError, "Input file reading error in: %s %d", __FILE__, __LINE__);
-        goto Stop;
-    }
-
     switch (mode) {
         default:
         case AVG:
@@ -230,7 +225,8 @@ int main(int argc, char *argv[]) {
         }
     }
     ret = CMsucceeded;
-    Stop:
+
+Stop:
     if (items != (void *)   NULL) free(items);
     if (array != (double *) NULL) free(array);
     if (obsNum != (int *)   NULL) free(obsNum);
