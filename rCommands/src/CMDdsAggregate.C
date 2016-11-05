@@ -144,7 +144,7 @@ int main(int argc, char *argv[]) {
                 }
                 strncpy(outHeader.Date, date, step);
                 outHeader.Date[step] = '\0';
-                if (MFdsHeaderRead(&outHeader, outFile)) {
+                if (MFdsHeaderWrite(&outHeader, outFile)) {
                     if ((int) fwrite(record, sizeof(float), outHeader.ItemNum, outFile) != outHeader.ItemNum) {
                         CMmsgPrint(CMmsgSysError, "Output writing error in: %s:%d", __FILE__, __LINE__);
                         goto Stop;
