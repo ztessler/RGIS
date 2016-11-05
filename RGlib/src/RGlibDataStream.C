@@ -543,7 +543,13 @@ DBInt RGlibDataStream2RGIS(DBObjData *outData, DBObjData *tmplData, FILE *inFile
         case DBTypeGridDiscrete: {
             DBGridIF *gridIF = new DBGridIF(outData);
 
-            while (MFdsHeaderRead (&header, inFile) == CMsucceeded) {
+            do {
+                if (MFdsHeaderRead(&header, inFile) == CMfailed) {
+                    if (ferror (inFile) != 0) {
+                        CMmsgPrint(CMmsgSysError, "Input file reading error in: %s %d", __FILE__, __LINE__);
+                    }
+                    break;
+                }
                 if (header.ItemNum != gridIF->RowNum() * gridIF->ColNum()) {
                     CMmsgPrint(CMmsgUsrError, "Error: Datastream inconsistency!");
                     return (DBFault);
@@ -597,7 +603,7 @@ DBInt RGlibDataStream2RGIS(DBObjData *outData, DBObjData *tmplData, FILE *inFile
                         gridIF->Value(record, pos, val);
                     }
                 layerID++;
-            }
+            } while (inFile == 0);
             gridIF->RecalcStats();
         }
             break;
@@ -606,7 +612,13 @@ DBInt RGlibDataStream2RGIS(DBObjData *outData, DBObjData *tmplData, FILE *inFile
             DBGridIF *gridIF = new DBGridIF(outData);
             DBNetworkIF *netIF = new DBNetworkIF(tmplData);
 
-            while (MFdsHeaderRead(&header, inFile) == CMsucceeded) {
+            do {
+                if (MFdsHeaderRead(&header, inFile) == CMfailed) {
+                    if (ferror (inFile) != 0) {
+                        CMmsgPrint(CMmsgSysError, "Input file reading error in: %s %d", __FILE__, __LINE__);
+                    }
+                    break;
+                }
                 if (header.ItemNum != netIF->CellNum()) {
                     CMmsgPrint(CMmsgUsrError, "Error: Datastream inconsistency!");
                     return (DBFault);
@@ -654,7 +666,7 @@ DBInt RGlibDataStream2RGIS(DBObjData *outData, DBObjData *tmplData, FILE *inFile
                     gridIF->Value(record, pos, val);
                 }
                 layerID++;
-            }
+            } while (feof (inFile) == 0);
             gridIF->RecalcStats();
         }
             break;

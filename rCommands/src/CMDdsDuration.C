@@ -188,9 +188,12 @@ int main(int argc, char *argv[]) {
     } while (feof(inFile) == false);
     rewind(inFile);
     do  {
-        if (MFdsHeaderRead (&header, inFile) == CMfailed) {
-            CMmsgPrint(CMmsgSysError, "Input reading error in: %s:%d", __FILE__, __LINE__);
-            goto Stop;
+        if (MFdsHeaderRead(&header, inFile) == CMfailed) {
+            if (ferror (inFile) != 0) {
+                CMmsgPrint(CMmsgSysError, "Input file reading error in: %s %d", __FILE__, __LINE__);
+                goto Stop;
+            }
+            break;
         }
         if ((int) fread(items, itemSize, header.ItemNum, inFile) != header.ItemNum) {
             CMmsgPrint(CMmsgSysError, "Input reading error in: %s:%d", __FILE__, __LINE__);

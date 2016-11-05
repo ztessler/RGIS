@@ -67,8 +67,11 @@ int main(int argc, char *argv[]) {
 
     do {
         if (MFdsHeaderRead(&header, inFile) == CMfailed) {
-            CMmsgPrint(CMmsgSysError, "Input file reading error in: %s %d", __FILE__, __LINE__);
-            goto Stop;
+            if (ferror (inFile) != 0) {
+                CMmsgPrint(CMmsgSysError, "Input file reading error in: %s %d", __FILE__, __LINE__);
+                goto Stop;
+            }
+            break;
         }
         if (items == (void *) NULL) {
             itemSize = MFVarItemSize(header.Type);

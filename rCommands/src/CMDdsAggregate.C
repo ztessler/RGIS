@@ -101,8 +101,11 @@ int main(int argc, char *argv[]) {
 
     do {
         if (MFdsHeaderRead(&header, inFile) == CMfailed) {
-            CMmsgPrint(CMmsgSysError, "Input file reading error in: %s %d", __FILE__, __LINE__);
-            goto Stop;
+            if (ferror (inFile) != 0) {
+                CMmsgPrint(CMmsgSysError, "Input file reading error in: %s %d", __FILE__, __LINE__);
+                goto Stop;
+            }
+            break;
         }
         if (strncmp(date, header.Date, step) != 0) {
             if (items == (void *) NULL) {
@@ -208,7 +211,7 @@ int main(int argc, char *argv[]) {
                     break;
             }
         }
-    } while (feof(inFile) == false);
+    } while (feof(inFile) == 0); // TODO I don't understand, why this is not enough
     switch (mode) {
         default:
         case AVG:
