@@ -65,14 +65,7 @@ int main(int argc, char *argv[]) {
         goto Stop;
     }
 
-    do {
-        if (MFdsHeaderRead(&header, inFile) == CMfailed) {
-            if (ferror (inFile) != 0) {
-                CMmsgPrint(CMmsgSysError, "Input file reading error in: %s %d", __FILE__, __LINE__);
-                goto Stop;
-            }
-            break;
-        }
+    while (MFdsHeaderRead(&header, inFile) == CMfailed) {
         if (items == (void *) NULL) {
             itemSize = MFVarItemSize(header.Type);
             if ((items = (void *) calloc(header.ItemNum, itemSize)) == (void *) NULL) {
@@ -124,9 +117,13 @@ int main(int argc, char *argv[]) {
                     fprintf(outFile, "%s\t\n", header.Date);
                 break;
         }
-    } while (feof(inFile) == false);
-    ret = CMsucceeded;
-    Stop:
+    }
+    if (ferror (inFile) != 0) {
+        CMmsgPrint(CMmsgSysError, "Input file reading error in: %s %d", __FILE__, __LINE__);
+        ret = CMfailed;
+    }
+    else ret = CMsucceeded;
+Stop:
     if (inFile != stdin) fclose(inFile);
     if (outFile != stdout) fclose(outFile);
     return (ret);

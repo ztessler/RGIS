@@ -480,7 +480,7 @@ DBInt RGlibDataStream2RGIS(DBObjData *outData, DBObjData *tmplData, FILE *inFile
             itemTable->AddField(idField);
             itemTable->AddField(dateField);
 
-            while (MFdsHeaderRead (&header, inFile)) {
+            while (MFdsHeaderRead (&header, inFile) == CMsucceeded) {
                 if (header.ItemNum != pntIF->ItemNum()) {
                     CMmsgPrint(CMmsgUsrError, "Error: Datastream inconsistency %d %d!", header.ItemNum,
                                pntIF->ItemNum());
@@ -533,23 +533,18 @@ DBInt RGlibDataStream2RGIS(DBObjData *outData, DBObjData *tmplData, FILE *inFile
                         case MFDouble:
                             valField->Float(record, ((double *) data)[itemID]);
                             break;
+                        }
                     }
                 }
+                if (ferror (inFile) != 0) CMmsgPrint(CMmsgSysError, "Input file reading error in: %s %d", __FILE__, __LINE__);
+                delete pntIF;
             }
-            delete pntIF;
-        }
             break;
         case DBTypeGridContinuous:
         case DBTypeGridDiscrete: {
             DBGridIF *gridIF = new DBGridIF(outData);
 
-            do {
-                if (MFdsHeaderRead(&header, inFile) == CMfailed) {
-                    if (ferror (inFile) != 0) {
-                        CMmsgPrint(CMmsgSysError, "Input file reading error in: %s %d", __FILE__, __LINE__);
-                    }
-                    break;
-                }
+            while (MFdsHeaderRead(&header, inFile) == CMsucceeded) {
                 if (header.ItemNum != gridIF->RowNum() * gridIF->ColNum()) {
                     CMmsgPrint(CMmsgUsrError, "Error: Datastream inconsistency!");
                     return (DBFault);
@@ -603,22 +598,17 @@ DBInt RGlibDataStream2RGIS(DBObjData *outData, DBObjData *tmplData, FILE *inFile
                         gridIF->Value(record, pos, val);
                     }
                 layerID++;
-            } while (inFile == 0);
+                }
+            if (ferror (inFile) != 0) CMmsgPrint(CMmsgSysError, "Input file reading error in: %s %d", __FILE__, __LINE__);
             gridIF->RecalcStats();
-        }
+            }
             break;
         case DBTypeNetwork: {
             DBInt cellID;
             DBGridIF *gridIF = new DBGridIF(outData);
             DBNetworkIF *netIF = new DBNetworkIF(tmplData);
 
-            do {
-                if (MFdsHeaderRead(&header, inFile) == CMfailed) {
-                    if (ferror (inFile) != 0) {
-                        CMmsgPrint(CMmsgSysError, "Input file reading error in: %s %d", __FILE__, __LINE__);
-                    }
-                    break;
-                }
+            while (MFdsHeaderRead(&header, inFile) == CMsucceeded) {
                 if (header.ItemNum != netIF->CellNum()) {
                     CMmsgPrint(CMmsgUsrError, "Error: Datastream inconsistency!");
                     return (DBFault);
@@ -631,8 +621,7 @@ DBInt RGlibDataStream2RGIS(DBObjData *outData, DBObjData *tmplData, FILE *inFile
                     }
                     record = gridIF->Layer(layerID);
                     gridIF->RenameLayer(header.Date);
-                }
-                else record = gridIF->AddLayer(header.Date);
+                } else record = gridIF->AddLayer(header.Date);
                 if ((int) fread(data, itemSize, header.ItemNum, inFile) != header.ItemNum) {
                     CMmsgPrint(CMmsgSysError, "Error: Data stream read in: %s %d", __FILE__, __LINE__);
                     delete netIF;
@@ -666,7 +655,8 @@ DBInt RGlibDataStream2RGIS(DBObjData *outData, DBObjData *tmplData, FILE *inFile
                     gridIF->Value(record, pos, val);
                 }
                 layerID++;
-            } while (feof (inFile) == 0);
+            }
+            if (ferror(inFile) != 0) CMmsgPrint(CMmsgSysError, "Input file reading error in: %s %d", __FILE__, __LINE__);
             gridIF->RecalcStats();
         }
             break;

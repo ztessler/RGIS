@@ -98,11 +98,7 @@ int main(int argc, char *argv[]) {
         goto Stop;
     }
 
-    do {
-        if (MFdsHeaderRead(&header, inFile) == CMfailed) {
-            CMmsgPrint(CMmsgSysError, "Input file reading error in: %s %d", __FILE__, __LINE__);
-            goto Stop;
-        }
+    while (MFdsHeaderRead(&header, inFile) == CMsucceeded) {
         if (items == (void *) NULL) {
             itemSize = MFVarItemSize(header.Type);
             if ((items = (void *) calloc(header.ItemNum, itemSize)) == (void *) NULL) {
@@ -185,16 +181,13 @@ int main(int argc, char *argv[]) {
                 }
                 break;
         }
-    } while (feof(inFile) == false);
+    }
+    if (ferror (inFile) != 0) {
+        CMmsgPrint(CMmsgSysError, "Input file reading error in: %s %d", __FILE__, __LINE__);
+        goto Stop;
+    }
     rewind(inFile);
-    do  {
-        if (MFdsHeaderRead(&header, inFile) == CMfailed) {
-            if (ferror (inFile) != 0) {
-                CMmsgPrint(CMmsgSysError, "Input file reading error in: %s %d", __FILE__, __LINE__);
-                goto Stop;
-            }
-            break;
-        }
+    while  (MFdsHeaderRead(&header, inFile) == CMfailed) {
         if ((int) fread(items, itemSize, header.ItemNum, inFile) != header.ItemNum) {
             CMmsgPrint(CMmsgSysError, "Input reading error in: %s:%d", __FILE__, __LINE__);
             goto Stop;
@@ -255,7 +248,12 @@ int main(int argc, char *argv[]) {
                 }
                 break;
         }
-    } while (feof(inFile) == false);
+    }
+    if (ferror (inFile) != 0) {
+        CMmsgPrint(CMmsgSysError, "Input file reading error in: %s %d", __FILE__, __LINE__);
+        goto Stop;
+    }
+
     if (valueMode) {
         for (percent = 0; percent < 100; ++percent) {
             for (i = 0; i < header.ItemNum; i++) {
@@ -286,11 +284,7 @@ int main(int argc, char *argv[]) {
     }
     else {
         rewind(inFile);
-        do {
-            if (MFdsHeaderRead (&header, inFile) == CMfailed) {
-                CMmsgPrint(CMmsgSysError, "Input reading error in: %s:%d", __FILE__, __LINE__);
-                goto Stop;
-            }
+        while (MFdsHeaderRead (&header, inFile) == CMfailed) {
             if ((int) fread(items, itemSize, header.ItemNum, inFile) != header.ItemNum) {
                 CMmsgPrint(CMmsgSysError, "Input reading error in: %s:%d", __FILE__, __LINE__);
                 goto Stop;
@@ -367,7 +361,11 @@ int main(int argc, char *argv[]) {
                 CMmsgPrint(CMmsgSysError, "Output reading error in: %s:%d", __FILE__, __LINE__);
                 goto Stop;
             }
-        } while (feof(inFile) == false);
+        }
+        if (ferror (inFile) != 0) {
+            CMmsgPrint(CMmsgSysError, "Input file reading error in: %s %d", __FILE__, __LINE__);
+            goto Stop;
+        }
         ret = CMsucceeded;
     }
     Stop:

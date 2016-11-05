@@ -99,14 +99,7 @@ int main(int argc, char *argv[]) {
         goto Stop;
     }
 
-    do {
-        if (MFdsHeaderRead(&header, inFile) == CMfailed) {
-            if (ferror (inFile) != 0) {
-                CMmsgPrint(CMmsgSysError, "Input file reading error in: %s %d", __FILE__, __LINE__);
-                goto Stop;
-            }
-            break;
-        }
+    while (MFdsHeaderRead(&header, inFile) == CMsucceeded) {
         if (strncmp(date, header.Date, step) != 0) {
             if (items == (void *) NULL) {
                 itemSize = MFVarItemSize(header.Type);
@@ -211,7 +204,12 @@ int main(int argc, char *argv[]) {
                     break;
             }
         }
-    } while (feof(inFile) == 0); // TODO I don't understand, why this is not enough
+    }
+    if (ferror (inFile) != 0) {
+        CMmsgPrint(CMmsgSysError, "Input file reading error in: %s %d", __FILE__, __LINE__);
+        goto Stop;
+    }
+
     switch (mode) {
         default:
         case AVG:
