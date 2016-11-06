@@ -23,7 +23,7 @@ enum {
 };
 
 int main(int argc, char *argv[]) {
-    int argPos = 0, argNum = argc, ret = CMfailed, itemSize, i, step = CMfailed, mode = CMfailed;
+    int argPos = 0, argNum = argc, ret = CMfailed, itemSize, i, recordNum = 0, step = CMfailed, mode = CMfailed;
     FILE *inFile = stdin, *outFile = stdout;
     char date[MFDateStringLength];
     MFdsHeader_t header, outHeader;
@@ -100,6 +100,7 @@ int main(int argc, char *argv[]) {
     }
 
     while (MFdsHeaderRead(&header, inFile) == CMsucceeded) {
+        recordNum++;
         if (strncmp(date, header.Date, step) != 0) {
             if (items == (void *) NULL) {
                 itemSize = MFVarItemSize(header.Type);
@@ -144,7 +145,7 @@ int main(int argc, char *argv[]) {
                 }
                 strncpy(outHeader.Date, date, step);
                 outHeader.Date[step] = '\0';
-                if (MFdsHeaderWrite(&outHeader, outFile)) {
+                if (MFdsHeaderWrite(&outHeader, outFile) == CMsucceeded) {
                     if ((int) fwrite(record, sizeof(float), outHeader.ItemNum, outFile) != outHeader.ItemNum) {
                         CMmsgPrint(CMmsgSysError, "Output writing error in: %s:%d", __FILE__, __LINE__);
                         goto Stop;
@@ -205,23 +206,25 @@ int main(int argc, char *argv[]) {
             }
         }
     }
-    switch (mode) {
-        default:
-        case AVG:
-            for (i = 0; i < header.ItemNum; i++)
-                record[i] = obsNum[i] > 0 ? array[i] / obsNum[i] : outHeader.Missing.Float;
-            break;
-        case SUM:
-            for (i = 0; i < header.ItemNum; i++)
-                record[i] = obsNum[i] > 0 ? array[i] * ((double) maxObs / (double) obsNum[i]) : outHeader.Missing.Float;
-            break;
-    }
-    strncpy(outHeader.Date, header.Date, step);
-    outHeader.Date[step] = '\0';
-    if (MFdsHeaderWrite(&outHeader, outFile)) {
-        if ((int) fwrite(record, sizeof(float), outHeader.ItemNum, outFile) != outHeader.ItemNum) {
-            CMmsgPrint(CMmsgSysError, "Output writing error in: %s:%d", __FILE__, __LINE__);
-            goto Stop;
+    if (recordNum > 0) {
+        switch (mode) {
+            default:
+            case AVG:
+                for (i = 0; i < header.ItemNum; i++)
+                    record[i] = obsNum[i] > 0 ? array[i] / obsNum[i] : outHeader.Missing.Float;
+                break;
+            case SUM:
+                for (i = 0; i < header.ItemNum; i++)
+                    record[i] = obsNum[i] > 0 ? array[i] * ((double) maxObs / (double) obsNum[i]) : outHeader.Missing.Float;
+                break;
+        }
+        strncpy(outHeader.Date, header.Date, step);
+        outHeader.Date[step] = '\0';
+        if (MFdsHeaderWrite(&outHeader, outFile) == CMsucceeded) {
+            if ((int) fwrite(record, sizeof(float), outHeader.ItemNum, outFile) != outHeader.ItemNum) {
+                CMmsgPrint(CMmsgSysError, "Output writing error in: %s:%d", __FILE__, __LINE__);
+                goto Stop;
+            }
         }
     }
     ret = CMsucceeded;

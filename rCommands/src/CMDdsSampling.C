@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
         goto Stop;
     }
 
-    while (MFdsHeaderRead(&header, inFile) == CMfailed) {
+    while (MFdsHeaderRead(&header, inFile) == CMsucceeded) {
         if (items == (void *) NULL) {
             itemSize = MFVarItemSize(header.Type);
             if ((items = (void *) calloc(header.ItemNum, itemSize)) == (void *) NULL) {

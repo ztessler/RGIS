@@ -187,7 +187,7 @@ int main(int argc, char *argv[]) {
         goto Stop;
     }
     rewind(inFile);
-    while  (MFdsHeaderRead(&header, inFile) == CMfailed) {
+    while  (MFdsHeaderRead(&header, inFile) == CMsucceeded) {
         if ((int) fread(items, itemSize, header.ItemNum, inFile) != header.ItemNum) {
             CMmsgPrint(CMmsgSysError, "Input reading error in: %s:%d", __FILE__, __LINE__);
             goto Stop;
@@ -271,7 +271,7 @@ int main(int argc, char *argv[]) {
                 }
             }
             sprintf(outHeader.Date, "%3d", percent + 1);
-            if (MFdsHeaderWrite (&outHeader, outFile) == false) {
+            if (MFdsHeaderWrite (&outHeader, outFile) == CMsucceeded) {
                 CMmsgPrint(CMmsgSysError, "Output writing error in: %s:%d", __FILE__, __LINE__);
                 goto Stop;
             }
@@ -284,7 +284,7 @@ int main(int argc, char *argv[]) {
     }
     else {
         rewind(inFile);
-        while (MFdsHeaderRead (&header, inFile) == CMfailed) {
+        while (MFdsHeaderRead (&header, inFile) == CMsucceeded) {
             if ((int) fread(items, itemSize, header.ItemNum, inFile) != header.ItemNum) {
                 CMmsgPrint(CMmsgSysError, "Input reading error in: %s:%d", __FILE__, __LINE__);
                 goto Stop;
@@ -353,7 +353,7 @@ int main(int argc, char *argv[]) {
                     break;
             }
             strcpy(outHeader.Date, header.Date);
-            if (MFdsHeaderWrite(&outHeader, outFile) == false) {
+            if (MFdsHeaderWrite(&outHeader, outFile) == CMsucceeded) {
                 CMmsgPrint(CMmsgSysError, "Output writing error in: %s:%d", __FILE__, __LINE__);
                 goto Stop;
             }
