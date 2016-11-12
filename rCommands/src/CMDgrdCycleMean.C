@@ -148,10 +148,10 @@ int main(int argc, char *argv[]) {
 
     data = DBGridToGrid(tsData);
 
-    if (title == (char *) NULL) title = tsData->Name();
-    if (subject == (char *) NULL) subject = tsData->Document(DBDocSubject);
-    if (domain == (char *) NULL) domain = tsData->Document(DBDocGeoDomain);
-    if (version == (char *) NULL) version = tsData->Document(DBDocVersion);
+    if (title    == (char *) NULL) title   = tsData->Name();
+    if (subject  == (char *) NULL) subject = tsData->Document(DBDocSubject);
+    if (domain   == (char *) NULL) domain  = tsData->Document(DBDocGeoDomain);
+    if (version  == (char *) NULL) version = tsData->Document(DBDocVersion);
     if (shadeSet == DBFault) shadeSet = DBDataFlagDispModeContGreyScale;
 
     data->Name(title);

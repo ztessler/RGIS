@@ -19,12 +19,12 @@ int main(int argc, char *argv[]) {
     int argPos, argNum = argc, ret, verbose = false;
     char *title = (char *) NULL, *subject = (char *) NULL;
     char *domain = (char *) NULL, *version = (char *) NULL;
-    DBInt doMin = true;
+    DBInt doMin = true, reportValue = true;
     DBObjData *tsData, *data;
 
     for (argPos = 1; argPos < argNum;) {
         if (CMargTest (argv[argPos], "-m", "--mode")) {
-            int codes[] = {false, true};
+            int codes[] = {true, false};
             const char *strs[] = {"min", "max", (char *) NULL};
 
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) {
@@ -36,6 +36,22 @@ int main(int argc, char *argv[]) {
                 return (CMfailed);
             }
             doMin = codes[doMin];
+            if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
+            continue;
+        }
+        if (CMargTest (argv[argPos], "-r", "--report")) {
+            int codes[] = {true, false};
+            const char *strs[] = {"value", "layer", (char *) NULL};
+
+            if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) {
+                CMmsgPrint(CMmsgUsrError, "Missing report method!");
+                return (CMfailed);
+            }
+            if ((reportValue = CMoptLookup(strs, argv[argPos], true)) == DBFault) {
+                CMmsgPrint(CMmsgUsrError, "Invalid report method!");
+                return (CMfailed);
+            }
+            reportValue = codes[reportValue];
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
             continue;
         }
@@ -83,6 +99,7 @@ int main(int argc, char *argv[]) {
         if (CMargTest (argv[argPos], "-h", "--help")) {
             CMmsgPrint(CMmsgInfo, "%s [options] <input grid> <output grid>", CMfileName(argv[0]));
             CMmsgPrint(CMmsgInfo, "     -m,--mode      [min|max]");
+            CMmsgPrint(CMmsgInfo, "     -r,--report    [value|layer]");
             CMmsgPrint(CMmsgInfo, "     -t,--title     [dataset title]");
             CMmsgPrint(CMmsgInfo, "     -u,--subject   [subject]");
             CMmsgPrint(CMmsgInfo, "     -d,--domain    [domain]");
@@ -111,18 +128,19 @@ int main(int argc, char *argv[]) {
         return (CMfailed);
     }
 
-    if (title == (char *) NULL) title = tsData->Name();
+    if (title   == (char *) NULL) title   = tsData->Name();
     if (subject == (char *) NULL) subject = tsData->Document(DBDocSubject);
-    if (domain == (char *) NULL) domain = tsData->Document(DBDocGeoDomain);
+    if (domain  == (char *) NULL) domain  = tsData->Document(DBDocGeoDomain);
     if (version == (char *) NULL) version = tsData->Document(DBDocVersion);
 
-    data = DBGridToGrid(tsData, DBTypeGridContinuous, DBTableFieldInt, sizeof(DBInt));
+    data = reportValue ? DBGridToGrid(tsData, DBTypeGridContinuous, DBTableFieldFloat, sizeof(DBFloat)) :
+                         DBGridToGrid(tsData, DBTypeGridContinuous, DBTableFieldInt,   sizeof(DBInt));
     data->Name(title);
-    data->Document(DBDocSubject, subject);
+    data->Document(DBDocSubject,   subject);
     data->Document(DBDocGeoDomain, domain);
-    data->Document(DBDocVersion, version);
+    data->Document(DBDocVersion,   version);
 
-    if ((ret = RGlibMinMax(tsData, data, doMin == 0 ? true : false)) == DBSuccess)
+    if ((ret = RGlibMinMax(tsData, data, doMin,reportValue)) == DBSuccess)
         ret = (argNum > 2) && (strcmp(argv[2], "-") != 0) ? data->Write(argv[2]) : data->Write(stdout);
 
     delete tsData;

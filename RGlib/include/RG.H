@@ -98,7 +98,7 @@ DBInt RGlibSeasonAggregate(DBObjData *, DBObjData *, DBInt, DBInt, DBInt);
 
 DBInt RGlibSeasonMean(DBObjData *, DBObjData *, DBInt, DBInt, DBInt);
 
-DBInt RGlibMinMax(DBObjData *, DBObjData *, bool);
+DBInt RGlibMinMax(DBObjData *, DBObjData *, bool, bool);
 
 DBInt RGlibNetworkToGrid(DBObjData *, DBObjTableField *, DBObjData *);
 

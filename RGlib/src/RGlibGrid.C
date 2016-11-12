@@ -1605,13 +1605,13 @@ DBInt RGlibSeasonMean(DBObjData *tsData, DBObjData *data, DBInt seasonLen, DBInt
     return (ret);
 }
 
-DBInt RGlibMinMax(DBObjData *tsData, DBObjData *data, bool doMin) {
+DBInt RGlibMinMax(DBObjData *tsData, DBObjData *data, bool doMin, bool reportValue) {
     DBInt tsLayerID, layerID;
     DBFloat value, searchVal;
     DBPosition pos;
     DBObjRecord *layerRec;
     DBGridIF *tsGridIF = new DBGridIF(tsData);
-    DBGridIF *gridIF = new DBGridIF(data);
+    DBGridIF *gridIF   = new DBGridIF(data);
 
     if ((tsGridIF->RowNum() != gridIF->RowNum()) || (tsGridIF->ColNum() != gridIF->ColNum())) {
         delete tsGridIF;
@@ -1640,8 +1640,10 @@ DBInt RGlibMinMax(DBObjData *tsData, DBObjData *data, bool doMin) {
                     }
                 }
             }
-            if (layerID != DBFault)
-                gridIF->Value(pos, layerID);
+            if (layerID != DBFault) {
+                if (reportValue) gridIF->Value(pos, searchVal);
+                else             gridIF->Value(pos, layerID);
+            }
             else gridIF->Value(pos, gridIF->MissingValue());
         }
     gridIF->RenameLayer((char *) "XXXX");

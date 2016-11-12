@@ -98,9 +98,9 @@ int main(int argc, char *argv[]) {
         return (CMfailed);
     }
 
-    if (title == (char *) NULL) title = (char *) "Cell Statistics";
+    if (title   == (char *) NULL)   title = (char *) "Cell Statistics";
     if (subject == (char *) NULL) subject = srcData->Document(DBDocSubject);
-    if (domain == (char *) NULL) domain = srcData->Document(DBDocGeoDomain);
+    if (domain  == (char *) NULL)  domain = srcData->Document(DBDocGeoDomain);
     if (version == (char *) NULL) version = (char *) "0.01pre";
 
     dstData->Name(title);
