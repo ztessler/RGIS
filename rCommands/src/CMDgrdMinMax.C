@@ -20,6 +20,8 @@ int main(int argc, char *argv[]) {
     char *title = (char *) NULL, *subject = (char *) NULL;
     char *domain = (char *) NULL, *version = (char *) NULL;
     DBInt doMin = true, reportValue = true;
+    int shadeSet = DBDataFlagDispModeContGreyScale;
+    bool changeShadeSet = false;
     DBObjData *tsData, *data;
 
     for (argPos = 1; argPos < argNum;) {
@@ -91,6 +93,27 @@ int main(int argc, char *argv[]) {
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
             continue;
         }
+        if (CMargTest (argv[argPos], "-s", "--shadeset")) {
+            int shadeCodes[] = {DBDataFlagDispModeContStandard,
+                                DBDataFlagDispModeContGreyScale,
+                                DBDataFlagDispModeContBlueScale,
+                                DBDataFlagDispModeContBlueRed,
+                                DBDataFlagDispModeContElevation};
+            const char *shadeSets[] = {"standard", "grey", "blue", "blue-to-red", "elevation", (char *) NULL};
+
+            if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) {
+                CMmsgPrint(CMmsgUsrError, "Missing shadeset!");
+                return (CMfailed);
+            }
+            if ((shadeSet = CMoptLookup(shadeSets, argv[argPos], true)) == CMfailed) {
+                CMmsgPrint(CMmsgUsrError, "Invalid shadeset!");
+                return (CMfailed);
+            }
+            shadeSet = shadeCodes[shadeSet];
+            changeShadeSet = true;
+            if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
+            continue;
+        }
         if (CMargTest (argv[argPos], "-V", "--verbose")) {
             verbose = true;
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
@@ -104,6 +127,7 @@ int main(int argc, char *argv[]) {
             CMmsgPrint(CMmsgInfo, "     -u,--subject   [subject]");
             CMmsgPrint(CMmsgInfo, "     -d,--domain    [domain]");
             CMmsgPrint(CMmsgInfo, "     -v,--version   [version]");
+            CMmsgPrint(CMmsgInfo, "     -s,--shadeset  [standard|grey|blue|blue-to-red|elevation]");
             CMmsgPrint(CMmsgInfo, "     -V,--verbose");
             CMmsgPrint(CMmsgInfo, "     -h,--help");
             return (DBSuccess);
@@ -139,6 +163,10 @@ int main(int argc, char *argv[]) {
     data->Document(DBDocSubject,   subject);
     data->Document(DBDocGeoDomain, domain);
     data->Document(DBDocVersion,   version);
+    if (changeShadeSet && (data->Type() == DBTypeGridContinuous)) {
+        data->Flags(DBDataFlagDispModeContShadeSets, DBClear);
+        data->Flags(shadeSet, DBSet);
+    }
 
     if ((ret = RGlibMinMax(tsData, data, doMin,reportValue)) == DBSuccess)
         ret = (argNum > 2) && (strcmp(argv[2], "-") != 0) ? data->Write(argv[2]) : data->Write(stdout);
