@@ -20,14 +20,18 @@ typedef enum {
     CMDboxAverage, CMDboxMinimum, CMDboxMaximum, CMDboxSum
 } CMDboxMethod;
 
+typedef enum { CMDboxWeightArea, CMDboxWeightCellNum
+} CMDboxWeight;
+
 int main(int argc, char *argv[]) {
     int argPos, argNum = argc, ret, verbose = false;
-    CMDboxMethod method = CMDboxAverage;
+    CMDboxMethod method    = CMDboxAverage;
+    CMDboxWeight boxWeight = CMDboxWeightArea;
     DBInt kernelSize = 2, layerID;
     char *title = (char *) NULL, *subject = (char *) NULL;
     char *domain = (char *) NULL, *version = (char *) NULL;
     int shadeSet = DBDataFlagDispModeContGreyScale;
-    DBFloat var, *array = (DBFloat *) NULL, *sumArea = (DBFloat *) NULL, *misArea = (DBFloat *) NULL, cellArea;
+    DBFloat var, *array = (DBFloat *) NULL, *sumWeights = (DBFloat *) NULL, *misWeights = (DBFloat *) NULL, cellArea;
     DBRegion extent;
     DBPosition inPos, outPos;
     DBCoordinate coord, cellSize;
@@ -62,6 +66,24 @@ int main(int argc, char *argv[]) {
                     CMmsgPrint(CMmsgWarning, "Ignoring illformed aggregate method [%s]!", argv[argPos]);
                 }
                 else method = methods[code];
+            }
+            if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
+            continue;
+        }
+        if (CMargTest(argv[argPos], "-w", "--weight")) {
+            if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) {
+                CMmsgPrint(CMmsgUsrError, "Missing aggregate method!");
+                return (CMfailed);
+            }
+            else {
+                const char *options[] = {"area", "cellnum", (char *) NULL};
+                CMDboxWeight methods[] = { CMDboxWeightArea, CMDboxWeightCellNum};
+                DBInt code;
+
+                if ((code = CMoptLookup(options, argv[argPos], false)) == CMfailed) {
+                    CMmsgPrint(CMmsgWarning, "Ignoring illformed aggregate method [%s]!", argv[argPos]);
+                }
+                else boxWeight = methods[code];
             }
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
             continue;
@@ -131,6 +153,7 @@ int main(int argc, char *argv[]) {
             CMmsgPrint(CMmsgInfo, "%s [options] <input file> <output file>", CMfileName(argv[0]));
             CMmsgPrint(CMmsgInfo, "     -z,--size      [box size]");
             CMmsgPrint(CMmsgInfo, "     -m,--method    [average|minimum|maximum|sum]");
+            CMmsgPrint(CMmsgInfo, "     -w,--weight    [area|cellnum]");
             CMmsgPrint(CMmsgInfo, "     -t,--title     [dataset title]");
             CMmsgPrint(CMmsgInfo, "     -u,--subject   [subject]");
             CMmsgPrint(CMmsgInfo, "     -d,--domain    [domain]");
@@ -172,7 +195,7 @@ int main(int argc, char *argv[]) {
     cellSize.X = (DBFloat) kernelSize * inGridIF->CellWidth();
     cellSize.Y = (DBFloat) kernelSize * inGridIF->CellHeight();
     extent = inData->Extent();
-    if ((outData = DBGridCreate(title, extent, cellSize)) == (DBObjData *) NULL) return (CMfailed);
+    if ((outData = DBGridCreate(title, extent, cellSize, inGridIF->ValueType())) == (DBObjData *) NULL) return (CMfailed);
     outData->Document(DBDocSubject, subject);
     outData->Document(DBDocGeoDomain, domain);
     outData->Document(DBDocVersion, version);
@@ -181,12 +204,12 @@ int main(int argc, char *argv[]) {
     outData->Projection(inData->Projection());
     outGridIF = new DBGridIF(outData);
     outGridIF->MissingValue(inGridIF->MissingValue());
-    if ((sumArea = (DBFloat *) calloc(outGridIF->ColNum() * outGridIF->RowNum(), sizeof(DBFloat))) ==
+    if ((sumWeights = (DBFloat *) calloc(outGridIF->ColNum() * outGridIF->RowNum(), sizeof(DBFloat))) ==
         (DBFloat *) NULL) {
         CMmsgPrint(CMmsgSysError, "Memory allocation error in %s:%d", __FILE__, __LINE__);
         return (CMfailed);
     }
-    if ((misArea = (DBFloat *) calloc(outGridIF->ColNum() * outGridIF->RowNum(), sizeof(DBFloat))) ==
+    if ((misWeights = (DBFloat *) calloc(outGridIF->ColNum() * outGridIF->RowNum(), sizeof(DBFloat))) ==
         (DBFloat *) NULL) {
         CMmsgPrint(CMmsgSysError, "Memory allocation error in %s:%d", __FILE__, __LINE__);
         return (CMfailed);
@@ -206,8 +229,8 @@ int main(int argc, char *argv[]) {
             outLayerRec = outGridIF->AddLayer(inLayerRec->Name());
         for (outPos.Row = 0; outPos.Row < outGridIF->RowNum(); ++outPos.Row)
             for (outPos.Col = 0; outPos.Col < outGridIF->ColNum(); ++outPos.Col) {
-                sumArea[outPos.Row * outGridIF->ColNum() + outPos.Col] = 0.0;
-                misArea[outPos.Row * outGridIF->ColNum() + outPos.Col] = 0.0;
+                sumWeights[outPos.Row * outGridIF->ColNum() + outPos.Col] = 0.0;
+                misWeights[outPos.Row * outGridIF->ColNum() + outPos.Col] = 0.0;
                 switch (method) {
                     case CMDboxSum:
                     case CMDboxAverage:
@@ -227,11 +250,17 @@ int main(int argc, char *argv[]) {
                 outGridIF->Coord2Pos(coord, outPos);
                 cellArea = inGridIF->CellArea(inPos);
                 if (inGridIF->Value(inLayerRec, inPos, &var)) {
-                    sumArea[outPos.Row * outGridIF->ColNum() + outPos.Col] += cellArea;
                     switch (method) {
                         case CMDboxSum:
                         case CMDboxAverage:
-                            array[outPos.Row * outGridIF->ColNum() + outPos.Col] += var * cellArea;
+                            if (boxWeight == CMDboxWeightArea) {
+                                array[outPos.Row * outGridIF->ColNum() + outPos.Col] += var * cellArea;
+                                sumWeights[outPos.Row * outGridIF->ColNum() + outPos.Col] += cellArea;
+                            }
+                            else {
+                                array[outPos.Row * outGridIF->ColNum() + outPos.Col] += var;
+                                sumWeights[outPos.Row * outGridIF->ColNum() + outPos.Col] += 1;
+                            }
                             break;
                         case CMDboxMinimum:
                             array[outPos.Row * outGridIF->ColNum() + outPos.Col] =
@@ -245,19 +274,25 @@ int main(int argc, char *argv[]) {
                             break;
                     }
                 }
-                else
-                    misArea[outPos.Row * outGridIF->ColNum() + outPos.Col] += cellArea;
+                else {
+                    if (boxWeight == CMDboxWeightArea)
+                        misWeights[outPos.Row * outGridIF->ColNum() + outPos.Col] += cellArea;
+                    else
+                        misWeights[outPos.Row * outGridIF->ColNum() + outPos.Col] += 1;
+                }
             }
         for (outPos.Row = 0; outPos.Row < outGridIF->RowNum(); ++outPos.Row)
             for (outPos.Col = 0; outPos.Col < outGridIF->ColNum(); ++outPos.Col) {
-                if (sumArea[outPos.Row * outGridIF->ColNum() + outPos.Col] > 0.0) {
+                if (sumWeights[outPos.Row * outGridIF->ColNum() + outPos.Col] > 0.0) {
                     var = array[outPos.Row * outGridIF->ColNum() + outPos.Col];
                     if (method == CMDboxAverage)
-                        var = var / (DBFloat) sumArea[outPos.Row * outGridIF->ColNum() + outPos.Col];
-                    else if (method == CMDboxSum)
-                        var = var * (misArea[outPos.Row * outGridIF->ColNum() + outPos.Col] +
-                                     sumArea[outPos.Row * outGridIF->ColNum() + outPos.Col])
-                              / (DBFloat) sumArea[outPos.Row * outGridIF->ColNum() + outPos.Col];
+                        var = var / (DBFloat) sumWeights[outPos.Row * outGridIF->ColNum() + outPos.Col];
+                    else if (method == CMDboxSum) {
+                        if (boxWeight == CMDboxWeightArea)
+                            var = var * (misWeights[outPos.Row * outGridIF->ColNum() + outPos.Col] +
+                                         sumWeights[outPos.Row * outGridIF->ColNum() + outPos.Col])
+                                      / (DBFloat) sumWeights[outPos.Row * outGridIF->ColNum() + outPos.Col];
+                    }
                     outGridIF->Value(outLayerRec, outPos, var);
                 }
                 else
@@ -269,8 +304,8 @@ int main(int argc, char *argv[]) {
     ret = (argNum > 2) && (strcmp(argv[2], "-") != 0) ? outData->Write(argv[2]) : outData->Write(stdout);
 
     if (verbose) RGlibPauseClose();
-    if (sumArea != (DBFloat *) NULL) free(sumArea);
-    if (misArea != (DBFloat *) NULL) free(misArea);
+    if (sumWeights != (DBFloat *) NULL) free(sumWeights);
+    if (misWeights != (DBFloat *) NULL) free(misWeights);
     if (array != (DBFloat *) NULL) free(array);
     return (ret);
 }
