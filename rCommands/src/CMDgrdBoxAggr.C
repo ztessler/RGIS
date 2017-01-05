@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
                 return (CMfailed);
             }
             else {
-                const char *options[] = {"average", "minimum", "maximum", "sum", (char *) NULL};
+                const char *options[] = {"avg", "min", "max", "sum", (char *) NULL};
                 CMDboxMethod methods[] = {CMDboxAverage, CMDboxMinimum, CMDboxMaximum, CMDboxSum};
                 DBInt code;
 
