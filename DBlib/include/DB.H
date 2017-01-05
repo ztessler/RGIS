@@ -2204,6 +2204,8 @@ DBObjData *DBGridToGrid(DBObjData *, DBInt);
 
 DBObjData *DBGridToGrid(DBObjData *);
 
+DBObjData *DBGridCreate(char *, DBRegion, DBCoordinate, DBInt, DBInt, DBInt);
+
 DBObjData *DBGridCreate(char *, DBRegion, DBCoordinate, DBInt);
 
 DBObjData *DBGridCreate(char *, DBRegion, DBCoordinate);

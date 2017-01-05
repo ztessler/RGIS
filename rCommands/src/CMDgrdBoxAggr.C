@@ -195,7 +195,7 @@ int main(int argc, char *argv[]) {
     cellSize.X = (DBFloat) kernelSize * inGridIF->CellWidth();
     cellSize.Y = (DBFloat) kernelSize * inGridIF->CellHeight();
     extent = inData->Extent();
-    if ((outData = DBGridToGrid(inData)) == (DBObjData *) NULL) return (CMfailed);
+    if ((outData = DBGridCreate (title, extent, cellSize, inData->Type (), inGridIF->ValueType(), inGridIF->ValueSize())) == (DBObjData *) NULL) return (CMfailed);
     outData->Name(title);
     outData->Document(DBDocSubject, subject);
     outData->Document(DBDocGeoDomain, domain);
@@ -259,8 +259,8 @@ int main(int argc, char *argv[]) {
                                 sumWeights[outPos.Row * outGridIF->ColNum() + outPos.Col] += cellArea;
                             }
                             else {
-                                array[outPos.Row * outGridIF->ColNum() + outPos.Col] += var;
-                                sumWeights[outPos.Row * outGridIF->ColNum() + outPos.Col] += 1;
+                                array[outPos.Row * outGridIF->ColNum() + outPos.Col]      += var;
+                                sumWeights[outPos.Row * outGridIF->ColNum() + outPos.Col] += 1.0;
                             }
                             break;
                         case CMDboxMinimum:
@@ -279,7 +279,7 @@ int main(int argc, char *argv[]) {
                     if (boxWeight == CMDboxWeightArea)
                         misWeights[outPos.Row * outGridIF->ColNum() + outPos.Col] += cellArea;
                     else
-                        misWeights[outPos.Row * outGridIF->ColNum() + outPos.Col] += 1;
+                        misWeights[outPos.Row * outGridIF->ColNum() + outPos.Col] += 1.0;
                 }
             }
         for (outPos.Row = 0; outPos.Row < outGridIF->RowNum(); ++outPos.Row)
@@ -287,7 +287,8 @@ int main(int argc, char *argv[]) {
                 if (sumWeights[outPos.Row * outGridIF->ColNum() + outPos.Col] > 0.0) {
                     var = array[outPos.Row * outGridIF->ColNum() + outPos.Col];
                     if (method == CMDboxAverage)
-                        var = var / (DBFloat) sumWeights[outPos.Row * outGridIF->ColNum() + outPos.Col];
+                        var = var / ((DBFloat) sumWeights[outPos.Row * outGridIF->ColNum() + outPos.Col] +
+                                    (boxWeight == CMDboxWeightCellNum ? misWeights[outPos.Row * outGridIF->ColNum() + outPos.Col] : 0.0));
                     else if (method == CMDboxSum) {
                         if (boxWeight == CMDboxWeightArea)
                             var = var * (misWeights[outPos.Row * outGridIF->ColNum() + outPos.Col] +

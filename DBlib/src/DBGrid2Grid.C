@@ -129,8 +129,26 @@ DBObjData *DBGridCreate(char *name, DBRegion extent, DBCoordinate cellSize) {
     return (DBGridCreate(name, extent, cellSize, DBTypeGridContinuous));
 }
 
-DBObjData *DBGridCreate(char *title, DBRegion extent, DBCoordinate cellSize, DBInt type) {
-    DBInt rowNum, colNum, varSize, varType;
+DBObjData *DBGridCreate(char *name, DBRegion extent, DBCoordinate cellSize, DBInt type) {
+    DBInt varType, varSize;
+    switch (type) {
+        case DBTypeGridContinuous:
+            varType = DBVariableFloat;
+            varSize = sizeof(DBFloat4);
+            break;
+        case DBTypeGridDiscrete:
+            varType = DBVariableInt;
+            varSize = sizeof(DBInt);
+            break;
+        default:
+            CMmsgPrint(CMmsgAppError, "Invalid Data Type in: %s %d", __FILE__, __LINE__);
+            return ((DBObjData *) NULL);
+    }
+    return (DBGridCreate(name, extent, cellSize, type,varType, varSize));
+}
+
+DBObjData *DBGridCreate(char *title, DBRegion extent, DBCoordinate cellSize, DBInt type, DBInt varType, DBInt varSize) {
+    DBInt rowNum, colNum;
     DBObjTable *layerTable;
     DBObjTable *itemTable;
     DBObjTableField *rowNumFLD;
@@ -174,20 +192,6 @@ DBObjData *DBGridCreate(char *title, DBRegion extent, DBCoordinate cellSize, DBI
     colNumFLD->Int(layerRec, colNum);
     cellWidthFLD->Float(layerRec, cellSize.X);
     cellHeightFLD->Float(layerRec, cellSize.Y);
-    switch (type) {
-        case DBTypeGridContinuous:
-            varType = DBVariableFloat;
-            varSize = sizeof(DBFloat4);
-            break;
-        case DBTypeGridDiscrete:
-            varType = DBVariableInt;
-            varSize = sizeof(DBInt);
-            break;
-        default:
-            CMmsgPrint(CMmsgAppError, "Invalid Data Type in: %s %d", __FILE__, __LINE__);
-            delete data;
-            return ((DBObjData *) NULL);
-    }
     valueTypeFLD->Int(layerRec, varType);
     valueSizeFLD->Int(layerRec, varSize);
     dataRec = new DBObjRecord(layerRec->Name(), ((size_t) colNum) * rowNum, varSize);
