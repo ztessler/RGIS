@@ -627,31 +627,31 @@ function RGISlookupAggrMethod ()
 
 	case "${variable}" in
 		(air_temperature|max_air_temperature|min_air_temperature)  # 0 1 2
-			echo "avg"
+			echo "average"
 		;;
 		(diurnal_air_temperature_range)             #  3
-			echo "avg"
+			echo "average"
 		;;
 		(c_litterfall)                              #  4
 			echo "sum"
 		;;
 		(cell_area)                                 #  5
-			echo "avg"
+			echo "average"
 		;;
 		(cloud_cover)                               #  6
-			echo "avg"
+			echo "average"
 		;;
 		(continents)                                #  7
 			echo "N/A"
 		;;
 		(cropland_fraction)                         #  8
-			echo "avg"
+			echo "average"
 		;;
 		(cropping_intensity)                        #  9
-			echo "avg"
+			echo "average"
 		;;
 		(daily_precipitation_fraction)              # 10
-			echo "avg"
+			echo "average"
 		;;
 		(din_areal_loading)                         # 11
 			echo "sum"
@@ -660,7 +660,7 @@ function RGISlookupAggrMethod ()
 			echo "sum"
 		;;
 		(discharge)                                 # 13
-			echo "avg"
+			echo "average"
 		;;
 		(don_areal_loading)                         # 14
 			echo "sum"
@@ -675,49 +675,49 @@ function RGISlookupAggrMethod ()
 			echo "sum"
 		;;
 		(elevation|max_elevation|min_elevation)     # 18 19 20
-			echo "avg"
+			echo "average"
 		;;
 		(field_capacity)                            # 21
-			echo "avg"
+			echo "average"
 		;;
 		(growing_season1)                           # 22
-			echo "avg"
+			echo "average"
 		;;
 		(growing_season2)                           # 23
-			echo "avg"
+			echo "average"
 		;;
 		(heatindex)                                 # 24
-			echo "avg"
+			echo "average"
 		;;
 		(max_heatindex)                             # 25
-			echo "avg"
+			echo "average"
 		;;
 		(min_heatindex)                             # 26
-			echo "avg"
+			echo "average"
 		;;
 		(dewpoint_temperature)                      # 27
-			echo "avg"
+			echo "average"
 		;;
 		(relative_humidity)                         # 28
-			echo "avg"
+			echo "average"
 		;;
 		(specific_humidity)                         # 29
-			echo "avg"
+			echo "average"
 		;;
 		(vapor_pressure)                            # 30
-			echo "avg"
+			echo "average"
 		;;
 		(irrigated_area_fraction)                   # 31
-			echo "avg"
+			echo "average"
 		;;
 		(irrigation_efficiency)                     # 31
-			echo "avg"
+			echo "average"
 		;;
 		(irrigation_gross_demand)                   # 33
 			echo "sum"
 		;;
 		(network)                                   # 34
-			echo "avg"
+			echo "average"
 		;;
 		(n_litterfall)                              # 35
 			echo "sum"
@@ -738,31 +738,31 @@ function RGISlookupAggrMethod ()
 			echo "N/A"
 		;;
 		(other_crop_fraction)                       # 41
-			echo "avg"
+			echo "average"
 		;;
 		(perennial_crop_fraction)                   # 42
-			echo "avg"
+			echo "average"
 		;;
 		(population)                                # 43
 			echo "sum"
 		;;
 		(population_density)                        # 44
-			echo "avg"
+			echo "average"
 		;;
 		(population-rural)                          # 45
-			echo "avg"
+			echo "average"
 		;;
 		(population-urban)                          # 46
-			echo "avg"
+			echo "average"
 		;;
 		(precipitation)                             # 47
 			echo "sum"
 		;;
 		(shortwave_downwelling_radiation)           # 48
-			echo "avg"
+			echo "average"
 		;;
 		(longwave_downwelling_radiation)            # 49
-			echo "avg"
+			echo "average"
 		;;
 		(rain_fall)                                 # 50
 			echo "sum"
@@ -771,46 +771,46 @@ function RGISlookupAggrMethod ()
 			echo "sum"
 		;;
 		(reservoir_capacity)                        # 52
-			echo "avg"
+			echo "average"
 		;;
 		(rice_crop_fraction)                        # 53
-			echo "avg"
+			echo "average"
 		;;
 		(rice_percolation_rate)                     # 54
-			echo "avg"
+			echo "average"
 		;;
 		(rooting_depth)                             # 55
-			echo "avg"
+			echo "average"
 		;;
 		(runoff)                                    # 56
 			echo "sum"
 		;;
 		(small_reservoir_coefficient)               # 57
-			echo "avg"
+			echo "average"
 		;;
 		(snow_fall)                                 # 58
-			echo "avg"
+			echo "average"
 		;;
 		(soil_moisture)                             # 59
-			echo "avg"
+			echo "average"
 		;;
 		(soil_moisture_change)                      # 60
-			echo "avg"
+			echo "average"
 		;;
 		(surface_air_pressure)                      # 61
-			echo "avg"
+			echo "average"
 		;;
 		(vegetables_crop_fraction)                  # 62
-			echo "avg"
+			echo "average"
 		;;
 		(wilting_point)                             # 63
-			echo "avg"
+			echo "average"
 		;;
 		(wind_speed)                                # 64
-			echo "avg"
+			echo "average"
 		;;
 		(*)
-			echo "avg"
+			echo "average"
 			echo "Defaulting aggregation method: ${variable}" > /dev/stderr
 		;;
 	esac
