@@ -195,7 +195,8 @@ int main(int argc, char *argv[]) {
     cellSize.X = (DBFloat) kernelSize * inGridIF->CellWidth();
     cellSize.Y = (DBFloat) kernelSize * inGridIF->CellHeight();
     extent = inData->Extent();
-    if ((outData = DBGridCreate(title, extent, cellSize, inGridIF->ValueType())) == (DBObjData *) NULL) return (CMfailed);
+    if ((outData = DBGridToGrid(inData)) == (DBObjData *) NULL) return (CMfailed);
+    outData->Name(title);
     outData->Document(DBDocSubject, subject);
     outData->Document(DBDocGeoDomain, domain);
     outData->Document(DBDocVersion, version);
