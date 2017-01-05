@@ -744,7 +744,7 @@ function RGISlookupAggrMethod ()
 			echo "avg"
 		;;
 		(population)                                # 43
-			echo "avg"
+			echo "sum"
 		;;
 		(population_density)                        # 44
 			echo "avg"

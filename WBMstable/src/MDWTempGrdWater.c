@@ -103,7 +103,7 @@ int MDWTempGrdWaterDef () {
 
 	case MDcalculate:																													// RJS 061312
 
-	if (((_MDInWTempSurfRunoffID = MDWTempSurfRunoffDef ()) == CMfailed) ||
+	if (((_MDInWTempSurfRunoffID = MDWTempSurfRunoffDef  ()) == CMfailed) ||
 	    ((_MDInRainRechargeID    = MDRainInfiltrationDef ()) == CMfailed) ||
 	    ((_MDInIrrReturnFlowID   = MDIrrReturnFlowDef    ()) == CMfailed) ||
 	    ((_MDOutGrdWaterID       = MDBaseFlowDef         ()) == CMfailed) ||
