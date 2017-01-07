@@ -31,9 +31,6 @@ using namespace std;
 #define RGISItemOrderTopDown    0
 #define RGISItemOrderBottomUp    1
 
-#define RGISReferenceCenter    0
-#define RGISReferenceLLCorner    1
-
 #define RGISGridBinary            0
 #define RGISGridASCII            1
 

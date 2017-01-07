@@ -835,7 +835,7 @@ void RGISToolsImportGridCBK (Widget widget,RGISWorkspace *workspace,XmAnyCallbac
 						col = col < 0 ? colNum + col : col;
 						row -= llCellRow;
 						row = row < 0 ? rowNum + row : row;
-						memcpy (((char *) dataRec->Data ()) + ((DBUnsigned) row * (DBUnsigned) colNum + (DBUnsigned) col) * (DBUnsigned) itemSize,buffer,itemSize);
+						memcpy (((char *) dataRec->Data ()) + ((DBAddress) row * (DBAddress) colNum + (DBAddress) col) * (DBAddress) itemSize,buffer,itemSize);
 						if (layout == RGISLaoutByRow)
 							{
 							i += 1;
