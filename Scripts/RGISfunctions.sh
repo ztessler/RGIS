@@ -140,7 +140,7 @@ function RGISlookupSubject ()
 			echo "Landcover-PctBroadleafEvergreen"
 		;;
 		(landcover_deciduous_conifer_percentage)      # 40
-			echo "Landcover-PctConiferConifer"
+			echo "Landcover-PctConiferDeciduous"
 		;;
 		(landcover_evergreen_conifer_percentage)      # 41
 			echo "Landcover-PctConiferEvergreen"
