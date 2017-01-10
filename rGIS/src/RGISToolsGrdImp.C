@@ -643,7 +643,7 @@ void RGISToolsImportGridCBK (Widget widget,RGISWorkspace *workspace,XmAnyCallbac
 
 	if (proc)
 		{
-		DBObjData *grdData = new DBObjData ("",binaryType == RGISBinTypeShort ?
+		DBObjData *grdData = new DBObjData ("",binaryType == RGISBinTypeShort || binaryType == RGISBinTypeLong ?
 				DBTypeGrid : (binaryType < RGISBinTypeShort ? DBTypeGridDiscrete : DBTypeGridContinuous));
 
 		if (UIDataHeaderForm (grdData))
