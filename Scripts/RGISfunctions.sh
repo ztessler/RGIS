@@ -1420,6 +1420,12 @@ function RGISfile ()
 		(continents)
 			local extension="gdbd"
 		;;
+		(states)
+			local extension="gdbd"
+		;;
+		(counties)
+			local extension="gdbd"
+		;;
 		(ocean_basins)
 			local extension="gdbd"
 		;;
