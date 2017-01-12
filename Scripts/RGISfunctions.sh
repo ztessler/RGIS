@@ -1304,7 +1304,7 @@ function RGISdirectory ()
 
 function RGISfileExtension ()
 {
-	local     variable="${3}"
+	local     variable="${1}"
 
 	case "${variable}" in
 		(network)
@@ -1313,10 +1313,10 @@ function RGISfileExtension ()
 		(continents)
 			local extension="gdbd"
 		;;
-		(states)
+		(countries)
 			local extension="gdbd"
 		;;
-		(countries)
+		(states)
 			local extension="gdbd"
 		;;
 		(counties)
