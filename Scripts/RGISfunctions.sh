@@ -1316,6 +1316,9 @@ function RGISfileExtension ()
 		(states)
 			local extension="gdbd"
 		;;
+		(countries)
+			local extension="gdbd"
+		;;
 		(counties)
 			local extension="gdbd"
 		;;
