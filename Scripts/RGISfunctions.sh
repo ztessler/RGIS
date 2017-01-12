@@ -1305,7 +1305,6 @@ function RGISdirectory ()
 function RGISfileExtension ()
 {
 	local     variable="${1}"
-
 	case "${variable}" in
 		(network)
 			local extension="gdbn"
