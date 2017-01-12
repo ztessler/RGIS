@@ -1302,6 +1302,33 @@ function RGISdirectory ()
 	return 0
 }
 
+function RGISfileExtension ()
+{
+	local     variable="${3}"
+
+	case "${variable}" in
+		(network)
+			local extension="gdbn"
+		;;
+		(continents)
+			local extension="gdbd"
+		;;
+		(states)
+			local extension="gdbd"
+		;;
+		(counties)
+			local extension="gdbd"
+		;;
+		(ocean_basins)
+			local extension="gdbd"
+		;;
+		(*)
+			local extension="gdbc"
+		;;
+    esac
+    echo "${extension}"
+}
+
 function RGISfilePath ()
 {
 	local      archive="${1}"
@@ -1341,20 +1368,7 @@ function RGISfilePath ()
 		;;
 	esac
 
-	case "${variable}" in
-		(network)
-			local extension="gdbn"
-		;;
-		(continents)
-			local extension="gdbd"
-		;;
-		(ocean_basins)
-			local extension="gdbd"
-		;;
-		(*)
-			local extension="gdbc"
-		;;
-	esac
+    local extension=$(RGISfileExtension "${variable}")
 
 	local rgisDirectory=$(RGISdirectoryPath  "${archive}" "${domain}" "${variable}" "${product}" "${resolution}" "${tStepType}" "${tStep}")
 	local      fileName=$(RGISdirectoryPath            "" "${domain}" "${variable}" "${product}" "${resolution}" "${tStepType}" "${tStep}")
@@ -1413,26 +1427,7 @@ function RGISfile ()
 		;;
 	esac
 
-	case "${variable}" in
-		(network)
-			local extension="gdbn"
-		;;
-		(continents)
-			local extension="gdbd"
-		;;
-		(states)
-			local extension="gdbd"
-		;;
-		(counties)
-			local extension="gdbd"
-		;;
-		(ocean_basins)
-			local extension="gdbd"
-		;;
-		(*)
-			local extension="gdbc"
-		;;
-	esac
+    local extension=$(RGISfileExtension "${variable}")
 
 	local rgisDirectory=$(RGISdirectory      "${archive}" "${domain}" "${variable}" "${product}" "${resolution}" "${tStepType}" "${tStep}")
 	local      fileName=$(_RGISresolutionDir "${archive}" "${domain}" "${variable}" "${product}" "${resolution}" | sed "s:/:_:g" )
