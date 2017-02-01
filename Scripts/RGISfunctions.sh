@@ -381,7 +381,7 @@ function _RGISlookupFullName ()
 		(dewpoint_temperature)                        # 30
 			echo "Dewpoint Temperature"
 		;;
-		(relativec_humidity)                          # 31
+		(relative_humidity)                           # 31
 			echo "Relative Humidity"
 		;;
 		(specific_humidity)                           # 32
