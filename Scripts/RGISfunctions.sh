@@ -284,10 +284,10 @@ function RGISlookupSubject ()
 			echo "WindSpeed"
 		;;
 		(u_wind_speed)                                # 88
-			echo "WindSpeed-U"
+			echo "WindSpeed-U10m"
 		;;
 		(v_wind_speed)                                # 89
-			echo "WindSpeed-v"
+			echo "WindSpeed-V10m"
 		;;
 		(*)
 			echo "${variable}"
