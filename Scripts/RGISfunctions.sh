@@ -1048,55 +1048,58 @@ function RGISlookupAggrMethod ()
 		(shortwave_downwelling_radiation)             # 69
 			echo "avg"
 		;;
-		(longwave_downwelling_radiation)              # 70
+		(shortwave_upwelling_radiation)               # 70
 			echo "avg"
 		;;
-		(longwave_upwelling_radiation)                # 71
+		(longwave_downwelling_radiation)              # 71
 			echo "avg"
 		;;
-		(rain_fall)                                   # 72
+		(longwave_upwelling_radiation)                # 72
+			echo "avg"
+		;;
+		(rain_fall)                                   # 73
 			echo "sum"
 		;;
-		(rain_pet)                                    # 73
+		(rain_pet)                                    # 74
 			echo "sum"
 		;;
-		(reservoir_capacity)                          # 74
+		(reservoir_capacity)                          # 75
 			echo "avg"
 		;;
-		(rice_crop_fraction)                          # 75
+		(rice_crop_fraction)                          # 76
 			echo "avg"
 		;;
-		(rice_percolation_rate)                       # 76
+		(rice_percolation_rate)                       # 77
 			echo "avg"
 		;;
-		(rooting_depth)                               # 77
+		(rooting_depth)                               # 78
 			echo "avg"
 		;;
-		(runoff)                                      # 78
+		(runoff)                                      # 79
 			echo "sum"
 		;;
-		(small_reservoir_coefficient)                 # 79
+		(small_reservoir_coefficient)                 # 80
 			echo "avg"
 		;;
-		(snow_fall)                                   # 80
+		(snow_fall)                                   # 81
 			echo "avg"
 		;;
-		(soil_moisture)                               # 81
+		(soil_moisture)                               # 82
 			echo "avg"
 		;;
-		(soil_moisture_change)                        # 82
+		(soil_moisture_change)                        # 83
 			echo "avg"
 		;;
-		(surface_air_pressure)                        # 83
+		(surface_air_pressure)                        # 84
 			echo "avg"
 		;;
-		(vegetables_crop_fraction)                    # 84
+		(vegetables_crop_fraction)                    # 85
 			echo "avg"
 		;;
-		(wilting_point)                               # 85
+		(wilting_point)                               # 86
 			echo "avg"
 		;;
-		(wind_speed)                                  # 86
+		(wind_speed)                                  # 87
 			echo "avg"
 		;;
 		(u_wind_speed)                                # 88
