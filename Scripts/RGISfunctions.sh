@@ -229,13 +229,13 @@ function RGISlookupSubject ()
 		(shortwave_downwelling_radiation)             # 69
 			echo "Radiation-ShortWave-Downwelling"
 		;;
-		(shortwave_downwelling_radiation)             # 70
+		(shortwave_upwelling_radiation)               # 70
 			echo "Radiation-ShortWave-Upwelling"
 		;;
 		(longwave_downwelling_radiation)              # 71
 			echo "Radiation-LongWave-Downwelling"
 		;;
-		(longwave_downwelling_radiation)              # 72
+		(longwave_upwelling_radiation)                # 72
 			echo "Radiation-LongWave-Upwelling"
 		;;
 		(rain_fall)                                   # 73
