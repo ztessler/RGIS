@@ -144,7 +144,7 @@ int main(int argc, char *argv[]) {
         return (DBFault);
     }
     if (subject == (char *) NULL) subject = tmpData->Document(DBDocSubject);
-    if (domain == (char *) NULL) domain = tmpData->Document(DBDocGeoDomain);
+    if (domain  == (char *) NULL) domain  = tmpData->Document(DBDocGeoDomain);
     if (version == (char *) NULL) version = (char *) "0.01pre";
 
     switch (tmpData->Type()) {
