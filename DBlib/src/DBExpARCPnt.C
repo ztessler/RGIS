@@ -123,7 +123,10 @@ int DBExportARCTableData(DBObjData *data, char *tableName, char *fileName) {
                         fprintf(file, ",\"%s\"", tableField->String(itemRec));
                         break;
                     case DBTableFieldInt:
-                        fprintf(file, ",%d", tableField->Int(itemRec));
+                        if ((tableField->Format())[strlen(tableField->Format()) - 1] == 'X')
+                            fprintf(file, ",%X", tableField->Int(itemRec));
+                        else
+                            fprintf(file, ",%d", tableField->Int(itemRec));
                         break;
                     case DBTableFieldFloat:
                         fprintf(file, ",%f", tableField->Float(itemRec));
