@@ -15,7 +15,7 @@ NCstate NCdsHandleGridDefine(NCdsHandleGrid_t *grid, int *ncids, size_t n) {
     grid->Levels = grid->Times = (double *) NULL;
     grid->NCindex = grid->NCoffset = (size_t *) NULL;
     grid->DoLUnit = grid->DoTUnit = false;
-    grid->LUnits = grid->TUnits = (utUnit *) NULL;
+    grid->LUnits = grid->TUnits = (ut_unit *) NULL;
     grid->Climatology = false;
     if (n < 1) return (NCfailed);
     if (NCdsHandleGLayoutDefine((NCdsHandleGLayout_t *) grid, ncids, n) == NCfailed) return (NCfailed);
@@ -27,9 +27,7 @@ NCstate NCdsHandleGridDefine(NCdsHandleGrid_t *grid, int *ncids, size_t n) {
 
     if (((grid->TVarIds = (int *) calloc(n, sizeof(int))) == (int *) NULL) ||
         ((grid->LVarIds = (int *) calloc(n, sizeof(int))) == (int *) NULL) ||
-        ((grid->NCoffset = (size_t *) calloc(n, sizeof(size_t))) == (size_t *) NULL) ||
-        ((grid->LUnits = (utUnit *) calloc(n, sizeof(utUnit))) == (utUnit *) NULL) ||
-        ((grid->TUnits = (utUnit *) calloc(n, sizeof(utUnit))) == (utUnit *) NULL)) {
+        ((grid->NCoffset = (size_t *) calloc(n, sizeof(size_t))) == (size_t *) NULL)) {
         CMmsgPrint(CMmsgSysError, "Memory allocation error in: %s %d", __FILE__, __LINE__);
         goto ABORT;
     }
