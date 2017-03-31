@@ -18,7 +18,7 @@ bfekete@ccny.cuny.edu
 
 int main(int argc, char *argv[]) {
     int argPos, argNum = argc, ret, verbose = false;
-    float climb = 0.0, maxBasin = HUGE_VAL;
+    float climb = 0.0, minBasin = HUGE_VAL;
     char *title = (char *) NULL, *subject = (char *) NULL;
     char *domain = (char *) NULL, *version = (char *) NULL;
     char *elevName = (char *) NULL;
@@ -47,13 +47,13 @@ int main(int argc, char *argv[]) {
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
             continue;
         }
-        if (CMargTest (argv[argPos], "-a", "--maximum_basin")) {
+        if (CMargTest (argv[argPos], "-a", "--minimum_basin")) {
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) {
                 CMmsgPrint(CMmsgUsrError, "Missing maximum basin size!");
                 return (CMfailed);
             }
-            if (sscanf(argv[argPos], "%f", &maxBasin) != 1) {
-                CMmsgPrint(CMmsgUsrError, "Invalid maximum basin size");
+            if (sscanf(argv[argPos], "%f", &minBasin) != 1) {
+                CMmsgPrint(CMmsgUsrError, "Invalid minimum basin size");
                 return (CMfailed);
             }
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
@@ -138,14 +138,14 @@ int main(int argc, char *argv[]) {
         }
         if (CMargTest (argv[argPos], "-h", "--help")) {
             CMmsgPrint(CMmsgInfo, "%s [options] <input network> <output network>", CMfileName(argv[0]));
-            CMmsgPrint(CMmsgInfo, "     -e,--elevation   [elevation coverage]");
-            CMmsgPrint(CMmsgInfo, "     -c,--climb       [climb coefficient]");
-            CMmsgPrint(CMmsgInfo, "     -a,--maximum_basin [maximum basin size]");
-            CMmsgPrint(CMmsgInfo, "     -P, --planet     [Earth|Mars|Venus|radius]");
-            CMmsgPrint(CMmsgInfo, "     -t,--title       [dataset title]");
-            CMmsgPrint(CMmsgInfo, "     -u,--subject     [subject]");
-            CMmsgPrint(CMmsgInfo, "     -d,--domain      [domain]");
-            CMmsgPrint(CMmsgInfo, "     -v,--version     [version]");
+            CMmsgPrint(CMmsgInfo, "     -e,--elevation     [elevation coverage]");
+            CMmsgPrint(CMmsgInfo, "     -c,--climb         [climb coefficient]");
+            CMmsgPrint(CMmsgInfo, "     -a,--minimum_basin [minimum basin size]");
+            CMmsgPrint(CMmsgInfo, "     -P, --planet       [Earth|Mars|Venus|radius]");
+            CMmsgPrint(CMmsgInfo, "     -t,--title         [dataset title]");
+            CMmsgPrint(CMmsgInfo, "     -u,--subject       [subject]");
+            CMmsgPrint(CMmsgInfo, "     -d,--domain        [domain]");
+            CMmsgPrint(CMmsgInfo, "     -v,--version       [version]");
             CMmsgPrint(CMmsgInfo, "     -V,--verbose");
             CMmsgPrint(CMmsgInfo, "     -h,--help");
             return (DBSuccess);
@@ -190,7 +190,7 @@ int main(int argc, char *argv[]) {
     if ((argNum > 2) && (strcmp(argv[2], "-") != 0)) netData->FileName(argv[2]);
     else save = false;
 
-    if ((ret = RGlibNetworkDefragment(netData, grdData, climb, maxBasin, save)) == DBSuccess)
+    if ((ret = RGlibNetworkDefragment(netData, grdData, climb, minBasin, save)) == DBSuccess)
         ret = (argNum > 2) && (strcmp(argv[2], "-") != 0) ? netData->Write(argv[2]) : netData->Write(stdout);
 
     delete netData;
@@ -209,7 +209,7 @@ static DBInt _RGlibNetworkDefragCompare(const void *leftID, const void *rightID)
     return (leftVal < rightVal ? -1 : 1);
 }
 
-DBInt RGlibNetworkDefragment(DBObjData *netData, DBObjData *elevData, DBFloat maxClimb, DBFloat maxBasin, bool save) {
+DBInt RGlibNetworkDefragment(DBObjData *netData, DBObjData *elevData, DBFloat maxClimb, DBFloat minBasin, bool save) {
     DBInt basin, basinID, *basinIDs, cBasinID, nBasinID, cellID, dir, prevDir, pourDir, cellNum, count;
     DBFloat elev, elev2, pourElev;
     DBPosition pos, cellPos, pourPos;
@@ -283,7 +283,7 @@ DBInt RGlibNetworkDefragment(DBObjData *netData, DBObjData *elevData, DBFloat ma
             if (CMmathEqualValues(_RGlibNetworkBasinElev[cBasinID], gridIF->Minimum())) continue;
             toCell = pourCell = mouthCell = netIF->MouthCell(netIF->Basin(cBasinID));
             if (netIF->CellDirection(mouthCell) != 0x0) continue;
-            if (netIF->BasinArea(netIF->Basin(cBasinID)) >= maxBasin) continue;
+            if (netIF->BasinArea(netIF->Basin(cBasinID)) >= minBasin) continue;
 
             pourDir = 0x0;
             cellNum = mouthCell->RowID() + netIF->CellBasinCells(mouthCell);
