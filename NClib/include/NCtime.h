@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-#include<udunits2.h>
+#include<udunits.h>
 
 typedef enum {
     NCtimeYear = 0,
@@ -24,9 +24,9 @@ size_t NCtimeMonthLength(int, size_t);
 
 size_t NCtimeDayOfYear(int, size_t, size_t);
 
-NCstate NCtimeParse(const char *, NCtimeStep, ut_unit *, double *);
+NCstate NCtimeParse(const char *, NCtimeStep, utUnit *, double *);
 
-NCstate NCtimePrint(NCtimeStep, ut_unit *, double, char *);
+NCstate NCtimePrint(NCtimeStep, utUnit *, double, char *);
 
 const char *NCtimeStepString(NCtimeStep);
 

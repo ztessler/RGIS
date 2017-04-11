@@ -3,6 +3,7 @@
 
 #include <NCtable.h>
 #include <NCtime.h>
+#include <udunits.h>
 
 #if defined(__cplusplus)
 extern "C" {
@@ -38,7 +39,7 @@ NCdsHandle_t *NCdsHandleOpenByIds(int *, size_t);
 
 NCstate NCdsHandleClose(NCdsHandle_t *);
 
-NCdsHandle_t *NCdsHandleCreate(const char *, const char *, int, NCtimeStep, ut_unit *, double, double);
+NCdsHandle_t *NCdsHandleCreate(const char *, const char *, int, NCtimeStep, utUnit *, double, double);
 
 int NCdsHandleGetLNum(const NCdsHandle_t *);
 
@@ -54,13 +55,13 @@ NCstate NCdsHandleSetFloat(NCdsHandle_t *, size_t *, double);
 
 NCstate NCdsHandleSetFill(NCdsHandle_t *, size_t *);
 
-NCstate NCdsHandleGetTime(const NCdsHandle_t *, size_t, ut_unit *, double *);
+NCstate NCdsHandleGetTime(const NCdsHandle_t *, size_t, utUnit *, double *);
 
-int NCdsHandleGetTimeStep(const NCdsHandle_t *, size_t, ut_unit *, double *);
+int NCdsHandleGetTimeStep(const NCdsHandle_t *, size_t, utUnit *, double *);
 
-int NCdsHandleGetTLayerID(const NCdsHandle_t *, ut_unit *, double);
+int NCdsHandleGetTLayerID(const NCdsHandle_t *, utUnit *, double);
 
-NCstate NCdsHandleGetUnitConv(const NCdsHandle_t *, const ut_unit *, double *, double *);
+NCstate NCdsHandleGetUnitConv(const NCdsHandle_t *, const utUnit *, double *, double *);
 
 NCstate NCdsHandleReference(const NCdsHandle_t *, const NCcoordinate_t *, NCreference_t *);
 
@@ -140,7 +141,7 @@ typedef struct NCdsHandleGrid_s {
 /* Begin dsHandleGrid */
     size_t *NCindex, *NCoffset;
     bool DoLUnit, DoTUnit;
-    ut_unit *LUnits, *TUnits;
+    utUnit *LUnits, *TUnits;
     int *LVarIds, *TVarIds;
     double *Levels, *Times;
     size_t LNum, TNum;
@@ -153,11 +154,11 @@ NCstate NCdsHandleGridDefine(NCdsHandleGrid_t *, int *, size_t);
 
 void NCdsHandleGridClear(NCdsHandleGrid_t *);
 
-NCstate NCdsHandleGridGetTime(const NCdsHandleGrid_t *, size_t, ut_unit *, double *);
+NCstate NCdsHandleGridGetTime(const NCdsHandleGrid_t *, size_t, utUnit *, double *);
 
-int NCdsHandleGridGetTimeStep(const NCdsHandleGrid_t *, size_t, ut_unit *, double *);
+int NCdsHandleGridGetTimeStep(const NCdsHandleGrid_t *, size_t, utUnit *, double *);
 
-int NCdsHandleGridGetTLayerID(const NCdsHandleGrid_t *, ut_unit *, double);
+int NCdsHandleGridGetTLayerID(const NCdsHandleGrid_t *, utUnit *, double);
 
 typedef struct NCdsHandleGCont_s {
 /* Begin dsHandle */
@@ -178,7 +179,7 @@ typedef struct NCdsHandleGCont_s {
 /* Begin dsHandleGrid */
     size_t *NCindex, *NCoffset;
     bool DoLUnit, DoTUnit;
-    ut_unit *LUnits, *TUnits;
+    utUnit *LUnits, *TUnits;
     int *LVarIds, *TVarIds;
     double *Levels, *Times;
     size_t LNum, TNum;
@@ -188,7 +189,7 @@ typedef struct NCdsHandleGCont_s {
 /* Begin dsHandleGCont */
     NCscale ScaleMode;
     bool DoGUnit;
-    ut_unit *GUnit;
+    utUnit GUnit;
     double Scale, Offset;
     union {
         int Int;
@@ -239,7 +240,7 @@ typedef struct NCdsHandleGDisc_s {
 /* Begin dsHandleGrid */
     size_t *NCindex, *NCoffset;
     bool DoLUnit, DoTUnit;
-    ut_unit *LUnits, *TUnits;
+    utUnit *LUnits, *TUnits;
     int *LVarIds, *TVarIds;
     double *Levels, *Times;
     size_t LNum, TNum;

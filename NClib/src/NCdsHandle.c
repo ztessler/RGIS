@@ -88,7 +88,7 @@ NCdsHandle_t *NCdsHandleOpen(const char *pattern) {
 
 NCdsHandle_t *NCdsHandleOpenById(int ncid) { return (NCdsHandleOpenByIds(&ncid, 1)); }
 
-NCdsHandle_t *NCdsHandleCreate(const char *pattern, const char *name, int dncid, NCtimeStep tsMode, ut_unit *tUnitIn,
+NCdsHandle_t *NCdsHandleCreate(const char *pattern, const char *name, int dncid, NCtimeStep tsMode, utUnit *tUnitIn,
                                double sTime, double eTime) {
     size_t i, j, strLen, strOffset, ncNum = 0, index;
     char *str[] = {"{year}", "{month}", "{day}", "{hour}", "{minute}", "{second}"};
@@ -97,7 +97,7 @@ NCdsHandle_t *NCdsHandleCreate(const char *pattern, const char *name, int dncid,
     int endYear, endMonth, year, month, day, hour, minute;
     float second;
     double time = 0.0, scale, offset;
-    ut_unit *tUnitOut;
+    utUnit tUnitOut;
     NCdsHandle_t *dsh;
 
     if ((searchStr = malloc(strlen(pattern) + 1)) == (char *) NULL) {
@@ -398,7 +398,7 @@ NCstate NCdsHandleSetFill(NCdsHandle_t *dsh, size_t *index) {
     return (NCfailed);
 }
 
-NCstate NCdsHandleGetTime(const NCdsHandle_t *dsh, size_t layerID, ut_unit *tUnit, double *time) {
+NCstate NCdsHandleGetTime(const NCdsHandle_t *dsh, size_t layerID, utUnit *tUnit, double *time) {
     switch (dsh->DataType) {
         default:
             break;
@@ -410,7 +410,7 @@ NCstate NCdsHandleGetTime(const NCdsHandle_t *dsh, size_t layerID, ut_unit *tUni
     return (NCfailed);
 }
 
-int NCdsHandleGetTimeStep(const NCdsHandle_t *dsh, size_t layerID, ut_unit *tUnit, double *tStep) {
+int NCdsHandleGetTimeStep(const NCdsHandle_t *dsh, size_t layerID, utUnit *tUnit, double *tStep) {
     switch (dsh->DataType) {
         default:
             break;
@@ -422,7 +422,7 @@ int NCdsHandleGetTimeStep(const NCdsHandle_t *dsh, size_t layerID, ut_unit *tUni
     return (NCfailed);
 }
 
-NCstate NCdsHandleGetTLayerID(const NCdsHandle_t *dsh, ut_unit *tUnit, double time) {
+NCstate NCdsHandleGetTLayerID(const NCdsHandle_t *dsh, utUnit *tUnit, double time) {
     switch (dsh->DataType) {
         default:
             break;
@@ -434,7 +434,7 @@ NCstate NCdsHandleGetTLayerID(const NCdsHandle_t *dsh, ut_unit *tUnit, double ti
     return (NCfailed);
 }
 
-NCstate NCdsHandleGetUnitConv(const NCdsHandle_t *dsh, const ut_unit *unit, double *scale, double *offset) {
+NCstate NCdsHandleGetUnitConv(const NCdsHandle_t *dsh, const utUnit *unit, double *scale, double *offset) {
     switch (dsh->DataType) {
         case NCtypeGDisc:
         default:

@@ -53,7 +53,7 @@ size_t NCtimeMonthLength (utUnit *tUnit, double t)
 }
 */
 
-NCstate NCtimeParse(const char *timeStr, NCtimeStep timeStep, ut_unit *tUnit, double *t) {
+NCstate NCtimeParse(const char *timeStr, NCtimeStep timeStep, utUnit *tUnit, double *t) {
     double second;
     int year, month, day, hour, minute;
 
@@ -73,7 +73,7 @@ NCstate NCtimeParse(const char *timeStr, NCtimeStep timeStep, ut_unit *tUnit, do
     return (NCsucceeded);
 }
 
-NCstate NCtimePrint(NCtimeStep timeStep, ut_unit *tUnit, double t, char *timeStr) {
+NCstate NCtimePrint(NCtimeStep timeStep, utUnit *tUnit, double t, char *timeStr) {
     float second;
     int year, month, day, hour, minute;
 
