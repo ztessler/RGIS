@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
             continue;
         }
-        if (CMargTest (argv[argPos], "-a", "--minimum_basin")) {
+        if (CMargTest (argv[argPos], "-m", "--minimum_basin")) {
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) {
                 CMmsgPrint(CMmsgUsrError, "Missing maximum basin size!");
                 return (CMfailed);
@@ -140,7 +140,7 @@ int main(int argc, char *argv[]) {
             CMmsgPrint(CMmsgInfo, "%s [options] <input network> <output network>", CMfileName(argv[0]));
             CMmsgPrint(CMmsgInfo, "     -e,--elevation     [elevation coverage]");
             CMmsgPrint(CMmsgInfo, "     -c,--climb         [climb coefficient]");
-            CMmsgPrint(CMmsgInfo, "     -a,--minimum_basin [minimum basin size]");
+            CMmsgPrint(CMmsgInfo, "     -m,--minimum_basin [minimum basin size]");
             CMmsgPrint(CMmsgInfo, "     -P, --planet       [Earth|Mars|Venus|radius]");
             CMmsgPrint(CMmsgInfo, "     -t,--title         [dataset title]");
             CMmsgPrint(CMmsgInfo, "     -u,--subject       [subject]");

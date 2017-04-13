@@ -218,6 +218,16 @@ public:
     void FourColoring();
 };
 
+class DBGridSampler {
+private:
+    DBPosition Position [9];
+    DBFloat    Weight   [9];
+    DBInt      Num;
+public:
+    DBGridSampler () { Initialize (); }
+    void Initialize () {for (Num = 8; Num >= 0; --Num) { Position [Num].Row = Position [Num].Col = 0; Weight [Num] = 0.0; } }
+};
+
 class DBGridIF {
 private:
     DBObjData *DataPTR;
