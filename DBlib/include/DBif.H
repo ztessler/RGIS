@@ -226,7 +226,7 @@ private:
 public:
     DBGridSampler () { Initialize (); }
     void Initialize () {for (Num = 8; Num >= 0; --Num) { Position [Num].Row = Position [Num].Col = 0; Weight [Num] = 0.0; } }
-};
+}; // TODO adding grid sampler to reduced the redundant computation of weights during interpolation of multilayered coverages.
 
 class DBGridIF {
 private:
