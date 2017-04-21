@@ -189,6 +189,61 @@ DBFloat DBGridIF::Minimum(DBInt layer) const {
     return (retVal);
 }
 
+DBInt DBGridIF::Coord2Sampler (DBCoordinate coord, DBGridSampler &sampler) const {
+    bool horExt, verExt;
+    DBCoordinate cellCoord;
+    DBPosition   pos, cellPos;
+    DBMathDistanceFunction distFunc = DBMathGetDistanceFunction(DataPTR);
+
+    Coord2Pos(coord,   cellPos);
+    Pos2Coord(cellPos, cellCoord);
+    sampler.Initialize(cellCoord);
+    sampler.Add (cellPos, DBMathCoordinateDistance(distFunc, coord, cellCoord));
+    if (Flat) return (sampler.Num());
+
+    horExt = fabs (coord.X - cellCoord.X) < (CellWidth()  / 4.0) ? true : false;
+    verExt = fabs (coord.Y - cellCoord.Y) < (CellHeight() / 4.0) ? true : false;
+
+    pos.Col = coord.X > cellCoord.X ? cellPos.Col + 1 : cellPos.Col - 1;
+    pos.Row = cellPos.Row;
+    if (Pos2Coord(pos, cellCoord) == DBSuccess)
+        sampler.Add(pos, DBMathCoordinateDistance(distFunc, coord, cellCoord));
+    pos.Row = coord.Y > cellCoord.Y ? cellPos.Row + 1 : cellPos.Row - 1;
+    if (Pos2Coord(pos, cellCoord) == DBSuccess)
+        sampler.Add(pos, DBMathCoordinateDistance(distFunc, coord, cellCoord));
+    pos.Col = cellPos.Col;
+    if (Pos2Coord(pos, cellCoord) == DBSuccess)
+        sampler.Add(pos, DBMathCoordinateDistance(distFunc, coord, cellCoord));
+
+    if (horExt) {
+        pos.Col = coord.X > cellCoord.X ? cellPos.Col - 1 : cellPos.Col + 1;
+        pos.Row = cellPos.Row;
+        if (Pos2Coord(pos, cellCoord) == DBSuccess)
+            sampler.Add(pos, DBMathCoordinateDistance(distFunc, coord, cellCoord));
+        pos.Row = coord.Y > cellCoord.Y ? cellPos.Row + 1 : cellPos.Row - 1;
+        if (Pos2Coord(pos, cellCoord) == DBSuccess)
+            sampler.Add(pos, DBMathCoordinateDistance(distFunc, coord, cellCoord));
+    }
+
+    if (verExt) {
+        pos.Col = cellPos.Col;
+        pos.Row = coord.Y > cellCoord.Y ? cellPos.Row + 1 : cellPos.Row - 1;
+        if (Pos2Coord(pos, cellCoord) == DBSuccess)
+            sampler.Add(pos, DBMathCoordinateDistance(distFunc, coord, cellCoord));
+        pos.Col = coord.X > cellCoord.X ? cellPos.Col + 1 : cellPos.Col - 1;
+        if (Pos2Coord(pos, cellCoord) == DBSuccess)
+            sampler.Add(pos, DBMathCoordinateDistance(distFunc, coord, cellCoord));
+    }
+
+    if (horExt && verExt) {
+        pos.Col = coord.X > cellCoord.X ? cellPos.Col + 1 : cellPos.Col - 1;
+        pos.Row = coord.Y > cellCoord.Y ? cellPos.Row - 1 : cellPos.Row + 1;
+        if (Pos2Coord(pos, cellCoord) == DBSuccess)
+            sampler.Add(pos, DBMathCoordinateDistance(distFunc, coord, cellCoord));
+    }
+    return (sampler.Num());
+}
+
 DBInt DBGridIF::Coord2Pos(DBCoordinate coord, DBPosition &pos) const {
     pos.Col = (DBInt) floor((coord.X - DataPTR->Extent().LowerLeft.X) / CellWidth());
     pos.Row = (DBInt) floor((coord.Y - DataPTR->Extent().LowerLeft.Y) / CellHeight());
@@ -198,25 +253,20 @@ DBInt DBGridIF::Coord2Pos(DBCoordinate coord, DBPosition &pos) const {
 }
 
 DBInt DBGridIF::Pos2Coord(DBPosition pos, DBCoordinate &coord) const {
-    DBInt ret = DBSuccess;
-    if (pos.Col < 0) ret = DBFault;
-    if (pos.Row < 0) ret = DBFault;
-    if (pos.Col >= ColNum()) ret = DBFault;
-    if (pos.Row >= RowNum()) ret = DBFault;
+    if ((pos.Col < 0) || (pos.Row < 0) || (pos.Col >= ColNum()) || (pos.Row >= RowNum())) return (DBFault);
 
-    coord.X = DataPTR->Extent().LowerLeft.X + pos.Col * CellWidth() + CellWidth() / 2.0;
+    coord.X = DataPTR->Extent().LowerLeft.X + pos.Col * CellWidth()  + CellWidth()  / 2.0;
     coord.Y = DataPTR->Extent().LowerLeft.Y + pos.Row * CellHeight() + CellHeight() / 2.0;
-    return (ret);
+    return (DBSuccess);
 }
 
 DBInt DBGridIF::Value(DBObjRecord *layerRec, DBPosition pos, DBInt value) {
     DBInt j;
     DBObjRecord *dataRec = LayerFLD->Record(layerRec);
 
-    if (pos.Col < 0) return (false);
-    if (pos.Row < 0) return (false);
-    if (pos.Col >= DimensionVAR.Col) return (false);
-    if (pos.Row >= DimensionVAR.Row) return (false);
+    if ((pos.Col < 0) || (pos.Row < 0) || (pos.Col >= DimensionVAR.Col) || (pos.Row >= DimensionVAR.Row)) {
+        return (false);
+    }
 
     j = DimensionVAR.Col * (DimensionVAR.Row - pos.Row - 1) + pos.Col;
     switch (ValueTypeVAR) {
@@ -251,10 +301,10 @@ DBInt DBGridIF::Value(DBObjRecord *layerRec, DBPosition pos, DBInt *value) const
     DBInt j;
     DBObjRecord *dataRec = LayerFLD->Record(layerRec);
 
-    if (pos.Col < 0) return (false);
-    if (pos.Row < 0) return (false);
-    if (pos.Col >= DimensionVAR.Col) return (false);
-    if (pos.Row >= DimensionVAR.Row) return (false);
+    if ((pos.Col < 0) || (pos.Row < 0) || (pos.Col >= DimensionVAR.Col) || (pos.Row >= DimensionVAR.Row)) {
+        *value = MissingValue();
+        return (false);
+    }
 
     j = DimensionVAR.Col * (DimensionVAR.Row - pos.Row - 1) + pos.Col;
     switch (ValueTypeVAR) {
@@ -292,10 +342,10 @@ DBInt DBGridIF::Value(DBObjRecord *layerRec, DBPosition pos, DBFloat *value) con
     DBObjRecord *dataRec = LayerFLD->Record(layerRec);
     DBFloat missingValue = MissingValueFLD->Float(ItemTable->Item(layerRec->RowID()));
 
-//	if (pos.Col < 0) return (false); No longer possible
-//	if (pos.Row < 0) return (false);
-    if (pos.Col >= DimensionVAR.Col) return (false);
-    if (pos.Row >= DimensionVAR.Row) return (false);
+	if ((pos.Col < 0) || (pos.Row < 0) || (pos.Col >= DimensionVAR.Col) || (pos.Row >= DimensionVAR.Row)) {
+        *value = MissingValue();
+        return (false);
+    }
 
     j = DimensionVAR.Col * (DimensionVAR.Row - pos.Row - 1) + pos.Col;
     switch (ValueTypeVAR) {
@@ -363,168 +413,21 @@ DBInt DBGridIF::Value(DBObjRecord *layerRec, DBPosition pos, DBFloat value) {
     return (DBSuccess);
 }
 
-DBInt DBGridIF::Value(DBObjRecord *layerRec, DBCoordinate coord, DBFloat *value) const {
-    DBInt i, j, pointNum;
-    DBInt row[9], col[9];
-    DBPosition pos;
-    DBCoordinate cellCoord;
-    DBPosition cellPos;
-    DBFloat precision, dist, wAvg, sumWeight, retVal;
-    DBObjRecord *dataRec = LayerFLD->Record(layerRec);
-    DBFloat missingValue = MissingValueFLD->Float(ItemTable->Item());
-    DBMathDistanceFunction distFunc = DBMathGetDistanceFunction(DataPTR);
+DBInt DBGridIF::Value(DBObjRecord *layerRec, DBGridSampler sampler, DBFloat *value) const {
+    DBInt i, j, pointNum = sampler.Num();
+    DBFloat weight, sumWValue, sumWeight, retVal;
 
-    if (DataPTR->Extent().InRegion(coord) == false) return (false);
-    precision = pow((double) 10.0, (double) DataPTR->Precision());
-    Coord2Pos(coord, cellPos);
-    Pos2Coord(cellPos, cellCoord);
-    if (Flat ||
-        ((fabs(coord.X - cellCoord.X) < precision) &&
-         (fabs(coord.Y - cellCoord.Y) < precision))) {
-        j = DimensionVAR.Col * (DimensionVAR.Row - cellPos.Row - 1) + cellPos.Col;
-        switch (ValueTypeVAR) {
-            case DBTableFieldFloat:
-                switch (ValueSizeVAR) {
-                    case sizeof(DBFloat4):
-                        retVal = (DBFloat) ((DBFloat4 *) (dataRec->Data()))[j];
-                        break;
-                    case sizeof(DBFloat):
-                        retVal = (DBFloat) ((DBFloat *) (dataRec->Data()))[j];
-                        break;
-                }
-                break;
-            case DBTableFieldInt:
-                switch (ValueSizeVAR) {
-                    case sizeof(DBByte):
-                        retVal = (DBFloat) ((DBByte *) (dataRec->Data()))[j];
-                        break;
-                    case sizeof(DBShort):
-                        retVal = (DBFloat) ((DBShort *) (dataRec->Data()))[j];
-                        break;
-                    case sizeof(DBInt):
-                        retVal = (DBFloat) ((DBInt *) (dataRec->Data()))[j];
-                        break;
-                }
-                break;
-        }
-        if (!CMmathEqualValues(retVal, missingValue)) {
-            *value = retVal;
-            return (true);
-        }
-    }
-    col[0] = cellPos.Col;
-    row[0] = cellPos.Row;
-    if (coord.X < cellCoord.X) col[0] -= 1;
-    if (coord.Y < cellCoord.Y) row[0] -= 1;
-    col[1] = col[0] + 1;
-    row[1] = row[0];
-    col[2] = col[0] + 1;
-    row[2] = row[0] + 1;
-    col[3] = col[0];
-    row[3] = row[0] + 1;
-
-    pos.Col = col[0];
-    pos.Row = row[0];
-    Pos2Coord(pos, cellCoord);
-    if ((coord.X - cellCoord.X) > (3.0 * CellWidth() / 4.0)) i = 1;
-    else if ((coord.X - cellCoord.X) > (CellWidth() / 4.0)) i = 0;
-    else i = -1;
-    if ((coord.Y - cellCoord.Y) > (3.0 * CellHeight() / 4.0)) j = 1;
-    else if ((coord.Y - cellCoord.Y) > (CellHeight() / 4.0)) j = 0;
-    else j = -1;
-
-    if ((i != 0) || (j != 0)) {
-        if (i == 0) {
-            row[4] = row[5] = j > 0 ? row[2] + 1 : row[0] - 1;
-            col[4] = col[0];
-            col[5] = col[2];
-            pointNum = 6;
-        }
-        else if (j == 0) {
-            row[4] = row[0];
-            row[5] = row[2];
-            col[4] = col[5] = i > 0 ? col[2] + 1 : col[0] - 1;
-            pointNum = 6;
-        }
-        else {
-            row[7] = row[0];
-            row[8] = row[2];
-            if (j > 0)
-                row[4] = row[5] = row[6] = row[2] + 1;
-            else
-                row[4] = row[5] = row[6] = row[0] - 1;
-
-            if (i > 0) {
-                col[4] = col[0];
-                col[5] = col[2];
-                col[6] = col[7] = col[8] = col[2] + 1;
-            }
-            else {
-                col[5] = col[0];
-                col[6] = col[2];
-                col[4] = col[7] = col[8] = col[0] - 1;
-            }
-            pointNum = 9;
-        }
-    }
-    else pointNum = 4;
-
-    wAvg = sumWeight = 0.0;
+    sumWValue = sumWeight = 0.0;
     for (i = 0; i < pointNum; ++i) {
-        if (col[i] < 0) continue;
-        if (row[i] < 0) continue;
-        if (col[i] >= DimensionVAR.Col) continue;
-        if (row[i] >= DimensionVAR.Row) continue;
-
-        j = DimensionVAR.Col * (DimensionVAR.Row - row[i] - 1) + col[i];
-        switch (ValueTypeVAR) {
-            case DBTableFieldFloat:
-                switch (ValueSizeVAR) {
-                    case sizeof(DBFloat4):
-                        retVal = (DBFloat) ((DBFloat4 *) (dataRec->Data()))[j];
-                        break;
-                    case sizeof(DBFloat):
-                        retVal = (DBFloat) ((DBFloat *) (dataRec->Data()))[j];
-                        break;
-                }
-                break;
-            case DBTableFieldInt:
-                switch (ValueSizeVAR) {
-                    case sizeof(DBByte):
-                        retVal = (DBFloat) ((DBByte *) (dataRec->Data()))[j];
-                        break;
-                    case sizeof(DBShort):
-                        retVal = (DBFloat) ((DBShort *) (dataRec->Data()))[j];
-                        break;
-                    case sizeof(DBInt):
-                        retVal = (DBFloat) ((DBInt *) (dataRec->Data()))[j];
-                        break;
-                }
-                break;
+        if (Value(layerRec, sampler.Position(i), &retVal)) {
+            weight = 1.0 / sampler.Weight(i);
+            weight *= weight;
+            sumWeight += weight;
+            sumWValue += retVal * weight;
         }
-        if (CMmathEqualValues(retVal, missingValue)) {
-            if ((col[i] == cellPos.Col) && (row[i] == cellPos.Row)) return (false);
-            else continue;
-        }
-        pos.Row = (DBUShort) row[i];
-        pos.Col = (DBUShort) col[i];
-        Pos2Coord(pos, cellCoord);
-        if (pointNum > 1) {
-            dist = DBMathCoordinateDistance(distFunc, coord, cellCoord);
-            dist *= dist;
-        }
-        else dist = 1.0;
-        wAvg = wAvg + retVal / dist;
-        sumWeight = sumWeight + 1.0 / dist;
     }
-    if (sumWeight > 0) {
-        *value = wAvg / sumWeight;
-        return (true);
-    }
-    else {
-        *value = missingValue;
-        return (false);
-    }
+    if (sumWeight > 0) { *value = sumWValue / sumWeight; return (true);  }
+    else               { *value = MissingValue();        return (false); }
 }
 
 DBObjRecord *DBGridIF::GridItem(DBObjRecord *layerRec, DBPosition pos) const {

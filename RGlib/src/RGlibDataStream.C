@@ -24,6 +24,7 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
     DBObjRecord *layerRec, *gridRec;
     DBObjTableField *fieldPTR = (DBObjTableField *) NULL;
     DBGridIF *gridIF;
+    DBGridSampler *sampler = (DBGridSampler *) NULL;
     DBVPointIF *tmplPntIF = (DBVPointIF *) NULL;
     DBGridIF *tmplGrdIF = (DBGridIF *) NULL;
     DBNetworkIF *tmplNetIF = (DBNetworkIF *) NULL;
@@ -141,6 +142,17 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
     if (tmplPntIF != (DBVPointIF *) NULL) {
         DBObjRecord *pntRec;
 
+        if ((fieldPTR == (DBObjTableField *) NULL) && ((dsHeader.Type == MFFloat) || (dsHeader.Type == MFDouble))) {
+            if ((sampler = (DBGridSampler *) calloc (sizeof(DBGridSampler),tmplPntIF->ItemNum ())) == (DBGridSampler *) NULL) {
+                CMmsgPrint (CMmsgSysError,"Memory allocation error in: %s %d",__FILE__,__LINE__);
+                return (DBFault);
+            }
+        }
+        for (itemID = 0;itemID < tmplPntIF->ItemNum ();++itemID) {
+            pntRec = tmplPntIF->Item (itemID);
+            gridIF->Coord2Sampler(tmplPntIF->Coordinate(pntRec),sampler[itemID]);
+        }
+
         if (fieldPTR == (DBObjTableField *) NULL) {
             for (layerID = 0; layerID < gridIF->LayerNum(); ++layerID) {
                 layerRec = gridIF->Layer(layerID);
@@ -164,7 +176,7 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
                         }
                     }
                     else {
-                        if (gridIF->Value(layerRec, tmplPntIF->Coordinate(pntRec), &floatValue) == false)
+                        if (gridIF->Value(layerRec, sampler [pntRec->RowID()], &floatValue) == false)
                             floatValue = dsHeader.Missing.Float;
                         switch (dsHeader.Type) {
                             case MFFloat:
@@ -242,6 +254,18 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
         DBPosition pos;
         DBCoordinate coord;
 
+        if ((tmplGrdIF != gridIF) && (fieldPTR == (DBObjTableField *) NULL) && ((dsHeader.Type == MFFloat) || (dsHeader.Type == MFDouble))) {
+            if ((sampler = (DBGridSampler *) calloc (sizeof(DBGridSampler),tmplGrdIF->RowNum() * tmplGrdIF->ColNum())) == (DBGridSampler *) NULL) {
+                CMmsgPrint (CMmsgSysError,"Memory allocation error in: %s %d",__FILE__,__LINE__);
+                return (DBFault);
+            }
+        }
+        for (pos.Row = 0;pos.Row < tmplGrdIF->RowNum();++pos.Row)
+            for (pos.Col = 0;pos.Col < tmplGrdIF->ColNum();++pos.Col) {
+            tmplGrdIF->Pos2Coord(pos,coord);
+            gridIF->Coord2Sampler(coord,sampler[pos.Row * tmplGrdIF->RowNum() + pos.Col]);
+        }
+
         if (fieldPTR == (DBObjTableField *) NULL) {
             for (layerID = 0; layerID < gridIF->LayerNum(); ++layerID) {
                 layerRec = gridIF->Layer(layerID);
@@ -273,8 +297,7 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
                         }
                         else {
                             if (tmplGrdIF != gridIF) {
-                                tmplGrdIF->Pos2Coord(pos, coord);
-                                if (gridIF->Value(layerRec, coord, &floatValue) == false)
+                                if (gridIF->Value(layerRec, sampler[pos.Row * tmplGrdIF->RowNum() + pos.Col], &floatValue) == false)
                                     floatValue = dsHeader.Missing.Float;
                             }
                             else {
@@ -361,6 +384,17 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
     else if (tmplNetIF != (DBNetworkIF *) NULL) {
         DBObjRecord *cellRec;
 
+        if ((fieldPTR == (DBObjTableField *) NULL) && ((dsHeader.Type == MFFloat) || (dsHeader.Type == MFDouble))) {
+            if ((sampler = (DBGridSampler *) calloc (sizeof(DBGridSampler),tmplNetIF->CellNum ())) == (DBGridSampler *) NULL) {
+                CMmsgPrint (CMmsgSysError,"Memory allocation error in: %s %d",__FILE__,__LINE__);
+                return (DBFault);
+            }
+        }
+        for (itemID = 0;itemID < tmplNetIF->CellNum();++itemID) {
+            cellRec = tmplNetIF->Cell (itemID);
+            gridIF->Coord2Sampler(tmplNetIF->Center(cellRec),sampler[itemID]);
+        }
+
         if (fieldPTR == (DBObjTableField *) NULL) {
             for (layerID = 0; layerID < gridIF->LayerNum(); ++layerID) {
                 layerRec = gridIF->Layer(layerID);
@@ -384,7 +418,7 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
                         }
                     }
                     else {
-                        if (gridIF->Value(layerRec, tmplNetIF->Center(cellRec), &floatValue) == false)
+                        if (gridIF->Value(layerRec, sampler[itemID], &floatValue) == false)
                             floatValue = dsHeader.Missing.Float;
                         switch (dsHeader.Type) {
                             case MFFloat:
@@ -454,6 +488,7 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
     }
 
     free(data);
+    if (sampler != (DBGridSampler *) NULL) free (sampler);
     delete gridIF;
     return (ret);
 }

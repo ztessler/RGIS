@@ -218,15 +218,41 @@ public:
     void FourColoring();
 };
 
+#define DBGridSamplerMaxNum 9
+
 class DBGridSampler {
 private:
-    DBPosition Position [9];
-    DBFloat    Weight   [9];
-    DBInt      Num;
+    DBCoordinate CoordVAR;
+    DBPosition PositionVAR [DBGridSamplerMaxNum];
+    DBFloat    WeightVAR   [DBGridSamplerMaxNum];
+    DBInt      NumVAR;
 public:
-    DBGridSampler () { Initialize (); }
-    void Initialize () {for (Num = 8; Num >= 0; --Num) { Position [Num].Row = Position [Num].Col = 0; Weight [Num] = 0.0; } }
-}; // TODO adding grid sampler to reduced the redundant computation of weights during interpolation of multilayered coverages.
+    void Initialize (DBCoordinate coord) {
+        CoordVAR.X = coord.X; CoordVAR.Y = coord.Y;
+        for (NumVAR = 0; NumVAR < DBGridSamplerMaxNum; ++NumVAR) {
+            PositionVAR [NumVAR].Row = PositionVAR [NumVAR].Col = 0;
+            WeightVAR [NumVAR] = 0.0;
+        }
+        NumVAR = 0;
+    }
+    DBInt Add (DBPosition pos, DBFloat weight) {
+        if (NumVAR >= DBGridSamplerMaxNum) {
+            CMmsgPrint (CMmsgAppError,"Too many sampling point in: %s %d", __FILE__,__LINE__);
+            return (DBFault);
+        }
+        PositionVAR [NumVAR].Col = pos.Col;
+        PositionVAR [NumVAR].Row = pos.Row;
+        WeightVAR   [NumVAR] = weight;
+        NumVAR++;
+        return (DBSuccess);
+    }
+    bool WithinPrecision (DBCoordinate coord, DBFloat precision) {
+        return ((fabs (CoordVAR.X - coord.X) < precision) && (fabs ( CoordVAR.Y - coord.Y) < precision));
+    }
+    DBInt Num () const {return (NumVAR); }
+    DBPosition Position (DBInt num) const { return (PositionVAR[num]); };
+    DBFloat Weight (DBInt num) const { return (WeightVAR[num]); }
+};
 
 class DBGridIF {
 private:
@@ -273,6 +299,8 @@ public:
 
     DBObjData *Data() const { return (DataPTR); }
 
+    DBInt Coord2Sampler (DBCoordinate, DBGridSampler &) const;
+
     DBInt Coord2Pos(DBCoordinate, DBPosition &) const;
 
     DBInt Pos2Coord(DBPosition, DBCoordinate &) const;
@@ -312,6 +340,7 @@ public:
 
     DBInt Value(DBObjRecord *layerRec, DBCoordinate coord, DBInt *value) const {
         DBPosition pos;
+
         if (Coord2Pos(coord, pos) == DBFault) {
             *value = (DBInt) MissingValue();
             return (false);
@@ -367,11 +396,30 @@ public:
 
     DBInt Value(DBPosition pos, DBFloat value) { return (Value(LayerTable->Item(), pos, value)); }
 
-    DBInt Value(DBObjRecord *, DBCoordinate, DBFloat *) const;
+    DBInt Value(DBObjRecord *, DBGridSampler, DBFloat *) const;
+
+    DBInt Value(DBObjRecord *layerRec, DBCoordinate coord,  DBFloat *value)  const {
+        DBGridSampler sampler;
+        DBFloat precision = pow((double) 10.0, (double) DataPTR->Precision());
+
+        if (Coord2Sampler (coord, sampler) < 1) {
+            *value = MissingValue();
+            return (false);
+        }
+
+        if (Flat || sampler.WithinPrecision(coord, precision)) {
+            if (Value (layerRec, sampler.Position(0), value) == false) {
+                *value = MissingValue();
+                if (Flat) return (false);
+            }
+            else return (true);
+        }
+        return (Value (layerRec, sampler, value));
+    }
 
     DBInt Value(DBObjRecord *layerRec, DBCoordinate coord, DBFloat value) {
         DBPosition pos;
-        if (Coord2Pos(coord, pos) == DBFault) return (DBFault);
+        if (Coord2Pos(coord, pos) == DBFault) return (false);
         return (Value(layerRec, pos, value));
     }
 
@@ -386,7 +434,7 @@ public:
 
     DBInt Value(DBInt layerID, DBCoordinate coord, DBFloat value) {
         DBObjRecord *layerRec = LayerTable->Item(layerID);
-        if (layerRec == (DBObjRecord *) NULL) return (DBFault);
+        if (layerRec == (DBObjRecord *) NULL) return (false);
         else return (Value(layerRec, coord, value));
     }
 
