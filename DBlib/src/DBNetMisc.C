@@ -395,6 +395,7 @@ static int _DBGNetworkCellCompare(const DBObjRecord **cellRec0, const DBObjRecor
 }
 
 DBInt DBNetworkIF::Build() {
+    bool changed;
     DBInt i, j, row, col, basin, dir, projection = DataPTR->Projection();
     DBCoordinate coord0, coord1;
     char nameStr[DBStringLength];
@@ -403,6 +404,7 @@ DBInt DBNetworkIF::Build() {
 
     _DBnetIF = this;
 
+    Rebuild:
     for (j = 0; j < BasinTable->ItemNum(); ++j) {
         basinRec = BasinTable->Item(j);
         if (((cellRec = Cell(MouthPosFLD->Position(basinRec))) == (DBObjRecord *) NULL) ||
@@ -547,6 +549,70 @@ DBInt DBNetworkIF::Build() {
         SymbolFLD->Record(basinRec, symbolRec);
     }
     basin = DBFault;
+    changed = false;
+    for (i = 0; i < CellNum (); ++i) {
+        cellRec = CellTable->Item(i);
+        if ((Basin(cellRec)) == (DBObjRecord *) NULL) {
+            fromCell = cellRec;
+            for (toCell = ToCell(cellRec);
+                 (toCell != (DBObjRecord *) NULL) && ((toCell->Flags() & DBObjectFlagLocked) != DBObjectFlagLocked);
+                 toCell = ToCell(fromCell)) {
+                fromCell = toCell;
+                fromCell->Flags(DBObjectFlagLocked, DBSet);
+            }
+            if (toCell != (DBObjRecord *) NULL) {
+                CellDirection(fromCell, 0);
+                changed = true;
+            }
+            for (toCell = ToCell(cellRec);
+                 (toCell != (DBObjRecord *) NULL) && ((toCell->Flags() & DBObjectFlagLocked) == DBObjectFlagLocked);
+                 toCell = ToCell(fromCell)) {
+                fromCell = toCell;
+                fromCell->Flags(DBObjectFlagLocked, DBClear);
+            }
+        }
+        switch (ToCellDir(cellRec)) {
+            case DBNetDirNE:
+                fromCell = FromCell(cellRec, DBNetDirE, false);
+                if ((fromCell != (DBObjRecord *) NULL) && (CellDirection(fromCell) == DBNetDirNW)) {
+                    if (cellRec->RowID() < fromCell->RowID())
+                        CellDirection(fromCell, DBNetDirN);
+                    else CellDirection(cellRec, DBNetDirN);
+                    changed = true;
+                }
+                break;
+            case DBNetDirSE:
+                fromCell = FromCell(cellRec, DBNetDirS, false);
+                if ((fromCell != (DBObjRecord *) NULL) && (CellDirection(fromCell) == DBNetDirNE)) {
+                    if (cellRec->RowID() < fromCell->RowID())
+                        CellDirection(fromCell, DBNetDirE);
+                    else CellDirection(cellRec, DBNetDirE);
+                    changed = true;
+                }
+                break;
+            case DBNetDirSW:
+                fromCell = FromCell(cellRec, DBNetDirW, false);
+                if ((fromCell != (DBObjRecord *) NULL) && (CellDirection(fromCell) == DBNetDirSE)) {
+                    if (cellRec->RowID() < fromCell->RowID())
+                        CellDirection(fromCell, DBNetDirS);
+                    else CellDirection(cellRec, DBNetDirS);
+                    changed = true;
+                }
+                break;
+            case DBNetDirNW:
+                fromCell = FromCell(cellRec, DBNetDirN, false);
+                if ((fromCell != (DBObjRecord *) NULL) && (CellDirection(fromCell) == DBNetDirSW)) {
+                    if (cellRec->RowID() < fromCell->RowID())
+                        CellDirection(fromCell, DBNetDirW);
+                    else CellDirection(cellRec, DBNetDirW);
+                    changed = true;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    if (changed) goto Rebuild;
     for (i = 0; i < CellNum(); ++i) {
         cellRec = CellTable->Item(i);
         if ((basinRec = Basin(cellRec)) == (DBObjRecord *) NULL) {
@@ -557,7 +623,6 @@ DBInt DBNetworkIF::Build() {
             basin = basinRec->RowID();
             DBPause(80 + basin * 20 / BasinNum());
             ColorFLD->Int(basinRec, 7);
-            toCell = cellRec;
         }
         for (dir = 0; dir < 8; dir += 2) {
             if ((fromCell = FromCell(cellRec, 0x01 << dir, false)) == (DBObjRecord *) NULL) continue;

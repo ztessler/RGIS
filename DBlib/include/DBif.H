@@ -830,7 +830,7 @@ public:
 
     DBInt CellDirection(DBPosition position, DBInt dir) { return (CellDirection(Cell(position), dir)); }
 
-    DBInt CellDirection(DBCoordinate coord, DBInt dir) { return (CellDirection(Cell(coord), dir)); }
+    DBInt CellDirection(DBCoordinate coord,  DBInt dir)  { return (CellDirection(Cell(coord), dir)); }
 
     DBInt CellDirection(DBObjRecord *cellRec) {
         if (cellRec == (DBObjRecord *) NULL) return (DBFault);
