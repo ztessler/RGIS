@@ -283,19 +283,22 @@ function RGISlookupSubject ()
 		(surface_air_pressure)                        # 87
 			echo "AirPressure"
 		;;
-		(vegetables_crop_fraction)                    # 88
+		(upstream_area)                               # 88
+			echo "UpstreamArea"
+		;;
+		(vegetables_crop_fraction)                    # 89
 			echo "CropFraction-Vegetables"
 		;;
-		(wilting_point)                               # 89
+		(wilting_point)                               # 90
 			echo "Soil-WiltingPoint"
 		;;
-		(wind_speed)                                  # 90
+		(wind_speed)                                  # 91
 			echo "WindSpeed"
 		;;
-		(u_wind_speed)                                # 91
+		(u_wind_speed)                                # 92
 			echo "WindSpeed-U10m"
 		;;
-		(v_wind_speed)                                # 92
+		(v_wind_speed)                                # 93
 			echo "WindSpeed-V10m"
 		;;
 		(*)
@@ -573,19 +576,22 @@ function _RGISlookupFullName ()
 		(surface_air_pressure)                        # 87
 			echo "Air Pressure"
 		;;
-		(vegetables_crop_fraction)                    # 88
+		(upstream_area)                               # 88
+			echo "Upstream Area"
+		;;
+		(vegetables_crop_fraction)                    # 89
 			echo "Vegetables Crop Fraction"
 		;;
-		(wilting_point)                               # 89
+		(wilting_point)                               # 90
 			echo "Wilting Point"
 		;;
-		(wind_speed)                                  # 90
+		(wind_speed)                                  # 91
 			echo "Wind Speed"
 		;;
-		(u_wind_speed)                                # 91
+		(u_wind_speed)                                # 92
 			echo "Wind Speed U-direction"
 		;;
-		(v_wind_speed)                                # 92
+		(v_wind_speed)                                # 93
 			echo "Wind Speed V-direction"
 		;;
 		(*)
@@ -851,19 +857,22 @@ function RGISlookupShadeset ()
 		(surface_air_pressure)                        # 87
 			echo "grey"
 		;;
-		(vegetables_crop_fraction)                    # 88
+		(upstream_area)                               # 88
 			echo "grey"
 		;;
-		(wilting_point)                               # 89
+		(vegetables_crop_fraction)                    # 89
 			echo "grey"
 		;;
-		(wind_speed)                                  # 90
+		(wilting_point)                               # 90
 			echo "grey"
 		;;
-		(u_wind_speed)                                # 91
+		(wind_speed)                                  # 91
 			echo "grey"
 		;;
-		(v_wind_speed)                                # 92
+		(u_wind_speed)                                # 92
+			echo "grey"
+		;;
+		(v_wind_speed)                                # 93
 			echo "grey"
 		;;
 		(*)
@@ -1129,19 +1138,22 @@ function RGISlookupAggrMethod ()
 		(surface_air_pressure)                        # 87
 			echo "avg"
 		;;
-		(vegetables_crop_fraction)                    # 88
+		(upstream_area)                               # 88
 			echo "avg"
 		;;
-		(wilting_point)                               # 89
+		(vegetables_crop_fraction)                    # 89
 			echo "avg"
 		;;
-		(wind_speed)                                  # 90
+		(wilting_point)                               # 90
 			echo "avg"
 		;;
-		(u_wind_speed)                                # 91
+		(wind_speed)                                  # 91
 			echo "avg"
 		;;
-		(v_wind_speed)                                # 92
+		(u_wind_speed)                                # 92
+			echo "avg"
+		;;
+		(v_wind_speed)                                # 93
 			echo "avg"
 		;;
 		(*)
