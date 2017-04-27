@@ -362,6 +362,22 @@ function FwOutputs()
 	done
 }
 
+function _fwBestGuess()
+{
+	local fwSOURCEfile="${1}"
+		if [ ! -e "${1}" ]
+		then
+			local filename=$(basename "${1}")
+			local extension="${filename##*.}"
+			if [ "${extension}" == 'gz' ]
+			then
+				fwSOURCEfile="${fwSOURCE[4]%.*}"
+			fi
+		fi
+	echo "${fwSOURCEfile}"
+}
+
+
 function _fwPrintTest()
 {
 	echo "Variables"
@@ -385,9 +401,12 @@ function _fwPrintTest()
 			echo "  ${fwInputITEM[0]} Piped input"		
 		elif [ "${fwSOURCE[3]}" == "file"  ]
 		then
-			if [ -e ${fwSOURCE[4]} ]
+			local fwSOURCEfile="$( _fwBestGuess ${fwSOURCE[4]} )"			
+			if [ -e "${fwSOURCEfile}" ] # !!! Always displays the array value !!!
 			then
-				echo "  ${fwSOURCE[@]}"
+# Replaced 			echo "  ${fwSOURCE[@]} "
+# with the following to include listing of "good" file names
+				echo "  ${fwSOURCE[0]} ${fwSOURCE[1]} ${fwSOURCE[2]} ${fwSOURCE[3]} ${fwSOURCEfile}"
 			else
 				echo "  ${fwInputITEM[0]} datafile [${fwSOURCE[4]}] is missing!"
 			fi
@@ -464,6 +483,7 @@ function _fwPreprocess()
 	[ "${_fwPREPROCESS}" == "forced" ] && rm -f "${_fwGDSDomainFILE}";
 	[ -e "${_fwGDSDomainFILE}"       ] || ${_fwRGISBIN}rgis2domain ${_fwLENGTHCORRECTION} "${_fwRGISDomainFILE}" "${_fwGDSDomainFILE}";
 
+
 	if [ "${fwDOSTATE}" == "dostate" ]
 	then
 		for (( fwI = 0; fwI < ${#_fwStateARRAY[@]} ; ++fwI ))
@@ -475,13 +495,28 @@ function _fwPreprocess()
 			[ "${fwSOURCE[2]}" == "" ] && { echo "  ${fwStateITEM} version is missing!";                   return 1; }
 			[ "${fwSOURCE[3]}" == "" ] && { echo "  ${fwStateITEM} data source type is missing!";          return 1; }
 			[ "${fwSOURCE[4]}" == "" ] && { echo "  ${fwStateITEM} data source specification is missing!"; return 1; }
+#ADDED STUFF 
+			local fwSOURCEfile="$( _fwBestGuess ${fwSOURCE[4]} )"
+#			local fwSOURCEfile="${fwSOURCE[4]}"
+#				if [ ! -e "${fwSOURCE[4]}" ]
+#				then
+#					filename=$(basename "${fwSOURCE[4]}")
+#					extension="${filename##*.}"
+#					if [ "${extension}" == 'gz' ]
+#					then
+#						local fwSOURCEfile="${fwSOURCE[4]%.*}"
+#					fi
+#				fi
+#END OF ADDS				
 			if [[ "${fwSOURCE[3]}" == "const" ]]
 			then
 				[ "${FwVERBOSE}" == "on" ] && echo "         ${fwInputITEM} State Constant"
 			elif [ "${fwSOURCE[3]}" == "file" ]
 			then
 				[ "${FwVERBOSE}" == "on" ] && echo "         ${fwInputITEM} State File input"
-				if [ -e "${fwSOURCE[4]}" ]
+
+#				if [ -e "${fwSOURCE[4]}" ]
+                if [ -e "${fwSOURCEfile}" ]
 				then
 					local fwFILENAME="$(FwGDSFilename "${fwInputITEM}" "State" "${fwSOURCE[2]}" "${fwYEAR}" "d")"
 					[ "${_fwPREPROCESS}" == "forced" ] && rm -f "${fwFILENAME}"
@@ -489,11 +524,13 @@ function _fwPreprocess()
 					then
 						[ -e "${_fwRGISDomainFILE}" ] || { echo "Missing domain file: ${_fwRGISDomainFILE}"; return 1; }
 						[ "${fwPROC}" -ge "${_fwMAXPROC}" ] && { wait ; (( fwPROC = 0 )) ; }
-						${_fwRGISBIN}rgis2ds -m "${_fwRGISDomainFILE}" "${fwSOURCE[4]}" "${fwFILENAME}" &
+# ALSO CHANGED WITH LINE BELOW			${_fwRGISBIN}rgis2ds -m "${_fwRGISDomainFILE}" "${fwSOURCE[4]}" "${fwFILENAME}" &
+# Replaced "${fwSOURCE[4]}" with "${fwSOURCEfile}" (from _fwBestGuess function)
+						${_fwRGISBIN}rgis2ds -m "${_fwRGISDomainFILE}" "${fwSOURCEfile}" "${fwFILENAME}" &
 						(( ++fwPROC ))
 					fi
 				else
-					echo "  ${fwInputITEM} datafile [${fwSOURCE[4]}] is missing!"
+					echo "  ${fwInputITEM} datafile [${fwSOURCE[4]}] is missing! At line 512"
 				fi
 			fi
 		done
@@ -520,20 +557,37 @@ function _fwPreprocess()
 		[ "${fwSOURCE[2]}" == "" ] && { echo "  ${fwInputITEM} version is missing!";                   return 1; }
 		[ "${fwSOURCE[3]}" == "" ] && { echo "  ${fwInputITEM} data source type is missing!";          return 1; }
 		[ "${fwSOURCE[4]}" == "" ] && { echo "  ${fwInputITEM} data source specification is missing!"; return 1; }
+#ADDED STUFF 
+			local fwSOURCEfile="$( _fwBestGuess ${fwSOURCE[4]} )"
+#		local fwSOURCEfile="${fwSOURCE[4]}"
+#			if [ ! -e "${fwSOURCE[4]}" ]
+#			then
+#				filename=$(basename "${fwSOURCE[4]}")
+#				extension="${filename##*.}"
+#				if [ "${extension}" == 'gz' ]
+#				then
+#					local fwSOURCEfile="${fwSOURCE[4]%.*}"
+#				fi
+#			fi
+#END OF ADDS				
 		if [ "${fwSOURCE[3]}" == "const" ]
 		then
 			[ "${FwVERBOSE}" == "on" ] && echo "         ${fwInputITEM} Constant input"
 		elif [ "${fwSOURCE[3]}" == "file" ]
 		then
 			[ "${FwVERBOSE}" == "on" ] && echo "         ${fwInputITEM} File input"
-			[ -e "${fwSOURCE[4]}" ] || { echo "  ${fwInputITEM} datafile [${fwSOURCE[4]}] is missing!"; return 1; }
+# ALSO CHANGED THIS LINE WITH LINE BELOW			[ -e "${fwSOURCE[4]}" ] || { echo "  ${fwInputITEM} datafile [${fwSOURCE[4]}] is missing!  At line 545"; return 1; }
+# Replaced "${fwSOURCE[4]}" with "${fwSOURCEfile}" (from _fwBestGuess function)
+			[ -e "${fwSOURCEfile}" ] || { echo "  ${fwInputITEM} datafile [${fwSOURCEfile}] is missing!"; return 1; }
 			[ -e "${_fwGDSDomainDIR}/${fwSOURCE[2]}" ] || mkdir -p "${_fwGDSDomainDIR}/${fwSOURCE[2]}"
 			local fwFILENAME="$(FwGDSFilename "${fwInputITEM}" "Input" "${fwSOURCE[2]}" "${fwInYEAR}" "d")"
 			[ "${_fwPREPROCESS}" == "forced" ] && rm -f "${fwFILENAME}"
 			[ -e "${fwFILENAME}" ] && continue
 			[ -e "${_fwRGISDomainFILE}" ] || { echo "Missing domain file: ${_fwRGISDomainFILE}"; return 1; }
 			[ "${fwPROC}" -ge "${_fwMAXPROC}" ] && { wait; (( fwPROC = 0 )) ; }
-			${_fwRGISBIN}rgis2ds -m "${_fwRGISDomainFILE}" "${fwSOURCE[4]}" "${fwFILENAME}" &
+# ALSO CHANGED THIS LINE WITH LINE BELOW		${_fwRGISBIN}rgis2ds -m "${_fwRGISDomainFILE}" "${fwSOURCE[4]}" "${fwFILENAME}" &
+# Replaced "${fwSOURCE[4]}" with "${fwSOURCEfile}" (from _fwBestGuess function)
+			${_fwRGISBIN}rgis2ds -m "${_fwRGISDomainFILE}" "${fwSOURCEfile}" "${fwFILENAME}" &
 			(( ++fwPROC ))
 		fi
 	done
