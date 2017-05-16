@@ -44,8 +44,7 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
         switch (fieldPTR->Type()) {
             case DBTableFieldInt:
                 switch (itemSize) {
-                    default:
-                    case sizeof(DBByte):
+                   case sizeof(DBByte):
                         dsHeader.Type = MFByte;
                         break;
                     case sizeof(DBShort):
@@ -54,21 +53,29 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
                     case sizeof(DBInt):
                         dsHeader.Type = MFInt;
                         break;
+                    default:
+                        CMmsgPrint(CMmsgAppError, "Error: Invalid field size in: %s %d", __FILE__, __LINE__);
+                        return (DBFault);
                 }
                 dsHeader.Missing.Int = fieldPTR->IntNoData();
                 break;
             case DBTableFieldFloat:
                 switch (itemSize) {
-                    default:
                     case sizeof(DBFloat4):
                         dsHeader.Type = MFFloat;
                         break;
                     case sizeof(DBFloat):
                         dsHeader.Type = MFDouble;
                         break;
+                    default:
+                        CMmsgPrint(CMmsgAppError, "Error: Invalid field size in: %s %d", __FILE__, __LINE__);
+                        return (DBFault);
                 }
                 dsHeader.Missing.Float = fieldPTR->FloatNoData();
                 break;
+            default:
+                CMmsgPrint(CMmsgAppError, "Error: Invalid field type in: %s %d", __FILE__, __LINE__);
+                return (DBFault);
         }
     }
     else {
@@ -86,6 +93,9 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
                     case 4:
                         dsHeader.Type = MFInt;
                         break;
+                    default:
+                        CMmsgPrint(CMmsgAppError, "Error: Invalid field size in: %s %d", __FILE__, __LINE__);
+                        return (DBFault);
                 }
                 dsHeader.Missing.Int = (int) gridIF->MissingValue();
                 break;
@@ -97,9 +107,15 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
                     case 8:
                         dsHeader.Type = MFDouble;
                         break;
+                    default:
+                        CMmsgPrint(CMmsgAppError, "Error: Invalid field size in: %s %d", __FILE__, __LINE__);
+                        return (DBFault);
                 }
                 dsHeader.Missing.Float = gridIF->MissingValue();
                 break;
+            default:
+                CMmsgPrint(CMmsgAppError, "Error: Invalid field type in: %s %d", __FILE__, __LINE__);
+                return (DBFault);
         }
     }
 
@@ -127,7 +143,7 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
                 return (DBFault);
         }
     }
-    if ((data = (void *) calloc(dsHeader.ItemNum, itemSize)) == (void *) NULL) {
+    if ((data = calloc((size_t) (dsHeader.ItemNum), (size_t) itemSize)) == (void *) NULL) {
         CMmsgPrint(CMmsgSysError, "Error! Allocating %d items of %d size in: %s %d", dsHeader.ItemNum, itemSize,
                    __FILE__, __LINE__);
         return (DBFault);
@@ -143,14 +159,15 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
         DBObjRecord *pntRec;
 
         if ((fieldPTR == (DBObjTableField *) NULL) && ((dsHeader.Type == MFFloat) || (dsHeader.Type == MFDouble))) {
-            if ((sampler = (DBGridSampler *) calloc (sizeof(DBGridSampler),tmplPntIF->ItemNum ())) == (DBGridSampler *) NULL) {
-                CMmsgPrint (CMmsgSysError,"Memory allocation error in: %s %d",__FILE__,__LINE__);
+            if ((sampler = (DBGridSampler *) calloc(sizeof(DBGridSampler), (size_t) tmplPntIF->ItemNum())) ==
+                (DBGridSampler *) NULL) {
+                CMmsgPrint(CMmsgSysError, "Memory allocation error in: %s %d", __FILE__, __LINE__);
                 return (DBFault);
             }
-        }
-        for (itemID = 0;itemID < tmplPntIF->ItemNum ();++itemID) {
-            pntRec = tmplPntIF->Item (itemID);
-            gridIF->Coord2Sampler(tmplPntIF->Coordinate(pntRec),sampler[itemID]);
+            for (itemID = 0; itemID < tmplPntIF->ItemNum(); ++itemID) {
+                pntRec = tmplPntIF->Item(itemID);
+                gridIF->Coord2Sampler(tmplPntIF->Coordinate(pntRec), sampler[itemID]);
+            }
         }
 
         if (fieldPTR == (DBObjTableField *) NULL) {
@@ -173,6 +190,9 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
                             case MFInt:
                                 ((int *) data)[itemID] = (short) intValue;
                                 break;
+                            default:
+                                CMmsgPrint(CMmsgAppError, "Error: Invalid data type in: %s %d", __FILE__, __LINE__);
+                                return (DBFault);
                         }
                     }
                     else {
@@ -185,6 +205,9 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
                             case MFDouble:
                                 ((double *) data)[itemID] = (double) floatValue;
                                 break;
+                            default:
+                                CMmsgPrint(CMmsgAppError, "Error: Invalid data type in: %s %d", __FILE__, __LINE__);
+                                return (DBFault);
                         }
                     }
                 }
@@ -193,7 +216,7 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
                     ret = DBFault;
                     break;
                 }
-                if ((DBInt) fwrite(data, itemSize, dsHeader.ItemNum, outFile) != dsHeader.ItemNum) {
+                if ((DBInt) fwrite(data, (size_t) itemSize, (size_t) (dsHeader.ItemNum), outFile) != dsHeader.ItemNum) {
                     CMmsgPrint(CMmsgSysError, "Error: Writing data in: %s %d", __FILE__, __LINE__);
                     ret = DBFault;
                     break;
@@ -210,11 +233,11 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
                     switch (dsHeader.Type) {
                         case MFByte:
                             ((char *) data)[itemID] =
-                                    gridRec != (DBObjRecord *) NULL ? fieldPTR->Int(gridRec) : fieldPTR->IntNoData();
+                                    gridRec != (DBObjRecord *) NULL ? (char) fieldPTR->Int(gridRec) : (char) fieldPTR->IntNoData();
                             break;
                         case MFShort:
                             ((short *) data)[itemID] =
-                                    gridRec != (DBObjRecord *) NULL ? fieldPTR->Int(gridRec) : fieldPTR->IntNoData();
+                                    gridRec != (DBObjRecord *) NULL ? (short) fieldPTR->Int(gridRec) : (short) fieldPTR->IntNoData();
                             break;
                         case MFInt:
                             ((int *) data)[itemID] =
@@ -222,12 +245,15 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
                             break;
                         case MFFloat:
                             ((float *) data)[itemID] =
-                                    gridRec != (DBObjRecord *) NULL ? fieldPTR->Int(gridRec) : fieldPTR->FloatNoData();
+                                    gridRec != (DBObjRecord *) NULL ? (float) fieldPTR->Float(gridRec) : (float) fieldPTR->FloatNoData();
                             break;
                         case MFDouble:
                             ((double *) data)[itemID] =
-                                    gridRec != (DBObjRecord *) NULL ? fieldPTR->Int(gridRec) : fieldPTR->FloatNoData();
+                                    gridRec != (DBObjRecord *) NULL ? (double) fieldPTR->Float(gridRec) : (double) fieldPTR->FloatNoData();
                             break;
+                        default:
+                            CMmsgPrint(CMmsgAppError, "Error: Invalid data type in: %s %d", __FILE__, __LINE__);
+                            return (DBFault);
                     }
                 }
                 if ((DBInt) fwrite(&dsHeader, sizeof(MFdsHeader_t), 1, outFile) != 1) {
@@ -235,7 +261,7 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
                     ret = DBFault;
                     break;
                 }
-                if ((DBInt) fwrite(data, itemSize, dsHeader.ItemNum, outFile) != dsHeader.ItemNum) {
+                if ((DBInt) fwrite(data, (size_t) itemSize, (size_t) (dsHeader.ItemNum), outFile) != dsHeader.ItemNum) {
                     CMmsgPrint(CMmsgSysError, "Error: Writing data in: %s %d", __FILE__, __LINE__);
                     ret = DBFault;
                     break;
@@ -255,15 +281,17 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
         DBCoordinate coord;
 
         if ((tmplGrdIF != gridIF) && (fieldPTR == (DBObjTableField *) NULL) && ((dsHeader.Type == MFFloat) || (dsHeader.Type == MFDouble))) {
-            if ((sampler = (DBGridSampler *) calloc (sizeof(DBGridSampler),tmplGrdIF->RowNum() * tmplGrdIF->ColNum())) == (DBGridSampler *) NULL) {
-                CMmsgPrint (CMmsgSysError,"Memory allocation error in: %s %d",__FILE__,__LINE__);
+            if ((sampler = (DBGridSampler *) calloc(sizeof(DBGridSampler),
+                                                    (size_t) tmplGrdIF->RowNum() * (size_t) tmplGrdIF->ColNum())) ==
+                (DBGridSampler *) NULL) {
+                CMmsgPrint(CMmsgSysError, "Memory allocation error in: %s %d", __FILE__, __LINE__);
                 return (DBFault);
             }
-        }
-        for (pos.Row = 0;pos.Row < tmplGrdIF->RowNum();++pos.Row)
-            for (pos.Col = 0;pos.Col < tmplGrdIF->ColNum();++pos.Col) {
-            tmplGrdIF->Pos2Coord(pos,coord);
-            gridIF->Coord2Sampler(coord,sampler[pos.Row * tmplGrdIF->RowNum() + pos.Col]);
+            for (pos.Row = 0; pos.Row < tmplGrdIF->RowNum(); ++pos.Row)
+                for (pos.Col = 0; pos.Col < tmplGrdIF->ColNum(); ++pos.Col) {
+                    tmplGrdIF->Pos2Coord(pos, coord);
+                    gridIF->Coord2Sampler(coord, sampler[pos.Row * tmplGrdIF->RowNum() + pos.Col]);
+                }
         }
 
         if (fieldPTR == (DBObjTableField *) NULL) {
@@ -293,6 +321,9 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
                                 case MFInt:
                                     ((int *) data)[itemID] = (short) intValue;
                                     break;
+                                default:
+                                    CMmsgPrint(CMmsgAppError, "Error: Invalid data type in: %s %d", __FILE__, __LINE__);
+                                    return (DBFault);
                             }
                         }
                         else {
@@ -311,6 +342,9 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
                                 case MFDouble:
                                     ((double *) data)[itemID] = (double) floatValue;
                                     break;
+                                default:
+                                    CMmsgPrint(CMmsgAppError, "Error: Invalid data type in: %s %d", __FILE__, __LINE__);
+                                    return (DBFault);
                             }
                         }
                     }
@@ -319,7 +353,7 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
                     ret = DBFault;
                     break;
                 }
-                if ((DBInt) fwrite(data, itemSize, dsHeader.ItemNum, outFile) != dsHeader.ItemNum) {
+                if ((DBInt) fwrite(data, (size_t) itemSize, (size_t) (dsHeader.ItemNum), outFile) != dsHeader.ItemNum) {
                     CMmsgPrint(CMmsgSysError, "Error: Writing data in: %s %d", __FILE__, __LINE__);
                     ret = DBFault;
                     break;
@@ -340,25 +374,28 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
                         else gridRec = gridIF->GridItem(layerRec, pos);
                         switch (dsHeader.Type) {
                             case MFByte:
-                                ((char *) data)[itemID] = gridRec != (DBObjRecord *) NULL ? fieldPTR->Int(gridRec)
-                                                                                          : fieldPTR->IntNoData();
+                                ((char *) data)[itemID] = gridRec != (DBObjRecord *) NULL ? (char) fieldPTR->Int(gridRec)
+                                                                                          : (char) fieldPTR->IntNoData();
                                 break;
                             case MFShort:
-                                ((short *) data)[itemID] = gridRec != (DBObjRecord *) NULL ? fieldPTR->Int(gridRec)
-                                                                                           : fieldPTR->IntNoData();
+                                ((short *) data)[itemID] = gridRec != (DBObjRecord *) NULL ? (short) fieldPTR->Int(gridRec)
+                                                                                           : (short) fieldPTR->IntNoData();
                                 break;
                             case MFInt:
                                 ((int *) data)[itemID] = gridRec != (DBObjRecord *) NULL ? fieldPTR->Int(gridRec)
                                                                                          : fieldPTR->IntNoData();
                                 break;
                             case MFFloat:
-                                ((float *) data)[itemID] = gridRec != (DBObjRecord *) NULL ? fieldPTR->Int(gridRec)
-                                                                                           : fieldPTR->FloatNoData();
+                                ((float *) data)[itemID] = gridRec != (DBObjRecord *) NULL ? (float) fieldPTR->Float(gridRec)
+                                                                                           : (float) fieldPTR->FloatNoData();
                                 break;
                             case MFDouble:
-                                ((double *) data)[itemID] = gridRec != (DBObjRecord *) NULL ? fieldPTR->Int(gridRec)
-                                                                                            : fieldPTR->FloatNoData();
+                                ((double *) data)[itemID] = gridRec != (DBObjRecord *) NULL ? (double) fieldPTR->Float(gridRec)
+                                                                                            : (double) fieldPTR->FloatNoData();
                                 break;
+                            default:
+                                CMmsgPrint(CMmsgAppError, "Error: Invalid data type in: %s %d", __FILE__, __LINE__);
+                                return (DBFault);
                         }
                     }
                 if ((DBInt) fwrite(&dsHeader, sizeof(MFdsHeader_t), 1, outFile) != 1) {
@@ -366,7 +403,7 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
                     ret = DBFault;
                     break;
                 }
-                if ((DBInt) fwrite(data, itemSize, dsHeader.ItemNum, outFile) != dsHeader.ItemNum) {
+                if ((DBInt) fwrite(data, (size_t) itemSize, (size_t) (dsHeader.ItemNum), outFile) != dsHeader.ItemNum) {
                     CMmsgPrint(CMmsgSysError, "Error: Writing data in: %s %d", __FILE__, __LINE__);
                     ret = DBFault;
                     break;
@@ -385,14 +422,15 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
         DBObjRecord *cellRec;
 
         if ((fieldPTR == (DBObjTableField *) NULL) && ((dsHeader.Type == MFFloat) || (dsHeader.Type == MFDouble))) {
-            if ((sampler = (DBGridSampler *) calloc (sizeof(DBGridSampler),tmplNetIF->CellNum ())) == (DBGridSampler *) NULL) {
-                CMmsgPrint (CMmsgSysError,"Memory allocation error in: %s %d",__FILE__,__LINE__);
+            if ((sampler = (DBGridSampler *) calloc(sizeof(DBGridSampler), (size_t) tmplNetIF->CellNum())) ==
+                (DBGridSampler *) NULL) {
+                CMmsgPrint(CMmsgSysError, "Memory allocation error in: %s %d", __FILE__, __LINE__);
                 return (DBFault);
             }
-        }
-        for (itemID = 0;itemID < tmplNetIF->CellNum();++itemID) {
-            cellRec = tmplNetIF->Cell (itemID);
-            gridIF->Coord2Sampler(tmplNetIF->Center(cellRec),sampler[itemID]);
+            for (itemID = 0; itemID < tmplNetIF->CellNum(); ++itemID) {
+                cellRec = tmplNetIF->Cell(itemID);
+                gridIF->Coord2Sampler(tmplNetIF->Center(cellRec), sampler[itemID]);
+            }
         }
 
         if (fieldPTR == (DBObjTableField *) NULL) {
@@ -415,6 +453,9 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
                             case MFInt:
                                 ((int *) data)[itemID] = (short) intValue;
                                 break;
+                            default:
+                                CMmsgPrint(CMmsgAppError, "Error: Invalid data type in: %s %d", __FILE__, __LINE__);
+                                return (DBFault);
                         }
                     }
                     else {
@@ -427,6 +468,9 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
                             case MFDouble:
                                 ((double *) data)[itemID] = (double) floatValue;
                                 break;
+                            default:
+                                CMmsgPrint(CMmsgAppError, "Error: Invalid data type in: %s %d", __FILE__, __LINE__);
+                                return (DBFault);
                         }
                     }
                 }
@@ -435,7 +479,7 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
                     ret = DBFault;
                     break;
                 }
-                if ((DBInt) fwrite(data, itemSize, dsHeader.ItemNum, outFile) != dsHeader.ItemNum) {
+                if ((DBInt) fwrite(data, (size_t) itemSize, (size_t) (dsHeader.ItemNum), outFile) != dsHeader.ItemNum) {
                     CMmsgPrint(CMmsgSysError, "Error: Writing data in: %s %d", __FILE__, __LINE__);
                     ret = DBFault;
                     break;
@@ -452,24 +496,27 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
                     switch (dsHeader.Type) {
                         case MFByte:
                             ((char *) data)[itemID] =
-                                    gridRec != (DBObjRecord *) NULL ? fieldPTR->Int(gridRec) : fieldPTR->IntNoData();
+                                    gridRec != (DBObjRecord *) NULL ? (char) fieldPTR->Int(gridRec) : (char) fieldPTR->IntNoData();
                             break;
                         case MFShort:
                             ((short *) data)[itemID] =
-                                    gridRec != (DBObjRecord *) NULL ? fieldPTR->Int(gridRec) : fieldPTR->IntNoData();
+                                    gridRec != (DBObjRecord *) NULL ? (short) fieldPTR->Int(gridRec) : (short) fieldPTR->IntNoData();
                             break;
                         case MFInt:
                             ((int *) data)[itemID] =
                                     gridRec != (DBObjRecord *) NULL ? fieldPTR->Int(gridRec) : fieldPTR->IntNoData();
                             break;
                         case MFFloat:
-                            ((float *) data)[itemID] = gridRec != (DBObjRecord *) NULL ? fieldPTR->Float(gridRec)
-                                                                                       : fieldPTR->FloatNoData();
+                            ((float *) data)[itemID] = gridRec != (DBObjRecord *) NULL ? (float) fieldPTR->Float(gridRec)
+                                                                                       : (float) fieldPTR->FloatNoData();
                             break;
                         case MFDouble:
                             ((double *) data)[itemID] = gridRec != (DBObjRecord *) NULL ? fieldPTR->Float(gridRec)
                                                                                         : fieldPTR->FloatNoData();
                             break;
+                        default:
+                            CMmsgPrint(CMmsgAppError, "Error: Invalid data type in: %s %d", __FILE__, __LINE__);
+                            return (DBFault);
                     }
                 }
                 if ((DBInt) fwrite(&dsHeader, sizeof(MFdsHeader_t), 1, outFile) != 1) {
@@ -477,7 +524,7 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
                     ret = DBFault;
                     break;
                 }
-                if ((DBInt) fwrite(data, itemSize, dsHeader.ItemNum, outFile) != dsHeader.ItemNum) {
+                if ((DBInt) fwrite(data, (size_t) itemSize, (size_t) (dsHeader.ItemNum), outFile) != dsHeader.ItemNum) {
                     CMmsgPrint(CMmsgSysError, "Error: Writing data in: %s %d", __FILE__, __LINE__);
                     ret = DBFault;
                     break;
@@ -523,26 +570,28 @@ DBInt RGlibDataStream2RGIS(DBObjData *outData, DBObjData *tmplData, FILE *inFile
                 }
                 if (data == (void *) NULL) {
                     itemSize = MFVarItemSize(header.Type);
-                    if ((data = (void *) realloc(data, header.ItemNum * itemSize)) == (void *) NULL) {
+                    if ((data = (void *) realloc(data, (size_t) header.ItemNum * itemSize)) == (void *) NULL) {
                         CMmsgPrint(CMmsgSysError, "Memory allocation error in: %s %d", __FILE__, __LINE__);
                         return (DBFault);
                     }
                     switch (header.Type) {
                         case MFByte:
-                            valField = new DBObjTableField("Value", DBTableFieldInt, "%2d", sizeof(char), false);
+                            valField = new DBObjTableField("Value", DBTableFieldInt, "%2d", sizeof(char), false); break;
                         case MFShort:
-                            valField = new DBObjTableField("Value", DBTableFieldInt, "%4d", sizeof(DBShort), false);
+                            valField = new DBObjTableField("Value", DBTableFieldInt, "%4d", sizeof(DBShort), false); break;
                         case MFInt:
-                            valField = new DBObjTableField("Value", DBTableFieldInt, "%8d", sizeof(DBInt), false);
+                            valField = new DBObjTableField("Value", DBTableFieldInt, "%8d", sizeof(DBInt), false); break;
                         case MFFloat:
-                            valField = new DBObjTableField("Value", DBTableFieldFloat, "%8.2f", sizeof(DBFloat4),
-                                                           false);
+                            valField = new DBObjTableField("Value", DBTableFieldFloat, "%8.2f", sizeof(DBFloat4), false); break;
                         case MFDouble:
-                            valField = new DBObjTableField("Value", DBTableFieldFloat, "%8.2f", sizeof(DBFloat), false);
+                            valField = new DBObjTableField("Value", DBTableFieldFloat, "%8.2f", sizeof(DBFloat), false); break;
+                        default:
+                            CMmsgPrint(CMmsgAppError, "Error: Invalid data type in: %s %d", __FILE__, __LINE__);
+                            return (DBFault);
                     }
                     itemTable->AddField(valField);
                 }
-                if ((int) fread(data, itemSize, header.ItemNum, inFile) != header.ItemNum) {
+                if ((int) fread(data, (size_t) itemSize, (size_t) (header.ItemNum), inFile) != header.ItemNum) {
                     CMmsgPrint(CMmsgSysError, "Error: Data stream read in: %s %d", __FILE__, __LINE__);
                     return (DBFault);
                 }
@@ -568,6 +617,9 @@ DBInt RGlibDataStream2RGIS(DBObjData *outData, DBObjData *tmplData, FILE *inFile
                         case MFDouble:
                             valField->Float(record, ((double *) data)[itemID]);
                             break;
+                        default:
+                            CMmsgPrint(CMmsgAppError, "Error: Invalid data type in: %s %d", __FILE__, __LINE__);
+                            return (DBFault);
                         }
                     }
                 }
@@ -586,7 +638,7 @@ DBInt RGlibDataStream2RGIS(DBObjData *outData, DBObjData *tmplData, FILE *inFile
                 }
                 if (layerID == 0) {
                     itemSize = MFVarItemSize(header.Type);
-                    if ((data = (void *) realloc(data, header.ItemNum * itemSize)) == (void *) NULL) {
+                    if ((data = realloc(data, header.ItemNum * itemSize)) == (void *) NULL) {
                         CMmsgPrint(CMmsgSysError, "Memory allocation error in: %s %d", __FILE__, __LINE__);
                         return (DBFault);
                     }
@@ -605,8 +657,11 @@ DBInt RGlibDataStream2RGIS(DBObjData *outData, DBObjData *tmplData, FILE *inFile
                     case MFDouble:
                         gridIF->MissingValue(record, header.Missing.Float);
                         break;
+                    default:
+                        CMmsgPrint(CMmsgAppError, "Error: Invalid data type in: %s %d", __FILE__, __LINE__);
+                        return (DBFault);
                 }
-                if ((int) fread(data, itemSize, header.ItemNum, inFile) != header.ItemNum) {
+                if ((int) fread(data, (size_t) itemSize, (size_t) (header.ItemNum), inFile) != header.ItemNum) {
                     CMmsgPrint(CMmsgSysError, "Error: Data stream read in: %s %d", __FILE__, __LINE__);
                     return (DBFault);
                 }
@@ -629,6 +684,9 @@ DBInt RGlibDataStream2RGIS(DBObjData *outData, DBObjData *tmplData, FILE *inFile
                             case MFDouble:
                                 val = (DBFloat) (((double *) data)[pos.Row * gridIF->ColNum() + pos.Col]);
                                 break;
+                            default:
+                                CMmsgPrint(CMmsgAppError, "Error: Invalid data type in: %s %d", __FILE__, __LINE__);
+                                return (DBFault);
                         }
                         gridIF->Value(record, pos, val);
                     }
@@ -650,7 +708,7 @@ DBInt RGlibDataStream2RGIS(DBObjData *outData, DBObjData *tmplData, FILE *inFile
                 }
                 if (layerID == 0) {
                     itemSize = MFVarItemSize(header.Type);
-                    if ((data = (void *) realloc(data, header.ItemNum * itemSize)) == (void *) NULL) {
+                    if ((data = (void *) realloc(data, (size_t) header.ItemNum * itemSize)) == (void *) NULL) {
                         CMmsgPrint(CMmsgSysError, "Memory allocation error in: %s %d", __FILE__, __LINE__);
                         return (DBFault);
                     }
@@ -686,6 +744,9 @@ DBInt RGlibDataStream2RGIS(DBObjData *outData, DBObjData *tmplData, FILE *inFile
                         case MFDouble:
                             val = (DBFloat) (((double *) data)[cellID]);
                             break;
+                        default:
+                            CMmsgPrint(CMmsgAppError, "Error: Invalid data type in: %s %d", __FILE__, __LINE__);
+                            return (DBFault);
                     }
                     gridIF->Value(record, pos, val);
                 }
@@ -693,7 +754,9 @@ DBInt RGlibDataStream2RGIS(DBObjData *outData, DBObjData *tmplData, FILE *inFile
             }
             if (ferror(inFile) != 0) CMmsgPrint(CMmsgSysError, "Input file reading error in: %s %d", __FILE__, __LINE__);
             gridIF->RecalcStats();
-        }
+        } break;
+        default:
+            CMmsgPrint(CMmsgAppError, "Error: Invalid data in: %s %d", __FILE__, __LINE__);
             break;
     }
     return (DBSuccess);
