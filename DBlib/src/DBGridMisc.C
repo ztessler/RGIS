@@ -191,6 +191,7 @@ DBFloat DBGridIF::Minimum(DBInt layer) const {
 
 DBInt DBGridIF::Coord2Sampler (DBCoordinate coord, DBGridSampler &sampler) const {
     bool horExt, verExt;
+    DBFloat dist;
     DBCoordinate cellCoord;
     DBPosition   pos, cellPos;
     DBMathDistanceFunction distFunc = DBMathGetDistanceFunction(DataPTR);
@@ -415,12 +416,19 @@ DBInt DBGridIF::Value(DBObjRecord *layerRec, DBPosition pos, DBFloat value) {
 
 DBInt DBGridIF::Value(DBObjRecord *layerRec, DBGridSampler sampler, DBFloat *value) const {
     DBInt i, j, pointNum = sampler.Num();
-    DBFloat weight, sumWValue, sumWeight, retVal;
+    DBFloat precision, weight, sumWValue, sumWeight, retVal;
 
+    precision = pow((double) 10.0, (double) DataPTR->Precision());
     sumWValue = sumWeight = 0.0;
     for (i = 0; i < pointNum; ++i) {
         if (Value(layerRec, sampler.Position(i), &retVal)) {
-            weight = 1.0 / sampler.Weight(i);
+            weight = sampler.Weight(i);
+            if (weight < precision) {
+                sumWValue = retVal;
+                sumWeight = 1.0;
+                break;
+            }
+            weight = 1.0 / weight;
             weight *= weight;
             sumWeight += weight;
             sumWValue += retVal * weight;

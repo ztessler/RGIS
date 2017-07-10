@@ -439,8 +439,7 @@ DBInt RGlibRGIS2DataStream(DBObjData *grdData, DBObjData *tmplData, char *fieldN
                 strncpy(dsHeader.Date, layerRec->Name(), MFDateStringLength - 1);
                 for (itemID = 0; itemID < dsHeader.ItemNum; ++itemID) {
                     cellRec = tmplNetIF->Cell(itemID);
-                    if ((dsHeader.Type == MFByte) || (dsHeader.Type == MFShort) ||
-                        (dsHeader.Type == MFInt)) {
+                    if ((dsHeader.Type == MFByte) || (dsHeader.Type == MFShort) || (dsHeader.Type == MFInt)) {
                         if (gridIF->Value(layerRec, tmplNetIF->Center(cellRec), &intValue) == false)
                             intValue = dsHeader.Missing.Int;
                         switch (dsHeader.Type) {
