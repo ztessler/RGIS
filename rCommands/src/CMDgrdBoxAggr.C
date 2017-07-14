@@ -267,11 +267,13 @@ int main(int argc, char *argv[]) {
                             array[outPos.Row * outGridIF->ColNum() + outPos.Col] =
                                     var < array[outPos.Row * outGridIF->ColNum() + outPos.Col] ?
                                     var : array[outPos.Row * outGridIF->ColNum() + outPos.Col];
+                            sumWeights[outPos.Row * outGridIF->ColNum() + outPos.Col] += 1.0;
                             break;
                         case CMDboxMaximum:
                             array[outPos.Row * outGridIF->ColNum() + outPos.Col] =
                                     var > array[outPos.Row * outGridIF->ColNum() + outPos.Col] ?
                                     var : array[outPos.Row * outGridIF->ColNum() + outPos.Col];
+                            sumWeights[outPos.Row * outGridIF->ColNum() + outPos.Col] += 1.0;
                             break;
                     }
                 }

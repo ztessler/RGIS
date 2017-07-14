@@ -339,9 +339,9 @@ DBInt DBGridIF::Value(DBObjRecord *layerRec, DBPosition pos, DBInt *value) const
 }
 
 DBInt DBGridIF::Value(DBObjRecord *layerRec, DBPosition pos, DBFloat *value) const {
-    DBInt j;
+    DBInt j, retVal, intVal, missingInt;
     DBObjRecord *dataRec = LayerFLD->Record(layerRec);
-    DBFloat missingValue = MissingValueFLD->Float(ItemTable->Item(layerRec->RowID()));
+    DBFloat missingFloat;
 
 	if ((pos.Col < 0) || (pos.Row < 0) || (pos.Col >= DimensionVAR.Col) || (pos.Row >= DimensionVAR.Row)) {
         *value = MissingValue();
@@ -351,6 +351,7 @@ DBInt DBGridIF::Value(DBObjRecord *layerRec, DBPosition pos, DBFloat *value) con
     j = DimensionVAR.Col * (DimensionVAR.Row - pos.Row - 1) + pos.Col;
     switch (ValueTypeVAR) {
         case DBTableFieldFloat:
+            missingFloat = MissingValueFLD->Float(ItemTable->Item(layerRec->RowID()));
             switch (ValueSizeVAR) {
                 case sizeof(DBFloat4):
                     *value = (DBFloat) ((DBFloat4 *) (dataRec->Data()))[j];
@@ -359,22 +360,26 @@ DBInt DBGridIF::Value(DBObjRecord *layerRec, DBPosition pos, DBFloat *value) con
                     *value = (DBFloat) ((DBFloat *) (dataRec->Data()))[j];
                     break;
             }
+            retVal = CMmathEqualValues(*value, missingFloat) ? false : true;
             break;
         case DBTableFieldInt:
+            missingInt = MissingValueFLD->Int(ItemTable->Item(layerRec->RowID()));
             switch (ValueSizeVAR) {
                 case sizeof(DBByte):
-                    *value = (DBFloat) ((DBByte *) (dataRec->Data()))[j];
+                    intVal = (DBInt) ((DBByte *) (dataRec->Data()))[j];
                     break;
                 case sizeof(DBShort):
-                    *value = (DBFloat) ((DBShort *) (dataRec->Data()))[j];
+                    intVal = (DBInt) ((DBShort *) (dataRec->Data()))[j];
                     break;
                 case sizeof(DBInt):
-                    *value = (DBFloat) ((DBInt *) (dataRec->Data()))[j];
+                    intVal = (DBInt) ((DBInt *) (dataRec->Data()))[j];
                     break;
             }
+            retVal = intVal == missingInt ? false : true;
+            *value = (DBFloat) intVal;
             break;
     }
-    return (CMmathEqualValues(*value, missingValue) ? false : true);
+    return (retVal);
 }
 
 DBInt DBGridIF::Value(DBObjRecord *layerRec, DBPosition pos, DBFloat value) {
