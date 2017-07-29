@@ -368,7 +368,7 @@ int main(int argc, char *argv[]) {
     extent.Expand(coord);
     grdData->Extent(extent);
     grdData->Projection(DBMathGuessProjection(extent));
-    grdData->Precision((int) floor((log(cellWidth < cellHeight ? cellWidth : cellHeight) - 1)));
+    grdData->Precision(DBMathGuessPrecision(extent));
 
     switch (binaryType) {
         case RGISBinTypeByte:
