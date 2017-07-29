@@ -43,10 +43,11 @@ char *DBMathFloatAutoFormat(DBFloat maxVal) {
 }
 
 DBInt DBMathGuessProjection(DBRegion extent) {
-    if (extent.LowerLeft.X < -180.0) return (DBProjectionCartesian);
-    if (extent.LowerLeft.Y < -90.0) return (DBProjectionCartesian);
-    if (extent.UpperRight.X > 180.0) return (DBProjectionCartesian);
-    if (extent.UpperRight.Y > 90.0) return (DBProjectionCartesian);
+    DBFloat precision = pow (10.0,DBMathGuessPrecision(extent));
+    if (extent.LowerLeft.X < -180.0 - precision) return (DBProjectionCartesian);
+    if (extent.LowerLeft.Y <  -90.0 - precision) return (DBProjectionCartesian);
+    if (extent.UpperRight.X > 180.0 + precision) return (DBProjectionCartesian);
+    if (extent.UpperRight.Y >  90.0 + precision) return (DBProjectionCartesian);
     return (DBProjectionSpherical);
 }
 
