@@ -367,10 +367,7 @@ int main(int argc, char *argv[]) {
     coord.Y += rowNum * cellHeight;
     extent.Expand(coord);
     grdData->Extent(extent);
-    if ((llXCoord >= -180.0) && (coord.X <= 180.0) && (llYCoord >= -90.) && (coord.Y <= 90.))
-        grdData->Projection(DBProjectionSpherical);
-    else
-        grdData->Projection(DBProjectionCartesian);
+    grdData->Projection(DBMathGuessProjection(extent));
     grdData->Precision((int) floor((log(cellWidth < cellHeight ? cellWidth : cellHeight) - 1)));
 
     switch (binaryType) {
