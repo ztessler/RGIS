@@ -33,24 +33,21 @@ DBInt DBNetworkExportASCIIGridDir(DBObjData *netData, FILE *file) {
             fprintf(file, " %d", netIF->CellDirection (netIF->Cell(pos)));
         fprintf(file, "\n");
     }
-    fclose(file);
     delete netIF;
     return (DBSuccess);
 }
 
 DBInt DBNetworkExportASCIIGridDir(DBObjData *netData, char *fileName) {
     FILE *file;
-    DBPosition pos;
-    DBCoordinate cellSize;
-    DBRegion extent = netData->Extent();
-    DBNetworkIF *netIF = new DBNetworkIF(netData);
-
+    DBInt ret;
     if ((file = fopen(fileName, "w")) == NULL) {
         CMmsgPrint(CMmsgSysError, "File Opening Error in: %s %d", __FILE__, __LINE__);
         return (DBFault);
     }
 
-    return (DBNetworkExportASCIIGridDir (netData,file));
+    ret = DBNetworkExportASCIIGridDir (netData,file);
+    fclose(file);
+    return (ret);
 }
 
 DBInt DBNetworkExportASCIIGridBasin(DBObjData *netData, char *fileName) {
