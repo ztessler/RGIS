@@ -15,16 +15,18 @@ bfekete@ccny.cuny.edu
 #include <DBif.H>
 #include <RG.H>
 
+DBInt DBNetworkExportASCIIGridDir (DBObjData *,FILE *);
+
 int main(int argc, char *argv[]) {
     FILE *out;
     int argPos, argNum = argc, ret, verbose = false;
     char *layerName = (char *) NULL;
-    int doList = false, doNum = false, doAll = false;
+    int doList = false, doNum = false, doAll = true;
     DBInt layerID;
     DBObjData *data;
     DBObjRecord *layerRec;
-    DBGridIF *gridIF;
-
+    DBGridIF    *gridIF;
+    
     for (argPos = 1; argPos < argNum;) {
         if (CMargTest (argv[argPos], "-a", "--all")) {
             argNum = CMargShiftLeft(argPos, argv, argNum);
@@ -34,11 +36,13 @@ int main(int argc, char *argv[]) {
         if (CMargTest (argv[argPos], "-i", "--list")) {
             argNum = CMargShiftLeft(argPos, argv, argNum);
             doList = true;
+            doAll  = false;
             continue;
         }
         if (CMargTest (argv[argPos], "-n", "--num")) {
             argNum = CMargShiftLeft(argPos, argv, argNum);
             doNum = true;
+            doAll = false;
             continue;
         }
         if (CMargTest (argv[argPos], "-l", "--layer")) {
@@ -47,6 +51,7 @@ int main(int argc, char *argv[]) {
                 return (CMfailed);
             }
             layerName = argv[argPos];
+            doAll = false;
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
             continue;
         }
@@ -91,33 +96,45 @@ int main(int argc, char *argv[]) {
         return (CMfailed);
     }
 
-    gridIF = new DBGridIF(data);
     if ((out = argNum > 2 ? fopen(argv[2], "w") : stdout) == (FILE *) NULL) {
         CMmsgPrint(CMmsgUsrError, "Output file opening error!");
         return (CMfailed);
     }
 
-    if (doNum) fprintf(out, "%d", gridIF->LayerNum());
-    if (doList)
-        for (layerID = 0; layerID < gridIF->LayerNum(); ++layerID) {
-            layerRec = gridIF->Layer(layerID);
-            fprintf(out, "%s", layerRec->Name());
-        }
-    if (doAll)
-        for (layerID = 0; layerID < gridIF->LayerNum(); ++layerID) {
-            layerRec = gridIF->Layer(layerID);
-            DBExportARCGridLayer(data, layerRec, out);
-        }
-    else if (layerName != (char *) NULL) {
-        if ((layerRec = gridIF->Layer(layerName)) == (DBObjRecord *) NULL) {
-            CMmsgPrint(CMmsgUsrError, "Wrong layername");
-        }
-        else DBExportARCGridLayer(data, layerRec, out);
+    switch (data->Type ()) {
+        case DBTypeGridContinuous:
+        case DBTypeGridDiscrete:
+            gridIF = new DBGridIF(data);
+            if (doNum)  { fprintf(out, "%d", gridIF->LayerNum()); }
+            if (doList) {
+                for (layerID = 0; layerID < gridIF->LayerNum(); ++layerID) {
+                    layerRec = gridIF->Layer(layerID);
+                    fprintf(out, "%s", layerRec->Name());
+                }
+                ret = CMsucceeded;
+            }
+            if (doAll) {
+                for (layerID = 0; layerID < gridIF->LayerNum(); ++layerID) {
+                    layerRec = gridIF->Layer(layerID);
+                    if ((ret = DBExportARCGridLayer(data, layerRec, out)) == CMfailed) break;
+                }
+            }
+            else if (layerName != (char *) NULL) {
+                if ((layerRec = gridIF->Layer(layerName)) == (DBObjRecord *) NULL) {
+                    CMmsgPrint(CMmsgUsrError, "Wrong layername");
+                    ret = CMfailed;
+                }
+                else ret = DBExportARCGridLayer(data, layerRec, out);
+            }
+            delete gridIF;
+            break;
+        case DBTypeNetwork:
+            ret = DBNetworkExportASCIIGridDir (data, out);
+            break;
     }
 
     if (argNum > 2) fclose(out);
 
-    delete gridIF;
     delete data;
     if (verbose) RGlibPauseClose();
     return (ret);

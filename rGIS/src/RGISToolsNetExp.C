@@ -22,9 +22,9 @@ DBInt DBNetworkExportASCIIGridDistToMouth	(DBObjData *,char *);
 DBInt DBNetworkExportASCIIGridDistToOcean	(DBObjData *,char *); 
 DBInt DBNetworkExportArcGenARC			(DBObjData *,char *);
 DBInt DBNetworkExportArcGenNODE			(DBObjData *,char *);
-DBInt DBNetworkExportArcAttributes		(DBObjData *,char *);
-DBInt DBNetworkExportBasinAttributes	(DBObjData *,char *);
-DBInt DBNetworkExportArcGenMouse			(DBObjData *,char *);
+// DBInt DBNetworkExportArcAttributes		(DBObjData *,char *);
+// DBInt DBNetworkExportBasinAttributes	(DBObjData *,char *);
+// DBInt DBNetworkExportArcGenMouse		(DBObjData *,char *);
 
 int _RGISToolsNetworkExportARCInfo (DBObjData *netData,char *selection)
 

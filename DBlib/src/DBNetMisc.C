@@ -571,7 +571,7 @@ DBInt DBNetworkIF::Build() {
                 fromCell->Flags(DBObjectFlagLocked, DBClear);
             }
         }
-        switch (ToCellDir(cellRec)) {
+        switch (CellDirection (cellRec)) {
             case DBNetDirNE:
                 fromCell = FromCell(cellRec, DBNetDirE, false);
                 if ((fromCell != (DBObjRecord *) NULL) && (CellDirection(fromCell) == DBNetDirNW)) {

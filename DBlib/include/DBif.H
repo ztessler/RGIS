@@ -761,12 +761,6 @@ public:
 
     DBObjRecord *ToCell(const DBObjRecord *) const;
 
-    DBInt ToCellDir(const DBObjRecord *cellRec) const {
-        if (cellRec == (DBObjRecord *) NULL)
-            return (DBFault);
-        else return (ToCellFLD->Int(cellRec));
-    }
-
     DBObjRecord *FromCell(const DBObjRecord *, DBInt, DBInt) const;
 
     DBObjRecord *FromCell(const DBObjRecord *cellRec, DBInt dir) const { return (FromCell(cellRec, dir, true)); }

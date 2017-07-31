@@ -13,17 +13,12 @@ bfekete@ccny.cuny.edu
 #include <DB.H>
 #include <DBif.H>
 
-DBInt DBNetworkExportASCIIGridDir(DBObjData *netData, char *fileName) {
-    FILE *file;
+DBInt DBNetworkExportASCIIGridDir(DBObjData *netData, FILE *file) {
     DBPosition pos;
     DBCoordinate cellSize;
     DBRegion extent = netData->Extent();
     DBNetworkIF *netIF = new DBNetworkIF(netData);
 
-    if ((file = fopen(fileName, "w")) == NULL) {
-        CMmsgPrint(CMmsgSysError, "File Opening Error in: %s %d", __FILE__, __LINE__);
-        return (DBFault);
-    }
     cellSize = netIF->CellSize();
 
     fprintf(file, "ncols         %d\n", netIF->ColNum());
@@ -35,12 +30,27 @@ DBInt DBNetworkExportASCIIGridDir(DBObjData *netData, char *fileName) {
 
     for (pos.Row = netIF->RowNum() - 1; pos.Row >= 0; --pos.Row) {
         for (pos.Col = 0; pos.Col < netIF->ColNum(); ++pos.Col)
-            fprintf(file, " %d", netIF->ToCellDir(netIF->Cell(pos)));
+            fprintf(file, " %d", netIF->CellDirection (netIF->Cell(pos)));
         fprintf(file, "\n");
     }
     fclose(file);
     delete netIF;
     return (DBSuccess);
+}
+
+DBInt DBNetworkExportASCIIGridDir(DBObjData *netData, char *fileName) {
+    FILE *file;
+    DBPosition pos;
+    DBCoordinate cellSize;
+    DBRegion extent = netData->Extent();
+    DBNetworkIF *netIF = new DBNetworkIF(netData);
+
+    if ((file = fopen(fileName, "w")) == NULL) {
+        CMmsgPrint(CMmsgSysError, "File Opening Error in: %s %d", __FILE__, __LINE__);
+        return (DBFault);
+    }
+
+    return (DBNetworkExportASCIIGridDir (netData,file));
 }
 
 DBInt DBNetworkExportASCIIGridBasin(DBObjData *netData, char *fileName) {

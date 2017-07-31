@@ -36,7 +36,8 @@ int DBExportARCGridLayer(DBObjData *data, DBObjRecord *layerRec, FILE *file) {
     fprintf(file, "xllcorner     %f\n", (data->Extent()).LowerLeft.X);
     fprintf(file, "yllcorner     %f\n", (data->Extent()).LowerLeft.Y);
     fprintf(file, "cellsize      %f\n", gridIF->CellWidth());
-    if (data->Type() == DBTypeGridContinuous) {
+    switch (data->Type()) {
+        case DBTypeGridContinuous:
         DBFloat value;
         fprintf(file, "NODATA_value  %f\n", gridIF->MissingValue());
         for (row = gridIF->RowNum() - 1; row >= 0; row--) {
@@ -48,8 +49,7 @@ int DBExportARCGridLayer(DBObjData *data, DBObjRecord *layerRec, FILE *file) {
             }
             fprintf(file, "\n");
         }
-    }
-    else {
+        case DBTypeGridDiscrete:
         fprintf(file, "NODATA_value  %d\n", DBDefaultMissingIntVal);
         for (row = gridIF->RowNum() - 1; row >= 0; row--) {
             for (col = 0; col < gridIF->ColNum(); col++) {
