@@ -91,7 +91,7 @@ int main(int argc, char *argv[]) {
 
     data = new DBObjData();
     ret = (argNum > 1) && (strcmp(argv[1], "-") != 0) ? data->Read(argv[1]) : data->Read(stdin);
-    if ((ret == DBFault) || ((data->Type() & DBTypeGrid) != DBTypeGrid)) {
+    if ((ret == DBFault) || ((data->Type () != DBTypeGridContinuous && data->Type () != DBTypeGridDiscrete && data->Type() != DBTypeNetwork))) {
         delete data;
         return (CMfailed);
     }
