@@ -14,10 +14,14 @@ bfekete@ccny.cuny.edu
 
 void UI2DView::SetExtent(DBRegion extent) {
     XPoint wlist[5], xy0, xy1;
+    DBInt projection;
     DBFloat u, v;
     DBCoordinate lowerLeft = extent.LowerLeft, upperRight = extent.UpperRight;
     double windowratio, mapratio;
+    DBDataset *dataset = UIDataset();
+    DBObjData  *firstData = dataset->FirstData();
 
+    projection = firstData != (DBObjData *) NULL ? firstData->Precision () : DBProjectionCartesian;
     RequiredEXT = extent;
     wlist[0].x = Image->width / 2;
     wlist[0].y = Image->height / 2;
@@ -78,6 +82,8 @@ void UI2DView::SetExtent(DBRegion extent) {
 
     ViewEXT.LowerLeft = lowerLeft;
     ViewEXT.UpperRight = upperRight;
+    MapScale = DBMathCoordinateDistance (DBMathGetDistanceFunction (projection), ViewEXT.LowerLeft,ViewEXT.UpperRight)
+             / (sqrt((DBFloat) (Image->width) * (Image->width) + (DBFloat) (Image->height) * (Image->height)) * PixelKM);
 }
 
 void UI2DView::SetActiveExtent(DBRegion extent) {

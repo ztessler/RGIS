@@ -644,27 +644,18 @@ void UI2DView::Draw() {
     XSetRegion(XtDisplay(DrawingAreaW), gc, DrawRegion);
     if (((dataset->DataList())->Flags() & DBDataLISTFlagSmartSort) == DBDataLISTFlagSmartSort) {
         for (data = dataset->FirstData(); data != (DBObjData *) NULL; data = dataset->NextData())
-            if ((data->Flags() & DBDataFlagDisplay) == DBDataFlagDisplay) if (data->Type() ==
-                                                                              DBTypeGridContinuous)
-                DrawGrid(data, gc);
+            if ((data->Type() == DBTypeGridContinuous) && data->Visible(MapScale)) DrawGrid     (data, gc);
+
         for (data = dataset->FirstData(); data != (DBObjData *) NULL; data = dataset->NextData())
-            if ((data->Flags() & DBDataFlagDisplay) == DBDataFlagDisplay) if (data->Type() ==
-                                                                              DBTypeGridDiscrete)
-                DrawGrid(data, gc);
+            if ((data->Type() == DBTypeGridDiscrete)   && data->Visible(MapScale)) DrawGrid     (data, gc);
         for (data = dataset->FirstData(); data != (DBObjData *) NULL; data = dataset->NextData())
-            if ((data->Flags() & DBDataFlagDisplay) == DBDataFlagDisplay) if (data->Type() ==
-                                                                              DBTypeVectorPolygon)
-                DrawPolygons(data, gc);
+            if ((data->Type() == DBTypeVectorPolygon)  && data->Visible(MapScale)) DrawPolygons (data, gc);
         for (data = dataset->FirstData(); data != (DBObjData *) NULL; data = dataset->NextData())
-            if ((data->Flags() & DBDataFlagDisplay) == DBDataFlagDisplay) if (data->Type() == DBTypeVectorLine)
-                DrawLines(data, gc);
+            if ((data->Type() == DBTypeVectorLine)     && data->Visible(MapScale)) DrawLines    (data, gc);
         for (data = dataset->FirstData(); data != (DBObjData *) NULL; data = dataset->NextData())
-            if ((data->Flags() & DBDataFlagDisplay) == DBDataFlagDisplay) if (data->Type() == DBTypeNetwork)
-                DrawNetwork(data, gc);
+            if ((data->Type() == DBTypeNetwork)        && data->Visible(MapScale)) DrawNetwork  (data, gc);
         for (data = dataset->FirstData(); data != (DBObjData *) NULL; data = dataset->NextData())
-            if ((data->Flags() & DBDataFlagDisplay) == DBDataFlagDisplay) if (data->Type() ==
-                                                                              DBTypeVectorPoint)
-                DrawPoints(data, gc);
+            if ((data->Type() == DBTypeVectorPoint)    && data->Visible(MapScale)) DrawPoints   (data, gc);
     }
     else
         for (data = dataset->FirstData(); data != (DBObjData *) NULL; data = dataset->NextData())

@@ -31,7 +31,7 @@ bfekete@ccny.cuny.edu
 #define UIMENU_GROUP06   ((DBUnsigned)(0x01 << 0x05))
 #define UIMENU_GROUP07   ((DBUnsigned)(0x01 << 0x06))
 #define UIMENU_GROUP08   ((DBUnsigned)(0x01 << 0x07))
-#define UIMENU_GROUP09     ((DBUnsigned)(0x01 << 0x08))
+#define UIMENU_GROUP09   ((DBUnsigned)(0x01 << 0x08))
 #define UIMENU_GROUP10   ((DBUnsigned)(0x01 << 0x09))
 #define UIMENU_GROUP11   ((DBUnsigned)(0x01 << 0x0a))
 #define UIMENU_GROUP12   ((DBUnsigned)(0x01 << 0x0b))
@@ -56,30 +56,30 @@ bfekete@ccny.cuny.edu
 #define UIMENU_GROUP31   ((DBUnsigned)(0x01 << 0x1e))
 #define UIMENU_GROUP32   ((DBUnsigned)(0x01 << 0x1f))
 
-#define UIColorStandard        0x00
+#define UIColorStandard     0x00
 #define UIColorGreyScale    0x01
 #define UIColorBlueScale    0x02
-#define UIColorRedScale        0x03
+#define UIColorRedScale     0x03
 #define UIColorElevation    0x04
 #define UIColorTrueColor    0x05
 
-#define UIStandardWhite        0x00
-#define UIStandardBlack        0x01
-#define UIStandardRed        0x02
-#define UIStandardGreen        0x03
-#define UIStandardBlue        0x04
-#define UIStandardCyan        0x05
-#define UIStandardMagenta    0x06
+#define UIStandardWhite     0x00
+#define UIStandardBlack     0x01
+#define UIStandardRed       0x02
+#define UIStandardGreen     0x03
+#define UIStandardBlue      0x04
+#define UIStandardCyan      0x05
+#define UIStandardMagenta   0x06
 #define UIStandardYellow    0x07
-#define UIStandardGrey        0x14
+#define UIStandardGrey      0x14
 
 #define UIGraphTimeSeries    0x01
 #define UIGraphXYPlot        0x02
 
 #define UIFault -1
 
-#define UISymbolMarker        0x01
-#define UISymbolLine        0x02
+#define UISymbolMarker       0x01
+#define UISymbolLine         0x02
 #define UISymbolShade        0x03
 #define UISymbolStick        0x04
 
@@ -335,6 +335,7 @@ class UI2DView : public DBObject {
 private:
     DBInt InputModeVAR;
     DBRegion RequiredEXT, ViewEXT, ActiveEXT;
+    DBFloat PixelKM, MapScale;
     XImage *Image;
     Region DrawRegion, FullRegion;
     Cursor ActiveCursor, RegenCursor;

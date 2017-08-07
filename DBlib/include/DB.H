@@ -1707,6 +1707,12 @@ public:
 
     void RecalcExtent();
 
+    bool Visible (DBFloat mapScale) {
+        if (mapScale < pow (10.0,(DBFloat) MinScale ())) return (false);
+        if (mapScale > pow (10.0,(DBFloat) MaxScale ())) return (false);
+        return ((Flags () & DBDataFlagDisplay) == DBDataFlagDisplay);
+    }
+
     DBInt SelectObject(DBObjRecord *, DBInt);
 
     void LinkedData(DBObjData *data) { LinkedDataPTR = data; }

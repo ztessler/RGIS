@@ -18,7 +18,7 @@ bfekete@ccny.cuny.edu
 
 int main(int argc, char *argv[]) {
     int argPos, argNum = argc, ret, verbose = false;
-    float climb = 0.0, minBasin = HUGE_VAL;
+    float climb = 0.0, maxBasin = HUGE_VAL;
     char *title = (char *) NULL, *subject = (char *) NULL;
     char *domain = (char *) NULL, *version = (char *) NULL;
     char *elevName = (char *) NULL;
@@ -47,13 +47,13 @@ int main(int argc, char *argv[]) {
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
             continue;
         }
-        if (CMargTest (argv[argPos], "-m", "--minimum_basin")) {
+        if (CMargTest (argv[argPos], "-m", "--maximum_basin")) {
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) {
                 CMmsgPrint(CMmsgUsrError, "Missing maximum basin size!");
                 return (CMfailed);
             }
-            if (sscanf(argv[argPos], "%f", &minBasin) != 1) {
-                CMmsgPrint(CMmsgUsrError, "Invalid minimum basin size");
+            if (sscanf(argv[argPos], "%f", &maxBasin) != 1) {
+                CMmsgPrint(CMmsgUsrError, "Invalid maximum basin size");
                 return (CMfailed);
             }
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
@@ -140,7 +140,7 @@ int main(int argc, char *argv[]) {
             CMmsgPrint(CMmsgInfo, "%s [options] <input network> <output network>", CMfileName(argv[0]));
             CMmsgPrint(CMmsgInfo, "     -e,--elevation     [elevation coverage]");
             CMmsgPrint(CMmsgInfo, "     -c,--climb         [climb coefficient]");
-            CMmsgPrint(CMmsgInfo, "     -m,--minimum_basin [minimum basin size]");
+            CMmsgPrint(CMmsgInfo, "     -m,--maximum_basin [maxmum basin size]");
             CMmsgPrint(CMmsgInfo, "     -P, --planet       [Earth|Mars|Venus|radius]");
             CMmsgPrint(CMmsgInfo, "     -t,--title         [dataset title]");
             CMmsgPrint(CMmsgInfo, "     -u,--subject       [subject]");
@@ -190,7 +190,7 @@ int main(int argc, char *argv[]) {
     if ((argNum > 2) && (strcmp(argv[2], "-") != 0)) netData->FileName(argv[2]);
     else save = false;
 
-    if ((ret = RGlibNetworkDefragment(netData, grdData, climb, minBasin, save)) == DBSuccess)
+    if ((ret = RGlibNetworkDefragment(netData, grdData, climb, maxBasin, save)) == DBSuccess)
         ret = (argNum > 2) && (strcmp(argv[2], "-") != 0) ? netData->Write(argv[2]) : netData->Write(stdout);
 
     delete netData;
