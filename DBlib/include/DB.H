@@ -1708,7 +1708,6 @@ public:
     void RecalcExtent();
 
     bool Visible (DBFloat mapScale) {
-        printf ("MapScale: %f MinScale: %d MaxScale: %d\n",mapScale,MinScale(), MaxScale());
         if (mapScale < pow (10.0,(DBFloat) MinScale ())) return (false);
         if (mapScale > pow (10.0,(DBFloat) MaxScale ())) return (false);
         return ((Flags () & DBDataFlagDisplay) == DBDataFlagDisplay);
