@@ -85,7 +85,7 @@ void UI2DView::SetExtent(DBRegion extent) {
     diagDistance = DBMathCoordinateDistance (DBMathGetDistanceFunction (projection), ViewEXT.LowerLeft,ViewEXT.UpperRight);
     MapScale = DBMathCoordinateDistance (DBMathGetDistanceFunction (projection), ViewEXT.LowerLeft,ViewEXT.UpperRight) * 1000000.0
              / (sqrt((DBFloat) (Image->width) * (Image->width) + (DBFloat) (Image->height) * (Image->height)) * PixelMM);
-    printf ("MapScale: %f Diagonal Distance: %f\n",MapScale, diagDistance);
+//    printf ("MapScale: %f Diagonal Distance: %f\n",MapScale, diagDistance);
 }
 
 void UI2DView::SetActiveExtent(DBRegion extent) {

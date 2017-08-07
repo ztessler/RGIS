@@ -645,7 +645,6 @@ void UI2DView::Draw() {
     if (((dataset->DataList())->Flags() & DBDataLISTFlagSmartSort) == DBDataLISTFlagSmartSort) {
         for (data = dataset->FirstData(); data != (DBObjData *) NULL; data = dataset->NextData())
             if ((data->Type() == DBTypeGridContinuous) && data->Visible(MapScale)) DrawGrid     (data, gc);
-
         for (data = dataset->FirstData(); data != (DBObjData *) NULL; data = dataset->NextData())
             if ((data->Type() == DBTypeGridDiscrete)   && data->Visible(MapScale)) DrawGrid     (data, gc);
         for (data = dataset->FirstData(); data != (DBObjData *) NULL; data = dataset->NextData())
