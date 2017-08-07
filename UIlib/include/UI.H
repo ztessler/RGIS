@@ -335,7 +335,7 @@ class UI2DView : public DBObject {
 private:
     DBInt InputModeVAR;
     DBRegion RequiredEXT, ViewEXT, ActiveEXT;
-    DBFloat PixelKM, MapScale;
+    DBFloat PixelMM, MapScale;
     XImage *Image;
     Region DrawRegion, FullRegion;
     Cursor ActiveCursor, RegenCursor;

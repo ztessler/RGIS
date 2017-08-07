@@ -17,11 +17,11 @@ void UI2DView::SetExtent(DBRegion extent) {
     DBInt projection;
     DBFloat u, v;
     DBCoordinate lowerLeft = extent.LowerLeft, upperRight = extent.UpperRight;
-    double windowratio, mapratio;
+    double windowratio, mapratio, diagDistance;
     DBDataset *dataset = UIDataset();
     DBObjData  *firstData = dataset->FirstData();
 
-    projection = firstData != (DBObjData *) NULL ? firstData->Precision () : DBProjectionCartesian;
+    projection = firstData != (DBObjData *) NULL ? firstData->Projection () : DBProjectionCartesian;
     RequiredEXT = extent;
     wlist[0].x = Image->width / 2;
     wlist[0].y = Image->height / 2;
@@ -82,8 +82,10 @@ void UI2DView::SetExtent(DBRegion extent) {
 
     ViewEXT.LowerLeft = lowerLeft;
     ViewEXT.UpperRight = upperRight;
-    MapScale = DBMathCoordinateDistance (DBMathGetDistanceFunction (projection), ViewEXT.LowerLeft,ViewEXT.UpperRight)
-             / (sqrt((DBFloat) (Image->width) * (Image->width) + (DBFloat) (Image->height) * (Image->height)) * PixelKM);
+    diagDistance = DBMathCoordinateDistance (DBMathGetDistanceFunction (projection), ViewEXT.LowerLeft,ViewEXT.UpperRight);
+    MapScale = DBMathCoordinateDistance (DBMathGetDistanceFunction (projection), ViewEXT.LowerLeft,ViewEXT.UpperRight) * 1000000.0
+             / (sqrt((DBFloat) (Image->width) * (Image->width) + (DBFloat) (Image->height) * (Image->height)) * PixelMM);
+    printf ("MapScale: %f Diagonal Distance: %f\n",MapScale, diagDistance);
 }
 
 void UI2DView::SetActiveExtent(DBRegion extent) {
