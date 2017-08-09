@@ -826,7 +826,7 @@ DBInt RGlibNetworkCellSlopes(DBObjData *netData, DBObjData *inGridData, DBObjDat
     DBFloat value, slope;
     DBPosition pos;
     DBCoordinate coord0, coord1;
-    DBObjRecord *outLayerRec, *cellRec, *layerRec;
+    DBObjRecord *outLayerRec, *cellRec, *toCellRec, *layerRec;
     DBGridIF *inGridIF, *outGridIF;
     DBNetworkIF *netIF;
     DBMathDistanceFunction distFunc = DBMathGetDistanceFunction(netData);
@@ -863,10 +863,11 @@ DBInt RGlibNetworkCellSlopes(DBObjData *netData, DBObjData *inGridData, DBObjDat
                 else {
                     coord0 = netIF->Center(cellRec);
                     if (inGridIF->Value(layerRec, coord0, &slope)) {
-                        coord1 = coord0 + netIF->Delta(cellRec);
-                        if ((coord0.X == coord1.X) && (coord0.Y == coord1.Y))
+                        if ((toCellRec = netIF->ToCell(cellRec)) == (DBObjRecord *) NULL) {
                             outGridIF->Value(outLayerRec, pos, (DBFloat) RGlibMinSLOPE);
+                        }
                         else {
+                            coord1 = netIF->Center(toCellRec);
                             if (inGridIF->Value(layerRec, coord1, &value)) {
                                 slope = (slope - value) / DBMathCoordinateDistance(distFunc, coord0, coord1);
                                 outGridIF->Value(outLayerRec, pos, slope);
