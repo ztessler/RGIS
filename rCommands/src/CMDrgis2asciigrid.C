@@ -96,7 +96,7 @@ int main(int argc, char *argv[]) {
         return (CMfailed);
     }
 
-    if ((out = argNum > 2 ? fopen(argv[2], "w") : stdout) == (FILE *) NULL) {
+    if ((out = (argNum > 2) && (strcmp(argv[2], "-") != 0) ? fopen(argv[2], "w") : stdout) == (FILE *) NULL) {
         CMmsgPrint(CMmsgUsrError, "Output file opening error!");
         return (CMfailed);
     }
