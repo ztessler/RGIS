@@ -230,68 +230,11 @@ void RGISEditGridRemovePitsCBK (Widget widget, RGISWorkspace *workspace,XmAnyCal
 void RGISEditGridNetFilterCBK (Widget widget, RGISWorkspace *workspace,XmAnyCallbackStruct *callData)
 
 	{
-	DBInt layerID, cellID, count, ret, kernel, kernelSize, maxProgress, dir;
-	DBFloat elev, cellElev, prevElev, upElev [5], meanElev, minElev, dElev;
 	DBDataset *dataset = UIDataset ();
 	DBObjData *grdData = dataset->Data ();
 	DBObjData *netData = grdData->LinkedData ();
-	DBGridIF *gridIF = new DBGridIF (grdData);
-	DBNetworkIF *netIF = new DBNetworkIF (netData);
-	DBObjRecord *cellRec, *fromCell, *nextCell, *layerRec;
 
 	UIPauseDialogOpen ((char *) "Network Filtering");
-	maxProgress = netIF->CellNum () * gridIF->LayerNum ();
-	for (layerID = 0;layerID < gridIF->LayerNum (); ++layerID)
-		{
-		layerRec = gridIF->Layer (layerID);
-
-		for (cellID = 0;cellID < netIF->CellNum (); ++cellID)
-			{
-			if (UIPause (((layerID + 1) * netIF->CellNum () - cellID) * 100 / maxProgress)) goto Stop;
-			fromCell = netIF->Cell (cellID);
-			if (netIF->FromCell (fromCell) != (DBObjRecord *) NULL) continue;
-			while (gridIF->Value (layerRec,netIF->Center (fromCell),&prevElev) == (DBInt) false)
-				if ((fromCell = netIF->ToCell (fromCell)) == (DBObjRecord *) NULL) break;
-			if (fromCell == (DBObjRecord *) NULL) continue;
-
-			kernelSize = 0;
-			for (cellRec = netIF->ToCell (fromCell); (cellRec != (DBObjRecord *) NULL) && (netIF->FromCell (cellRec) == fromCell); cellRec = netIF->ToCell (cellRec))
-				{
-				dElev = netIF->CellLength (fromCell) * RGlibMinSLOPE;
-				if ((ret = gridIF->Value (layerRec,netIF->Center (cellRec),&cellElev)) == false) { count = 0; meanElev = 0.0; }
-				else { count = 1, meanElev = cellElev; }
-
-				if (kernelSize + 1 < (int) (sizeof (upElev) / sizeof (upElev [0]))) kernelSize++;
-				for (kernel = kernelSize - 1;kernel > 0;--kernel) upElev [kernel] = upElev [kernel - 1]; upElev [0] = prevElev;
-				for (kernel = 0;kernel < kernelSize;++kernel) { meanElev += upElev [kernel]; count++; }
-				minElev = prevElev;
-				for (dir = 0; dir < 8;++dir)
-					if (((fromCell = netIF->FromCell (cellRec,0x01 << dir,true)) != (DBObjRecord *) NULL) &&
-					    (gridIF->Value (layerRec,netIF->Center (fromCell),&elev) == true) && (minElev > elev))
-						{ minElev = elev; dElev = netIF->CellLength (fromCell) * RGlibMinSLOPE; }
-
-				nextCell = netIF->ToCell (cellRec);
-				for (kernel = 0;(kernel < kernelSize) && (nextCell != (DBObjRecord *) NULL);++kernel)
-					{
-					if(gridIF->Value (layerRec,netIF->Center (nextCell),&elev) != (DBInt) false) { meanElev += elev; count++; }
-					nextCell = netIF->ToCell (nextCell);
-					}
-				if (count > 0)
-					{
-					meanElev = meanElev / count;
-
-					if (meanElev > minElev - dElev) meanElev = minElev - dElev;
-					gridIF->Value (layerRec,netIF->Center (cellRec),meanElev);
-					prevElev = meanElev;
-					}
-				else	gridIF->Value (layerRec,netIF->Center (cellRec),gridIF->MissingValue ());
-				fromCell = cellRec;
-				}
-			}
-		gridIF->RecalcStats (layerRec);
-		}
-Stop:
+    RGlibGridNetFilter (netData,grdData);
 	UIPauseDialogClose ();
-	delete gridIF;
-	delete netIF;
 	}

@@ -60,6 +60,8 @@ DBInt RGlibPointSubbasinStats(DBObjData *, DBObjData *, DBObjData *, DBObjData *
 
 DBInt RGlibPointSubbasinHist(DBObjData *, DBObjData *, DBObjData *, DBObjData *);
 
+DBInt RGlibGridNetFilter (DBObjData *, DBObjData *);
+
 DBInt RGlibGridRemovePits(DBObjData *, DBObjData *);
 
 DBInt RGlibGridResampling(DBObjData *, DBObjRecord *, DBObjData *, DBObjData *);
