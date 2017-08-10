@@ -110,7 +110,8 @@ DBInt RGlibGridRemovePits(DBObjData *netData, DBObjData *grdData) {
         }
         gridIF->RecalcStats(layerRec);
     }
-    Stop:
+    
+ Stop:
     delete gridIF;
     delete netIF;
     return (cellID > 0 ? DBFault : DBSuccess);
