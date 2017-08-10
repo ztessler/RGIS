@@ -35,7 +35,7 @@ int DBExportARCGridLayer(DBObjData *data, DBObjRecord *layerRec, FILE *file) {
     fprintf(file, "nrows         %d\n", gridIF->RowNum());
     fprintf(file, "xllcorner     %f\n", (data->Extent()).LowerLeft.X);
     fprintf(file, "yllcorner     %f\n", (data->Extent()).LowerLeft.Y);
-    fprintf(file, "cellsize      %f\n", gridIF->CellWidth());
+    fprintf(file, "cellsize      %.15f\n", gridIF->CellWidth());
     switch (data->Type()) {
         case DBTypeGridContinuous:
         DBFloat value;
