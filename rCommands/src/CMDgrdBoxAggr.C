@@ -192,9 +192,10 @@ int main(int argc, char *argv[]) {
 
     inGridIF = new DBGridIF(inData);
 
-    cellSize.X = (DBFloat) kernelSize * inGridIF->CellWidth();
-    cellSize.Y = (DBFloat) kernelSize * inGridIF->CellHeight();
     extent = inData->Extent();
+    cellSize.X = (extent.UpperRight.X - extent.LowerLeft.X) / (inGridIF->ColNum() / kernelSize);
+    cellSize.Y = (extent.UpperRight.Y - extent.LowerLeft.Y) / (inGridIF->RowNum() / kernelSize);
+
     if ((outData = DBGridCreate (title, extent, cellSize, inData->Type (), inGridIF->ValueType(), inGridIF->ValueSize())) == (DBObjData *) NULL) return (CMfailed);
     outData->Name(title);
     outData->Document(DBDocSubject, subject);
