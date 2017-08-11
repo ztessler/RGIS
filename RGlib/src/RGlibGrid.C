@@ -22,6 +22,7 @@ DBInt RGlibGridNetFilter(DBObjData *netData, DBObjData *grdData) {
     DBNetworkIF *netIF = new DBNetworkIF (netData);
     DBObjRecord *cellRec, *fromCell, *nextCell, *layerRec;
 
+    maxProgress = netIF->CellNum () * gridIF->LayerNum ();
     for (layerID = 0;layerID < gridIF->LayerNum (); ++layerID)
     {
         layerRec = gridIF->Layer (layerID);
