@@ -4,7 +4,7 @@ GHAAS RiverGIS Utilities V1.0
 Global Hydrologic Archive and Analysis System
 Copyright 1994-2017, UNH - CCNY/CUNY
 
-CMDgrdBlkAggr.C
+CMDgrdBoxAggr.C
 
 bfekete@ccny.cuny.edu
 

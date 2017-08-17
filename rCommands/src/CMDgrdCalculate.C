@@ -255,7 +255,7 @@ public:
         CellSize.X = CellSize.Y = DBHugeVal;
         for (recID = 0; recID < Variables->ItemNum(); ++recID) {
             obj = Variables->Item(recID);
-            if ((fieldPTR = Table->Field(obj->Name())) != (DBObjTableField *) NULL) continue;
+            if (Table->Field(obj->Name()) != (DBObjTableField *) NULL) continue;
 
             if ((GrdVar = (CMDgrdVariable **) realloc(GrdVar, sizeof(CMDgrdVariable *) * (VarNum + 1))) ==
                 (CMDgrdVariable **) NULL) {
