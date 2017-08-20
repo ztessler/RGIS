@@ -47,14 +47,14 @@ int main(int argc, char *argv[]) {
             continue;
         }
         if (CMargTest (argv[argPos], "-n", "--interpolate")) {
-            const char *modes[] = {"surface", "flate", (char *) NULL};
+            const char *modes[] = {"surface", "flat", (char *) NULL};
 
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) {
-                CMmsgPrint(CMmsgUsrError, "Missing mode!");
+                CMmsgPrint(CMmsgUsrError, "Missing interpolation mode!");
                 return (CMfailed);
             }
             if ((interpolate = CMoptLookup(modes, argv[argPos], true)) == DBFault) {
-                CMmsgPrint(CMmsgUsrError, "Invalid mode!");
+                CMmsgPrint(CMmsgUsrError, "Invalid interpolation mode!");
                 return (CMfailed);
             }
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
@@ -64,11 +64,11 @@ int main(int argc, char *argv[]) {
             const char *modes[] = {"from", "to", (char *) NULL};
 
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) {
-                CMmsgPrint(CMmsgUsrError, "Missing mode!");
+                CMmsgPrint(CMmsgUsrError, "Missing cell mode!");
                 return (CMfailed);
             }
             if ((cellMode = CMoptLookup(modes, argv[argPos], true)) == DBFault) {
-                CMmsgPrint(CMmsgUsrError, "Invalid mode!");
+                CMmsgPrint(CMmsgUsrError, "Invalid cell mode!");
                 return (CMfailed);
             }
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
