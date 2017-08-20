@@ -88,6 +88,8 @@ DBInt RGlibGridBivarCellStats(DBObjData *, DBObjData *, DBObjData *);
 
 DBInt RGlibGridSampling(DBObjData *, DBObjData *, DBObjData *);
 
+void RGlibGridSampling(DBObjData *, DBObjData *, bool, bool);
+
 void RGlibGridSampling(DBObjData *, DBObjData *, bool);
 
 DBInt RGlibCycleMean(DBObjData *, DBObjData *, DBInt, DBInt);

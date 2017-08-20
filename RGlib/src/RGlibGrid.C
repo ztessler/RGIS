@@ -1869,10 +1869,14 @@ DBInt RGlibGridSampling(DBObjData *dbData, DBObjData *grdData, DBObjData *tblDat
     return (progress < maxProgress ? DBFault : DBSuccess);
 }
 
-void RGlibGridSampling(DBObjData *splData, DBObjData *grdData, bool netMode) {
+void RGlibGridSampling(DBObjData *splData, DBObjData *grdData, bool cellMode)
+    { return (RGlibGridSampling (splData, grdData, true, cellMode));}
+
+void RGlibGridSampling(DBObjData *splData, DBObjData *grdData, bool interpolate, bool netMode) {
     DBInt layerID, layerNum = 0, recordID;
     char *tableName;
     DBCoordinate coord;
+    DBPosition pos;
     DBObjTable *table;
     DBGridIF *gridIF;
     DBVPointIF *pntIF = (DBVPointIF *) NULL;
@@ -1917,18 +1921,23 @@ void RGlibGridSampling(DBObjData *splData, DBObjData *grdData, bool netMode) {
                 if (newField->Required()) continue;
                 for (recordID = 0; recordID < table->ItemNum(); recordID++) {
                     record = table->Item(recordID);
-                    DBPause((layerRec->RowID() * table->ItemNum() + recordID) * 100 /
-                            (gridIF->LayerNum() * table->ItemNum()));
+                    DBPause((layerRec->RowID() * table->ItemNum() + recordID) * 100 / (gridIF->LayerNum() * table->ItemNum()));
                     if (pntIF != (DBVPointIF *) NULL) coord = pntIF->Coordinate(record);
                     else coord = netMode ? netIF->Center(record) : netIF->Center(record) + netIF->Delta(record);
 
-                    if (gridIF->Value(layerRec, coord, &value))
-                        newField->Float(record, value);
-                    else newField->Float(record, newField->FloatNoData());
+                    if (interpolate) {
+                        if (gridIF->Value(layerRec, coord, &value))
+                            newField->Float(record, value);
+                        else newField->Float(record, newField->FloatNoData());
+                    }
+                    else {
+                        if ((gridIF->Coord2Pos((coord),pos) == DBSuccess) && gridIF->Value (layerRec,pos,&value))
+                            newField->Float(record, value);
+                        else newField->Float(record, newField->FloatNoData());
+                    }
                 }
             }
-        }
-            break;
+        } break;
         case DBTypeGridDiscrete: {
             DBObjTable *grdTable = grdData->Table(DBrNItems);
             DBObjectLIST<DBObjTableField> *fields = grdTable->Fields();
@@ -1979,8 +1988,7 @@ void RGlibGridSampling(DBObjData *splData, DBObjData *grdData, bool netMode) {
                             }
                     }
                 }
-        }
-            break;
+        } break;
     }
     if (pntIF != (DBVPointIF *) NULL) delete pntIF;
     if (netIF != (DBNetworkIF *) NULL) delete netIF;

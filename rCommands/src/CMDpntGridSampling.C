@@ -16,7 +16,7 @@ bfekete@ccny.cuny.edu
 #include <RG.H>
 
 int main(int argc, char *argv[]) {
-    int argPos, argNum = argc, ret, mode = 0, netMode = 0, verbose = false;
+    int argPos, argNum = argc, ret, mode = 0, cellMode = 0, interpolate = 0, verbose = false;
     char *title = (char *) NULL, *subject = (char *) NULL;
     char *domain = (char *) NULL, *version = (char *) NULL;
     char *splName = (char *) NULL;
@@ -46,14 +46,28 @@ int main(int argc, char *argv[]) {
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
             continue;
         }
-        if (CMargTest (argv[argPos], "-n", "--netmode")) {
+        if (CMargTest (argv[argPos], "-n", "--interpolate")) {
+            const char *modes[] = {"surface", "flate", (char *) NULL};
+
+            if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) {
+                CMmsgPrint(CMmsgUsrError, "Missing mode!");
+                return (CMfailed);
+            }
+            if ((interpolate = CMoptLookup(modes, argv[argPos], true)) == DBFault) {
+                CMmsgPrint(CMmsgUsrError, "Invalid mode!");
+                return (CMfailed);
+            }
+            if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
+            continue;
+        }
+        if (CMargTest (argv[argPos], "-c", "--cellmode")) {
             const char *modes[] = {"from", "to", (char *) NULL};
 
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) {
                 CMmsgPrint(CMmsgUsrError, "Missing mode!");
                 return (CMfailed);
             }
-            if ((netMode = CMoptLookup(modes, argv[argPos], true)) == DBFault) {
+            if ((cellMode = CMoptLookup(modes, argv[argPos], true)) == DBFault) {
                 CMmsgPrint(CMmsgUsrError, "Invalid mode!");
                 return (CMfailed);
             }
@@ -103,14 +117,15 @@ int main(int argc, char *argv[]) {
         }
         if (CMargTest (argv[argPos], "-h", "--help")) {
             CMmsgPrint(CMmsgInfo, "%s [options] <input grid> <output table>", CMfileName(argv[0]));
-            CMmsgPrint(CMmsgInfo, "     -s,--sample    [sampling points or network]");
-            CMmsgPrint(CMmsgInfo, "     -m,--mode      [table|attrib]");
-            CMmsgPrint(CMmsgInfo, "     -n,--netmode   [from|to]");
-            CMmsgPrint(CMmsgInfo, "     -t,--title     [dataset title]");
-            CMmsgPrint(CMmsgInfo, "     -u,--subject   [subject]");
-            CMmsgPrint(CMmsgInfo, "     -d,--domain    [domain]");
+            CMmsgPrint(CMmsgInfo, "     -s,--sample      [sampling points or network]");
+            CMmsgPrint(CMmsgInfo, "     -m,--mode        [table|attrib]");
+            CMmsgPrint(CMmsgInfo, "     -n,--interpolate [surface|flat]");
+            CMmsgPrint(CMmsgInfo, "     -c,--cellmode    [from|to]");
+            CMmsgPrint(CMmsgInfo, "     -t,--title       [dataset title]");
+            CMmsgPrint(CMmsgInfo, "     -u,--subject     [subject]");
+            CMmsgPrint(CMmsgInfo, "     -d,--domain      [domain]");
             CMmsgPrint(CMmsgInfo, "     -V,--verbose");
-            CMmsgPrint(CMmsgInfo, "     -v,--version   [version]");
+            CMmsgPrint(CMmsgInfo, "     -v,--version     [version]");
             CMmsgPrint(CMmsgInfo, "     -h,--help");
             return (DBSuccess);
         }
@@ -166,9 +181,8 @@ int main(int argc, char *argv[]) {
         if (subject != (char *) NULL) splData->Document(DBDocSubject, subject);
         if (domain != (char *) NULL) splData->Document(DBDocGeoDomain, domain);
         if (version != (char *) NULL) splData->Document(DBDocVersion, version);
-        RGlibGridSampling(splData, grdData, netMode == 0 ? true : false);
-        ret = (argNum > 2) && (strcmp(argv[2], "-") != 0) ?
-              splData->Write(argv[2]) : splData->Write(stdout);
+        RGlibGridSampling(splData, grdData, interpolate == 0 ? true : false, cellMode == 0 ? true : false);
+        ret = (argNum > 2) && (strcmp(argv[2], "-") != 0) ? splData->Write(argv[2]) : splData->Write(stdout);
     }
 
     delete grdData;
