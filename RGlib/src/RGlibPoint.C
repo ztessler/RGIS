@@ -30,6 +30,7 @@ DBInt RGlibPointSTNCoordinates(DBObjData *dbData, DBObjTableField *field) {
     for (pointID = 0; pointID < pntIF->ItemNum(); ++pointID) {
         pntRec = pntIF->Item(pointID);
         if (DBPause(pointID * 100 / pntIF->ItemNum())) goto Stop;
+        if ((pntRec->Flags () & DBObjectFlagIdle) == DBObjectFlagIdle) continue;
         coord = pntIF->Coordinate(pntRec);
         if (netIF->Coord2Pos(coord, pos) == DBFault) continue;
         netIF->Pos2Coord(pos, coord);
