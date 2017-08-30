@@ -1,5 +1,4 @@
 #!/bin/bash
-#@(#)GHAAS RiverGIS V2.1 Start Script (02-Jan-24)
 
 if [ -z "${GHAAS_DIR}" ]; then
 	if [ -e "/usr/local/share/ghaas" ]; then

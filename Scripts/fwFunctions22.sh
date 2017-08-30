@@ -9,7 +9,19 @@
 if [ "${GHAASDIR}" == "" ]; then GHAASDIR="/usr/local/share/ghaas"; fi
 source "${GHAASDIR}/Scripts/RGISfunctions.sh"
 
-_fwMAXPROC=1
+case "$(uname)" in
+    (Linux)
+        export GHAASprocessorNum=$(cat /proc/cpuinfo | grep processor | wc -l)
+    ;;
+    (Darwin)
+        export GHAASprocessorNum=$(sysctl -n hw.ncpu)
+    ;;
+    (*)
+        export GHAASprocessorNum=1
+    ;;
+esac
+
+_fwMAXPROC=${GHAASprocessorNum}
 _fwPASSNUM=5
 _fwRESTART="off"
 

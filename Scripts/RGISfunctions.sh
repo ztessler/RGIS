@@ -3,6 +3,18 @@
 if [[ "${RGIS_FUNCTIONS}" == "sourced" ]]; then
     return 0
 else
+    case "$(uname)" in
+        (Linux)
+            export GHAASprocessorNum=$(cat /proc/cpuinfo | grep processor | wc -l)
+        ;;
+        (Darwin)
+            export GHAASprocessorNum=$(sysctl -n hw.ncpu)
+        ;;
+        (*)
+            export GHAASprocessorNum=1
+        ;;
+    esac
+
     if (( $# > 1)); then
        if [[ "${1}" == "gzipped" ]]; then
           __RGIS_GZEXT=".gz"
