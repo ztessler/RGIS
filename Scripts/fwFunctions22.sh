@@ -11,7 +11,7 @@ source "${GHAASDIR}/Scripts/RGISfunctions.sh"
 
 case "$(uname)" in
     (Linux)
-        export GHAASprocessorNum=$(cat /proc/cpuinfo | grep processor | wc -l)
+        export GHAASprocessorNum=$(nproc)
     ;;
     (Darwin)
         export GHAASprocessorNum=$(sysctl -n hw.ncpu)
