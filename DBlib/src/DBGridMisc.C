@@ -191,7 +191,6 @@ DBFloat DBGridIF::Minimum(DBInt layer) const {
 
 DBInt DBGridIF::Coord2Sampler (DBCoordinate coord, DBGridSampler &sampler) const {
     bool horExt, verExt;
-    DBFloat dist;
     DBCoordinate cellCoord;
     DBPosition   pos, cellPos;
     DBMathDistanceFunction distFunc = DBMathGetDistanceFunction(DataPTR);
@@ -262,14 +261,14 @@ DBInt DBGridIF::Pos2Coord(DBPosition pos, DBCoordinate &coord) const {
 }
 
 DBInt DBGridIF::Value(DBObjRecord *layerRec, DBPosition pos, DBInt value) {
-    DBInt j;
+    size_t j;
     DBObjRecord *dataRec = LayerFLD->Record(layerRec);
 
     if ((pos.Col < 0) || (pos.Row < 0) || (pos.Col >= DimensionVAR.Col) || (pos.Row >= DimensionVAR.Row)) {
         return (false);
     }
 
-    j = DimensionVAR.Col * (DimensionVAR.Row - pos.Row - 1) + pos.Col;
+    j = (size_t) DimensionVAR.Col * (DimensionVAR.Row - pos.Row - 1) + pos.Col;
     switch (ValueTypeVAR) {
         case DBTableFieldFloat:
             switch (ValueSizeVAR) {
@@ -299,7 +298,7 @@ DBInt DBGridIF::Value(DBObjRecord *layerRec, DBPosition pos, DBInt value) {
 }
 
 DBInt DBGridIF::Value(DBObjRecord *layerRec, DBPosition pos, DBInt *value) const {
-    DBInt j;
+    size_t j;
     DBObjRecord *dataRec = LayerFLD->Record(layerRec);
 
     if ((pos.Col < 0) || (pos.Row < 0) || (pos.Col >= DimensionVAR.Col) || (pos.Row >= DimensionVAR.Row)) {
@@ -307,7 +306,7 @@ DBInt DBGridIF::Value(DBObjRecord *layerRec, DBPosition pos, DBInt *value) const
         return (false);
     }
 
-    j = DimensionVAR.Col * (DimensionVAR.Row - pos.Row - 1) + pos.Col;
+    j = (size_t) DimensionVAR.Col * (DimensionVAR.Row - pos.Row - 1) + pos.Col;
     switch (ValueTypeVAR) {
         case DBTableFieldFloat:
             switch (ValueSizeVAR) {
@@ -339,7 +338,8 @@ DBInt DBGridIF::Value(DBObjRecord *layerRec, DBPosition pos, DBInt *value) const
 }
 
 DBInt DBGridIF::Value(DBObjRecord *layerRec, DBPosition pos, DBFloat *value) const {
-    DBInt j, retVal, intVal, missingInt;
+    DBInt retVal, intVal, missingInt;
+    size_t j;
     DBObjRecord *dataRec = LayerFLD->Record(layerRec);
     DBFloat missingFloat;
 
@@ -348,7 +348,7 @@ DBInt DBGridIF::Value(DBObjRecord *layerRec, DBPosition pos, DBFloat *value) con
         return (false);
     }
 
-    j = DimensionVAR.Col * (DimensionVAR.Row - pos.Row - 1) + pos.Col;
+    j = (size_t) DimensionVAR.Col * (DimensionVAR.Row - pos.Row - 1) + pos.Col;
     switch (ValueTypeVAR) {
         case DBTableFieldFloat:
             missingFloat = MissingValueFLD->Float(ItemTable->Item(layerRec->RowID()));
@@ -383,7 +383,7 @@ DBInt DBGridIF::Value(DBObjRecord *layerRec, DBPosition pos, DBFloat *value) con
 }
 
 DBInt DBGridIF::Value(DBObjRecord *layerRec, DBPosition pos, DBFloat value) {
-    DBInt j = DimensionVAR.Col * (DimensionVAR.Row - pos.Row - 1) + pos.Col;
+    size_t j = (size_t) DimensionVAR.Col * (DimensionVAR.Row - pos.Row - 1) + pos.Col;
     DBObjRecord *dataRec = LayerFLD->Record(layerRec);
 
     if (pos.Col < 0) return (DBFault);
@@ -420,7 +420,7 @@ DBInt DBGridIF::Value(DBObjRecord *layerRec, DBPosition pos, DBFloat value) {
 }
 
 DBInt DBGridIF::Value(DBObjRecord *layerRec, DBGridSampler sampler, DBFloat *value) const {
-    DBInt i, j, pointNum = sampler.Num();
+    DBInt i, pointNum = sampler.Num();
     DBFloat precision, weight, sumWValue, sumWeight, retVal;
 
     precision = pow((double) 10.0, (double) DataPTR->Precision());
@@ -473,8 +473,7 @@ char *DBGridIF::ValueString(DBObjRecord *layerRec, DBPosition pos) {
             DBFloat cellVal;
             if (Value(layerRec, pos, &cellVal) == false) return ((char *) "");
             sprintf(retString, ValueFormat(), cellVal);
-        }
-            break;
+            } break;
         default:
             CMmsgPrint(CMmsgAppError, "Invalid Data Type in: %s %d", __FILE__, __LINE__);
             return ((char *) NULL);

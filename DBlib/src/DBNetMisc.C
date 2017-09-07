@@ -460,7 +460,7 @@ DBInt DBNetworkIF::Build() {
 
     for (row = 0; row < RowNum(); row++)
         for (col = 0; col < ColNum(); col++)
-            ((DBInt *) DataRec->Data())[row * ColNum() + col] = DBFault;
+            ((DBInt *) DataRec->Data())[(size_t) row * (size_t) ColNum() + (size_t) col] = DBFault;
     for (i = 0; i < CellNum(); ++i) {
         cellRec = CellTable->Item(i);
         cellRec->Flags(DBObjectFlagLocked, DBClear);
