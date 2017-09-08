@@ -26,7 +26,7 @@ size_t CMthreadProcessorNum () {
 }
 
 CMthreadJob_p CMthreadJobCreate (size_t taskNum, CMthreadUserExecFunc execFunc, void *commonData) {
-	size_t taskId, threadId, threadNum;
+	size_t taskId;
 	CMthreadJob_p job;
 
 	if ((job = (CMthreadJob_p) malloc (sizeof (CMthreadJob_t))) == (CMthreadJob_p) NULL) {

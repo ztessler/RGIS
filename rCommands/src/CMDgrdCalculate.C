@@ -309,7 +309,7 @@ public:
         GridIF = new DBGridIF(data);
 
         if (team.ThreadNum > 0) {
-            if ((job = CMthreadJobCreate(GridIF->RowNum() * GridIF->ColNum(), userFunc, (void *) this)) ==
+            if ((job = CMthreadJobCreate((size_t) (GridIF->RowNum()) * (size_t) (GridIF->ColNum()), userFunc, (void *) this)) ==
                 (CMthreadJob_p) NULL) {
                 CMmsgPrint(CMmsgAppError, "Job creation error in %s:%d", __FILE__, __LINE__);
                 CMthreadTeamDestroy(&team);
