@@ -634,14 +634,18 @@ int main(int argc, char *argv[]) {
         for (dataRec = (grdData->Arrays())->First();
              dataRec != (DBObjRecord *) NULL; dataRec = (grdData->Arrays())->Next()) {
             for (i = 0; i < colNum * rowNum; ++i) {
-                if (itemSize == (int) sizeof(DBByte))
-                    intVal = (DBInt) (*((DBByte *) ((char *) dataRec->Data() + i * itemSize)));
-                else intVal = (DBInt) (*((DBShort *) ((char *) dataRec->Data() + i * itemSize)));
+                switch(itemSize) {
+                    case 1:  intVal = (DBInt) (*((DBByte *)  ((char *) dataRec->Data() + i * itemSize))); break;
+                    case 2:  intVal = (DBInt) (*((DBShort *) ((char *) dataRec->Data() + i * itemSize))); break;
+                    default: intVal = (DBInt) (*((DBInt *)   ((char *) dataRec->Data() + i * itemSize))); break;
+                }
                 itemRec = itemTable->Item(intVal);
                 intVal = itemRec->ListPos();
-
-                if (itemSize == (int) sizeof(DBByte)) *((DBByte *) ((char *) dataRec->Data() + i * itemSize)) = intVal;
-                else *((DBShort *) ((char *) dataRec->Data() + i * itemSize)) = intVal;
+                switch (itemSize) {
+                    case 1:   *((DBByte *)  ((char *) dataRec->Data() + i * itemSize)) = intVal; break;
+                    case 2:   *((DBShort *) ((char *) dataRec->Data() + i * itemSize)) = intVal; break;
+                    default:  *((DBInt *)   ((char *) dataRec->Data() + i * itemSize)) = intVal; break;
+                }
             }
         }
         itemTable->ItemSort();
