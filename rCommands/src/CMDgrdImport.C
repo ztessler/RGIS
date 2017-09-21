@@ -597,13 +597,19 @@ int main(int argc, char *argv[]) {
         foregroundFLD->Int(symRec, 1);
         backgroundFLD->Int(symRec, 0);
         styleFLD->Int(symRec, 0);
-        for (dataRec = (grdData->Arrays())->First();
-             dataRec != (DBObjRecord *) NULL; dataRec = (grdData->Arrays())->Next()) {
+        for (dataRec = (grdData->Arrays())->First(); dataRec != (DBObjRecord *) NULL; dataRec = (grdData->Arrays())->Next()) {
             for (i = 0; i < colNum * rowNum; ++i) {
-                if (itemSize == (int) sizeof(DBByte))
-                    intVal = (DBInt) (*((DBByte *) ((char *) dataRec->Data() + i * itemSize)));
-                else intVal = (DBInt) (*((DBShort *) ((char *) dataRec->Data() + i * itemSize)));
-
+                switch (itemSize) {
+                    case 1:
+                        intVal = (DBInt) (*((DBByte *) ((char *) dataRec->Data() + i * itemSize)));
+                        break;
+                    case 2:
+                        intVal = (DBInt) (*((DBShort *) ((char *) dataRec->Data() + i * itemSize)));
+                        break;
+                    default:
+                        intVal = (DBInt) (*((DBInt *) ((char *) dataRec->Data() + i * itemSize)));
+                        break;
+                }
                 sprintf(buffer, "Category%d", intVal);
                 if ((itemRec = itemTable->Item(buffer)) == (DBObjRecord *) NULL) {
                     if ((itemRec = itemTable->Add(buffer)) == (DBObjRecord *) NULL) {
@@ -616,8 +622,12 @@ int main(int argc, char *argv[]) {
                     gridSymbolFLD->Record(itemRec, symRec);
                 }
                 intVal = itemRec->RowID();
-                if (itemSize == (int) sizeof(DBByte)) *((DBByte *) ((char *) dataRec->Data() + i * itemSize)) = intVal;
-                else *((DBShort *) ((char *) dataRec->Data() + i * itemSize)) = intVal;
+                switch (itemSize) {
+                    case 1:  *((DBByte *)  ((char *) dataRec->Data() + i * itemSize)) = intVal; break;
+                    case 2:  *((DBShort *) ((char *) dataRec->Data() + i * itemSize)) = intVal; break;
+                    default: *((DBInt *)   ((char *) dataRec->Data() + i * itemSize)) = intVal; break;
+                }
+
             }
         }
         itemTable->ListSort(gridValueFLD);

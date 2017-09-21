@@ -164,7 +164,7 @@ static void _RGISAnFieldCalculate (DBObjTable *table,DBInt oper)
 		f0Text = XmTextFieldGetString (field0TextF);
 		f1Text = XmTextFieldGetString (field1TextF);
 		rText  = XmTextFieldGetString (resultTextF);
-		allowOk = (strlen (f0Text) > 0) && (strlen (f1Text) > 0) && (rText > 0);
+		allowOk = (strlen (f0Text) > 0) && (strlen (f1Text) > 0) && (strlen (rText) > 0);
 		XtFree (f0Text);	XtFree (f1Text);	XtFree (rText);
 		XtSetSensitive (UIDialogFormGetOkButton (dShell),allowOk);
 		}
@@ -549,7 +549,7 @@ void RGISAnalyseFieldsCompareCBK (Widget widget,void *data,XmAnyCallbackStruct *
 		f0Text = XmTextFieldGetString (field0TextF);
 		f1Text = XmTextFieldGetString (field1TextF);
 		rText  = XmTextFieldGetString (resultTextF);
-		allowOk = (strlen (f0Text) > 0) && (strlen (f1Text) > 0) && (rText > 0);
+		allowOk = (strlen (f0Text) > 0) && (strlen (f1Text) > 0) && (strlen (rText) > 0);
 		XtFree (f0Text);	XtFree (f1Text);	XtFree (rText);
 		XtSetSensitive (UIDialogFormGetOkButton (dShell),allowOk);
 		}

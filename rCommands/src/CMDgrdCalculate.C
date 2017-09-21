@@ -339,7 +339,7 @@ public:
             GridIF->RenameLayer(LayerRec, layerName);
 
             if (job != (CMthreadJob_p) NULL) CMthreadJobExecute(&team, job);
-            else
+            else {
                 for (pos.Row = 0; pos.Row < GridIF->RowNum(); ++pos.Row)
                     for (pos.Col = 0; pos.Col < GridIF->ColNum(); ++pos.Col) {
                         GridIF->Pos2Coord(pos, coord);
@@ -347,6 +347,7 @@ public:
                         for (i = 0; i < (DBInt) ExpNum; ++i) Expressions[i]->Evaluate(record);
                         GridIF->Value(LayerRec, pos, Operand->Float(record));
                     }
+            }
             GridIF->RecalcStats(LayerRec);
         }
         delete GridIF;
