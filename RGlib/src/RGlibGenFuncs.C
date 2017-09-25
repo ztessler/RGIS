@@ -65,7 +65,7 @@ DBInt RGlibGenFuncFieldCompare(DBObjTable *table, char *f0Text, char *f1Text, ch
 }
 
 DBInt RGlibGenFuncFieldCalculate(DBObjTable *table, char *f0Text, char *f1Text, char *rText, DBInt oper) {
-    DBInt intVal, ret = false, i, rowID;
+    DBInt intVal, ret, i, rowID;
     DBFloat val[2];
     DBObjTableField *field[2];
     DBObjTableField *result;
@@ -87,12 +87,10 @@ DBInt RGlibGenFuncFieldCalculate(DBObjTable *table, char *f0Text, char *f1Text, 
 
     for (rowID = 0; rowID < table->ItemNum(); ++rowID) {
         record = table->Item(rowID);
-        if ((record->Flags() & DBObjectFlagIdle) == DBObjectFlagIdle)
-            result->Float(record, result->FloatNoData());
+        if ((record->Flags() & DBObjectFlagIdle) == DBObjectFlagIdle) continue;
         else {
             for (i = 0; i < 2; ++i)
                 if (field[i] != (DBObjTableField *) NULL) {
-                    ret = false;
                     if (field[i]->Type() == DBTableFieldInt) {
                         intVal = field[i]->Int(record);
                         val[i] = (DBFloat) intVal;
@@ -104,7 +102,7 @@ DBInt RGlibGenFuncFieldCalculate(DBObjTable *table, char *f0Text, char *f1Text, 
                     }
                     if (ret) {
                         result->Float(record, result->FloatNoData());
-                        goto Continue;
+                        continue;
                     }
                 }
             if ((oper == DBMathOperatorDiv) && (val[1] == 0))
@@ -127,8 +125,6 @@ DBInt RGlibGenFuncFieldCalculate(DBObjTable *table, char *f0Text, char *f1Text, 
                         CMmsgPrint(CMmsgAppError, "Invalid Operand in: %s %d", __FILE__, __LINE__);
                         break;
                 }
-            Continue:
-            continue;
         }
     }
     return (DBSuccess);
