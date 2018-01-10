@@ -109,7 +109,7 @@ function FwArguments()
 			;;
 			(-l|--lengthcorrection)
 				shift
-				_fwLENGTHCORRECTION="-lc ${1}"	
+				_fwLENGTHCORRECTION="-l ${1}"
 			;;
 			(-n|--passnum)
 				shift

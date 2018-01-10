@@ -1,17 +1,5 @@
 #!/bin/bash
 
-case "$(uname)" in
-    (Linux)
-        export GHAASprocessorNum=$(nproc)
-    ;;
-    (Darwin)
-        export GHAASprocessorNum=$(sysctl -n hw.ncpu)
-    ;;
-    (*)
-        export GHAASprocessorNum=1
-    ;;
-esac
-
 function RGISlookupSubject ()
 {
 	local variable=$(echo "${1}" | tr "[A-Z]" "[a-z]")
@@ -1759,3 +1747,35 @@ function RGISStatistics ()
 	[ -e "${monthlyTSfile}" ] && rm "${monthlyTSfile}"
 	return 0
 }
+
+if [[ "${RGIS_FUNCTIONS}" == "sourced" ]]; then
+    return 0
+else
+    case "$(uname)" in
+        (Linux)
+            export GHAASprocessorNum=$(nproc)
+        ;;
+        (Darwin)
+            export GHAASprocessorNum=$(sysctl -n hw.ncpu)
+        ;;
+        (*)
+            export GHAASprocessorNum=1
+        ;;
+    esac
+
+    if (( $# > 0)); then
+       if [[ "${1}" == "gzipped" ]]; then
+          __RGIS_GZEXT=".gz"
+          shift
+       else
+          __RGIS_GZEXT=""
+       fi
+    fi
+    if (( $# > 1)); then
+        FUNCTION="$1"; shift
+        ARGUMENTS="$@"
+        ${FUNCTION} ${ARGUMENTS}
+    else
+        export RGIS_FUNCTIONS="sourced"
+    fi
+fi
