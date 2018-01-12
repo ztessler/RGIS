@@ -147,7 +147,7 @@ DBObjRecord *DBNetworkIF::Cell(DBPosition pos, DBFloat area) const {
     if ((cellID = ((DBInt *) DataRec->Data())[(size_t) pos.Row * (size_t) ColNum() + (size_t) pos.Col]) == DBFault)
         return ((DBObjRecord *) NULL);
     cellRec = CellTable->Item(cellID);
-    delta = bestDelta = fabs(area - CellBasinArea(cellRec)) / (fabs(area) + fabs(CellBasinArea(cellRec)));
+    bestDelta = fabs(area - CellBasinArea(cellRec)) / (fabs(area) + fabs(CellBasinArea(cellRec)));
     retCellRec = bestCellRec = cellRec;
     for (i = 0; i < 8; ++i) {
         dir = (0x01 << i) & 0xff;
