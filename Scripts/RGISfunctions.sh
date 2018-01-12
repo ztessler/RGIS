@@ -1,6 +1,5 @@
 #!/bin/bash
 
-if [ "${GHAASDIR}" == "" ]; then GHAASDIR="/usr/local/share/ghaas"; fi
 case "$(uname)" in
     (Linux)
         export GHAASprocessorNum=$(nproc)
