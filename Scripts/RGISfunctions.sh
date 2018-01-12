@@ -1,5 +1,46 @@
 #!/bin/bash
 
+case "$(uname)" in
+    (Linux)
+        export GHAASprocessorNum=$(nproc)
+    ;;
+    (Darwin)
+        export GHAASprocessorNum=$(sysctl -n hw.ncpu)
+    ;;
+    (*)
+        export GHAASprocessorNum=1
+    ;;
+esac
+
+export __RGISarchiveFormat="plain"
+
+function RGISprocessorNum ()
+{
+    local processorNum="${0}"
+
+    export GHAASprocessorNum="${processorNum}"
+}
+function RGISarchiveFormat ()
+{
+   local format="${0}"
+
+   case "${format}" in
+        (plain)
+            __RGISarchiveFormat="plain"
+        ;;
+        (gzipped)
+            __RGISarchiveFormat="gzipped"
+        ;;
+        (netcdf)
+            __RGISarchiveFormat="netcdf"
+        ;;
+        (*)
+            echo "Unrecognised file format:${format} in: RGISarchiveFormat"
+            __RGISarchiveFormat="plain"
+        ;;
+   esac
+}
+
 function RGISlookupSubject ()
 {
 	local variable=$(echo "${1}" | tr "[A-Z]" "[a-z]")
@@ -1474,7 +1515,17 @@ function RGISfilePath ()
 		local tStepStr=""
 	fi
 
-	echo "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.${extension}${__RGIS_GZEXT}"
+    case "${__RGISarchiveFormat}" in
+        (gzipped)
+            echo "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.${extension}${__RGIS_GZEXT}"
+        ;;
+        (netcdf)
+            echo "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.nc"
+        ;;
+        (*)
+        	echo "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.${extension}"
+        ;;
+    esac
 }
 
 function RGISfile ()
@@ -1531,8 +1582,16 @@ function RGISfile ()
 		local tStepStr=""
 	fi
 
-#	local  variableName=$(RGISlookupSubject "${variable}")
-	echo "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.${extension}${__RGIS_GZEXT}"
+    if [ -e "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.${extension}.gz" ]
+    then
+    	echo "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.${extension}.gz"
+    elseif [ -e "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.nc" ]
+        echo "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.nc"
+    elseif [ -e "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.${extension}" ]
+        echo "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.${extension}"
+    else
+        echo ""
+    fi
 }
 
 function RGIStitle ()
@@ -1747,35 +1806,3 @@ function RGISStatistics ()
 	[ -e "${monthlyTSfile}" ] && rm "${monthlyTSfile}"
 	return 0
 }
-
-if [[ "${RGIS_FUNCTIONS}" == "sourced" ]]; then
-    return 0
-else
-    case "$(uname)" in
-        (Linux)
-            export GHAASprocessorNum=$(nproc)
-        ;;
-        (Darwin)
-            export GHAASprocessorNum=$(sysctl -n hw.ncpu)
-        ;;
-        (*)
-            export GHAASprocessorNum=1
-        ;;
-    esac
-
-    if (( $# > 0)); then
-       if [[ "${1}" == "gzipped" ]]; then
-          __RGIS_GZEXT=".gz"
-          shift
-       else
-          __RGIS_GZEXT=""
-       fi
-    fi
-    if (( $# > 1)); then
-        FUNCTION="$1"; shift
-        ARGUMENTS="$@"
-        ${FUNCTION} ${ARGUMENTS}
-    else
-        export RGIS_FUNCTIONS="sourced"
-    fi
-fi
