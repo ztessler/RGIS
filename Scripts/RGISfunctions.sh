@@ -22,7 +22,7 @@ function RGISprocessorNum ()
 }
 function RGISarchiveFormat ()
 {
-   local format="${0}"
+   local format="${1}"
 
    case "${format}" in
         (plain)
