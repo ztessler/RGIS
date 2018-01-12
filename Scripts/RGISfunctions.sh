@@ -1517,7 +1517,7 @@ function RGISfilePath ()
 
     case "${__RGISarchiveFormat}" in
         (gzipped)
-            echo "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.${extension}${__RGIS_GZEXT}"
+            echo "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.${extension}.gz"
         ;;
         (netcdf)
             echo "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.nc"
@@ -1586,8 +1586,10 @@ function RGISfile ()
     then
     	echo "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.${extension}.gz"
     elseif [ -e "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.nc" ]
+    then
         echo "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.nc"
     elseif [ -e "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.${extension}" ]
+    then
         echo "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.${extension}"
     else
         echo ""
