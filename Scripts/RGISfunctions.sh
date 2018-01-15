@@ -1644,15 +1644,15 @@ function RGIStitle ()
 
 function RGISAppend ()
 {
-   local    archive="${1}"
-   local     domain="${2}"
-   local   variable="${3}"
-   local    product="${4}"
-   local resolution="${5}"
-   local    version="${6}"
-	local  startyear="${7}"
+    local    archive="${1}"
+    local     domain="${2}"
+    local   variable="${3}"
+    local    product="${4}"
+    local resolution="${5}"
+    local    version="${6}"
+    local  startyear="${7}"
 	local    endyear="${8}"
-   local      tStep="${9}"
+	local      tStep="${9}"
 
  	local      files=""
 	local  separator=" "

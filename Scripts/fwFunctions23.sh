@@ -501,7 +501,7 @@ function _fwPreprocess()
 	if [ "${_fwOPTIONSPIPED}" == "on" ]
 	then
 	    _fwPostprocess "${fwVERSION}" "${fwYEAR}"
-	else
+	fi
 	return 0
 }
 
