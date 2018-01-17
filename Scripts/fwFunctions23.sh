@@ -145,7 +145,19 @@ function FwArguments()
 				esac
 			;;
 			(-I|--piped)
-			    _fwOPTIONSPIPED="on"
+				shift
+				case ${1} in
+					(on)
+					    _fwOPTIONSPIPED="on"
+				    	export GHAASparallelIO=single
+					;;
+					(off)
+						_fwOPTIONSPIPED="off"
+					;;
+					(*)
+						echo "Invalid --piped argument [${1}]"
+					;;
+				esac
 			;;
 			(-O|--optionsprint)
 				_fwOPTIONSPRINT="on"
@@ -202,23 +214,26 @@ function FwArguments()
 
 function FwInit()
 {
-	      _fwModelBIN=${1}	
+	      _fwModelBIN=${1}
        _fwDomainNAME=${2}
    _fwRGISDomainFILE=${3}
        _fwGDSWorkDIR=${4}
   	_fwRGISResultsDIR=${5}
 	if [ "${6}" != "" ]; then export _fwRGISBIN="${6}/"; else export _fwRGISBIN=""; fi
 
-	    _fwDomainTYPE="${_fwRGISDomainFILE##*.}"
-         FwDomainRES="${_fwRGISDomainFILE%.*}"
+	    _fwDomainTYPE="${_fwRGISDomainFILE%.gz}"
+	    _fwDomainTYPE="${_fwDomainTYPE##*.}"
+			FwDomainRES="${_fwRGISDomainFILE%.gz}"
+         FwDomainRES="${FwDomainRES%.*}"
          FwDomainRES="${FwDomainRES%_*}"
          FwDomainRES="${FwDomainRES##*_}"
+   echo "${_fwRGISDomainFILE}"
 	[ "${_fwRGISDomainFILE}" == "${FwDomainRES}" ] && FwDomainRES="unset"
 	case ${_fwDomainTYPE} in
-		(gdbn)
+		(gdbn|gbdn.gz)
 			_fwDomainTYPE="Network"
 		;;
-		(gdbc|gdbd)
+		(gdbc|gdbc.gz|gdbd|gdbd.gz)
 			_fwDomainTYPE="Grid"
 		;;
 		(*)
@@ -288,7 +303,7 @@ function FwOptions()
 		local     fwSET="${fwLINES[(( fwVARnum * 5 + 2))]}"
 		local    fwFLUX="${fwLINES[(( fwVARnum * 5 + 3))]}"
 		local fwINITIAL="${fwLINES[(( fwVARnum * 5 + 4))]}"
-		
+
 		if [ "${fwFLUX}"    == "no"  ]
 		then
 			_fwVariableARRAY[${fwVARnum}]="${_fwVariableITEM} avg"
@@ -345,14 +360,16 @@ function _fwPrintTest()
 			echo "  ${fwInputITEM[0]} is missing from data sources!"
 		elif [ "${fwSOURCE[3]}" == "const" ]
 		then
-			echo "  ${fwInputITEM[0]} Constant [${fwSOURCE[4]}] input"		
+			echo "  ${fwInputITEM[0]} Constant [${fwSOURCE[4]}] input"
 		elif [ "${fwSOURCE[3]}" == "pipe"  ]
 		then
-			echo "  ${fwInputITEM[0]} Piped input"		
+			echo "  ${fwInputITEM[0]} Piped input"
 		elif [ "${fwSOURCE[3]}" == "file"  ]
 		then
 			if [ -e "${fwSOURCE[4]}" ]
 			then
+				echo "  ${fwSOURCE[0]} ${fwSOURCE[1]} ${fwSOURCE[2]} ${fwSOURCE[3]} ${fwSOURCE[4]}"
+			else
 				echo "  ${fwInputITEM[0]} datafile [${fwSOURCE[4]}] is missing!"
 			fi
 		fi
@@ -423,7 +440,7 @@ function _fwPreprocess()
 	local fwDOSTATE="${2}"
 	local    fwYEAR="${3}"
 
-	[ -e "${_fwRGISDomainFILE}" ] || { echo "Missing domain file: ${_fwRGISDomainFILE}"; return 1; }
+	[ -e "${_fwRGISDomainFILE}" ] || ( echo "Missing domain file: ${_fwRGISDomainFILE}"; return 1; )
 
 	[ "${FwVERBOSE}" == "on" ] && echo "      Preprocessing ${fwYEAR} started:  $(date '+%Y-%m-%d %H:%M:%S')"
 	[ -e "${_fwGDSDomainDIR}"        ] || mkdir -p "${_fwGDSDomainDIR}"
@@ -450,9 +467,8 @@ function _fwPreprocess()
 
 				if [ -e "${fwSOURCE[4]}" ]
 				then
-					[ -e "${_fwRGISDomainFILE}" ] || { echo "Missing domain file: ${_fwRGISDomainFILE}"; return 1; }
 					local fwFILENAME="$(FwGDSFilename "${fwInputITEM}" "State" "${fwSOURCE[2]}" "${fwYEAR}" "d")"
-                    ${_fwRGISBIN}rgis2ds -m "${_fwRGISDomainFILE}" "${fwSOURCE[4]}" "${fwFILENAME}" &
+               ${_fwRGISBIN}rgis2ds -m "${_fwRGISDomainFILE}" "${fwSOURCE[4]}" "${fwFILENAME}" &
 				else
 					echo "${fwStateITEM} datafile [${fwSOURCE[4]}] is missing!"
 				fi
@@ -481,7 +497,7 @@ function _fwPreprocess()
 		[ "${fwSOURCE[1]}" == "" ] && { echo "  ${fwInputITEM} data type is missing!";                 return 1; }
 		[ "${fwSOURCE[2]}" == "" ] && { echo "  ${fwInputITEM} version is missing!";                   return 1; }
 		[ "${fwSOURCE[3]}" == "" ] && { echo "  ${fwInputITEM} data source type is missing!";          return 1; }
-		[ "${fwSOURCE[4]}" == "" ] && { echo "  ${fwInputITEM} data source specification is missing!"; return 1; }
+		[ "${fwSOURCE[4]}" == "" ] && { echo "  ${fwInputITEM} data source specification is missing! LOFASZ ${fwSOURCE[4]}"; return 1; }
 
 		if [ "${fwSOURCE[3]}" == "const" ]
 		then
@@ -489,12 +505,18 @@ function _fwPreprocess()
 		elif [ "${fwSOURCE[3]}" == "file" ]
 		then
 			[ "${FwVERBOSE}" == "on" ] && echo "         ${fwInputITEM} File input"
-            [ -e "${fwSOURCE[4]}" ]       || { echo "  ${fwInputITEM} datafile [${fwSOURCE[4]}] is missing!"; return 1; }
-			[ -e "${_fwGDSDomainDIR}/${fwSOURCE[2]}" ] || mkdir -p "${_fwGDSDomainDIR}/${fwSOURCE[2]}"
-			local fwFILENAME="$(FwGDSFilename "${fwInputITEM}" "Input" "${fwSOURCE[2]}" "${fwInYEAR}" "d")"
-            [ "${_fwOPTIONSPIPED}" == "on" ] && { rm -f "${fwFILENAME}"; mkfifo "${fwFILENAME}" }
-            ${_fwRGISBIN}rgis2ds -m "${_fwRGISDomainFILE}" "${fwSOURCE[4]}" "${fwFILENAME}" &
- 		fi
+
+            if [ -e "${fwSOURCE[4]}" ]
+            then
+					[ -e "${_fwGDSDomainDIR}/${fwSOURCE[2]}" ] || mkdir -p "${_fwGDSDomainDIR}/${fwSOURCE[2]}"
+					local fwFILENAME="$(FwGDSFilename "${fwInputITEM}" "Input" "${fwSOURCE[2]}" "${fwInYEAR}" "d")"
+					rm -f "${fwFILENAME}"
+					[ "${_fwOPTIONSPIPED}" == "on" ] && mkfifo "${fwFILENAME}"
+            	${_fwRGISBIN}rgis2ds -m "${_fwRGISDomainFILE}" "${fwSOURCE[4]}" "${fwFILENAME}" &
+            else
+            	echo "  ${fwInputITEM} datafile [${fwSOURCE[4]}] is missing!"
+        	fi
+        fi
 	done
 	[ "${_fwOPTIONSPIPED}" == "off" ] && wait
 	[ "${FwVERBOSE}" == "on" ] && echo "      Preprocessing ${fwYEAR} finished: $(date '+%Y-%m-%d %H:%M:%S')"
@@ -512,6 +534,7 @@ function _fwPostprocess()
 	if [ "${fwYEAR}" == "" ]; then local fwSUFFIX="LT"; else local fwSUFFIX="TS${fwYEAR}"; fi
 	[ "${FwVERBOSE}" == "on" ] && { echo "      Postprocessing ${fwYEAR} started:  $(date '+%Y-%m-%d %H:%M:%S')"; }
 
+	local files=""
 	for (( fwI = 0; fwI < ${#_fwOutputARRAY[@]} ; ++fwI ))
 	do
 		local fwVARIABLE="${_fwOutputARRAY[${fwI}]}"
@@ -519,36 +542,36 @@ function _fwPostprocess()
 		[ "${fwAMODE}" == "" ] && { echo "Skipping undefinded variable [${fwVARIABLE}]"; continue; }
 		local fwGDSFileNAME="$(FwGDSFilename "${fwVARIABLE}" "Output" "${fwVERSION}" "${fwYEAR}" "d")"
 		[ -e "${fwGDSFileNAME}" ] || local fwGDSFileNAME="$(FwGDSFilename "${fwVARIABLE}" "State" "${fwVERSION}" "${fwYEAR}" "d")"
-		[ -e "${fwGDSFileNAME}" ] || { echo "Skipping missing variable [${fwVARIABLE}]"; echo ${fwGDSFileNAME}; continue; }
-        cat "${fwGDSFileNAME}" | tee "${fwGDSFileNAME}.MONTHLY"
+		[ -e "${fwGDSFileNAME}" ] || ( echo "Skipping missing variable [${fwVARIABLE}]"; echo ${fwGDSFileNAME}; continue; )
+
+      mkfifo "${fwGDSFileNAME}.DAILY" "${fwGDSFileNAME}.MONTHLY"
+
 		if [ "${_fwDAILYOUTPUT}" == "on" ]
 		then
-            mkfifo "${fwGDSFileNAME}.DAILY"
-            mkfifo "${fwGDSFileNAME}.MONTHLY"
-
 			local fwRGISFileNAME="$(FwRGISFilename "${fwVARIABLE}" "${fwVERSION}" "d" "${fwYEAR}")"
 			[ -e "${fwRGISFileNAME%/*}" ] || mkdir -p "${fwRGISFileNAME%/*}"
-            cat "${fwGDSFileNAME}" "${fwGDSFileNAME}.DAILY" "${fwGDSFileNAME}.MONTHLY" |\
-			${_fwRGISBIN}ds2rgis -t "${_fwDomainNAME}, ${fwVARIABLE} ${fwVERSION} (${FwDomainRES}, Daily${fwSUFFIX})"\
-			                     -m ${_fwRGISDomainFILE} -d "${_fwDomainNAME}" -u "${fwVARIABLE}" -s blue - "${fwRGISFileNAME}" &
+         (cat "${fwGDSFileNAME}" "${fwGDSFileNAME}.DAILY" "${fwGDSFileNAME}.MONTHLY" |\
+			 ${_fwRGISBIN}ds2rgis -t "${_fwDomainNAME}, ${fwVARIABLE} ${fwVERSION} (${FwDomainRES}, Daily${fwSUFFIX})"\
+			                      -m ${_fwRGISDomainFILE} -d "${_fwDomainNAME}" -u "${fwVARIABLE}" -s blue - "${fwRGISFileNAME}"
+		     rm "${fwGDSFileNAME}") &
 		else
-            mkfifo "${fwGDSFileNAME}.DAILY"
-            mkfifo "${fwGDSFileNAME}.MONTHLY"
-            cat "${fwGDSFileNAME}" | tee "${fwGDSFileNAME}.DAILY" > "${fwGDSFileNAME}.MONTHLY"
-        fi
-		wait
+         (cat "${fwGDSFileNAME}" | tee "${fwGDSFileNAME}.DAILY" > "${fwGDSFileNAME}.MONTHLY"
+          rm "${fwGDSFileNAME}") &
+      fi
 		local fwRGISFileNAME="$(FwRGISFilename "${fwVARIABLE}" "${fwVERSION}" "m" "${fwYEAR}")"
 		[ -e "${fwRGISFileNAME%/*}" ] || mkdir -p "${fwRGISFileNAME%/*}"
-		${_fwRGISBIN}dsAggregate -e month -a ${fwAMODE} "${fwGDSFileNAME}.DAILY" |\
-		${_fwRGISBIN}ds2rgis -t "${_fwDomainNAME}, ${fwVARIABLE} ${fwVERSION} (${FwDomainRES}, Monthly${fwSUFFIX})"\
-		                     -m ${_fwRGISDomainFILE}  -d "${_fwDomainNAME}" -u "${fwVARIABLE}" -s blue - ${fwRGISFileNAME} &
+		(${_fwRGISBIN}dsAggregate -e month -a ${fwAMODE} "${fwGDSFileNAME}.DAILY" - |\
+		 ${_fwRGISBIN}ds2rgis -t "${_fwDomainNAME}, ${fwVARIABLE} ${fwVERSION} (${FwDomainRES}, Monthly${fwSUFFIX})" \
+		                     -m ${_fwRGISDomainFILE}  -d "${_fwDomainNAME}" -u "${fwVARIABLE}" -s blue - ${fwRGISFileNAME}
+		 rm "${fwGDSFileNAME}.DAILY") &
 		local fwRGISFileNAME="$(FwRGISFilename "${fwVARIABLE}" "${fwVERSION}" "a" "${fwYEAR}")"
 		[ -e "${fwRGISFileNAME%/*}" ] || mkdir -p "${fwRGISFileNAME%/*}"
-		${_fwRGISBIN}dsAggregate -e year -a ${fwAMODE} "${fwGDSFileNAME}.MONTHLY" |\
-		${_fwRGISBIN}ds2rgis -t "${_fwDomainNAME}, ${fwVARIABLE} ${fwVERSION} (${FwDomainRES}, Yearly${fwSUFFIX})"\
-		                     -m ${_fwRGISDomainFILE} -d "${_fwDomainNAME}" -u "${fwVARIABLE}"  -s blue - ${fwRGISFileNAME} &
+		(${_fwRGISBIN}dsAggregate -e year -a ${fwAMODE} "${fwGDSFileNAME}.MONTHLY" - |\
+		 ${_fwRGISBIN}ds2rgis -t "${_fwDomainNAME}, ${fwVARIABLE} ${fwVERSION} (${FwDomainRES}, Yearly${fwSUFFIX})" \
+		                     -m ${_fwRGISDomainFILE} -d "${_fwDomainNAME}" -u "${fwVARIABLE}"  -s blue - ${fwRGISFileNAME}
+		 rm "${fwGDSFileNAME}.MONTHLY") &
 	done
-	[ "${_fwOPTIONSPIPED}" == "off" ] && wait
+	[ "${_fwOPTIONSPIPED}" == "on" ] && wait
 	[ "${FwVERBOSE}" == "on" ] && { echo "      Postprocessing ${fwYEAR} finished: $(date '+%Y-%m-%d %H:%M:%S')"; }
 	return 0
 }
@@ -640,7 +663,7 @@ function _fwSpinup()
 			[ "${FwVERBOSE}" == "on" ] && echo "   Passnum [${fwPASS}] failed:   $(date '+%Y-%m-%d %H:%M:%S')"
 			return 1
 		fi
-		[ "${_fwOPTIONSPIPED}" == "on" ] && { _fwPreprocess "$fwVERSION}" "nostate" "" || return 1 }
+		[ "${_fwOPTIONSPIPED}" == "on" ] && ( _fwPreprocess "$fwVERSION}" "nostate" "" || return 1 )
 	done
 	_fwPostprocess "${fwVERSION}" "" || return 1;
 	[ "${FwVERBOSE}"      == "on" ] && echo "Initialization finished: $(date '+%Y-%m-%d %H:%M:%S')"
@@ -747,7 +770,7 @@ function _fwRun()
 		    local  fwInputITEM=(${_fwInputARRAY[${fwI}]})
             if [ "${fwSOURCE[3]}" == "file" ]
 		    then
-                rm -f "$(FwGDSFilename "${fwInputITEM}" "Input" "${fwSOURCE[2]}" "${fwInYEAR}" "d")"
+            rm -f "$(FwGDSFilename "${fwInputITEM}" "Input" "${fwSOURCE[2]}" "${fwInYEAR}" "d")"
  	    	fi
     	done
 		for (( fwI = 0; fwI < ${#_fwStateARRAY[@]} ; ++fwI ))

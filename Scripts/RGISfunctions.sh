@@ -1582,11 +1582,22 @@ function RGISfile ()
 		local tStepStr=""
 	fi
 
-    [ -e "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.nc" ]              && { echo    "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.nc";              return 0;}
-    [ -e "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.${extension}.gz" ] && { echo    "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.${extension}.gz"; return 0;}
-    [ -e "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.${extension}" ]    && { echo    "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.${extension}";    return 0;}
-    echo ""
-    return 1
+	if [[ "${timeRange}" == "xxxx" ]]
+	then
+		 ncPattern="${rgisDirectory}/${fileName}_${tStepStr}${tStepType}????.nc"
+		gdbPattern="${rgisDirectory}/${fileName}_${tStepStr}${tStepType}????.${extension}"
+		 gzPottern="${rgisDirectory}/${fileName}_${tStepStr}${tStepType}????.${extension}.gz"
+
+		[ "$(ls -1  ${ncPattern} 2> /dev/null)" != "" ] && { echo  "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}xxxx.nc";              return 0; }
+		[ "$(ls -1 ${gdbPattern} 2> /dev/null)" != "" ] && { echo  "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}xxxx.${extension}";    return 0; }
+		[ "$(ls -1  ${gzPattern} 2> /dev/null)" != "" ] && { echo  "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}xxxx.${extension}.gz"; return 0; }
+	else
+   	[ -e "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.nc" ]              && { echo    "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.nc";              return 0;}
+   	[ -e "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.${extension}.gz" ] && { echo    "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.${extension}.gz"; return 0;}
+   	[ -e "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.${extension}" ]    && { echo    "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}${timeRange}.${extension}";    return 0;}
+   fi
+   echo ""
+	return 1
 }
 
 function RGIStitle ()
