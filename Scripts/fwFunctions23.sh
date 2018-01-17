@@ -520,10 +520,6 @@ function _fwPreprocess()
 	done
 	[ "${_fwOPTIONSPIPED}" == "off" ] && wait
 	[ "${FwVERBOSE}" == "on" ] && echo "      Preprocessing ${fwYEAR} finished: $(date '+%Y-%m-%d %H:%M:%S')"
-	if [ "${_fwOPTIONSPIPED}" == "on" ]
-	then
-	    _fwPostprocess "${fwVERSION}" "${fwYEAR}"
-	fi
 	return 0
 }
 
