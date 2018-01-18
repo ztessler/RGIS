@@ -96,7 +96,7 @@ CMreturn MFdsHeaderWrite (MFdsHeader_t *header,FILE *outFile) {
 }
 
 CMreturn MFdsRecordRead (MFVariable_t *var) {
-	int i, sLen, readNum = 0, timeStep;
+	int i, sLen, readNum = 0;
 	MFdsHeader_t header;
 
     if (var->InStream->Type == MFConst) {
@@ -131,8 +131,10 @@ CMreturn MFdsRecordRead (MFVariable_t *var) {
 				var->Missing.Float = CMmathEqualValues (var->InStream->Handle.Float,MFDefaultMissingFloat) ?
 									 (float) 0.0 : MFDefaultMissingFloat;
 			}
-			var->InBuffer = (void *) malloc ((size_t) var->ItemNum * MFVarItemSize (var->Type));
-			if (var->InBuffer == (void *) NULL) {
+			var->InBuffer   = (void *) malloc ((size_t) var->ItemNum * MFVarItemSize (var->Type));
+            var->ProcBuffer = (void *) malloc ((size_t) var->ItemNum * MFVarItemSize (var->Type));
+            var->OutBuffer  = (void *) malloc ((size_t) var->ItemNum * MFVarItemSize (var->Type));
+			if ((var->InBuffer == (void *) NULL) || (var->ProcBuffer == (void *) NULL) || (var->OutBuffer == (void *) NULL)) {
 				CMmsgPrint (CMmsgSysError,"Memory allocation error in: %s:%d",__FILE__,__LINE__);
 				return (CMfailed);
 			}

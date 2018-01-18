@@ -437,7 +437,6 @@ enum { MFparIOnone, MFparIOsingle, MFparIOmulti };
 int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
 	FILE *inFile;
 	int i, varID, dlink, taskId, ret = CMsucceeded, timeStep, dateOffset = 0;
-    double value;
 	char *startDate = (char *) NULL, *endDate = (char *) NULL, *domainFileName = (char *) NULL;
 	char dateCur [MFDateStringLength], dateNext [MFDateStringLength], *climatologyStr;
 	bool testOnly;
@@ -470,8 +469,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
     }
 
     if (_MFModelParse (argc,argv,argNum, mainDefFunc, &domainFileName, &startDate, &endDate, &testOnly) == CMfailed) return (CMfailed);
-    if (strncmp (endDate,"XXXX",4) == 0) dateOffset = 4;
-	if (testOnly) return (CMsucceeded);
+ 	if (testOnly) return (CMsucceeded);
 
     switch (strlen (startDate)) {
         case  4: timeStep = MFTimeStepYear;  climatologyStr = MFDateClimatologyYearStr;  break;
@@ -497,8 +495,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                 if (MFdsRecordRead(var)              == CMfailed) return (CMfailed);
                 if (MFDataStreamClose(var->InStream) == CMfailed) return (CMfailed);
                 var->InStream   = (MFDataStream_t *) NULL;
-                var->ProcBuffer = var->InBuffer;
-                var->InBuffer   = (void *) NULL;
+                memcpy (var->ProcBuffer,var->InBuffer,(size_t) var->ItemNum * MFVarItemSize (var->Type));
             }
             else {
                 strcpy (var->InDate, startDate);
@@ -515,7 +512,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                         break;
                     default:
                         if (MFdsRecordRead(var) == CMfailed) return (CMfailed);
-                        var->ProcBuffer = var->InBuffer;
+                        memcpy (var->ProcBuffer,var->InBuffer,(size_t) var->ItemNum * MFVarItemSize (var->Type));
                         break;
                 }
             }
@@ -591,13 +588,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                                 return (CMfailed);
                             }
                         }
-                        if (var->NStep > 1)
-                            memcpy (var->ProcBuffer, var->InBuffer, var->ItemNum * MFVarItemSize(var->Type));
-                        else {
-                            buffer          = var->ProcBuffer;
-                            var->ProcBuffer = var->InBuffer;
-                            var->InBuffer   = buffer;
-                        }
+                        memcpy (var->ProcBuffer, var->InBuffer, var->ItemNum * MFVarItemSize(var->Type));
                         strcpy (var->InDate,  dateNext);
                     }
                     else strcpy (var->CurDate, dateCur);
@@ -620,13 +611,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                             CMmsgPrint(CMmsgAppError, "Variable (%s) Reading error!", var->Name);
                             return (CMfailed);
                         }
-                        if (var->NStep > 1)
-                            memcpy (var->ProcBuffer, var->InBuffer, var->ItemNum * MFVarItemSize(var->Type));
-                        else {
-                            buffer          = var->ProcBuffer;
-                            var->ProcBuffer = var->InBuffer;
-                            var->InBuffer   = buffer;
-                        }
+                        memcpy (var->ProcBuffer, var->InBuffer, var->ItemNum * MFVarItemSize(var->Type));
                         strcpy (var->InDate,  dateNext);
                         var->Read = (MFDateCompare(startDate, dateNext) < 0) && (MFDateCompare (dateNext, endDate) <= 0) ? true : false;
                         pthread_cond_signal (&(var->InCond));
@@ -651,13 +636,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                                 return (CMfailed);
                             }
                         }
-                        if (var->Initial)
-                            memcpy (var->OutBuffer,var->ProcBuffer,var->ItemNum * MFVarItemSize(var->Type));
-                        else {
-                            buffer          = var->ProcBuffer;
-                            var->ProcBuffer = var->OutBuffer;
-                            var->OutBuffer  = buffer;
-                        }
+                        memcpy (var->OutBuffer,var->ProcBuffer,var->ItemNum * MFVarItemSize(var->Type));
                         strcpy (var->OutDate, dateCur);
                     }
                 outIO.Cont = (MFDateCompare (dateCur, endDate) < 0) ? true : false;
@@ -688,13 +667,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                             CMmsgPrint(CMmsgAppError, "Variable (%s) writing error!", var->Name);
                             return (CMfailed); // TODO this should be more civilized
                         }
-                        if (var->Initial)
-                            memcpy (var->OutBuffer,var->ProcBuffer,var->ItemNum * MFVarItemSize(var->Type));
-                        else {
-                            buffer          = var->ProcBuffer;
-                            var->ProcBuffer = var->OutBuffer;
-                            var->OutBuffer  = buffer;
-                        }
+                        memcpy (var->OutBuffer,var->ProcBuffer,var->ItemNum * MFVarItemSize(var->Type));
                         strcpy (var->OutDate, dateCur);
                         var->LastWrite = MFDateCompare (dateCur,endDate) == 0 ? true : false;
                         pthread_cond_signal  (&(var->OutCond));
