@@ -249,10 +249,10 @@ function FwInit()
          FwDomainRES="${FwDomainRES##*_}"
 	[ "${_fwRGISDomainFILE}" == "${FwDomainRES}" ] && FwDomainRES="unset"
 	case ${_fwDomainTYPE} in
-		(gdbn)
+		(gdbn|gdbn.gz)
 			_fwDomainTYPE="Network"
 		;;
-		(gdbc|gdbd)
+		(gdbc|gdbc.gz|gdbd|gdbd.gz)
 			_fwDomainTYPE="Grid"
 		;;
 		(*)
