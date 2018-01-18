@@ -554,7 +554,7 @@ function _fwPostprocess()
 		then
 			local fwRGISFileNAME="$(FwRGISFilename "${fwVARIABLE}" "${fwVERSION}" "d" "${fwYEAR}")"
 			[ -e "${fwRGISFileNAME%/*}" ] || mkdir -p "${fwRGISFileNAME%/*}"
-         (cat "${fwGDSFileNAME}" "${fwGDSFileNAME}.DAILY" "${fwGDSFileNAME}.MONTHLY" |\
+         (cat "${fwGDSFileNAME}" | tee "${fwGDSFileNAME}.DAILY" "${fwGDSFileNAME}.MONTHLY" |\
 			 ${_fwRGISBIN}ds2rgis -t "${_fwDomainNAME}, ${fwVARIABLE} ${fwVERSION} (${FwDomainRES}, Daily${fwSUFFIX})"\
 			                      -m ${_fwRGISDomainFILE} -d "${_fwDomainNAME}" -u "${fwVARIABLE}" -s blue - "${fwRGISFileNAME}"
 		     rm "${fwGDSFileNAME}") &
