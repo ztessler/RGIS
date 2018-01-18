@@ -2,7 +2,7 @@
 
 GHAAS Water Balance Model Library V1.0
 Global Hydrologic Archive and Analysis System
-Copyright 1994-2017, UNH - CCNY/CUNY
+Copyright 1994-2018, UNH - CCNY/CUNY
 
 MFVariables.c
 
@@ -140,11 +140,6 @@ int MFVarGetID (char *name,char *unit,int type, bool flux, bool initial) {
 	}
 	return (var->ID);
 }
-
-int MFVarGetTStep (int id) {
-	MFVariable_t *var;
-	return ((var = MFVarGetByID (id)) != (MFVariable_t *) NULL ? var->NStep : MFTimeStepDay);
-} 
 
 static bool _MFVarTestMissingVal (MFVariable_t *var,int itemID)
 	{
