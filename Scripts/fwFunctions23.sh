@@ -227,8 +227,8 @@ function FwInit()
          FwDomainRES="${FwDomainRES%.*}"
          FwDomainRES="${FwDomainRES%_*}"
          FwDomainRES="${FwDomainRES##*_}"
-   echo "${_fwRGISDomainFILE}"
-	[ "${_fwRGISDomainFILE}" == "${FwDomainRES}" ] && FwDomainRES="unset"
+
+ 	[ "${_fwRGISDomainFILE}" == "${FwDomainRES}" ] && FwDomainRES="unset"
 	case ${_fwDomainTYPE} in
 		(gdbn|gbdn.gz)
 			_fwDomainTYPE="Network"
