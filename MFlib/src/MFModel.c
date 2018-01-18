@@ -495,6 +495,13 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                 if (MFdsRecordRead(var)              == CMfailed) return (CMfailed);
                 if (MFDataStreamClose(var->InStream) == CMfailed) return (CMfailed);
                 var->InStream   = (MFDataStream_t *) NULL;
+                if (var->ProcBuffer == (void *) NULL) {
+                    var->ProcBuffer = (void *) malloc ((size_t) var->ItemNum * MFVarItemSize (var->Type));
+                    if (var->ProcBuffer == (void *) NULL) {
+                        CMmsgPrint (CMmsgSysError,"Memory allocation error in: %s:%d",__FILE__,__LINE__);
+                        return (CMfailed);
+                    }
+                }
                 memcpy (var->ProcBuffer,var->InBuffer,(size_t) var->ItemNum * MFVarItemSize (var->Type));
             }
             else {
@@ -512,6 +519,13 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                         break;
                     default:
                         if (MFdsRecordRead(var) == CMfailed) return (CMfailed);
+                        if (var->ProcBuffer == (void *) NULL) {
+                            var->ProcBuffer = (void *) malloc ((size_t) var->ItemNum * MFVarItemSize (var->Type));
+                            if (var->ProcBuffer == (void *) NULL) {
+                                CMmsgPrint (CMmsgSysError,"Memory allocation error in: %s:%d",__FILE__,__LINE__);
+                                return (CMfailed);
+                            }
+                        }
                         memcpy (var->ProcBuffer,var->InBuffer,(size_t) var->ItemNum * MFVarItemSize (var->Type));
                         break;
                 }
