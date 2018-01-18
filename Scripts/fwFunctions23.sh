@@ -769,8 +769,7 @@ function _fwRun()
  		do
 			local fwStateITEM=(${_fwStateARRAY[${fwI}]})
 			echo "-t ${fwStateITEM}=file:$(FwGDSFilename "${fwStateITEM}" "State" "${fwVERSION}" "${fwYEAR}" "d")"
-			_fwStateList="${stateList} $(FwGDSFilename "${fwStateITEM}" "State" "${fwVERSION}" "${fwYEAR}" "d")"
- 		done
+		done
 		for (( fwI = 0; fwI < ${#_fwOutputARRAY[@]} ; ++fwI ))
  		do
 			local fwOutputITEM=${_fwOutputARRAY[${fwI}]}
