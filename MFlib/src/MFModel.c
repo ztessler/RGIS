@@ -729,7 +729,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
 		}
         if ((var->InBuffer  != (void *) NULL) && (var->InBuffer  != var->ProcBuffer)) free (var->InBuffer);
         if ((var->OutBuffer != (void *) NULL) && (var->OutBuffer != var->ProcBuffer)) free (var->OutBuffer);
-		free (var->ProcBuffer);
+		if (var->ProcBuffer != var->OutBuffer) free (var->ProcBuffer);
 	}
     CMthreadJobDestroy  (job);
     if (parallelIO != MFparIOnone) pthread_attr_destroy(&thread_attr);

@@ -132,9 +132,7 @@ CMreturn MFdsRecordRead (MFVariable_t *var) {
 									 (float) 0.0 : MFDefaultMissingFloat;
 			}
 			var->InBuffer   = (void *) malloc ((size_t) var->ItemNum * MFVarItemSize (var->Type));
-            var->ProcBuffer = (void *) malloc ((size_t) var->ItemNum * MFVarItemSize (var->Type));
-            var->OutBuffer  = (void *) malloc ((size_t) var->ItemNum * MFVarItemSize (var->Type));
-			if ((var->InBuffer == (void *) NULL) || (var->ProcBuffer == (void *) NULL) || (var->OutBuffer == (void *) NULL)) {
+ 			if (var->InBuffer == (void *) NULL) {
 				CMmsgPrint (CMmsgSysError,"Memory allocation error in: %s:%d",__FILE__,__LINE__);
 				return (CMfailed);
 			}
