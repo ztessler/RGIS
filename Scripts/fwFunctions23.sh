@@ -722,20 +722,7 @@ function _fwRun()
 		echo "-m   warning=${fwWarningLOG}"
 		echo "-m      info=${fwInfoLOG}"
 		echo "$(_fwOptionList)"
-		if (( fwYEAR == fwStartYEAR ))
-		then
-			for (( fwI = 0; fwI < ${#_fwStateARRAY[@]} ; ++fwI ))
-		 	do
-				local fwInputITEM=(${_fwStateARRAY[${fwI}]})
-				echo "-i ${fwInputITEM}=file:$(FwGDSFilename "${fwInputITEM[0]}" "State" "${fwVERSION}" "" "d")"
-			done
-		else
-			for (( fwI = 0; fwI < ${#_fwStateARRAY[@]} ; ++fwI ))
-		 	do
-				local fwInputITEM=(${_fwStateARRAY[${fwI}]})
-				echo "-i ${fwInputITEM}=file:$(FwGDSFilename "${fwInputITEM[0]}" "State" "${fwVERSION}" "$(( fwYEAR - 1 ))" "d")"
-			done
-		fi
+
 		for (( fwI = 0; fwI < ${#_fwInputARRAY[@]} ; ++fwI ))
 		do
 			local  fwInputITEM=(${_fwInputARRAY[${fwI}]})
@@ -763,6 +750,20 @@ function _fwRun()
 				fi
 			fi
 		done
+		if (( fwYEAR == fwStartYEAR ))
+		then
+			for (( fwI = 0; fwI < ${#_fwStateARRAY[@]} ; ++fwI ))
+		 	do
+				local fwInputITEM=(${_fwStateARRAY[${fwI}]})
+				echo "-i ${fwInputITEM}=file:$(FwGDSFilename "${fwInputITEM[0]}" "State" "${fwVERSION}" "" "d")"
+			done
+		else
+			for (( fwI = 0; fwI < ${#_fwStateARRAY[@]} ; ++fwI ))
+		 	do
+				local fwInputITEM=(${_fwStateARRAY[${fwI}]})
+				echo "-i ${fwInputITEM}=file:$(FwGDSFilename "${fwInputITEM[0]}" "State" "${fwVERSION}" "$(( fwYEAR - 1 ))" "d")"
+			done
+		fi
 
 		for (( fwI = 0; fwI < ${#_fwStateARRAY[@]} ; ++fwI ))
  		do
