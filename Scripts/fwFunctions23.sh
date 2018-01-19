@@ -149,7 +149,7 @@ function FwArguments()
 				case ${1} in
 					(on)
 					    _fwOPTIONSPIPED="on"
-				    	export GHAASparallelIO=single
+				    	export GHAASparallelIO="single"
 					;;
 					(off)
 						_fwOPTIONSPIPED="off"
@@ -436,7 +436,7 @@ function FwRGISFilename()
 
 function _fwPreprocess()
 {
-    local fwVERSION="${1}"
+   local fwVERSION="${1}"
 	local fwDOSTATE="${2}"
 	local    fwYEAR="${3}"
 
@@ -575,7 +575,7 @@ function _fwPostprocess()
 		                     -m ${_fwRGISDomainFILE} -d "${_fwDomainNAME}" -u "${fwVARIABLE}"  -s blue - ${fwRGISFileNAME}
 		 rm "${fwGDSFileNAME}.MONTHLY") &
 	done
-	[ "${_fwOPTIONSPIPED}" == "on" ] && wait
+	wait
 	[ "${FwVERBOSE}" == "on" ] && { echo "      Postprocessing ${fwYEAR} finished: $(date '+%Y-%m-%d %H:%M:%S')"; }
 	return 0
 }
@@ -583,6 +583,7 @@ function _fwPostprocess()
 function _fwSpinup()
 {
 	local fwVERSION="${1}"
+	local    fwYEAR="${2}"
 	local fwPASS
 	local fwInputITEM
 	local fwOutputITEM
@@ -621,6 +622,8 @@ function _fwSpinup()
 		echo "-m     debug=${fwDebugLOG}"
 		echo "-m   warning=${fwWarningLOG}"
 		echo "-m      info=${fwInfoLOG}"
+		echo "-s XXXX-01-01"
+		echo "-n XXXX-12-31"
 		echo "$(_fwOptionList)"
 		for (( fwI = 0; fwI < ${#_fwInputARRAY[@]} ; ++fwI ))
 		do
@@ -721,6 +724,8 @@ function _fwRun()
 		echo "-m     debug=${fwDebugLOG}"
 		echo "-m   warning=${fwWarningLOG}"
 		echo "-m      info=${fwInfoLOG}"
+		echo "-s ${fwYEAR}-01-01"
+		echo "-n ${fwYEAR}-12-31"
 		echo "$(_fwOptionList)"
 
 		for (( fwI = 0; fwI < ${#_fwInputARRAY[@]} ; ++fwI ))
