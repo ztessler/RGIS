@@ -144,7 +144,7 @@ function FwArguments()
 					;;
 				esac
 			;;
-			(-I|--piped)
+			(-p|--piped)
 				shift
 				case ${1} in
 					(on)
@@ -195,9 +195,10 @@ function FwArguments()
 				echo "           -a, --restart      on|off"
 				echo "           -s, --spinup       on|off"
 				echo "           -f, --finalrun     on|off"
-				echo "           -l, --lengthcorrection    [value]"
+				echo "           -l, --lengthcorrection [value]"
 				echo "           -n, --passnum      [num]"
 				echo "           -m, --outputformat [rgis|netcdf]"
+				echo "           -p, --piped        on|off"
 				echo "           -P, --processors   [# of processors]"
 				echo "           -W, --warnings     on|off"
 				echo "           -T, --testonly"
