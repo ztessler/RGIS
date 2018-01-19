@@ -131,8 +131,9 @@ CMreturn MFdsRecordRead (MFVariable_t *var) {
 				var->Missing.Float = CMmathEqualValues (var->InStream->Handle.Float,MFDefaultMissingFloat) ?
 									 (float) 0.0 : MFDefaultMissingFloat;
 			}
-			var->InBuffer   = (void *) malloc ((size_t) var->ItemNum * MFVarItemSize (var->Type));
- 			if (var->InBuffer == (void *) NULL) {
+			var->InBuffer   = (void *) calloc (var->ItemNum,MFVarItemSize (var->Type));
+            var->ProcBuffer = (void *) calloc (var->ItemNum,MFVarItemSize (var->Type));
+ 			if ((var->InBuffer == (void *) NULL) || (var->ProcBuffer == (void *) NULL)) {
 				CMmsgPrint (CMmsgSysError,"Memory allocation error in: %s:%d",__FILE__,__LINE__);
 				return (CMfailed);
 			}
@@ -178,12 +179,13 @@ CMreturn MFdsRecordRead (MFVariable_t *var) {
 
 				if (var->InBuffer == (void *) NULL) {
 					var->Type = header.Type;
-					if ((var->InBuffer = (void *) malloc(var->ItemNum * MFVarItemSize(var->Type))) == (void *) NULL) {
+                    var->InBuffer   = (void *) calloc (var->ItemNum,MFVarItemSize (var->Type));
+                    var->ProcBuffer = (void *) calloc (var->ItemNum,MFVarItemSize (var->Type));
+                    if ((var->InBuffer == (void *) NULL) || (var->ProcBuffer == (void *) NULL)) {
 						CMmsgPrint(CMmsgSysError, "Variable [%s] allocation error in: %s:%d", var->Name, __FILE__,
 								   __LINE__);
 						return (CMfailed);
 					}
-
 					switch (var->Type) {
 						case MFByte:
 						case MFShort:

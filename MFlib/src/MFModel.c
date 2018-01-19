@@ -512,7 +512,8 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                         break;
                     default:
                         if (MFdsRecordRead(var) == CMfailed) return (CMfailed);
-                        var->ProcBuffer = var->OutBuffer = var->InBuffer;
+                        memcpy (var->ProcBuffer, var->InBuffer, var->ItemNum * MFVarItemSize(var->Type));
+                        var->OutBuffer = var->ProcBuffer;
                         break;
                 }
             }
@@ -583,17 +584,11 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                 if (inIO.Ret == CMfailed) return (CMfailed);
                 for (var = MFVarGetByID (varID = 1); var != (MFVariable_t *) NULL; var = MFVarGetByID(++varID)) {
                     if (var->InStream != (MFDataStream_t *) NULL) {
-                        if ((var->ProcBuffer == (void *) NULL) || (var->ProcBuffer == var->InBuffer)) {
-                            if ((var->ProcBuffer = (void *) calloc(var->ItemNum, MFVarItemSize(var->Type))) == (void *) NULL) {
-                                CMmsgPrint(CMmsgSysError, "Memory Allocation Error in: %s:%d", __FILE__, __LINE__);
-                                return (CMfailed);
-                            }
-                        }
                         memcpy (var->ProcBuffer, var->InBuffer, var->ItemNum * MFVarItemSize(var->Type));
                         strcpy (var->InDate,  dateNext);
                     }
                     else strcpy (var->CurDate, dateCur);
-                }
+                 }
                 inIO.Cont = (MFDateCompare(startDate, dateNext) < 0) && (MFDateCompare (dateNext,endDate) <= 0) ? true : false;
                 pthread_cond_broadcast(&(inIO.Cond));
                 pthread_mutex_unlock  (&(inIO.Mutex));
@@ -601,12 +596,6 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
             case MFparIOmulti:
                 for (var = MFVarGetByID(varID = 1); var != (MFVariable_t *) NULL; var = MFVarGetByID(++varID))
                     if (var->InStream != (MFDataStream_t *) NULL) {
-                        if ((var->ProcBuffer == (void *) NULL) || (var->ProcBuffer == var->InBuffer)) {
-                            if ((var->ProcBuffer = (void *) calloc(var->ItemNum, MFVarItemSize(var->Type))) == (void *) NULL) {
-                                CMmsgPrint(CMmsgSysError, "Memory Allocation Error in: %s:%d", __FILE__, __LINE__);
-                                return (CMfailed);
-                            }
-                        }
                         pthread_mutex_lock(&(var->InMutex));
                         if (var->ReadRet == CMfailed) {
                             CMmsgPrint(CMmsgAppError, "Variable (%s) Reading error!", var->Name);
@@ -685,12 +674,15 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                             return (CMfailed);
                         }
                     }
-                    if ((var->InStream != (MFDataStream_t *) NULL) && (MFDateCompare(startDate, dateNext) < 0) && (MFDateCompare(dateNext,endDate) <= 0)) {
-                        strcpy (var->InDate, dateNext);
-                        if ((ret = MFdsRecordRead(var)) == CMfailed) {
-                            CMmsgPrint(CMmsgAppError, "Variable (%s) Reading error!", var->Name);
-                            return (CMfailed);
+                    if (var->InStream != (MFDataStream_t *) NULL) {
+                        if (MFDateCompare(startDate, dateNext) < 0) && (MFDateCompare(dateNext,endDate) <= 0)) {
+                            strcpy (var->InDate, dateNext);
+                            if ((ret = MFdsRecordRead(var)) == CMfailed) {
+                                CMmsgPrint(CMmsgAppError, "Variable (%s) Reading error!", var->Name);
+                                return (CMfailed);
+                            }
                         }
+                        memcpy (var->ProcBuffer, var->InBuffer, var->ItemNum * MFVarItemSize(var->Type));
                     }
                     else strcpy (var->CurDate,dateCur);
                 }
