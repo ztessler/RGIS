@@ -145,9 +145,16 @@ char *MFDateGetNext () {
 
 int MFDateCompare (const char *time0,const char *time1) {
 	int pos, len;
-	pos = (strncmp (time0,MFDateClimatologyYearStr,strlen (MFDateClimatologyYearStr)) == 0) ||
-          (strncmp (time1,MFDateClimatologyYearStr,strlen (MFDateClimatologyYearStr)) == 0) ? 4 : 0;
-	len = strlen (time0 + pos) < strlen (time1 + pos) ? strlen (time0 + pos) : strlen (time1 + pos);
+    if ((strncmp (time0,MFDateClimatologyYearStr,strlen (MFDateClimatologyYearStr)) == 0) ||
+        (strncmp (time1,MFDateClimatologyYearStr,strlen (MFDateClimatologyYearStr)) == 0)) {
+        pos = 4;
+        if (((strncmp (time0 + strlen (MFDateClimatologyYearStr),"-28",3) == 0) &&
+             (strncmp (time1 + strlen (MFDateClimatologyYearStr),"-29",3) == 0)) ||
+            ((strncmp (time0 + strlen (MFDateClimatologyYearStr),"-29",3) == 0) &&
+             (strncmp (time1 + strlen (MFDateClimatologyYearStr),"-28",3) == 0)))
+            return (0);
+    }
+ 	len = strlen (time0 + pos) < strlen (time1 + pos) ? strlen (time0 + pos) : strlen (time1 + pos);
 	return (strncmp (time0 + pos,time1 + pos,len));
 }
 
@@ -167,7 +174,7 @@ int  MFDateTimeStepLength (const char *timeStr, int timeStep) {
         leapYear = 0;
     } else {
         strncpy (scanStr,timeStr,strlen (MFDateClimatologyYearStr));
-        scanStr [4] = 0;
+        scanStr [strlen (MFDateClimatologyYearStr)] = 0;
         if (sscanf (scanStr,"%d", &year) != 1) {
             CMmsgPrint (CMmsgUsrError,"Date scanning error in: %s:%d",__FILE__,__LINE__);
             return (0);
