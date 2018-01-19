@@ -495,14 +495,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                 if (MFdsRecordRead(var)              == CMfailed) return (CMfailed);
                 if (MFDataStreamClose(var->InStream) == CMfailed) return (CMfailed);
                 var->InStream   = (MFDataStream_t *) NULL;
-                if (var->ProcBuffer == (void *) NULL) {
-                    var->ProcBuffer = (void *) malloc ((size_t) var->ItemNum * MFVarItemSize (var->Type));
-                    if (var->ProcBuffer == (void *) NULL) {
-                        CMmsgPrint (CMmsgSysError,"Memory allocation error in: %s:%d",__FILE__,__LINE__);
-                        return (CMfailed);
-                    }
-                }
-                memcpy (var->ProcBuffer,var->InBuffer,(size_t) var->ItemNum * MFVarItemSize (var->Type));
+                var->ProcBuffer = var->InBuffer;
             }
             else {
                 strcpy (var->InDate, startDate);
@@ -519,14 +512,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                         break;
                     default:
                         if (MFdsRecordRead(var) == CMfailed) return (CMfailed);
-                        if (var->ProcBuffer == (void *) NULL) {
-                            var->ProcBuffer = (void *) malloc ((size_t) var->ItemNum * MFVarItemSize (var->Type));
-                            if (var->ProcBuffer == (void *) NULL) {
-                                CMmsgPrint (CMmsgSysError,"Memory allocation error in: %s:%d",__FILE__,__LINE__);
-                                return (CMfailed);
-                            }
-                        }
-                        memcpy (var->ProcBuffer,var->InBuffer,(size_t) var->ItemNum * MFVarItemSize (var->Type));
+                        var->ProcBuffer = var->OutBuffer = var->InBuffer;
                         break;
                 }
             }
@@ -547,6 +533,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
             if ((var->ProcBuffer = (void *) calloc(var->ItemNum, MFVarItemSize(var->Type))) == (void *) NULL) {
                 CMmsgPrint(CMmsgSysError, "Memory Allocation Error in: %s:%d", __FILE__, __LINE__);
                 return (CMfailed);
+			var->OutBuffer = var->ProcBuffer;
             }
             for (i = 0; i < var->ItemNum; ++i) MFVarSetFloat(var->ID,i,0.0);
         }
@@ -596,7 +583,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                 if (inIO.Ret == CMfailed) return (CMfailed);
                 for (var = MFVarGetByID (varID = 1); var != (MFVariable_t *) NULL; var = MFVarGetByID(++varID)) {
                     if (var->InStream != (MFDataStream_t *) NULL) {
-                        if (var->ProcBuffer == (void *) NULL) {
+                        if ((var->ProcBuffer == (void *) NULL) || (var->ProcBuffer == var->InBuffer)) {
                             if ((var->ProcBuffer = (void *) calloc(var->ItemNum, MFVarItemSize(var->Type))) == (void *) NULL) {
                                 CMmsgPrint(CMmsgSysError, "Memory Allocation Error in: %s:%d", __FILE__, __LINE__);
                                 return (CMfailed);
@@ -614,7 +601,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
             case MFparIOmulti:
                 for (var = MFVarGetByID(varID = 1); var != (MFVariable_t *) NULL; var = MFVarGetByID(++varID))
                     if (var->InStream != (MFDataStream_t *) NULL) {
-                        if (var->ProcBuffer == (void *) NULL) {
+                        if ((var->ProcBuffer == (void *) NULL) || (var->ProcBuffer == var->InBuffer)) {
                             if ((var->ProcBuffer = (void *) calloc(var->ItemNum, MFVarItemSize(var->Type))) == (void *) NULL) {
                                 CMmsgPrint(CMmsgSysError, "Memory Allocation Error in: %s:%d", __FILE__, __LINE__);
                                 return (CMfailed);
@@ -644,7 +631,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                 if (outIO.Ret == CMfailed) return (CMfailed);
                 for (var = MFVarGetByID(varID = 1); var != (MFVariable_t *) NULL; var = MFVarGetByID(++varID))
                     if (var->OutStream != (MFDataStream_t *) NULL) {
-                        if (var->OutBuffer == (void *) NULL) {
+                        if ((var->OutBuffer == (void *) NULL) || (var->OutBuffer == var->ProcBuffer)) {
                             if ((var->OutBuffer = (void *) malloc(var->ItemNum * MFVarItemSize(var->Type))) == (void *) NULL) {
                                 CMmsgPrint(CMmsgSysError, "Variable [%s] allocation error (%s:%d)!", var->Name,__FILE__,__LINE__);
                                 return (CMfailed);
@@ -660,7 +647,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
             case MFparIOmulti:
                 for (var = MFVarGetByID(varID = 1); var != (MFVariable_t *) NULL; var = MFVarGetByID(++varID)) {
                     if (var->OutStream != (MFDataStream_t *) NULL) {
-                        if (var->OutBuffer == (void *) NULL) {
+                        if ((var->OutBuffer == (void *) NULL) || (var->OutBuffer == var->ProcBuffer)) {
                             if ((var->OutBuffer = (void *) malloc(var->ItemNum * MFVarItemSize(var->Type))) ==
                                 (void *) NULL) {
                                 CMmsgPrint(CMmsgSysError, "Variable [%s] allocation error (%s:%d)", var->Name,
@@ -704,7 +691,6 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                             CMmsgPrint(CMmsgAppError, "Variable (%s) Reading error!", var->Name);
                             return (CMfailed);
                         }
-
                     }
                     else strcpy (var->CurDate,dateCur);
                 }
@@ -743,7 +729,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
 		}
         if ((var->InBuffer  != (void *) NULL) && (var->InBuffer  != var->ProcBuffer)) free (var->InBuffer);
         if ((var->OutBuffer != (void *) NULL) && (var->OutBuffer != var->ProcBuffer)) free (var->OutBuffer);
-		if (var->ProcBuffer != var->OutBuffer) free (var->ProcBuffer);
+		free (var->ProcBuffer);
 	}
     CMthreadJobDestroy  (job);
     if (parallelIO != MFparIOnone) pthread_attr_destroy(&thread_attr);

@@ -162,7 +162,6 @@ CMreturn MFdsRecordRead (MFVariable_t *var) {
 		if (var->InStream->Handle.File == (FILE *) NULL) return (CMfailed);
 		if (MFDateCompare(var->CurDate, var->InDate) != 0) {
 			do {
-                CMmsgPrint (CMmsgDebug,"Reading %s %s %s",var->Name,var->CurDate, var->InDate);
 				if (MFdsHeaderRead(&header, var->InStream->Handle.File) == CMfailed) {
 					if (readNum < 1) {
 						CMmsgPrint(CMmsgSysError, "Data stream (%s %s %s) reading error", var->Name, var->CurDate, var->InDate);
