@@ -675,7 +675,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
                         }
                     }
                     if (var->InStream != (MFDataStream_t *) NULL) {
-                        if (MFDateCompare(startDate, dateNext) < 0) && (MFDateCompare(dateNext,endDate) <= 0)) {
+                        if ((MFDateCompare(startDate, dateNext) < 0) && (MFDateCompare(dateNext,endDate) <= 0)) {
                             strcpy (var->InDate, dateNext);
                             if ((ret = MFdsRecordRead(var)) == CMfailed) {
                                 CMmsgPrint(CMmsgAppError, "Variable (%s) Reading error!", var->Name);
