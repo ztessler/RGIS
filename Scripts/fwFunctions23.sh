@@ -623,8 +623,6 @@ function _fwSpinup()
 		echo "-m     debug=${fwDebugLOG}"
 		echo "-m   warning=${fwWarningLOG}"
 		echo "-m      info=${fwInfoLOG}"
-		echo "-s XXXX-01-01"
-		echo "-n XXXX-12-31"
 		echo "$(_fwOptionList)"
 		for (( fwI = 0; fwI < ${#_fwInputARRAY[@]} ; ++fwI ))
 		do
@@ -725,8 +723,6 @@ function _fwRun()
 		echo "-m     debug=${fwDebugLOG}"
 		echo "-m   warning=${fwWarningLOG}"
 		echo "-m      info=${fwInfoLOG}"
-		echo "-s ${fwYEAR}-01-01"
-		echo "-n ${fwYEAR}-12-31"
 		echo "$(_fwOptionList)"
 
 		for (( fwI = 0; fwI < ${#_fwInputARRAY[@]} ; ++fwI ))
