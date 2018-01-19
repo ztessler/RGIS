@@ -436,7 +436,7 @@ function FwRGISFilename()
 
 function _fwPreprocess()
 {
-   local fwVERSION="${1}"
+    local fwVERSION="${1}"
 	local fwDOSTATE="${2}"
 	local    fwYEAR="${3}"
 
