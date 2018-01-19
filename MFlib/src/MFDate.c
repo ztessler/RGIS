@@ -165,9 +165,9 @@ int  MFDateTimeStepLength (const char *timeStr, int timeStep) {
     if (strncmp (timeStr,MFDateClimatologyYearStr,strlen (MFDateClimatologyYearStr)) == 0) {
         year = MFDefaultMissingInt;
         leapYear = 0;
-    }
-    else {
+    } else {
         strncpy (scanStr,timeStr,strlen (MFDateClimatologyYearStr));
+        scanStr [4] = 0;
         if (sscanf (scanStr,"%d", &year) != 1) {
             CMmsgPrint (CMmsgUsrError,"Date scanning error in: %s:%d",__FILE__,__LINE__);
             return (0);
@@ -176,13 +176,13 @@ int  MFDateTimeStepLength (const char *timeStr, int timeStep) {
     }
     if (strlen (timeStr) > strlen (MFDateClimatologyYearStr)) {
         strncpy (scanStr,timeStr + strlen (MFDateClimatologyYearStr) + 1,2);
+        scanStr [2] = 0;
         if (sscanf (scanStr,"%d", &month) != 1) {
             CMmsgPrint (CMmsgUsrError,"Date scanning error in: %s:%d",__FILE__,__LINE__);
             return (0);
         }
         monthLen = _MFDateMonthLength(year,month);
     }
-
     switch (strlen (timeStr)) {
         case 4:
             switch (timeStep) {

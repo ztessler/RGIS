@@ -69,14 +69,14 @@ static void _MDPrecipFraction (int itemID)
 	int nDays    = MFDateGetMonthLength ();
 
 	if (MFVarTestMissingVal (_MDInPrecipID,     itemID) ||
-		 MFVarTestMissingVal (_MDInPrecipFracID, itemID)) { MFVarSetMissingVal (_MDOutPrecipID,itemID); return; }
+		MFVarTestMissingVal (_MDInPrecipFracID, itemID)) { MFVarSetMissingVal (_MDOutPrecipID,itemID); return; }
 
 	precipIn   = MFVarGetFloat (_MDInPrecipID,     itemID, 0.0);
 	precipFrac = MFVarGetFloat (_MDInPrecipFracID, itemID, 1.0 / nDays);
 
 	precipOut = precipIn *  precipFrac * nDays;
-	if (precipOut <0){ CMmsgPrint (CMmsgUsrError, "Precip negative! precipIn=%f precipFrac =%fprecipFrac", precipIn, precipFrac);}
-//if (itemID==2)printf("PrecipOut %f nDays %i precipFrac %f precipIn %f \n",precipOut, nDays,precipFrac,precipIn);
+	if (precipOut < 0.0){ CMmsgPrint (CMmsgUsrError, "Precip negative! itemID=%d precipIn=%f precipFrac =%fprecipFrac", itemID, precipIn, precipFrac);}
+	if (itemID == 9456) CMmsgPrint(CMmsgUsrError, "PrecipOut %f nDays %i precipFrac %f precipIn %f \n",precipOut, nDays,precipFrac,precipIn);
 	MFVarSetFloat (_MDOutPrecipID,itemID,precipOut);
 	}
 
