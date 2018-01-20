@@ -154,6 +154,7 @@ int MFDateCompare (const char *time0,const char *time1) {
              (strncmp (time1 + strlen (MFDateClimatologyYearStr),"-28",3) == 0)))
             return (0);
     }
+    else pos = 0;
  	len = strlen (time0 + pos) < strlen (time1 + pos) ? strlen (time0 + pos) : strlen (time1 + pos);
 	return (strncmp (time0 + pos,time1 + pos,len));
 }
