@@ -396,7 +396,6 @@ static int _DBGNetworkCellCompare(const DBObjRecord **cellRec0, const DBObjRecor
 
 DBInt DBNetworkIF::Build() {
     bool changed;
-    size_t dataIndex;
     DBInt i, j, row, col, basin, dir, projection = DataPTR->Projection();
     DBCoordinate coord0, coord1;
     char nameStr[DBStringLength];
@@ -426,8 +425,7 @@ DBInt DBNetworkIF::Build() {
         cellRec = CellTable->Item(i);
         DBPause(10 + i * 10 / CellNum());
         pos = CellPosition(cellRec);
-        dataIndex = (size_t) pos.Row * (size_t) ColNum() + (size_t) pos.Col;
-        if (((DBInt *) DataRec->Data())[dataIndex] == DBFault) {
+        if (((DBInt *) DataRec->Data())[(size_t) pos.Row * (size_t) ColNum() + (size_t) pos.Col] == DBFault) {
             CellTable->Delete(cellRec);
             --i;
         }
@@ -685,7 +683,7 @@ int DBNetworkIF::Trim() {
     RowNumFLD->Int(LayerRecord, row);
     ColNumFLD->Int(LayerRecord, col);
 
-    DataRec->Realloc(row * col * sizeof(int));
+    DataRec->Realloc((size_t) row * (size_t) col * sizeof(int));
 
     for (row = 0; row < RowNum(); row++)
         for (col = 0; col < ColNum(); col++)
