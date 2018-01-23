@@ -466,7 +466,9 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
     if (parallelIO != MFparIOnone) {
         pthread_attr_init (&thread_attr);
         pthread_attr_setdetachstate (&thread_attr, PTHREAD_CREATE_JOINABLE);
-    }
+		pthread_attr_setscope       (&thread_attr, PTHREAD_SCOPE_PROCESS);
+
+	}
 
     if (_MFModelParse (argc,argv,argNum, mainDefFunc, &domainFileName, &startDate, &endDate, &testOnly) == CMfailed) return (CMfailed);
  	if (testOnly) return (CMsucceeded);

@@ -261,8 +261,8 @@ CMthreadTeam_p CMthreadTeamInitialize (CMthreadTeam_p team, size_t threadNum) {
             return ((CMthreadTeam_p) NULL);
         }
         pthread_attr_init (&thread_attr);
-        pthread_attr_setdetachstate(&thread_attr, PTHREAD_CREATE_JOINABLE);
-        pthread_attr_setscope(&thread_attr, PTHREAD_SCOPE_SYSTEM);
+        pthread_attr_setdetachstate (&thread_attr, PTHREAD_CREATE_JOINABLE);
+        pthread_attr_setscope       (&thread_attr, PTHREAD_SCOPE_SYSTEM);
 
         pthread_mutex_init (&(team->MMutex), NULL);
         pthread_cond_init  (&(team->MCond),  NULL);
