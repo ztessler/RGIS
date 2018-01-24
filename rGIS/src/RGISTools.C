@@ -88,8 +88,9 @@ static void _RGISToolsExportASCIICBK (Widget widget,RGISWorkspace *workspace,XmA
 	DBExportASCIITable (table, selection);
 	}
 
-int _RGISToolsPointExportARCInfo (DBObjData *,char *);
-int _RGISToolsGridExportARCInfo (DBObjData *,char *);
+int _RGISToolsPointExportARCInfo   (DBObjData *,char *);
+int _RGISToolsLineExportARCInfo    (DBObjData *,char *);
+int _RGISToolsGridExportARCInfo    (DBObjData *,char *);
 int _RGISToolsNetworkExportARCInfo (DBObjData *,char *);
 
 static void _RGISToolsExportARCInfoCBK (Widget widget,RGISWorkspace *workspace,XmAnyCallbackStruct *callData)
@@ -106,12 +107,12 @@ static void _RGISToolsExportARCInfoCBK (Widget widget,RGISWorkspace *workspace,X
 	switch (data->Type ())
 		{
 		case DBTypeVectorPoint: 			_RGISToolsPointExportARCInfo (data,selection);	break;
-		case DBTypeVectorLine:				break;
+		case DBTypeVectorLine:				_RGISToolsLineExportARCInfo  (data,selection);	break;
 		case DBTypeVectorPolygon:			break;
 		case DBTypeGridDiscrete:
 		case DBTypeGridContinuous:			_RGISToolsGridExportARCInfo  (data,selection);	break;
-		case DBTypeNetwork: 					_RGISToolsNetworkExportARCInfo (data,selection); break;
-		case DBTypeTable:						break;
+		case DBTypeNetwork: 				_RGISToolsNetworkExportARCInfo (data,selection); break;
+		case DBTypeTable:					break;
 		}
 	}
 
