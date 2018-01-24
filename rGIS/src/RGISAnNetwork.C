@@ -170,8 +170,8 @@ void RGISAnNetworkStationsCBK (Widget widget,RGISWorkspace *workspace,XmAnyCallb
 		{
 		areaText = XmTextFieldGetString (areaField);
 		toleranceText = XmTextFieldGetString (toleranceField);
-		if ((strlen (areaText) > 0) 		&& (sscanf (areaText,"%lf",&area) == 1) &&
-			 (strlen (toleranceText) > 0) && (sscanf (toleranceText,"%lf",&tolerance) == 1))
+		if ((strlen (areaText) > 0)      && (sscanf (areaText,"%lf",      &area) == 1) &&
+			(strlen (toleranceText) > 0) && (sscanf (toleranceText,"%lf", &tolerance) == 1))
 				XtSetSensitive (UIDialogFormGetOkButton (dShell),true);
 		else	XtSetSensitive (UIDialogFormGetOkButton (dShell),false);
 		XtFree (areaText);
