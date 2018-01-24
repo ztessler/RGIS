@@ -38,7 +38,7 @@ int _RGISToolsLineExportARCInfo (DBObjData *data,char *selection)
 	coverName	[sizeof (coverName) - 1] = '\0';
 	for (pos = 0;pos < (DBInt) strlen (coverName);++pos) if (coverName [pos] == '.') coverName [pos] = '\0';
 	for (pos = 0;pos < (DBInt) strlen (coverName);++pos) coverName [pos] = tolower (coverName [pos]);
-	sprintf (amlFile,"%s/pntcreate.aml",selection);
+	sprintf (amlFile,"%s/linecreate.aml",selection);
 	if ((file = fopen (amlFile,"w")) == NULL)
 		{
 		unlink (asciiGenerate);
@@ -50,11 +50,11 @@ int _RGISToolsLineExportARCInfo (DBObjData *data,char *selection)
 	fprintf (file,"&workspace %s\n",selection);
 	fprintf (file,"generate c_%s\n",coverName);
 	fprintf (file,"input %s\n",asciiGenerate);
-	fprintf (file,"points\n");
+	fprintf (file,"lines\n");
 	fprintf (file,"quit\n");
-	fprintf (file,"build c_%s point\n",coverName);
+	fprintf (file,"build c_%s lines\n",coverName);
 	fprintf (file,"tables\n");
-	fprintf (file,"define c_%s.pattr\n",coverName);
+	fprintf (file,"define c_%s.lattr\n",coverName);
 	fprintf (file,"&r %s\n",asciiAttribDef);
 	fprintf (file,"~\n");
 	fprintf (file,"alter id\n");
@@ -63,11 +63,10 @@ int _RGISToolsLineExportARCInfo (DBObjData *data,char *selection)
 	fprintf (file,"&r %s\n",asciiAttribData);
 	fprintf (file,"~\n");
 	fprintf (file,"q stop\n");
-	fprintf (file,"joinitem c_%s.pat c_%s.pattr c_%s.pat c_%s-id c_%s-id\n",coverName,coverName,coverName,coverName,coverName);
-	fprintf (file,"addxy C_%s point\n",coverName); 
+	fprintf (file,"joinitem c_%s.aat c_%s.lattr c_%s.aat c_%s-id c_%s-id\n",coverName,coverName,coverName,coverName,coverName);
 	fprintf (file,"tables\n");
-	fprintf (file,"select c_%s.pattr\n",coverName);
-	fprintf (file,"erase c_%s.pattr\ny\n",coverName);
+	fprintf (file,"select c_%s.lattr\n",coverName);
+	fprintf (file,"erase c_%s.lattr\ny\n",coverName);
 	fprintf (file,"q stop\n");
 	fclose (file);
 

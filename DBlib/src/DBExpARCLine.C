@@ -29,7 +29,8 @@ int DBExportARCGenLine(DBObjData *data, char *fileName) {
         fprintf (file,"%d\n",lineRec->RowID ());
         nodeCoord = lineIF->FromCoord(lineRec);
         fprintf(file, "%f,%f\n", nodeCoord.X, nodeCoord.Y);
-        if (lineIF->VertexNum(lineRec) > 0) {
+        vertexNum = lineIF->VertexNum(lineRec);
+        if (vertexNum > 0) {
             coords = lineIF->Vertexes(lineRec);
             for (vertex = 0;vertex < vertexNum; ++vertex)
                 fprintf(file, "%f,%f\n", coords [vertex].X, coords [vertex].Y);
