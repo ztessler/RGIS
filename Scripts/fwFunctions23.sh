@@ -76,8 +76,6 @@ function FwArguments()
 			(-a|--restart)
 				shift
 				 _fwRESTART="${1}"
-				  _fwSPINUP="off"
-				_fwFINALRUN="on"
 			;;
 			(-s|--spinup)
 				shift
@@ -204,7 +202,11 @@ function FwArguments()
 		esac
 		shift
 	done
-	if [ "${_fwRESTART}" == "on" ]; then _fwSPINUP="off"; fi
+	if [ "${_fwRESTART}" != "" ]
+	then
+		  _fwSPINUP="off"
+	    _fwFINALRUN="on"
+	fi
 	return 0
 }
 
@@ -667,9 +669,9 @@ function _fwRun()
 	[ "${FwVERBOSE}" == "on" ] && echo "Model run started:  $(date '+%Y-%m-%d %H:%M:%S')"
     if [ "${_fwRESTART}" == "" ]
     then
-        fwFirstYear="${fwStartYEAR}"
+        fwFirstYEAR="${fwStartYEAR}"
     else
-        fwFirstYear="${_fwRESTART}"
+        fwFirstYEAR="${_fwRESTART}"
     fi
 	for (( fwYEAR = fwFirstYEAR; fwYEAR <= fwEndYEAR; ++fwYEAR ))
 	do
