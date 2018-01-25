@@ -746,8 +746,8 @@ function _fwRun()
 
 		echo "${fwOptions}" > ${fwOptionsFILE}
 
-		_fwPreprocess "${fwYEAR}"
 		[ "${FwVERBOSE}" == "on" ] && echo "   Running year [${fwYEAR}] started:  $(date '+%Y-%m-%d %H:%M:%S')"
+		_fwPreprocess "${fwYEAR}"
 		if [ "${_fwOPTIONSPIPED}" == "on" ]
 		then
 			echo ${fwOptions} | xargs ${_fwModelBIN} &
@@ -755,10 +755,10 @@ function _fwRun()
 			echo ${fwOptions} | xargs ${_fwModelBIN}
 		fi
 		_fwPostprocess "${fwVERSION}" "${fwYEAR}"
-		[ "${FwVERBOSE}"      == "on" ] && echo "   Running year [${fwYEAR}] finished: $(date '+%Y-%m-%d %H:%M:%S')"
-
 		local fwInputList=$(echo "${fwOptions}" | grep -e "-i" | grep -e "file:"| grep -e "Input" | sed "s:.*file\:\(.*\):\1:")
 		[ "${fwInputList}" == "" ] || rm -f ${fwInputList}
+
+		[ "${FwVERBOSE}"      == "on" ] && echo "   Running year [${fwYEAR}] finished: $(date '+%Y-%m-%d %H:%M:%S')"
 	done
 	[ "${FwVERBOSE}" == "on" ] && echo "Model run finished: $(date '+%Y-%m-%d %H:%M:%S')"
 	return 0
