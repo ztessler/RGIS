@@ -445,8 +445,8 @@ function _fwPreprocess()
 	[ -e "${_fwRGISDomainFILE}" ] || ( echo "Missing domain file: ${_fwRGISDomainFILE}"; return 1; )
 
 	[ "${FwVERBOSE}" == "on" ] && echo "      Preprocessing ${fwYEAR} started:  $(date '+%Y-%m-%d %H:%M:%S')"
-	[ -e "${_fwGDSDomainDIR}"        ] || mkdir -p "${_fwGDSDomainDIR}"
-	${_fwRGISBIN}rgis2domain ${_fwLENGTHCORRECTION} "${_fwRGISDomainFILE}" "${_fwGDSDomainFILE}" &
+	[ -e "${_fwGDSDomainDIR}"  ] || mkdir -p "${_fwGDSDomainDIR}"
+	[ -e "${_fwGDSDomainFILE}" ] || ${_fwRGISBIN}rgis2domain ${_fwLENGTHCORRECTION} "${_fwRGISDomainFILE}" "${_fwGDSDomainFILE}"
 
 	for (( fwI = 0; fwI < ${#_fwInputARRAY[@]} ; ++fwI ))
 	do
