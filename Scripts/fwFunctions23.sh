@@ -659,17 +659,17 @@ function _fwSpinup()
 
 function _fwRun()
 {
-   local     fwVERSION="${1}"
+   local      fwVERSION="${1}"
 	local   fwStartYEAR="${2}"
 	local     fwEndYEAR="${3}"
 
 	local fwStateList=""
 	[ "${FwVERBOSE}" == "on" ] && echo "Model run started:  $(date '+%Y-%m-%d %H:%M:%S')"
-    if [ _fwRESTART != "" ]
+    if [ "${_fwRESTART}" == "" ]
     then
-        fwFirstYear="${_fwRESTART}"
-    else
         fwFirstYear="${fwStartYEAR}"
+    else
+        fwFirstYear="${_fwRESTART}"
     fi
 	for (( fwYEAR = fwFirstYEAR; fwYEAR <= fwEndYEAR; ++fwYEAR ))
 	do
