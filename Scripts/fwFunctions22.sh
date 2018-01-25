@@ -11,7 +11,7 @@ source "${GHAASDIR}/Scripts/RGISfunctions.sh"
 
 _fwMAXPROC=${GHAASprocessorNum}
 _fwPASSNUM=5
-_fwRESTART="off"
+_fwRESTART=""
 
 function _fwDataSource()
 {
@@ -76,14 +76,9 @@ function FwArguments()
 		case ${1} in
 			(-a|--restart)
 				shift
-				case ${1} in
-					(on|off)
-						_fwRESTART="${1}"
-					;;
-					(*)
-						echo "Invalid --restart argument [${1}]"
-					;;
-				esac
+				 _fwRESTART="${1}"
+				  _fwSPINUP="off"
+				_fwFINALRUN="on"
 			;;
 			(-s|--spinup)
 				shift
@@ -211,7 +206,7 @@ function FwArguments()
 			(-h|--help)
 				_fwPROGNAME="${0##*/}" # I don't know how this one works.
 				echo "${_fwPROGNAME} [-s on|off] [-f on|off] [-p on|off] -W on|off -T -V"
-				echo "           -a, --restart      on|off"
+				echo "           -a, --restart      <year>"
 				echo "           -s, --spinup       on|off"
 				echo "           -f, --finalrun     on|off"
 				echo "           -l, --lengthcorrection    [value]"
@@ -362,22 +357,6 @@ function FwOutputs()
 	done
 }
 
-function _fwBestGuess()
-{
-	local fwSOURCEfile="${1}"
-		if [ ! -e "${1}" ]
-		then
-			local filename=$(basename "${1}")
-			local extension="${filename##*.}"
-			if [ "${extension}" == 'gz' ]
-			then
-				fwSOURCEfile="${fwSOURCE[4]%.*}"
-			fi
-		fi
-	echo "${fwSOURCEfile}"
-}
-
-
 function _fwPrintTest()
 {
 	echo "Variables"
@@ -401,12 +380,9 @@ function _fwPrintTest()
 			echo "  ${fwInputITEM[0]} Piped input"		
 		elif [ "${fwSOURCE[3]}" == "file"  ]
 		then
-			local fwSOURCEfile="$( _fwBestGuess ${fwSOURCE[4]} )"			
-			if [ -e "${fwSOURCEfile}" ] # !!! Always displays the array value !!!
+			if [ -e "${fwSOURCE[4]}" ]
 			then
-# Replaced 			echo "  ${fwSOURCE[@]} "
-# with the following to include listing of "good" file names
-				echo "  ${fwSOURCE[0]} ${fwSOURCE[1]} ${fwSOURCE[2]} ${fwSOURCE[3]} ${fwSOURCEfile}"
+				echo "  ${fwSOURCE[0]} ${fwSOURCE[1]} ${fwSOURCE[2]} ${fwSOURCE[3]} ${fwSOURCE[4]}"
 			else
 				echo "  ${fwInputITEM[0]} datafile [${fwSOURCE[4]}] is missing!"
 			fi
@@ -474,67 +450,13 @@ function FwRGISFilename()
 
 function _fwPreprocess()
 {
-	local fwDOSTATE="${1}"
-	local    fwYEAR="${2}"
+	local    fwYEAR="${1}"
 	local fwPROC
 	[ "${FwVERBOSE}" == "on" ] && echo "      Preprocessing ${fwYEAR} started:  $(date '+%Y-%m-%d %H:%M:%S')"
 	(( fwPROC = 0 ))
 	[ -e "${_fwGDSDomainDIR}"        ] || mkdir -p "${_fwGDSDomainDIR}"
 	[ "${_fwPREPROCESS}" == "forced" ] && rm -f "${_fwGDSDomainFILE}";
 	[ -e "${_fwGDSDomainFILE}"       ] || ${_fwRGISBIN}rgis2domain ${_fwLENGTHCORRECTION} "${_fwRGISDomainFILE}" "${_fwGDSDomainFILE}";
-
-
-	if [ "${fwDOSTATE}" == "dostate" ]
-	then
-		for (( fwI = 0; fwI < ${#_fwStateARRAY[@]} ; ++fwI ))
-		do
-			local fwStateITEM=${_fwStateARRAY[${fwI}]}
-			local    fwSOURCE=($(_fwDataSource "${fwInputITEM}" "static"))
-			[ "${fwSOURCE[0]}" == "" ] && continue
-			[ "${fwSOURCE[1]}" == "" ] && { echo "  ${fwStateITEM} data type is missing!";                 return 1; }
-			[ "${fwSOURCE[2]}" == "" ] && { echo "  ${fwStateITEM} version is missing!";                   return 1; }
-			[ "${fwSOURCE[3]}" == "" ] && { echo "  ${fwStateITEM} data source type is missing!";          return 1; }
-			[ "${fwSOURCE[4]}" == "" ] && { echo "  ${fwStateITEM} data source specification is missing!"; return 1; }
-#ADDED STUFF 
-			local fwSOURCEfile="$( _fwBestGuess ${fwSOURCE[4]} )"
-#			local fwSOURCEfile="${fwSOURCE[4]}"
-#				if [ ! -e "${fwSOURCE[4]}" ]
-#				then
-#					filename=$(basename "${fwSOURCE[4]}")
-#					extension="${filename##*.}"
-#					if [ "${extension}" == 'gz' ]
-#					then
-#						local fwSOURCEfile="${fwSOURCE[4]%.*}"
-#					fi
-#				fi
-#END OF ADDS				
-			if [[ "${fwSOURCE[3]}" == "const" ]]
-			then
-				[ "${FwVERBOSE}" == "on" ] && echo "         ${fwInputITEM} State Constant"
-			elif [ "${fwSOURCE[3]}" == "file" ]
-			then
-				[ "${FwVERBOSE}" == "on" ] && echo "         ${fwInputITEM} State File input"
-
-#				if [ -e "${fwSOURCE[4]}" ]
-                if [ -e "${fwSOURCEfile}" ]
-				then
-					local fwFILENAME="$(FwGDSFilename "${fwInputITEM}" "State" "${fwSOURCE[2]}" "${fwYEAR}" "d")"
-					[ "${_fwPREPROCESS}" == "forced" ] && rm -f "${fwFILENAME}"
-					if [ ! -e "${fwFILENAME}" ]
-					then
-						[ -e "${_fwRGISDomainFILE}" ] || { echo "Missing domain file: ${_fwRGISDomainFILE}"; return 1; }
-						[ "${fwPROC}" -ge "${_fwMAXPROC}" ] && { wait ; (( fwPROC = 0 )) ; }
-# ALSO CHANGED WITH LINE BELOW			${_fwRGISBIN}rgis2ds -m "${_fwRGISDomainFILE}" "${fwSOURCE[4]}" "${fwFILENAME}" &
-# Replaced "${fwSOURCE[4]}" with "${fwSOURCEfile}" (from _fwBestGuess function)
-						${_fwRGISBIN}rgis2ds -m "${_fwRGISDomainFILE}" "${fwSOURCEfile}" "${fwFILENAME}" &
-						(( ++fwPROC ))
-					fi
-				else
-					echo "  ${fwInputITEM} datafile [${fwSOURCE[4]}] is missing! At line 512"
-				fi
-			fi
-		done
-	fi
 
 	for (( fwI = 0; fwI < ${#_fwInputARRAY[@]} ; ++fwI ))
 	do
@@ -557,37 +479,20 @@ function _fwPreprocess()
 		[ "${fwSOURCE[2]}" == "" ] && { echo "  ${fwInputITEM} version is missing!";                   return 1; }
 		[ "${fwSOURCE[3]}" == "" ] && { echo "  ${fwInputITEM} data source type is missing!";          return 1; }
 		[ "${fwSOURCE[4]}" == "" ] && { echo "  ${fwInputITEM} data source specification is missing!"; return 1; }
-#ADDED STUFF 
-			local fwSOURCEfile="$( _fwBestGuess ${fwSOURCE[4]} )"
-#		local fwSOURCEfile="${fwSOURCE[4]}"
-#			if [ ! -e "${fwSOURCE[4]}" ]
-#			then
-#				filename=$(basename "${fwSOURCE[4]}")
-#				extension="${filename##*.}"
-#				if [ "${extension}" == 'gz' ]
-#				then
-#					local fwSOURCEfile="${fwSOURCE[4]%.*}"
-#				fi
-#			fi
-#END OF ADDS				
 		if [ "${fwSOURCE[3]}" == "const" ]
 		then
 			[ "${FwVERBOSE}" == "on" ] && echo "         ${fwInputITEM} Constant input"
 		elif [ "${fwSOURCE[3]}" == "file" ]
 		then
 			[ "${FwVERBOSE}" == "on" ] && echo "         ${fwInputITEM} File input"
-# ALSO CHANGED THIS LINE WITH LINE BELOW			[ -e "${fwSOURCE[4]}" ] || { echo "  ${fwInputITEM} datafile [${fwSOURCE[4]}] is missing!  At line 545"; return 1; }
-# Replaced "${fwSOURCE[4]}" with "${fwSOURCEfile}" (from _fwBestGuess function)
-			[ -e "${fwSOURCEfile}" ] || { echo "  ${fwInputITEM} datafile [${fwSOURCEfile}] is missing!"; return 1; }
+            [ -e "${fwSOURCE[4]}" ] || { echo "  ${fwInputITEM} datafile [${fwSOURCE[4]}] is missing!  At line 520"; return 1; }
 			[ -e "${_fwGDSDomainDIR}/${fwSOURCE[2]}" ] || mkdir -p "${_fwGDSDomainDIR}/${fwSOURCE[2]}"
 			local fwFILENAME="$(FwGDSFilename "${fwInputITEM}" "Input" "${fwSOURCE[2]}" "${fwInYEAR}" "d")"
 			[ "${_fwPREPROCESS}" == "forced" ] && rm -f "${fwFILENAME}"
 			[ -e "${fwFILENAME}" ] && continue
 			[ -e "${_fwRGISDomainFILE}" ] || { echo "Missing domain file: ${_fwRGISDomainFILE}"; return 1; }
 			[ "${fwPROC}" -ge "${_fwMAXPROC}" ] && { wait; (( fwPROC = 0 )) ; }
-# ALSO CHANGED THIS LINE WITH LINE BELOW		${_fwRGISBIN}rgis2ds -m "${_fwRGISDomainFILE}" "${fwSOURCE[4]}" "${fwFILENAME}" &
-# Replaced "${fwSOURCE[4]}" with "${fwSOURCEfile}" (from _fwBestGuess function)
-			${_fwRGISBIN}rgis2ds -m "${_fwRGISDomainFILE}" "${fwSOURCEfile}" "${fwFILENAME}" &
+            ${_fwRGISBIN}rgis2ds -m "${_fwRGISDomainFILE}" "${fwSOURCE[4]}" "${fwFILENAME}" &
 			(( ++fwPROC ))
 		fi
 	done
@@ -655,7 +560,7 @@ function _fwSpinup()
 	local     fwInfoLOG="file:${_fwGDSLogDIR}/Spinup0_Info.log"
 
 	[ "${FwVERBOSE}" == "on" ] && echo "Initialization started:  $(date '+%Y-%m-%d %H:%M:%S')"
-	_fwPreprocess "dostate" "" || return 1
+	_fwPreprocess "" || return 1
 	for ((fwPASS = 1; fwPASS <= _fwPASSNUM; ++fwPASS))
 	do
 		fwOptions=$(echo ${_fwGDSDomainFILE}
@@ -735,20 +640,13 @@ function _fwSpinup()
 
 function _fwRun()
 {
-   local     fwVERSION="${1}"
-	local   fwStartYEAR="${2}"
+    local     fwVERSION="${1}"
+    local   fwStartYEAR="${2}"
 	local     fwEndYEAR="${3}"
 
 	[ "${FwVERBOSE}" == "on" ] && echo "Model run started:  $(date '+%Y-%m-%d %H:%M:%S')"
 	for (( fwYEAR = fwStartYEAR; fwYEAR <= fwEndYEAR; ++fwYEAR ))
 	do
-		if (( fwYEAR == fwStartYEAR ))
-		then
-			if [ "$_fwRESTART}" == "off" ]; then fwDOSTATE="dostate"; else fwDOSTATE="nostate"; fi
-		else fwDOSTATE="nostate";
-		fi
-		_fwPreprocess "${fwDOSTATE}" "${fwYEAR}" || return 1
-
 		local fwOptionsFILE="${_fwGDSLogDIR}/Run${fwYEAR}_Options.log"
 		local     fwUserLOG="file:${_fwGDSLogDIR}/Run${fwYEAR}_UserError.log"
 		local    fwDebugLOG="file:${_fwGDSLogDIR}/Run${fwYEAR}_Debug.log"
@@ -818,6 +716,8 @@ function _fwRun()
 			fi
  		done)
 		echo "${fwOptions}" > ${fwOptionsFILE}
+
+		_fwPreprocess "${fwYEAR}" || return 1
 		[ "${FwVERBOSE}" == "on" ] && echo "   Running year [${fwYEAR}] started:  $(date '+%Y-%m-%d %H:%M:%S')"
 		if echo ${fwOptions} | xargs ${_fwModelBIN}
 		then

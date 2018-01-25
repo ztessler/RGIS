@@ -11,7 +11,7 @@ source "${GHAASDIR}/Scripts/RGISfunctions.sh"
 
 _fwMAXPROC=${GHAASprocessorNum}
 _fwPASSNUM=5
-_fwRESTART="off"
+_fwRESTART=""
 
 function _fwDataSource()
 {
@@ -75,14 +75,9 @@ function FwArguments()
 		case ${1} in
 			(-a|--restart)
 				shift
-				case ${1} in
-					(on|off)
-						_fwRESTART="${1}"
-					;;
-					(*)
-						echo "Invalid --restart argument [${1}]"
-					;;
-				esac
+				 _fwRESTART="${1}"
+				  _fwSPINUP="off"
+				_fwFINALRUN="on"
 			;;
 			(-s|--spinup)
 				shift
@@ -192,7 +187,7 @@ function FwArguments()
 			(-h|--help)
 				_fwPROGNAME="${0##*/}" # I don't know how this one works.
 				echo "${_fwPROGNAME} [-s on|off] [-f on|off] [-p on|off] -W on|off -T -V"
-				echo "           -a, --restart      on|off"
+				echo "           -a, --restart      <year>"
 				echo "           -s, --spinup       on|off"
 				echo "           -f, --finalrun     on|off"
 				echo "           -l, --lengthcorrection [value]"
@@ -437,9 +432,7 @@ function FwRGISFilename()
 
 function _fwPreprocess()
 {
-   local fwVERSION="${1}"
-	local fwDOSTATE="${2}"
-	local    fwYEAR="${3}"
+	local    fwYEAR="${1}"
 
 	if [ "${fwYEAR}" == "" ]
 	then
@@ -452,37 +445,6 @@ function _fwPreprocess()
 	[ "${FwVERBOSE}" == "on" ] && echo "      Preprocessing ${fwYEAR} started:  $(date '+%Y-%m-%d %H:%M:%S')"
 	[ -e "${_fwGDSDomainDIR}"        ] || mkdir -p "${_fwGDSDomainDIR}"
 	${_fwRGISBIN}rgis2domain ${_fwLENGTHCORRECTION} "${_fwRGISDomainFILE}" "${_fwGDSDomainFILE}" &
-
-	if [ "${fwDOSTATE}" == "dostate" ]
-	then
-		for (( fwI = 0; fwI < ${#_fwStateARRAY[@]} ; ++fwI ))
-		do
-			local fwStateITEM=${_fwStateARRAY[${fwI}]}
-			local    fwSOURCE=($(_fwDataSource "${fwInputITEM}" "static"))
-			[ "${fwSOURCE[0]}" == "" ] && continue
-			[ "${fwSOURCE[1]}" == "" ] && { echo "  ${fwStateITEM} data type is missing!";                 return 1; }
-			[ "${fwSOURCE[2]}" == "" ] && { echo "  ${fwStateITEM} version is missing!";                   return 1; }
-			[ "${fwSOURCE[3]}" == "" ] && { echo "  ${fwStateITEM} data source type is missing!";          return 1; }
-			[ "${fwSOURCE[4]}" == "" ] && { echo "  ${fwStateITEM} data source specification is missing!"; return 1; }
-
-			if [[ "${fwSOURCE[3]}" == "const" ]]
-			then
-				[ "${FwVERBOSE}" == "on" ] && echo "         ${fwInputITEM} State Constant"
-			elif [ "${fwSOURCE[3]}" == "file" ]
-			then
-				[ "${FwVERBOSE}" == "on" ] && echo "         ${fwInputITEM} State File input"
-
-				if [ -e "${fwSOURCE[4]}" ]
-				then
-					local fwFILENAME="$(FwGDSFilename "${fwInputITEM}" "State" "${fwSOURCE[2]}" "${fwYEAR}" "d")"
-               ${_fwRGISBIN}rgis2ds -m "${_fwRGISDomainFILE}" "${fwSOURCE[4]}" "${fwFILENAME}" &
-				else
-					echo "${fwStateITEM} datafile [${fwSOURCE[4]}] is missing!"
-				fi
-			fi
-		done
-	fi
-	wait
 
 	for (( fwI = 0; fwI < ${#_fwInputARRAY[@]} ; ++fwI ))
 	do
@@ -504,7 +466,7 @@ function _fwPreprocess()
 		[ "${fwSOURCE[1]}" == "" ] && { echo "  ${fwInputITEM} data type is missing!";                 return 1; }
 		[ "${fwSOURCE[2]}" == "" ] && { echo "  ${fwInputITEM} version is missing!";                   return 1; }
 		[ "${fwSOURCE[3]}" == "" ] && { echo "  ${fwInputITEM} data source type is missing!";          return 1; }
-		[ "${fwSOURCE[4]}" == "" ] && { echo "  ${fwInputITEM} data source specification is missing! LOFASZ ${fwSOURCE[4]}"; return 1; }
+		[ "${fwSOURCE[4]}" == "" ] && { echo "  ${fwInputITEM} data source specification is missing!"; return 1; }
 
 		if [ "${fwSOURCE[3]}" == "const" ]
 		then
@@ -591,7 +553,7 @@ function _fwSpinup()
 	local doState="dostate"
 
 	[ "${FwVERBOSE}" == "on" ] && echo "Initialization started:  $(date '+%Y-%m-%d %H:%M:%S')"
-	_fwPreprocess "$fwVERSION}" "${doState}" ""
+	_fwPreprocess ""
 	for ((fwPASS = 1; fwPASS <= _fwPASSNUM; ++fwPASS))
 	do
 		if   (( fwPASS == 1 ))
@@ -703,13 +665,14 @@ function _fwRun()
 
 	local fwStateList=""
 	[ "${FwVERBOSE}" == "on" ] && echo "Model run started:  $(date '+%Y-%m-%d %H:%M:%S')"
-	for (( fwYEAR = fwStartYEAR; fwYEAR <= fwEndYEAR; ++fwYEAR ))
+    if [ _fwRESTART != "" ]
+    then
+        fwFirstYear="${_fwRESTART}"
+    else
+        fwFirstYear="${fwStartYEAR}"
+    fi
+	for (( fwYEAR = fwFirstYEAR; fwYEAR <= fwEndYEAR; ++fwYEAR ))
 	do
-		if (( fwYEAR == fwStartYEAR ))
-		then
-			if [ "$_fwRESTART}" == "off" ]; then fwDOSTATE="dostate"; else fwDOSTATE="nostate"; fi
-		else fwDOSTATE="nostate";
-		fi
 		local fwOptionsFILE="${_fwGDSLogDIR}/Run${fwYEAR}_Options.log"
 		local     fwUserLOG="file:${_fwGDSLogDIR}/Run${fwYEAR}_UserError.log"
 		local    fwDebugLOG="file:${_fwGDSLogDIR}/Run${fwYEAR}_Debug.log"
@@ -781,9 +744,8 @@ function _fwRun()
 
 		echo "${fwOptions}" > ${fwOptionsFILE}
 
+		_fwPreprocess "${fwYEAR}"
 		[ "${FwVERBOSE}" == "on" ] && echo "   Running year [${fwYEAR}] started:  $(date '+%Y-%m-%d %H:%M:%S')"
-
-		_fwPreprocess "${fwVERSION}" "${fwDOSTATE}" "${fwYEAR}"
 		if [ "${_fwOPTIONSPIPED}" == "on" ]
 		then
 			echo ${fwOptions} | xargs ${_fwModelBIN} &
