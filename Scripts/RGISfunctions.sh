@@ -12,7 +12,7 @@ case "$(uname)" in
     ;;
 esac
 
-export __RGISarchiveFormat="plain"
+export __RGISarchiveFormat="gzipped"
 
 function RGISprocessorNum ()
 {
