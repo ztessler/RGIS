@@ -73,7 +73,7 @@ function FwArguments()
 	while [ "${1}" != "" ]
 	do
 		case ${1} in
-			(-a|--restart)
+			(-r|--restart)
 				shift
 				 _fwRESTART="${1}"
 			;;
@@ -185,7 +185,7 @@ function FwArguments()
 			(-h|--help)
 				_fwPROGNAME="${0##*/}" # I don't know how this one works.
 				echo "${_fwPROGNAME} [-s on|off] [-f on|off] [-p on|off] -W on|off -T -V"
-				echo "           -a, --restart      <year>"
+				echo "           -r, --restart      <year>"
 				echo "           -s, --spinup       on|off"
 				echo "           -f, --finalrun     on|off"
 				echo "           -l, --lengthcorrection [value]"
