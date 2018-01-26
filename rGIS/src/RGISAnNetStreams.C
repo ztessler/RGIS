@@ -121,7 +121,7 @@ void RGISAnNetworkStreamLinesCBK (Widget widget,RGISWorkspace *workspace,XmAnyCa
 		for (;cellID >= 0;--cellID)
 			{
 			cellRec = netIF->Cell (cellID);
-//			if (_RGISAnNetOrderField->Int (cellRec) < 3) continue;
+			if (_RGISAnNetOrderField->Int (cellRec) < 3) continue;
 			if (((toCellRec = netIF->ToCell (cellRec)) == (DBObjRecord *) NULL) ||
 			    (_RGISAnNetOrderField->Int (cellRec) != _RGISAnNetOrderField->Int (toCellRec)) ||
 	 		    (netIF->CellOrder (cellRec)          != netIF->CellOrder (toCellRec)))
