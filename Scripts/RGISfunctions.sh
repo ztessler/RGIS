@@ -26,13 +26,13 @@ function RGISarchiveFormat ()
 
    case "${format}" in
         (plain)
-            __RGISarchiveFormat="plain"
+            export __RGISarchiveFormat="plain"
         ;;
         (gzipped)
-            __RGISarchiveFormat="gzipped"
+            export __RGISarchiveFormat="gzipped"
         ;;
         (netcdf)
-            __RGISarchiveFormat="netcdf"
+            export __RGISarchiveFormat="netcdf"
         ;;
         (*)
             echo "Unrecognised file format:${format} in: RGISarchiveFormat"
