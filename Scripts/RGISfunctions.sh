@@ -36,7 +36,7 @@ function RGISarchiveFormat ()
         ;;
         (*)
             echo "Unrecognised file format:${format} in: RGISarchiveFormat"
-            __RGISarchiveFormat="plain"
+            export __RGISarchiveFormat="plain"
         ;;
    esac
 }
