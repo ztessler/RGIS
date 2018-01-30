@@ -1,5 +1,16 @@
 #!/bin/bash
 
+if [[ $0 != "${BASH_SOURCE}" ]]
+then
+    if [[ "${_RGISfunctionsSOURCED}" == "sourced" ]]
+    then
+        return 0
+    else
+        export _RGISfunctionsSOURCED="sourced"
+        echo "Sourcing ${BASH_SOURCE##*/}"
+    fi
+fi
+
 case "$(uname)" in
     (Linux)
         export GHAASprocessorNum=$(nproc)
@@ -1821,6 +1832,4 @@ then
         ARGUMENTS="$@"
         ${FUNCTION} ${ARGUMENTS}
     fi
-else
-    echo "${BASH_SOURCE##*/} Sourced"
 fi
