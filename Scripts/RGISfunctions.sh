@@ -1812,3 +1812,9 @@ function RGISStatistics ()
 	[ -e "${monthlyTSfile}" ] && rm "${monthlyTSfile}"
 	return 0
 }
+
+if (( $# > 1)); then
+    FUNCTION="$1"; shift
+    ARGUMENTS="$@"
+    ${FUNCTION} ${ARGUMENTS}
+fi
