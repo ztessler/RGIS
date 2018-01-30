@@ -1813,8 +1813,14 @@ function RGISStatistics ()
 	return 0
 }
 
-if (( $# > 1)); then
-    FUNCTION="$1"; shift
-    ARGUMENTS="$@"
-    ${FUNCTION} ${ARGUMENTS}
+if [[ $0 == "${BASH_SOURCE}" ]]
+then
+    if (( $# > 1))
+    then
+        FUNCTION="$1"; shift
+        ARGUMENTS="$@"
+        ${FUNCTION} ${ARGUMENTS}
+    fi
+else
+    echo "${BASH_SOURCE##*/} Sourced"
 fi
