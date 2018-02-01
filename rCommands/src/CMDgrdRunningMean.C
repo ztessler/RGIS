@@ -117,6 +117,10 @@ int main(int argc, char *argv[]) {
             CMmsgPrint(CMmsgInfo, "%s [options] <input grid> <output grid>", CMfileName(argv[0]));
             CMmsgPrint(CMmsgInfo, "     -k,--kernelsize");
             CMmsgPrint(CMmsgInfo, "     -f,--kerneloffset");
+            CMmsgPrint(CMmsgInfo, "     -t,--title       [dataset title]");
+            CMmsgPrint(CMmsgInfo, "     -d,--domain      [domain]");
+            CMmsgPrint(CMmsgInfo, "     -u,--subject     [subject]");
+            CMmsgPrint(CMmsgInfo, "     -v,--version     [version]");
             CMmsgPrint(CMmsgInfo, "     -V,--verbose");
             CMmsgPrint(CMmsgInfo, "     -h,--help");
             return (DBSuccess);
@@ -143,8 +147,8 @@ int main(int argc, char *argv[]) {
     if ((outData = DBGridToGrid(inData, DBTypeGridContinuous)) == (DBObjData *) NULL) return (CMfailed);
 
     if (title != (char *) NULL) outData->Name(title);
-    if (subject != (char *) NULL) outData->Document(DBDocSubject, subject);
     if (domain != (char *) NULL) outData->Document(DBDocGeoDomain, domain);
+    if (subject != (char *) NULL) outData->Document(DBDocSubject, subject);
     if (version != (char *) NULL) outData->Document(DBDocVersion, version);
     outGridIF = new DBGridIF(outData);
 

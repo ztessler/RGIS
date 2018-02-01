@@ -143,6 +143,8 @@ DBInt RGlibNetworkPsmRouting(DBObjData *, DBObjData *, DBObjData *, DBInt, DBFlo
 
 DBInt RGlibNetworkDefragment(DBObjData *, DBObjData *, DBFloat, DBFloat, bool);
 
+DBInt RGlibNetworkToStreamLines (DBObjData *, const char *, DBInt, DBObjData *);
+
 DBInt RGLibTableJoin(DBObjTable *, DBObjTableField *, DBObjTable *, DBObjTableField *);
 
 DBInt RGlibRGIS2DataStream(DBObjData *, DBObjData *, char *, FILE *);
