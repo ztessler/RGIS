@@ -143,7 +143,7 @@ DBInt RGlibNetworkPsmRouting(DBObjData *, DBObjData *, DBObjData *, DBInt, DBFlo
 
 DBInt RGlibNetworkDefragment(DBObjData *, DBObjData *, DBFloat, DBFloat, bool);
 
-DBInt RGlibNetworkToStreamLines (DBObjData *, const char *, DBInt, DBObjData *);
+DBInt RGlibNetworkToStreamLines (DBObjData *, DBInt, DBObjData *);
 
 DBInt RGLibTableJoin(DBObjTable *, DBObjTableField *, DBObjTable *, DBObjTableField *);
 

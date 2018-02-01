@@ -12,11 +12,9 @@ bfekete@ccny.cuny.edu
 
 #include <cm.h>
 #include <DB.H>
-#include <DBif.H>
 #include <RG.H>
 
 int main(int argc, char *argv[]) {
-    char *orderField = "Order";
     DBInt minOrder = 3;
     int argPos, argNum = argc, ret, verbose = false;
     char *title = (char *) NULL, *subject = (char *) NULL;
@@ -24,15 +22,6 @@ int main(int argc, char *argv[]) {
     DBObjData *netData, *arcData;
 
     for (argPos = 1; argPos < argNum;) {
-        if (CMargTest (argv[argPos], "-f", "--field")) {
-            if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) {
-                CMmsgPrint(CMmsgUsrError, "Missing order field!");
-                return (CMfailed);
-            }
-            orderField = argv[argPos];
-            if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
-            continue;
-        }
         if (CMargTest (argv[argPos], "-n", "--minorder")) {
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) {
                 CMmsgPrint(CMmsgUsrError, "Missing minimum order!");
@@ -88,7 +77,6 @@ int main(int argc, char *argv[]) {
         }
         if (CMargTest (argv[argPos], "-h", "--help")) {
             CMmsgPrint(CMmsgInfo, "%s [options] <input network> <output stream lines>", CMfileName(argv[0]));
-            CMmsgPrint(CMmsgInfo, "     -f,--field       [order field]");
             CMmsgPrint(CMmsgInfo, "     -n,--minorder    [minimum order]");
             CMmsgPrint(CMmsgInfo, "     -t,--title       [dataset title]");
             CMmsgPrint(CMmsgInfo, "     -d,--domain      [domain]");
@@ -129,7 +117,7 @@ int main(int argc, char *argv[]) {
     arcData->Document (DBDocSubject,  subject);
     arcData->Document (DBDocVersion,  version);
 
-    if ((ret = RGlibNetworkToStreamLines (DBObjData *netData, orderField, minOrder, arcData)) == DBSuccess)
+    if ((ret = RGlibNetworkToStreamLines (netData, minOrder, arcData)) == DBSuccess)
         ret = (argNum > 2) && (strcmp(argv[2], "-") != 0) ? arcData->Write(argv[2]) : arcData->Write(stdout);
 
     delete netData;

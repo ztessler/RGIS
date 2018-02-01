@@ -76,7 +76,7 @@ DBCoordinate *DBVPolyIF::Vertexes(const DBObjRecord *polyRec) const {
     CoordsPTR[vertex++] = NodeCoord(nodeRec);
     if (nodeRec != firstNodeRec) CoordsPTR[vertex++] = NodeCoord(firstNodeRec);
     if (VertexNum(polyRec) != vertex)
-        CMmsgPrint(CMmsgAppError, "Warning in Polygon %d VertexNum [%d %d] in: %s %d", polyRec->RowID(),
+        CMmsgPrint(CMmsgAppError, "Warning in Polygon %d MaxVertex [%d %d] in: %s %d", polyRec->RowID(),
                    VertexNum(polyRec), vertex, __FILE__, __LINE__);
     return (CoordsPTR);
 }

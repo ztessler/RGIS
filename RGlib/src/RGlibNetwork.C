@@ -1553,147 +1553,157 @@ DBInt RGlibNetworkReservoir (DBObjData *netData, const char *elevStr, const char
 
 }
 
-#define RGISNetStreamArea	"StreamArea"
-#define RGISNetBasinArea	"SubbasinArea"
-#define RGISNetStreamLength "StreamLength"
-#define RGISNetStreamNext	 "NextStream"
+#define RGISNetStreamOrder	"StreamOrder"
+#define RGISNetStreamMouthX "MouthXCoord"
+#define RGISNetStreamMouthY "MouthYCoord"
 
-static DBObjRecord     *_RGlibAnNetworkCellRec;
-static DBObjTableField *_RGlibAnNetOrderField;
-static DBObjTableField *_RGlibAnNetStreamIDFLD;
-static DBInt			_RGlibAnNetStreamID;
-static DBInt			_RGlibAnNetVertex;
-static DBInt			_RGlibAnNetVertexNum = 0;
-static DBCoordinate    *_RGlibAnNetCoord = (DBCoordinate *) NULL;
-static DBFloat  		_RGlibAnNetArea;
+class RGlibStreamAction {
+private:
+    DBObjRecord     *HeadCellRec, *MouthCellRec;
+    DBObjTableField *StreamIDFLD;
+    DBInt			 StreamID;
+    DBInt            CellOrder;
+    DBInt			 Vertex;
+    DBInt			 MaxVertex;
+    DBCoordinate    *Coordinates;
+    DBObjTable      *CellTable;
+    DBObjTable      *LineTable;
+    DBObjTableField *BasinFLD, *OrderFLD, *MouthXCoordFLD, *MouthYCoordFLD;
+    DBNetworkIF     *NetIF;
+    DBVLineIF       *LineIF;
+public:
+    RGlibStreamAction (DBObjData *netData, DBObjData *arcData, DBInt minOrder) {
+        DBInt cellID;
+        DBObjRecord *cellRec;
 
-static bool _RGlibAnNetworkUpStreamAction (DBNetworkIF *netIF,DBObjRecord *cellRec, void *dataPtr)
+        Coordinates = (DBCoordinate *) NULL;
+        CellTable = netData->Table (DBrNCells);
+        LineTable = arcData->Table (DBrNItems);
+        NetIF   = new DBNetworkIF (netData);
+        LineIF  = new DBVLineIF   (arcData);
 
-{
-    DBInt nextOrder [2];
+        arcData->Projection (netData->Projection ());
+        arcData->Precision  (netData->Precision ());
+        arcData->MaxScale   (netData->MaxScale ());
+        arcData->MinScale   (netData->MinScale ());
 
-    if (_RGlibAnNetVertex < 1)
-    {
-        nextOrder[0] = _RGlibAnNetOrderField->Int (cellRec);
-        nextOrder[1] = netIF->CellOrder (cellRec);
+        LineTable->AddField (BasinFLD       = new DBObjTableField (DBrNBasin,           DBTableFieldInt,  "%8d",  sizeof (DBInt)));
+        LineTable->AddField (OrderFLD       = new DBObjTableField (RGISNetStreamOrder,  DBTableFieldInt,  "%4d",  sizeof (DBInt)));
+        LineTable->AddField (MouthXCoordFLD = new DBObjTableField (RGISNetStreamMouthX, DBTableFieldFloat,"%9.2f",sizeof (DBFloat4)));
+        LineTable->AddField (MouthYCoordFLD = new DBObjTableField (RGISNetStreamMouthY, DBTableFieldFloat,"%9.2f",sizeof (DBFloat4)));
+        CellTable->AddField (StreamIDFLD = new DBObjTableField ("StreamID",DBTableFieldInt,"%8d",sizeof (DBInt)));
+
+        for (cellID = NetIF->CellNum () - 1;cellID >= 0;--cellID) {
+            cellRec = NetIF->Cell (cellID);
+            StreamIDFLD->Int (cellRec,0);
+        }
     }
-    else
-    {
-        nextOrder[0] = _RGlibAnNetOrderField->Int (netIF->ToCell (cellRec));
-        nextOrder[1] = netIF->CellOrder (netIF->ToCell(cellRec));
+    ~RGlibStreamAction () {
+//       if (Coordinates != (DBCoordinate *) NULL) free (Coordinates);
+        delete LineIF;
+        delete NetIF;
     }
+    DBInt CreateStream (DBObjRecord *cellRec, DBNetworkACTION upStreamAction, DBNetworkACTION downStreamAction) {
+        char objName [DBStringLength];
+        DBObjRecord *toCellRec = NetIF->ToCell (cellRec), *lineRec;
 
-    if ((_RGlibAnNetOrderField->Int (cellRec) == nextOrder[0]) && (netIF->CellOrder (cellRec) == nextOrder[1]))
-    {
-        _RGlibAnNetStreamIDFLD->Int (cellRec,_RGlibAnNetStreamID);
-        _RGlibAnNetworkCellRec = cellRec;
-        _RGlibAnNetVertex += 1;
-        return (true);
+        sprintf (objName,"Line: %5d",StreamID + 1);
+        if ((lineRec = LineIF->NewItem (objName)) == (DBObjRecord *) NULL)
+        { CMmsgPrint (CMmsgAppError, "Line Insertion Error in: %s %d",__FILE__,__LINE__); return (CMfailed); }
+        BasinFLD->Int (lineRec,NetIF->CellBasinID (cellRec));
+        OrderFLD->Int (lineRec,NetIF->CellOrder (cellRec));
+
+        Vertex = 0;
+        HeadCellRec = MouthCellRec = cellRec;
+        NetIF->UpStreamSearch (HeadCellRec, upStreamAction, (void *) this);
+        LineIF->FromNode (lineRec,LineIF->Node (NetIF->Center (HeadCellRec),true));
+        LineIF->ToNode   (lineRec,LineIF->Node (NetIF->Center (MouthCellRec) + NetIF->Delta (MouthCellRec),true));
+        MouthXCoordFLD->Float (lineRec, NetIF->Center (MouthCellRec).X);
+        MouthYCoordFLD->Float (lineRec, NetIF->Center (MouthCellRec).Y);
+
+        if (HeadCellRec != MouthCellRec)
+        {
+            if (MaxVertex < Vertex)
+            {
+                Coordinates = (DBCoordinate *) realloc (Coordinates,Vertex * sizeof (DBCoordinate));
+                if (Coordinates == (DBCoordinate *) NULL)
+                { CMmsgPrint (CMmsgSysError, "Memory Allocation Error in: %s %d",__FILE__,__LINE__); return (CMfailed); }
+                MaxVertex = Vertex;
+            }
+            Vertex = 0;
+            NetIF->DownStreamSearch (HeadCellRec, downStreamAction, (void *) this);
+            Coordinates [Vertex++] = NetIF->Center (MouthCellRec);
+            LineIF->Vertexes (lineRec,Coordinates,Vertex);
+        }
+        else LineIF->Vertexes (lineRec,Coordinates,0);
+        LineIF->ItemSymbol (lineRec,LineIF->Symbol (0));
+        StreamID += 1;
+        return (CMsucceeded);
     }
-    return (false);
-}
+    DBInt CreateStreams (DBInt minOrder, DBNetworkACTION upStreamAction, DBNetworkACTION downStreamAction) {
+        DBInt cellID;
+        DBObjRecord *cellRec, *toCellRec, *fromCell, *lineRec;
 
-static bool _RGlibAnNetworkDownStreamAction (DBNetworkIF *netIF,DBObjRecord *cellRec, void *dataPtr)
+        if (LineIF->NewSymbol ("Default Symbol") == (DBObjRecord *) NULL)
+        { CMmsgPrint (CMmsgAppError, "Symbol Creation Error in: %s %d",__FILE__,__LINE__); return (CMfailed); }
 
-{
-    if (_RGlibAnNetStreamIDFLD->Int (cellRec) != _RGlibAnNetStreamID) return (false);
-    _RGlibAnNetArea += netIF->CellArea (cellRec);
-    _RGlibAnNetCoord [_RGlibAnNetVertex++] = netIF->Center (cellRec);
-    return (true);
-}
-
-DBInt RGlibNetworkToStreamLines (DBObjData *netData, const char *orderField, DBInt minOrder, DBObjData *arcData) {
-    DBInt cellID;
-    char objName [DBStringLength];
-    DBObjTable *cellTable 	= netData->Table (DBrNCells);
-    DBObjTable *lineTable 	= arcData->Table (DBrNItems);
-    DBObjTableField *basinFLD, *fieldFLD, *lengthFLD, *areaFLD, *basinAreaFLD, *nextFLD;
-    DBObjRecord *cellRec, *toCellRec, *lineRec;
-    DBNetworkIF *netIF;
-    DBVLineIF *lineIF;
-
-
-    if ((_RGlibAnNetOrderField = cellTable->Field (orderField)) == (DBObjTableField *) NULL)
-    { CMmsgPrint (CMmsgAppError, "Field Selection Error in: %s %d",__FILE__,__LINE__); return (CMfailed); }
-
-    basinFLD  = new DBObjTableField (DBrNBasin,DBTableFieldInt,"%8d",sizeof (DBInt));
-    fieldFLD  = new DBObjTableField (_RGlibAnNetOrderField->Name (),
-                                     _RGlibAnNetOrderField->Type (),
-                                     _RGlibAnNetOrderField->Format (),
-                                     _RGlibAnNetOrderField->Length ());
-    lengthFLD    = new DBObjTableField (RGISNetStreamLength,DBTableFieldFloat,"%10.1f",sizeof (DBFloat4));
-    areaFLD      = new DBObjTableField (RGISNetStreamArea,DBTableFieldFloat,"%10.1f",sizeof (DBFloat4));
-    basinAreaFLD = new DBObjTableField (RGISNetBasinArea,DBTableFieldFloat,"%10.1f",sizeof (DBFloat4));
-    nextFLD      = new DBObjTableField (RGISNetStreamNext,DBTableFieldInt,"%6d",sizeof (DBInt));
-
-    netIF   = new DBNetworkIF (netData);
-    lineIF  = new DBVLineIF   (arcData);
-
-    arcData->Projection (netData->Projection ());
-    arcData->Precision  (netData->Precision ());
-    arcData->MaxScale   (netData->MaxScale ());
-    arcData->MinScale   (netData->MinScale ());
-
-    lineTable->AddField (basinFLD);
-    lineTable->AddField (fieldFLD);
-    lineTable->AddField (lengthFLD);
-    lineTable->AddField (areaFLD);
-    lineTable->AddField (basinAreaFLD);
-    lineTable->AddField (nextFLD);
-
-    cellTable->AddField (_RGlibAnNetStreamIDFLD = new DBObjTableField ("StreamID",DBTableFieldInt,"%8d",sizeof (DBInt)));
-
-    _RGlibAnNetStreamID = 0;
-
-    cellID = netIF->CellNum () - 1;
-    if (lineIF->NewSymbol ("Default Symbol") == (DBObjRecord *) NULL)
-    { CMmsgPrint (CMmsgAppError, "Symbol Creation Error in: %s %d",__FILE__,__LINE__); delete netIF; delete lineIF; return (CMfailed); }
-
-    for (;cellID >= 0;--cellID) {
-        cellRec = netIF->Cell (cellID);
-        if (_RGlibAnNetOrderField->Int (cellRec) < minOrder) continue;
-        if (((toCellRec = netIF->ToCell (cellRec)) == (DBObjRecord *) NULL) ||
-            (_RGlibAnNetOrderField->Int (cellRec) != _RGlibAnNetOrderField->Int (toCellRec)) ||
-                (netIF->CellOrder (cellRec)          != netIF->CellOrder (toCellRec))) {
-            if (DBPause ((netIF->CellNum () - cellRec->RowID ()) * 100 / netIF->CellNum ())) goto Stop;
-
-            sprintf (objName,"Line: %5d",_RGlibAnNetStreamID + 1);
-                if ((lineRec = lineIF->NewItem (objName)) == (DBObjRecord *) NULL)
-                { CMmsgPrint (CMmsgAppError, "Line Insertion Error in: %s %d",__FILE__,__LINE__); return (CMfailed); }
-                nextFLD->Int (lineRec,toCellRec == (DBObjRecord *) NULL ? 0 : _RGlibAnNetStreamIDFLD->Int (toCellRec) + 1);
-                basinFLD->Int (lineRec,netIF->CellBasinID (cellRec));
-                fieldFLD->Int (lineRec,_RGlibAnNetOrderField->Int (cellRec));
-
-                _RGlibAnNetVertex = 0;
-                netIF->UpStreamSearch (_RGlibAnNetworkCellRec = cellRec, _RGlibAnNetworkUpStreamAction);
-                lineIF->FromNode (lineRec,lineIF->Node (netIF->Center (_RGlibAnNetworkCellRec),true));
-                lineIF->ToNode (lineRec,lineIF->Node (netIF->Center (cellRec) + netIF->Delta (cellRec),true));
-
-                _RGlibAnNetArea = netIF->CellArea (_RGlibAnNetworkCellRec);
-                if (_RGlibAnNetVertex > 1)
-                {
-                    if (_RGlibAnNetVertexNum < _RGlibAnNetVertex - 1)
-                    {
-                        _RGlibAnNetCoord = (DBCoordinate *) realloc (_RGlibAnNetCoord,(_RGlibAnNetVertex - 1) * sizeof (DBCoordinate));
-                        if (_RGlibAnNetCoord == (DBCoordinate *) NULL)
-                        { CMmsgPrint (CMmsgSysError, "Memory Allocation Error in: %s %d",__FILE__,__LINE__); return (CMfailed); }
+        StreamID = 0;
+        for (cellID = NetIF->CellNum () - 1;cellID >= 0;--cellID) {
+            cellRec = NetIF->Cell (cellID);
+            CellOrder = NetIF->CellOrder (cellRec);
+            if (NetIF->CellOrder (cellRec) < minOrder) continue;
+            if (((toCellRec = NetIF->ToCell (cellRec)) == (DBObjRecord *) NULL) ||
+                (CellOrder != NetIF->CellOrder (toCellRec))) {
+                if (DBPause ((NetIF->CellNum () - cellRec->RowID ()) * 100 / NetIF->CellNum ())) goto Stop;
+                if (CreateStream(cellRec, upStreamAction, downStreamAction) == CMfailed) return (CMfailed);
+                else {
+                    fromCell = NetIF->ToCell (cellRec) != (DBObjRecord *) NULL ?  NetIF->FromCell(NetIF->ToCell (cellRec)) : (DBObjRecord *) NULL;
+                    if ((fromCell != (DBObjRecord *) NULL) && (StreamIDFLD->Int (fromCell) == 0)) {
+                        if (CreateStream(fromCell, upStreamAction, downStreamAction) == CMfailed) return (CMfailed);
                     }
-                    _RGlibAnNetVertex = 0;
-                    netIF->DownStreamSearch (netIF->ToCell (_RGlibAnNetworkCellRec), _RGlibAnNetworkDownStreamAction);
                 }
-                else	_RGlibAnNetVertex = 0;
-                lineIF->Vertexes (lineRec,_RGlibAnNetCoord,_RGlibAnNetVertex);
-                lineIF->ItemSymbol (lineRec,lineIF->Symbol (0));
-                lengthFLD->Float (lineRec,netIF->CellBasinLength (cellRec));
-                areaFLD->Float (lineRec,_RGlibAnNetArea);
-                basinAreaFLD->Float (lineRec,netIF->CellBasinArea (cellRec));
-                _RGlibAnNetStreamID += 1;
             }
         }
 Stop:
-    if (_RGlibAnNetCoord != (DBCoordinate *) NULL) free (_RGlibAnNetCoord);
+        if (Coordinates != (DBCoordinate *) NULL) free (Coordinates);
+        return (CMsucceeded);
+    }
+    bool UpStream (DBObjRecord *cellRec) {
+        if ((NetIF->CellOrder(cellRec) != CellOrder) || (StreamIDFLD->Int (cellRec) != 0)) return (false);
 
-    delete netIF;
-    delete lineIF;
-    return (CMsucceeded);
+        StreamIDFLD->Int (cellRec,StreamID);
+        HeadCellRec = cellRec;
+        Vertex += 1;
+        return (true);
+    }
+    bool DownStream (DBObjRecord *cellRec) {
+        DBObjRecord *toCellRec = NetIF->ToCell (cellRec);
+        if ((toCellRec == (DBObjRecord *) NULL) || (toCellRec == MouthCellRec)) return (false);
+        Coordinates [Vertex++] = NetIF->Center (toCellRec);
+        return (true);
+    }
+};
+
+static bool _RGlibAnNetworkUpStreamAction (DBNetworkIF *netIF,DBObjRecord *cellRec, void *dataPtr)
+{
+    RGlibStreamAction *streamAction = (RGlibStreamAction *) dataPtr;
+
+    return (streamAction->UpStream(cellRec));
+}
+
+static bool _RGlibAnNetworkDownStreamAction (DBNetworkIF *netIF,DBObjRecord *cellRec, void *dataPtr)
+{
+    RGlibStreamAction *streamAction = (RGlibStreamAction *) dataPtr;
+
+    return (streamAction->DownStream (cellRec));
+}
+
+DBInt RGlibNetworkToStreamLines (DBObjData *netData, DBInt minOrder, DBObjData *arcData) {
+    DBInt ret;
+    RGlibStreamAction *streamAction = new RGlibStreamAction (netData, arcData, minOrder);
+
+    ret = streamAction->CreateStreams (minOrder, _RGlibAnNetworkUpStreamAction, _RGlibAnNetworkDownStreamAction);
+
+    delete streamAction;
+    return (ret);
 }
