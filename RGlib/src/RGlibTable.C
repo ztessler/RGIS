@@ -85,3 +85,69 @@ DBInt RGLibTableJoin(DBObjTable *itemTable, DBObjTableField *relateField,
     free(newFields);
     return (itemID < itemTable->ItemNum() ? DBFault : DBSuccess);
 }
+
+DBInt RGlibTableToSQL (DBObjTable *table, const char *dbSchemaName, const char *dbTableName, FILE *outFile) {
+    DBObjectLIST<DBObjTableField> *fields = table->Fields();
+    DBObjRecord *record;
+    DBObjTableField *field;
+
+    if (dbSchemaName == (char *) NULL) {
+        fprintf (outFile, "-- Table: \"%s\"\n", dbTableName);
+        fprintf (outFile, "DROP TABLE IF EXISTS \"%s\";\n", dbTableName);
+        fprintf (outFile, "CREATE TABLE \"%s\"\n", dbTableName);
+    }
+    else {
+        fprintf (outFile, "-- Table: \"%s\".\"%s\"\n", dbSchemaName, dbTableName);
+        fprintf (outFile, "DROP TABLE IF EXISTS \"%s\".\"%s\";\n", dbSchemaName, dbTableName);
+        fprintf (outFile, "CREATE TABLE \"%s\".\"%s\"\n", dbSchemaName, dbTableName);
+    }
+
+    fprintf (outFile,"(\n");
+    fprintf (outFile,"\"ID\" INTEGER NOT NULL");
+    fprintf (outFile,",\n\"RecordName\" CHARACTER VARYING(%d) COLLATE pg_catalog.\"default\"",DBStringLength);
+    for (field = fields->First(); field != (DBObjTableField *) NULL; field = fields->Next()) {
+        if (DBTableFieldIsVisible (field))
+            switch (field->Type()) {
+                default:
+                case DBTableFieldString:
+                    fprintf(outFile, ",\n\"%s\" CHARACTER VARYING(%d) COLLATE pg_catalog.\"default\"", field->Name(),
+                            field->Length());
+                    break;
+                case DBTableFieldInt:
+                    fprintf(outFile, ",\n\"%s\" INTEGER", field->Name());
+                    break;
+                case DBTableFieldFloat:
+                    fprintf(outFile, ",\n\"%s\" NUMERIC (%d,%d)", field->Name(), field->FormatWidth(), field->FormatDecimals());
+                    break;
+                case DBTableFieldDate:
+                    fprintf(outFile, ",\n\%s\" DATE", field->Name());
+                    break;
+            }
+    }
+    fprintf (outFile,"\n) WITH ( OIDS = FALSE )\n");
+    fprintf (outFile,"TABLESPACE pg_default;\n");
+
+    if (dbSchemaName == (char *) NULL) fprintf (outFile,"INSERT INTO  \"%s\" (", dbTableName);
+    else fprintf (outFile,"\nINSERT INTO  \"%s\".\"%s\" (", dbSchemaName, dbTableName);
+    fprintf (outFile,"\"ID\", \"RecordName\"");
+    for (field = fields->First(); field != (DBObjTableField *) NULL; field = fields->Next()) {
+        if (DBTableFieldIsVisible (field)) fprintf (outFile,",\"%s\"",field->Name ());
+    }
+    fprintf (outFile,") VALUES\n");
+    for (record = table->First (); record != (DBObjRecord *) NULL; record = table->Next ()) {
+        if (record->RowID () == 0) fprintf (outFile,    "(%d, '%s'",record->RowID() + 1, record->Name());
+        else                       fprintf (outFile,"),\n(%d, '%s'",record->RowID() + 1, record->Name());
+        for (field = fields->First(); field != (DBObjTableField *) NULL; field = fields->Next()) {
+            if (DBTableFieldIsVisible (field))
+                switch (field->Type()) {
+                    default:
+                    case DBTableFieldString: fprintf(outFile,",'%s'", field->String(record));  break;
+                    case DBTableFieldInt:    fprintf(outFile,",%d", field->Int (record));    break;
+                    case DBTableFieldFloat:  fprintf(outFile,",%f", field->Float (record));  break;
+                    case DBTableFieldDate:   fprintf(outFile,",%s", field->String (record)); break;
+                }
+        }
+    }
+    fprintf (outFile,");");
+    return (CMsucceeded);
+ }

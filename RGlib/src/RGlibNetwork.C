@@ -1599,7 +1599,7 @@ public:
         }
     }
     ~RGlibStreamAction () {
-//      if (Coordinates != (DBCoordinate *) NULL) free (Coordinates);
+        if (Coordinates != (DBCoordinate *) NULL) free (Coordinates);
         delete LineIF;
         delete NetIF;
     }

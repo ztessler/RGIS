@@ -139,13 +139,13 @@ DBInt RGlibNetworkPourElevation (DBObjData *, const char *, const char *);
 
 DBInt RGlibNetworkReservoir (DBObjData *, const char *, const char *, const char *, const char *);
 
-DBInt RGlibNetworkPsmRouting(DBObjData *, DBObjData *, DBObjData *, DBInt, DBFloat, DBObjData *);
-
 DBInt RGlibNetworkDefragment(DBObjData *, DBObjData *, DBFloat, DBFloat, bool);
 
 DBInt RGlibNetworkToStreamLines (DBObjData *, DBInt, DBObjData *);
 
 DBInt RGLibTableJoin(DBObjTable *, DBObjTableField *, DBObjTable *, DBObjTableField *);
+
+DBInt RGlibTableToSQL (DBObjTable *, const char *, const char *, FILE *);
 
 DBInt RGlibRGIS2DataStream(DBObjData *, DBObjData *, char *, FILE *);
 
