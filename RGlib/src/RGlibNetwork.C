@@ -1603,71 +1603,6 @@ public:
         delete LineIF;
         delete NetIF;
     }
-    DBInt CreateStream (DBObjRecord *cellRec, DBNetworkACTION upStreamAction, DBNetworkACTION downStreamAction) {
-        char objName [DBStringLength];
-        DBObjRecord *toCellRec = NetIF->ToCell (cellRec), *lineRec;
-
-        sprintf (objName,"Line: %5d",StreamID + 1);
-        if ((lineRec = LineIF->NewItem (objName)) == (DBObjRecord *) NULL)
-        { CMmsgPrint (CMmsgAppError, "Line Insertion Error in: %s %d",__FILE__,__LINE__); return (CMfailed); }
-        BasinFLD->Int (lineRec,NetIF->CellBasinID (cellRec));
-        OrderFLD->Int (lineRec,NetIF->CellOrder (cellRec));
-
-        Vertex = 0;
-        HeadCellRec = MouthCellRec = cellRec;
-        NetIF->UpStreamSearch (HeadCellRec, upStreamAction, (void *) this);
-        LineIF->FromNode (lineRec,LineIF->Node (NetIF->Center (HeadCellRec),true));
-        LineIF->ToNode   (lineRec,LineIF->Node (NetIF->Center (MouthCellRec) + NetIF->Delta (MouthCellRec),true));
-        MouthXCoordFLD->Float (lineRec, NetIF->Center (MouthCellRec).X);
-        MouthYCoordFLD->Float (lineRec, NetIF->Center (MouthCellRec).Y);
-
-        if (HeadCellRec != MouthCellRec)
-        {
-            if (MaxVertex < Vertex)
-            {
-                Coordinates = (DBCoordinate *) realloc (Coordinates,Vertex * sizeof (DBCoordinate));
-                if (Coordinates == (DBCoordinate *) NULL)
-                { CMmsgPrint (CMmsgSysError, "Memory Allocation Error in: %s %d",__FILE__,__LINE__); return (CMfailed); }
-                MaxVertex = Vertex;
-            }
-            Vertex = 0;
-            NetIF->DownStreamSearch (HeadCellRec, downStreamAction, (void *) this);
-            Coordinates [Vertex++] = NetIF->Center (MouthCellRec);
-            LineIF->Vertexes (lineRec,Coordinates,Vertex);
-        }
-        else LineIF->Vertexes (lineRec,Coordinates,0);
-        LineIF->ItemSymbol (lineRec,LineIF->Symbol (0));
-        StreamID += 1;
-        return (CMsucceeded);
-    }
-    DBInt CreateStreams (DBInt minOrder, DBNetworkACTION upStreamAction, DBNetworkACTION downStreamAction) {
-        DBInt cellID;
-        DBObjRecord *cellRec, *toCellRec, *fromCell, *lineRec;
-
-        if (LineIF->NewSymbol ("Default Symbol") == (DBObjRecord *) NULL)
-        { CMmsgPrint (CMmsgAppError, "Symbol Creation Error in: %s %d",__FILE__,__LINE__); return (CMfailed); }
-
-        StreamID = 0;
-        for (cellID = NetIF->CellNum () - 1;cellID >= 0;--cellID) {
-            cellRec = NetIF->Cell (cellID);
-            CellOrder = NetIF->CellOrder (cellRec);
-            if (NetIF->CellOrder (cellRec) < minOrder) continue;
-            if (((toCellRec = NetIF->ToCell (cellRec)) == (DBObjRecord *) NULL) ||
-                (CellOrder != NetIF->CellOrder (toCellRec))) {
-                if (DBPause ((NetIF->CellNum () - cellRec->RowID ()) * 100 / NetIF->CellNum ())) goto Stop;
-                if (CreateStream(cellRec, upStreamAction, downStreamAction) == CMfailed) return (CMfailed);
-                else {
-                    fromCell = NetIF->ToCell (cellRec) != (DBObjRecord *) NULL ?  NetIF->FromCell(NetIF->ToCell (cellRec)) : (DBObjRecord *) NULL;
-                    if ((fromCell != (DBObjRecord *) NULL) && (StreamIDFLD->Int (fromCell) == 0)) {
-                        if (CreateStream(fromCell, upStreamAction, downStreamAction) == CMfailed) return (CMfailed);
-                    }
-                }
-            }
-        }
-Stop:
-        if (Coordinates != (DBCoordinate *) NULL) free (Coordinates);
-        return (CMsucceeded);
-    }
     bool UpStream (DBObjRecord *cellRec) {
         if ((NetIF->CellOrder(cellRec) != CellOrder) || (StreamIDFLD->Int (cellRec) != 0)) return (false);
 
@@ -1678,9 +1613,69 @@ Stop:
     }
     bool DownStream (DBObjRecord *cellRec) {
         DBObjRecord *toCellRec = NetIF->ToCell (cellRec);
-        if ((toCellRec == (DBObjRecord *) NULL) || (toCellRec == MouthCellRec)) return (false);
+        if (toCellRec == (DBObjRecord *) NULL) return (false);
         Coordinates [Vertex++] = NetIF->Center (toCellRec);
-        return (true);
+        return ((toCellRec != MouthCellRec));
+    }
+    DBInt CreateStream (DBObjRecord *cellRec, DBNetworkACTION upStreamAction, DBNetworkACTION downStreamAction) {
+        char objName [DBStringLength];
+        DBObjRecord *toCellRec = NetIF->ToCell (cellRec), *lineRec;
+
+        sprintf (objName,"Line: %5d",StreamID);
+        if ((lineRec = LineIF->NewItem (objName)) == (DBObjRecord *) NULL)
+        { CMmsgPrint (CMmsgAppError, "Line Insertion Error in: %s %d",__FILE__,__LINE__); return (CMfailed); }
+        BasinFLD->Int (lineRec,NetIF->CellBasinID (cellRec));
+        OrderFLD->Int (lineRec,NetIF->CellOrder (cellRec));
+
+        Vertex = 0;
+        StreamID += 1;
+        MouthCellRec = HeadCellRec = cellRec;
+        NetIF->UpStreamSearch (HeadCellRec, upStreamAction, (void *) this);
+        LineIF->FromNode (lineRec,LineIF->Node (NetIF->Center (HeadCellRec),true));
+        LineIF->ToNode   (lineRec,LineIF->Node (NetIF->Center (MouthCellRec) + NetIF->Delta (MouthCellRec),true));
+        MouthXCoordFLD->Float (lineRec, NetIF->Center (MouthCellRec).X);
+        MouthYCoordFLD->Float (lineRec, NetIF->Center (MouthCellRec).Y);
+        StreamIDFLD->Int (HeadCellRec, StreamID);
+        if (HeadCellRec == MouthCellRec) LineIF->Vertexes (lineRec,Coordinates,0);
+        else {
+            if (MaxVertex < Vertex) {
+                MaxVertex = Vertex;
+                if ((Coordinates = (DBCoordinate *) realloc (Coordinates, MaxVertex * sizeof (DBCoordinate))) == (DBCoordinate *) NULL)
+                { CMmsgPrint (CMmsgSysError, "Memory Allocation Error in: %s %d",__FILE__,__LINE__); return (CMfailed); }
+            }
+            Vertex = 0;
+            NetIF->DownStreamSearch (HeadCellRec, downStreamAction, (void *) this);
+            LineIF->Vertexes (lineRec,Coordinates,Vertex);
+//            StreamIDFLD->Int (MouthCellRec,StreamID);
+        }
+        LineIF->ItemSymbol (lineRec,LineIF->Symbol (0));
+        return (CMsucceeded);
+    }
+    DBInt CreateStreams (DBInt minOrder, DBNetworkACTION upStreamAction, DBNetworkACTION downStreamAction) {
+        DBInt cellID;
+        DBObjRecord *cellRec, *toCellRec, *lineRec;
+
+        if (LineIF->NewSymbol ("Default Symbol") == (DBObjRecord *) NULL)
+        { CMmsgPrint (CMmsgAppError, "Symbol Creation Error in: %s %d",__FILE__,__LINE__); return (CMfailed); }
+
+        StreamID = 0;
+        for (cellID = NetIF->CellNum () - 1;cellID >= 0;--cellID) {
+            if (DBPause ((NetIF->CellNum () - cellID) * 100 / NetIF->CellNum ())) goto Stop;
+            if (StreamIDFLD->Int (cellRec = NetIF->Cell (cellID)) != 0) continue;
+            if ((CellOrder = NetIF->CellOrder (cellRec)) < minOrder)    continue;
+            if (((toCellRec = NetIF->ToCell (cellRec)) == (DBObjRecord *) NULL) ||
+                (CellOrder != NetIF->CellOrder (toCellRec))) {
+                if (CreateStream(cellRec, upStreamAction, downStreamAction) == CMfailed) return (CMfailed);
+                cellRec = toCellRec != (DBObjRecord *) NULL ? NetIF->FromCell (toCellRec) : (DBObjRecord *) NULL;
+                if (cellRec == (DBObjRecord *) NULL) continue;
+                if (StreamIDFLD->Int(cellRec) != 0)  continue;
+                if ((CellOrder = NetIF->CellOrder (cellRec)) < minOrder) continue;
+                if (CreateStream(cellRec, upStreamAction, downStreamAction) == CMfailed) return (CMfailed);
+            }
+        }
+Stop:
+        if (Coordinates != (DBCoordinate *) NULL) free (Coordinates);
+        return (CMsucceeded);
     }
 };
 
