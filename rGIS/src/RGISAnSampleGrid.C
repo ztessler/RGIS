@@ -11,11 +11,7 @@ bfekete@ccny.cuny.edu
 *******************************************************************************/
 
 #include <Xm/Form.h>
-#include <Xm/Label.h>
-#include <Xm/TextF.h>
-#include <Xm/PushB.h>
 #include <rgis.H>
-#include <RG.H>
 
 void RGISAnalyseSingleSampleGridCBK (Widget widget, RGISWorkspace *workspace,XmAnyCallbackStruct *callData)
 

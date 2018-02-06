@@ -12,15 +12,14 @@ bfekete@ccny.cuny.edu
 
 #include <cm.h>
 #include <DB.H>
-#include <DBif.H>
 #include <RG.H>
 
 int main(int argc, char *argv[]) {
     FILE *outFile;
-    DBInt argPos, argNum = argc, ret;
+    DBInt argPos, argNum = argc, ret, mode = RGlibTableCopy;
     char *rgisTableName = (char *) "DBItems";
     char *dbSchemaName  = (char *) NULL;
-    char *dbTableName   = (char *) NULL;
+    char *sqlTableName   = (char *) NULL;
     DBObjData *data = (DBObjData *) NULL;
     DBObjTable *table;
 
@@ -30,16 +29,16 @@ int main(int argc, char *argv[]) {
                 CMmsgPrint(CMmsgUsrError, "Missing network!");
                 return (CMfailed);
             }
-            dbTableName = argv[argPos];
+            sqlTableName = argv[argPos];
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
             continue;
         }
-        if (CMargTest (argv[argPos], "-d", "--dbtable")) {
+        if (CMargTest (argv[argPos], "-q", "--sqltable")) {
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) {
                 CMmsgPrint(CMmsgUsrError, "Missing network!");
                 return (CMfailed);
             }
-            dbTableName = argv[argPos];
+            sqlTableName = argv[argPos];
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
             continue;
         }
@@ -52,11 +51,23 @@ int main(int argc, char *argv[]) {
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
             continue;
         }
+        if (CMargTest(argv[argPos], "-m", "--mode")) {
+            const char *options[] = {"copy", "append", "blank", (char *) NULL};
+            int codes[] = {RGlibTableCopy, RGlibTableAppend, RGlibTableBlank}, code;
+            if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
+            if ((code = CMoptLookup(options, argv[argPos], false)) == CMfailed) {
+                CMmsgPrint(CMmsgWarning, "Ignoring illformed step option [%s]!", argv[argPos]);
+            }
+                else mode = codes[code];
+            if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
+            continue;
+        }
         if (CMargTest (argv[argPos], "-h", "--help")) {
             CMmsgPrint(CMmsgInfo, "%s [options] <rgis file> <sqlfile>", CMfileName(argv[0]));
             CMmsgPrint(CMmsgInfo, "     -a,--rgistable [rgis table]");
             CMmsgPrint(CMmsgInfo, "     -s,--schema    [sql schema]");
-            CMmsgPrint(CMmsgInfo, "     -d,--dbtable   [sql table]");
+            CMmsgPrint(CMmsgInfo, "     -q,--sqltable  [sql table]");
+            CMmsgPrint(CMmsgInfo, "     -m,--mode      [copy|append|blank]");
             CMmsgPrint(CMmsgInfo, "     -h,--help");
             return (DBSuccess);
         }
@@ -76,13 +87,13 @@ int main(int argc, char *argv[]) {
         delete data;
         return (CMfailed);
     }
-    if ((outFile = (argNum > 1) && (strcmp(argv[2], "-") != 0) ? fopen (argv[2],"w") : stdout) == (FILE *) NULL) {
+    if ((outFile = (argNum > 2) && (strcmp(argv[2], "-") != 0) ? fopen (argv[2],"w") : stdout) == (FILE *) NULL) {
         CMmsgPrint(CMmsgUsrError, "Invalid output!");
         delete data;
         return (CMfailed);
     }
 
-    ret = RGlibTableToSQL (table, dbSchemaName, dbTableName, outFile);
+    ret = RGlibTableToSQL (table, dbSchemaName, sqlTableName, mode, outFile);
 
     delete data;
     if (outFile != stdout) {

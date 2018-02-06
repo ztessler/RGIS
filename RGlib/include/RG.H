@@ -10,22 +10,15 @@ bfekete@ccny.cuny.edu
 
 *******************************************************************************/
 
-#define RGlibCycleMonthly 12
-#define RGlibCycleWeekly  52
-#define RGlibCycleDaily  365
-
 #define RGlibAggrMinimum 0
 #define RGlibAggrMaximum 1
 #define RGlibAggrAverage 2
 #define RGlibAggrSum     3
 
-#define RGlibCycleIncr(cycle, tStep) (tStep + 1 < cycle ? tStep + 1 : 0)
-#define RGlibCycleDecr(cycle, tStep) ((tStep > 0 ? tStep : cycle) - 1)
 #define RGlibCycleStep(cycle, tStep) ((tStep) % cycle)
 
 #define RGlibCellID         ((char *) "CellID")
 #define RGlibBasinName      ((char *) "BasinName")
-#define RGlibStreamOrder    ((char *) "Stream Order")
 #define RGlibColor          ((char *) "Color")
 #define RGlibCellNum        ((char *)  "NumberOfCells")
 #define RGlibLength         ((char *) "STNMainstemLength")
@@ -94,8 +87,6 @@ void RGlibGridSampling(DBObjData *, DBObjData *, bool);
 
 DBInt RGlibCycleMean(DBObjData *, DBObjData *, DBInt, DBInt);
 
-DBInt RGlibLayerAggregate(DBObjData *, DBObjData *, DBInt, DBInt, DBInt);
-
 DBInt RGlibTSAggregate(DBObjData *, DBObjData *, DBInt, DBInt);
 
 DBInt RGlibSeasonAggregate(DBObjData *, DBObjData *, DBInt, DBInt, DBInt);
@@ -145,7 +136,9 @@ DBInt RGlibNetworkToStreamLines (DBObjData *, DBInt, DBObjData *);
 
 DBInt RGLibTableJoin(DBObjTable *, DBObjTableField *, DBObjTable *, DBObjTableField *);
 
-DBInt RGlibTableToSQL (DBObjTable *, const char *, const char *, FILE *);
+enum {RGlibTableCopy, RGlibTableAppend, RGlibTableBlank };
+
+DBInt RGlibTableToSQL (DBObjTable *, const char *, const char *, DBInt, FILE *);
 
 DBInt RGlibRGIS2DataStream(DBObjData *, DBObjData *, char *, FILE *);
 
