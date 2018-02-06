@@ -318,25 +318,28 @@ function RGISlookupSubject ()
 		(soil_moisture_change)                        # 86
 			echo "SoilMoistureChange"
 		;;
-		(surface_air_pressure)                        # 87
+		(stream_lines)                                # 87
+			echo "StreamLines"
+		;;
+		(surface_air_pressure)                        # 88
 			echo "AirPressure"
 		;;
-		(upstream_area)                               # 88
+		(upstream_area)                               # 89
 			echo "UpstreamArea"
 		;;
-		(vegetables_crop_fraction)                    # 89
+		(vegetables_crop_fraction)                    # 90
 			echo "CropFraction-Vegetables"
 		;;
-		(wilting_point)                               # 90
+		(wilting_point)                               # 91
 			echo "Soil-WiltingPoint"
 		;;
-		(wind_speed)                                  # 91
+		(wind_speed)                                  # 92
 			echo "WindSpeed"
 		;;
-		(u_wind_speed)                                # 92
+		(u_wind_speed)                                # 93
 			echo "WindSpeed-U10m"
 		;;
-		(v_wind_speed)                                # 93
+		(v_wind_speed)                                # 94
 			echo "WindSpeed-V10m"
 		;;
 		(*)
@@ -611,25 +614,28 @@ function _RGISlookupFullName ()
 		(soil_moisture_change)                        # 86
 			echo "Soil Moisture Change"
 		;;
-		(surface_air_pressure)                        # 87
+		(stream_lines)                                # 87
+			echo "Stream Lines"
+		;;
+		(surface_air_pressure)                        # 88
 			echo "Air Pressure"
 		;;
-		(upstream_area)                               # 88
+		(upstream_area)                               # 89
 			echo "Upstream Area"
 		;;
-		(vegetables_crop_fraction)                    # 89
+		(vegetables_crop_fraction)                    # 90
 			echo "Vegetables Crop Fraction"
 		;;
-		(wilting_point)                               # 90
+		(wilting_point)                               # 91
 			echo "Wilting Point"
 		;;
-		(wind_speed)                                  # 91
+		(wind_speed)                                  # 92
 			echo "Wind Speed"
 		;;
-		(u_wind_speed)                                # 92
+		(u_wind_speed)                                # 93
 			echo "Wind Speed U-direction"
 		;;
-		(v_wind_speed)                                # 93
+		(v_wind_speed)                                # 94
 			echo "Wind Speed V-direction"
 		;;
 		(*)
@@ -895,22 +901,25 @@ function RGISlookupShadeset ()
 		(surface_air_pressure)                        # 87
 			echo "grey"
 		;;
-		(upstream_area)                               # 88
+		(stream_lines)                                # 88
 			echo "grey"
 		;;
-		(vegetables_crop_fraction)                    # 89
+		(upstream_area)                               # 89
 			echo "grey"
 		;;
-		(wilting_point)                               # 90
+		(vegetables_crop_fraction)                    # 90
 			echo "grey"
 		;;
-		(wind_speed)                                  # 91
+		(wilting_point)                               # 91
 			echo "grey"
 		;;
-		(u_wind_speed)                                # 92
+		(wind_speed)                                  # 92
 			echo "grey"
 		;;
-		(v_wind_speed)                                # 93
+		(u_wind_speed)                                # 93
+			echo "grey"
+		;;
+		(v_wind_speed)                                # 94
 			echo "grey"
 		;;
 		(*)
@@ -1176,22 +1185,25 @@ function RGISlookupAggrMethod ()
 		(surface_air_pressure)                        # 87
 			echo "avg"
 		;;
-		(upstream_area)                               # 88
+		(stream_lines)                                # 88
 			echo "avg"
 		;;
-		(vegetables_crop_fraction)                    # 89
+		(upstream_area)                               # 89
 			echo "avg"
 		;;
-		(wilting_point)                               # 90
+		(vegetables_crop_fraction)                    # 90
 			echo "avg"
 		;;
-		(wind_speed)                                  # 91
+		(wilting_point)                               # 91
 			echo "avg"
 		;;
-		(u_wind_speed)                                # 92
+		(wind_speed)                                  # 92
 			echo "avg"
 		;;
-		(v_wind_speed)                                # 93
+		(u_wind_speed)                                # 93
+			echo "avg"
+		;;
+		(v_wind_speed)                                # 94
 			echo "avg"
 		;;
 		(*)
@@ -1448,20 +1460,11 @@ function RGISfileExtension ()
 		(confluence)
 			local extension="gdbp"
 		;;
-		(continents)
+		(continents|countries|states|counties|ocean_basins)
 			local extension="gdbd"
 		;;
-		(countries)
-			local extension="gdbd"
-		;;
-		(states)
-			local extension="gdbd"
-		;;
-		(counties)
-			local extension="gdbd"
-		;;
-		(ocean_basins)
-			local extension="gdbd"
+		(stream_lines)
+			local extension="gdbl"
 		;;
 		(*)
 			local extension="gdbc"
