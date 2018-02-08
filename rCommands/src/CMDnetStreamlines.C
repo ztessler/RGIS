@@ -4,7 +4,7 @@ GHAAS RiverGIS Utilities V1.0
 Global Hydrologic Archive and Analysis System
 Copyright 1994-2018, UNH - CCNY/CUNY
 
-CMDnetStreakLines.C
+CMDnetStreamlines.C
 
 bfekete@ccny.cuny.edu
 
@@ -117,7 +117,7 @@ int main(int argc, char *argv[]) {
     arcData->Document (DBDocSubject,  subject);
     arcData->Document (DBDocVersion,  version);
 
-    if ((ret = RGlibNetworkToStreamLines (netData, minOrder, arcData)) == DBSuccess)
+    if ((ret = RGlibNetworkToStreamlines (netData, minOrder, arcData)) == DBSuccess)
         ret = (argNum > 2) && (strcmp(argv[2], "-") != 0) ? arcData->Write(argv[2]) : arcData->Write(stdout);
 
     delete netData;

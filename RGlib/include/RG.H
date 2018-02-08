@@ -132,7 +132,7 @@ DBInt RGlibNetworkReservoir (DBObjData *, const char *, const char *, const char
 
 DBInt RGlibNetworkDefragment(DBObjData *, DBObjData *, DBFloat, DBFloat, bool);
 
-DBInt RGlibNetworkToStreamLines (DBObjData *, DBInt, DBObjData *);
+DBInt RGlibNetworkToStreamlines (DBObjData *, DBInt, DBObjData *);
 
 DBInt RGLibTableJoin(DBObjTable *, DBObjTableField *, DBObjTable *, DBObjTableField *);
 

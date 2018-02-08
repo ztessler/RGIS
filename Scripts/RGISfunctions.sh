@@ -318,8 +318,8 @@ function RGISlookupSubject ()
 		(soil_moisture_change)                        # 86
 			echo "SoilMoistureChange"
 		;;
-		(stream_line)                                 # 87
-			echo "StreamLine"
+		(streamline)                                 # 87
+			echo "Streamline"
 		;;
 		(surface_air_pressure)                        # 88
 			echo "AirPressure"
@@ -614,8 +614,8 @@ function _RGISlookupFullName ()
 		(soil_moisture_change)                        # 86
 			echo "Soil Moisture Change"
 		;;
-		(stream_line)                                 # 87
-			echo "Stream Line"
+		(streamline)                                 # 87
+			echo "Streamline"
 		;;
 		(surface_air_pressure)                        # 88
 			echo "Air Pressure"
@@ -901,7 +901,7 @@ function RGISlookupShadeset ()
 		(surface_air_pressure)                        # 87
 			echo "grey"
 		;;
-		(stream_line)                                 # 88
+		(streamline)                                 # 88
 			echo "grey"
 		;;
 		(upstream_area)                               # 89
@@ -1185,7 +1185,7 @@ function RGISlookupAggrMethod ()
 		(surface_air_pressure)                        # 87
 			echo "avg"
 		;;
-		(stream_line)                                 # 88
+		(streamline)                                 # 88
 			echo "avg"
 		;;
 		(upstream_area)                               # 89
@@ -1463,7 +1463,7 @@ function RGISfileExtension ()
 		(continents|countries|states|counties|ocean_basins)
 			local extension="gdbd"
 		;;
-		(stream_line)
+		(streamline)
 			local extension="gdbl"
 		;;
 		(*)

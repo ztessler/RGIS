@@ -33,7 +33,7 @@ void RGISAnNetworkStreamLinesCBK (Widget widget,RGISWorkspace *workspace,XmAnyCa
 	if (UIDataHeaderForm (arcData))
 		{
         UIPauseDialogOpen ((char *) "Creating Stream Lines");
-        if (RGlibNetworkToStreamLines (netData, minOrder, arcData) == CMsucceeded)
+        if (RGlibNetworkToStreamlines (netData, minOrder, arcData) == CMsucceeded)
             workspace->CurrentData (arcData);
         else delete arcData;
     	UIPauseDialogClose ();

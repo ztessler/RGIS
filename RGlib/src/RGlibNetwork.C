@@ -1700,7 +1700,7 @@ static bool _RGlibAnNetworkDownStreamAction (DBNetworkIF *netIF,DBObjRecord *cel
     return (streamAction->DownStream (cellRec));
 }
 
-DBInt RGlibNetworkToStreamLines (DBObjData *netData, DBInt minOrder, DBObjData *arcData) {
+DBInt RGlibNetworkToStreamlines (DBObjData *netData, DBInt minOrder, DBObjData *arcData) {
     DBInt ret;
     RGlibStreamAction *streamAction = new RGlibStreamAction (netData, arcData, minOrder);
 
