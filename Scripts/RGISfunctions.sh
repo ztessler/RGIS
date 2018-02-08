@@ -318,28 +318,31 @@ function RGISlookupSubject ()
 		(soil_moisture_change)                        # 86
 			echo "SoilMoistureChange"
 		;;
-		(streamline)                                 # 87
+		(streamline)                                  # 87
 			echo "Streamline"
 		;;
-		(surface_air_pressure)                        # 88
+		(subbasin)                                    # 88
+			echo "Subbasin"
+		;;
+		(surface_air_pressure)                        # 89
 			echo "AirPressure"
 		;;
-		(upstream_area)                               # 89
+		(upstream_area)                               # 90
 			echo "UpstreamArea"
 		;;
-		(vegetables_crop_fraction)                    # 90
+		(vegetables_crop_fraction)                    # 91
 			echo "CropFraction-Vegetables"
 		;;
-		(wilting_point)                               # 91
+		(wilting_point)                               # 92
 			echo "Soil-WiltingPoint"
 		;;
-		(wind_speed)                                  # 92
+		(wind_speed)                                  # 93
 			echo "WindSpeed"
 		;;
-		(u_wind_speed)                                # 93
+		(u_wind_speed)                                # 94
 			echo "WindSpeed-U10m"
 		;;
-		(v_wind_speed)                                # 94
+		(v_wind_speed)                                # 95
 			echo "WindSpeed-V10m"
 		;;
 		(*)
@@ -614,28 +617,31 @@ function _RGISlookupFullName ()
 		(soil_moisture_change)                        # 86
 			echo "Soil Moisture Change"
 		;;
-		(streamline)                                 # 87
+		(streamline)                                  # 87
 			echo "Streamline"
 		;;
-		(surface_air_pressure)                        # 88
+		(subbasin)                                    # 88
+			echo "Subbasin"
+ 		;;
+		(surface_air_pressure)                        # 89
 			echo "Air Pressure"
 		;;
-		(upstream_area)                               # 89
+		(upstream_area)                               # 90
 			echo "Upstream Area"
 		;;
-		(vegetables_crop_fraction)                    # 90
+		(vegetables_crop_fraction)                    # 91
 			echo "Vegetables Crop Fraction"
 		;;
-		(wilting_point)                               # 91
+		(wilting_point)                               # 92
 			echo "Wilting Point"
 		;;
-		(wind_speed)                                  # 92
+		(wind_speed)                                  # 93
 			echo "Wind Speed"
 		;;
-		(u_wind_speed)                                # 93
+		(u_wind_speed)                                # 94
 			echo "Wind Speed U-direction"
 		;;
-		(v_wind_speed)                                # 94
+		(v_wind_speed)                                # 95
 			echo "Wind Speed V-direction"
 		;;
 		(*)
@@ -901,25 +907,28 @@ function RGISlookupShadeset ()
 		(surface_air_pressure)                        # 87
 			echo "grey"
 		;;
-		(streamline)                                 # 88
+		(streamline)                                  # 88
 			echo "grey"
 		;;
-		(upstream_area)                               # 89
+		(subbasin)                                    # 89
 			echo "grey"
 		;;
-		(vegetables_crop_fraction)                    # 90
+		(upstream_area)                               # 90
 			echo "grey"
 		;;
-		(wilting_point)                               # 91
+		(vegetables_crop_fraction)                    # 91
 			echo "grey"
 		;;
-		(wind_speed)                                  # 92
+		(wilting_point)                               # 92
 			echo "grey"
 		;;
-		(u_wind_speed)                                # 93
+		(wind_speed)                                  # 93
 			echo "grey"
 		;;
-		(v_wind_speed)                                # 94
+		(u_wind_speed)                                # 94
+			echo "grey"
+		;;
+		(v_wind_speed)                                # 95
 			echo "grey"
 		;;
 		(*)
@@ -1185,25 +1194,28 @@ function RGISlookupAggrMethod ()
 		(surface_air_pressure)                        # 87
 			echo "avg"
 		;;
-		(streamline)                                 # 88
+		(streamline)                                  # 88
 			echo "avg"
 		;;
-		(upstream_area)                               # 89
+		(subbasin)                                    # 89
 			echo "avg"
 		;;
-		(vegetables_crop_fraction)                    # 90
+		(upstream_area)                               # 90
 			echo "avg"
 		;;
-		(wilting_point)                               # 91
+		(vegetables_crop_fraction)                    # 91
 			echo "avg"
 		;;
-		(wind_speed)                                  # 92
+		(wilting_point)                               # 92
 			echo "avg"
 		;;
-		(u_wind_speed)                                # 93
+		(wind_speed)                                  # 93
 			echo "avg"
 		;;
-		(v_wind_speed)                                # 94
+		(u_wind_speed)                                # 94
+			echo "avg"
+		;;
+		(v_wind_speed)                                # 95
 			echo "avg"
 		;;
 		(*)
@@ -1460,7 +1472,7 @@ function RGISfileExtension ()
 		(confluence)
 			local extension="gdbp"
 		;;
-		(continents|countries|states|counties|ocean_basins)
+		(continents|countries|states|counties|ocean_basins|subbasin)
 			local extension="gdbd"
 		;;
 		(streamline)

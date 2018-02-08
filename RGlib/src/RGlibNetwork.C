@@ -1594,8 +1594,8 @@ public:
         LineTable->AddField (MouthXCoordFLD = new DBObjTableField (RGISNetStreamMouthX, DBTableFieldFloat,"%9.2f",sizeof (DBFloat4)));
         LineTable->AddField (MouthYCoordFLD = new DBObjTableField (RGISNetStreamMouthY, DBTableFieldFloat,"%9.2f",sizeof (DBFloat4)));
         LineTable->AddField (HeadXCoordFLD  = new DBObjTableField (RGISNetStreamHeadX,  DBTableFieldFloat,"%9.2f",sizeof (DBFloat4)));
-        LineTable->AddField (HeadYCoordFLD  = new DBObjTableField (RGISNetStreamHeadY, DBTableFieldFloat,"%9.2f",sizeof (DBFloat4)));
-        CellTable->AddField (StreamIDFLD = new DBObjTableField ("StreamID",DBTableFieldInt,"%8d",sizeof (DBInt)));
+        LineTable->AddField (HeadYCoordFLD  = new DBObjTableField (RGISNetStreamHeadY,  DBTableFieldFloat,"%9.2f",sizeof (DBFloat4)));
+        CellTable->AddField (StreamIDFLD    = new DBObjTableField ("StreamID",DBTableFieldInt,"%8d",sizeof (DBInt)));
 
         for (cellID = NetIF->CellNum () - 1;cellID >= 0;--cellID) {
             cellRec = NetIF->Cell (cellID);
