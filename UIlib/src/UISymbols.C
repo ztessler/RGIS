@@ -397,14 +397,14 @@ int UISymbolEdit(DBObjTable *symbols, int symbolType) {
 
         symMenu = XmCreatePulldownMenu(rowCol, (char *) "UISymLineMenuPane", NULL, 0);
         depth = DefaultDepth (XtDisplay(UITopLevel()), DefaultScreen(XtDisplay(UITopLevel())));
-        for (symNum = 0; symNum < 12; symNum++) {
+        for (symNum = 0; symNum < 15; symNum++) {
             labelPixmap = XCreatePixmap(XtDisplay(UITopLevel()), XtWindow(UITopLevel()), 96, 24, depth);
             xgcv.foreground = background;
             xgcv.fill_style = FillSolid;
             XChangeGC(XtDisplay(UITopLevel()), gc, GCForeground | GCFillStyle, &xgcv);
             XFillRectangle(XtDisplay(UITopLevel()), labelPixmap, gc, 0, 0, 96, 24);
-            xgcv.line_width = symNum & 0x03;
-            switch (symNum >> 0x02) {
+            xgcv.line_width = symNum & 0x05;
+            switch (symNum >> 0x03) {
                 case 0:
                     xgcv.line_style = LineSolid;
                     break;
