@@ -397,7 +397,7 @@ int UISymbolEdit(DBObjTable *symbols, int symbolType) {
 
         symMenu = XmCreatePulldownMenu(rowCol, (char *) "UISymLineMenuPane", NULL, 0);
         depth = DefaultDepth (XtDisplay(UITopLevel()), DefaultScreen(XtDisplay(UITopLevel())));
-        for (symNum = 0; symNum < 15; symNum++) {
+        for (symNum = 0; symNum < 21; symNum++) {
             labelPixmap = XCreatePixmap(XtDisplay(UITopLevel()), XtWindow(UITopLevel()), 96, 24, depth);
             xgcv.foreground = background;
             xgcv.fill_style = FillSolid;
