@@ -142,7 +142,7 @@ void UI2DView::DrawLineObject(DBVLineIF *lineIF, DBObjRecord *record, GC gc) {
     XGCValues xgcv;
 
     if (ViewEXT.InRegion(lineIF->Extent(record)) == false) return;
-    switch (lineIF->ItemStyle(record) >> 0x02) {
+    switch (lineIF->ItemStyle(record) >> 0x03) {
         case 0:
             lStyle = LineSolid;
             break;
@@ -153,7 +153,7 @@ void UI2DView::DrawLineObject(DBVLineIF *lineIF, DBObjRecord *record, GC gc) {
             lStyle = LineDoubleDash;
             break;
     }
-    lWidth = lineIF->ItemStyle(record) & 0x03;
+    lWidth = lineIF->ItemStyle(record) & 0x07;
     if ((record->Flags() & DBObjectFlagSelected) == DBObjectFlagSelected) {
         xgcv.foreground = UIColor(UIColorStandard, lineIF->ItemBackground(record));
         xgcv.background = UIColor(UIColorStandard, lineIF->ItemForeground(record));
