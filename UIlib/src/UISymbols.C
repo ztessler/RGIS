@@ -403,7 +403,7 @@ int UISymbolEdit(DBObjTable *symbols, int symbolType) {
             xgcv.fill_style = FillSolid;
             XChangeGC(XtDisplay(UITopLevel()), gc, GCForeground | GCFillStyle, &xgcv);
             XFillRectangle(XtDisplay(UITopLevel()), labelPixmap, gc, 0, 0, 96, 24);
-            xgcv.line_width = symNum & 0x05;
+            xgcv.line_width = symNum & 0x07;
             switch (symNum >> 0x03) {
                 case 0:
                     xgcv.line_style = LineSolid;
