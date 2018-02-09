@@ -4,7 +4,7 @@ GHAAS RiverGIS Utilities V1.0
 Global Hydrologic Archive and Analysis System
 Copyright 1994-2018, UNH - CCNY/CUNY
 
-CMDrgis2asciigrid.C
+CMDrgis2ascii.C
 
 bfekete@ccny.cuny.edu
 
@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
             continue;
         }
         if (CMargTest (argv[argPos], "-h", "--help")) {
-            CMmsgPrint(CMmsgInfo, "%s [options] <rgis file> <ascii grid file>", CMfileName(argv[0]));
+            CMmsgPrint(CMmsgInfo, "%s [options] <rgis file> <ascii file>", CMfileName(argv[0]));
             CMmsgPrint(CMmsgInfo, "     -a,--all");
             CMmsgPrint(CMmsgInfo, "     -l,--layer [layername]");
             CMmsgPrint(CMmsgInfo, "     -i,--list");
