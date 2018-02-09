@@ -18,7 +18,7 @@ bfekete@ccny.cuny.edu
 DBInt DBNetworkExportASCIIGridDir (DBObjData *,FILE *);
 
 int main(int argc, char *argv[]) {
-    FILE *out;
+    FILE *outFile;
     int argPos, argNum = argc, ret, verbose = false;
     char *layerName = (char *) NULL;
     int doList = false, doNum = false, doAll = true;
@@ -91,12 +91,12 @@ int main(int argc, char *argv[]) {
 
     data = new DBObjData();
     ret = (argNum > 1) && (strcmp(argv[1], "-") != 0) ? data->Read(argv[1]) : data->Read(stdin);
-    if ((ret == DBFault) || ((data->Type () != DBTypeGridContinuous && data->Type () != DBTypeGridDiscrete && data->Type() != DBTypeNetwork))) {
+    if ((ret == DBFault) || (((data->Type () != DBTypeGridContinuous) && (data->Type () != DBTypeGridDiscrete) && (data->Type() != DBTypeNetwork) && (data->Type() != DBTypeVectorPoint) && (data->Type() != DBTypeVectorLine)))) {
         delete data;
         return (CMfailed);
     }
 
-    if ((out = (argNum > 2) && (strcmp(argv[2], "-") != 0) ? fopen(argv[2], "w") : stdout) == (FILE *) NULL) {
+    if ((outFile = (argNum > 2) && (strcmp(argv[2], "-") != 0) ? fopen(argv[2], "w") : stdout) == (FILE *) NULL) {
         CMmsgPrint(CMmsgUsrError, "Output file opening error!");
         return (CMfailed);
     }
@@ -105,18 +105,18 @@ int main(int argc, char *argv[]) {
         case DBTypeGridContinuous:
         case DBTypeGridDiscrete:
             gridIF = new DBGridIF(data);
-            if (doNum)  { fprintf(out, "%d", gridIF->LayerNum()); }
+            if (doNum)  { fprintf(outFile, "%d", gridIF->LayerNum()); }
             if (doList) {
                 for (layerID = 0; layerID < gridIF->LayerNum(); ++layerID) {
                     layerRec = gridIF->Layer(layerID);
-                    fprintf(out, "%s", layerRec->Name());
+                    fprintf(outFile, "%s", layerRec->Name());
                 }
                 ret = CMsucceeded;
             }
             if (doAll) {
                 for (layerID = 0; layerID < gridIF->LayerNum(); ++layerID) {
                     layerRec = gridIF->Layer(layerID);
-                    if ((ret = DBExportARCGridLayer(data, layerRec, out)) == CMfailed) break;
+                    if ((ret = DBExportARCGridLayer(data, layerRec, outFile)) == CMfailed) break;
                 }
             }
             else if (layerName != (char *) NULL) {
@@ -124,16 +124,17 @@ int main(int argc, char *argv[]) {
                     CMmsgPrint(CMmsgUsrError, "Wrong layername");
                     ret = CMfailed;
                 }
-                else ret = DBExportARCGridLayer(data, layerRec, out);
+                else ret = DBExportARCGridLayer(data, layerRec, outFile);
             }
             delete gridIF;
             break;
-        case DBTypeNetwork:
-            ret = DBNetworkExportASCIIGridDir (data, out);
-            break;
+        case DBTypeVectorPoint: ret = DBExportARCGenPoint (data,outFile); break;
+        case DBTypeVectorLine:  ret = DBExportARCGenLine  (data,outFile); break;
+        case DBTypeVectorPolygon: break;
+        case DBTypeNetwork: ret = DBNetworkExportASCIIGridDir (data, outFile); break;
     }
 
-    if (argNum > 2) fclose(out);
+    if (argNum > 2) fclose(outFile);
 
     delete data;
     if (verbose) RGlibPauseClose();

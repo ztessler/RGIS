@@ -2159,7 +2159,11 @@ DBInt DBExportASCIITable(DBObjTable *, FILE *);
 
 DBInt DBExportARCGenPoint(DBObjData *, char *);
 
+DBInt DBExportARCGenPoint(DBObjData *, FILE *);
+
 DBInt DBExportARCGenLine(DBObjData *, char *);
+
+DBInt DBExportARCGenLine(DBObjData *, FILE *);
 
 DBInt DBExportARCTableData(DBObjData *, char *, char *);
 

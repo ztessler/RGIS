@@ -14,17 +14,25 @@ bfekete@ccny.cuny.edu
 #include <DBif.H>
 
 int DBExportARCGenLine(DBObjData *data, char *fileName) {
+    DBInt ret;
     FILE *file;
+
+    if ((file = fopen(fileName, "w")) == (FILE *) NULL) {
+        CMmsgPrint(CMmsgSysError, "ARC Generate File Opening Error in: %s %d", __FILE__, __LINE__);
+        return (DBFault);
+    }
+    ret = DBExportARCGenLine (data, file);
+    fclose (file);
+    return (ret);
+}
+
+int DBExportARCGenLine (DBObjData *data, FILE *file) {
     DBInt vertex, vertexNum;
     DBCoordinate *coords, nodeCoord;
     DBObjTable *items = data->Table(DBrNItems);
     DBObjRecord *lineRec;
     DBVLineIF *lineIF = new DBVLineIF (data);
 
-    if ((file = fopen(fileName, "w")) == (FILE *) NULL) {
-        CMmsgPrint(CMmsgSysError, "ARC Generate File Opening Error in: %s %d", __FILE__, __LINE__);
-        return (DBFault);
-    }
     for (lineRec = items->First(); lineRec != (DBObjRecord *) NULL; lineRec = items->Next()) {
         fprintf (file,"%d\n",lineRec->RowID ());
         nodeCoord = lineIF->FromCoord(lineRec);
@@ -40,6 +48,5 @@ int DBExportARCGenLine(DBObjData *data, char *fileName) {
         fprintf(file, "END\n");
     }
     fprintf(file, "END\n");
-    fclose(file);
     return (DBSuccess);
 }
