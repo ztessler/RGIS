@@ -1556,8 +1556,10 @@ DBInt RGlibNetworkReservoir (DBObjData *netData, const char *elevStr, const char
 #define RGISNetStreamOrder	"StreamOrder"
 #define RGISNetStreamMouthX "MouthXCoord"
 #define RGISNetStreamMouthY "MouthYCoord"
-#define RGISNetStreamHeadX  "HeadXCoord"
-#define RGISNetStreamHeadY  "HeadYCoord"
+#define RGISNetStreamFromX  "FromXCoord"
+#define RGISNetStreamFromY  "FromYCoord"
+#define RGISNetStreamToX    "ToXCoord"
+#define RGISNetStreamToY    "ToYCoord"
 
 class RGlibStreamAction {
 private:
@@ -1570,7 +1572,7 @@ private:
     DBCoordinate    *Coordinates;
     DBObjTable      *CellTable;
     DBObjTable      *LineTable;
-    DBObjTableField *BasinFLD, *OrderFLD, *MouthXCoordFLD, *MouthYCoordFLD, *HeadXCoordFLD, *HeadYCoordFLD;
+    DBObjTableField *BasinFLD, *OrderFLD, *MouthXCoordFLD, *MouthYCoordFLD, *FromXCoordFLD, *FromYCoordFLD, *ToXCoordFLD, *ToYCoordFLD;
     DBNetworkIF     *NetIF;
     DBVLineIF       *LineIF;
 public:
@@ -1593,8 +1595,10 @@ public:
         LineTable->AddField (OrderFLD       = new DBObjTableField (RGISNetStreamOrder,  DBTableFieldInt,  "%4d",  sizeof (DBInt)));
         LineTable->AddField (MouthXCoordFLD = new DBObjTableField (RGISNetStreamMouthX, DBTableFieldFloat,"%9.2f",sizeof (DBFloat4)));
         LineTable->AddField (MouthYCoordFLD = new DBObjTableField (RGISNetStreamMouthY, DBTableFieldFloat,"%9.2f",sizeof (DBFloat4)));
-        LineTable->AddField (HeadXCoordFLD  = new DBObjTableField (RGISNetStreamHeadX,  DBTableFieldFloat,"%9.2f",sizeof (DBFloat4)));
-        LineTable->AddField (HeadYCoordFLD  = new DBObjTableField (RGISNetStreamHeadY,  DBTableFieldFloat,"%9.2f",sizeof (DBFloat4)));
+        LineTable->AddField (FromXCoordFLD  = new DBObjTableField (RGISNetStreamFromX,  DBTableFieldFloat,"%9.2f",sizeof (DBFloat4)));
+        LineTable->AddField (FromYCoordFLD  = new DBObjTableField (RGISNetStreamFromY,  DBTableFieldFloat,"%9.2f",sizeof (DBFloat4)));
+        LineTable->AddField (ToXCoordFLD    = new DBObjTableField (RGISNetStreamToX,    DBTableFieldFloat,"%9.2f",sizeof (DBFloat4)));
+        LineTable->AddField (ToYCoordFLD    = new DBObjTableField (RGISNetStreamToY,    DBTableFieldFloat,"%9.2f",sizeof (DBFloat4)));
         CellTable->AddField (StreamIDFLD    = new DBObjTableField ("StreamID",DBTableFieldInt,"%8d",sizeof (DBInt)));
 
         for (cellID = NetIF->CellNum () - 1;cellID >= 0;--cellID) {
@@ -1640,8 +1644,10 @@ public:
         LineIF->ToNode   (lineRec,LineIF->Node (NetIF->Center (MouthCellRec) + NetIF->Delta (MouthCellRec),true));
         MouthXCoordFLD->Float (lineRec, NetIF->Center (MouthCellRec).X);
         MouthYCoordFLD->Float (lineRec, NetIF->Center (MouthCellRec).Y);
-        HeadXCoordFLD->Float  (lineRec, NetIF->Center (HeadCellRec).X);
-        HeadYCoordFLD->Float  (lineRec, NetIF->Center (HeadCellRec).Y);
+        FromXCoordFLD->Float  (lineRec, NetIF->Center (HeadCellRec).X);
+        FromYCoordFLD->Float  (lineRec, NetIF->Center (HeadCellRec).Y);
+        ToXCoordFLD->Float (lineRec, NetIF->Center (MouthCellRec).X + NetIF->Delta (MouthCellRec).X);
+        ToYCoordFLD->Float (lineRec, NetIF->Center (MouthCellRec).Y + NetIF->Delta (MouthCellRec).Y);
         if (HeadCellRec == MouthCellRec) LineIF->Vertexes (lineRec,Coordinates,0);
         else {
             if (MaxVertex < Vertex) {
