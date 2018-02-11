@@ -38,4 +38,8 @@ if ! [ -e  ${install_dir}/ghaas/bin/rgis ]
 then
     ln -s ${install_dir}/ghaas/Scripts/rgis.sh ${install_dir}/ghaas/bin/rgis
 fi
+if ! [ -e  ${install_dir}/ghaas/bin/rgis2PostGIS ]
+then
+    ln -s ${install_dir}/ghaas/Scripts/rgis2PostGIS.sh ${install_dir}/ghaas/bin/rgis2PostGIS
+fi
 rm -rf "${build_dir}"
