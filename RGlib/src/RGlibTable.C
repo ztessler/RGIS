@@ -120,7 +120,7 @@ DBInt RGlibTableToSQL (DBObjTable *table, const char *dbSchemaName, const char *
                         fprintf(outFile, "\"%s\" NUMERIC (%d,%d),\n", field->Name(), field->FormatWidth(), field->FormatDecimals());
                         break;
                     case DBTableFieldDate:
-                        fprintf(outFile, "\"%s\" DATE,\n", field->Name());
+                        fprintf(outFile, "\"%s\" CHARACTER VARYING(10) COLLATE pg_catalog.\"default\",\n", field->Name());
                         break;
                 }
         }
