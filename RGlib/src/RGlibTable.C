@@ -103,7 +103,7 @@ DBInt RGlibTableToSQL (DBObjTable *table, const char *dbSchemaName, const char *
         }
 
         fprintf (outFile,"(\n");
-        fprintf (outFile,"\"ID\" INTEGER NOT NULL,\n");
+        fprintf (outFile,"\"ID\" SERIAL,\n");
         fprintf (outFile,"\"RecordName\" CHARACTER VARYING(%d) COLLATE pg_catalog.\"default\",\n",DBStringLength);
         for (field = fields->First(); field != (DBObjTableField *) NULL; field = fields->Next()) {
             if (DBTableFieldIsVisible (field))
@@ -132,22 +132,22 @@ DBInt RGlibTableToSQL (DBObjTable *table, const char *dbSchemaName, const char *
     if ((RGlibTableCopy == mode) || (RGlibTableAppend == mode)) {
         if (dbSchemaName == (char *) NULL) fprintf (outFile,"INSERT INTO  \"%s\" (", dbTableName);
         else fprintf (outFile,"\nINSERT INTO  \"%s\".\"%s\" (", dbSchemaName, dbTableName);
-        fprintf (outFile,"\"ID\", \"RecordName\"");
+        fprintf (outFile,"\"RecordName\"");
         for (field = fields->First(); field != (DBObjTableField *) NULL; field = fields->Next()) {
             if (DBTableFieldIsVisible (field)) fprintf (outFile,",\"%s\"",field->Name ());
         }
         fprintf (outFile,") VALUES\n");
         for (record = table->First (); record != (DBObjRecord *) NULL; record = table->Next ()) {
-            if (record->RowID () == 0) fprintf (outFile,    "(%d, '%s'",record->RowID() + 1, record->Name());
-            else                       fprintf (outFile,"),\n(%d, '%s'",record->RowID() + 1, record->Name());
+            if (record->RowID () == 0) fprintf (outFile,    "('%s'", record->Name());
+            else                       fprintf (outFile,"),\n('%s'", record->Name());
             for (field = fields->First(); field != (DBObjTableField *) NULL; field = fields->Next()) {
                 if (DBTableFieldIsVisible (field))
                     switch (field->Type()) {
                         default:
                         case DBTableFieldString: fprintf(outFile,",$$%s$$", field->String(record));  break;
-                        case DBTableFieldInt:    fprintf(outFile,",%d", field->Int (record));    break;
-                        case DBTableFieldFloat:  fprintf(outFile,",%f", field->Float (record));  break;
-                        case DBTableFieldDate:   fprintf(outFile,",%s", field->String (record)); break;
+                        case DBTableFieldInt:    fprintf(outFile,",%d", field->Int (record));        break;
+                        case DBTableFieldFloat:  fprintf(outFile,",%f", field->Float (record));      break;
+                        case DBTableFieldDate:   fprintf(outFile,",%s", field->String (record));     break;
                     }
             }
         }
