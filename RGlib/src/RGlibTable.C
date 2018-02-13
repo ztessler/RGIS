@@ -103,28 +103,29 @@ DBInt RGlibTableToSQL (DBObjTable *table, const char *dbSchemaName, const char *
         }
 
         fprintf (outFile,"(\n");
-        fprintf (outFile,"\"ID\" INTEGER NOT NULL");
-        fprintf (outFile,",\n\"RecordName\" CHARACTER VARYING(%d) COLLATE pg_catalog.\"default\"",DBStringLength);
+        fprintf (outFile,"\"ID\" INTEGER NOT NULL,\n");
+        fprintf (outFile,"\"RecordName\" CHARACTER VARYING(%d) COLLATE pg_catalog.\"default\",\n",DBStringLength);
         for (field = fields->First(); field != (DBObjTableField *) NULL; field = fields->Next()) {
             if (DBTableFieldIsVisible (field))
                 switch (field->Type()) {
                     default:
                     case DBTableFieldString:
-                        fprintf(outFile, ",\n\"%s\" CHARACTER VARYING(%d) COLLATE pg_catalog.\"default\"", field->Name(),
+                        fprintf(outFile, "\"%s\" CHARACTER VARYING(%d) COLLATE pg_catalog.\"default\",\n", field->Name(),
                                 field->Length());
                         break;
                     case DBTableFieldInt:
-                        fprintf(outFile, ",\n\"%s\" INTEGER", field->Name());
+                        fprintf(outFile, "\"%s\" INTEGER,\n", field->Name());
                         break;
                     case DBTableFieldFloat:
-                        fprintf(outFile, ",\n\"%s\" NUMERIC (%d,%d)", field->Name(), field->FormatWidth(), field->FormatDecimals());
+                        fprintf(outFile, "\"%s\" NUMERIC (%d,%d),\n", field->Name(), field->FormatWidth(), field->FormatDecimals());
                         break;
                     case DBTableFieldDate:
-                        fprintf(outFile, ",\n\%s\" DATE", field->Name());
+                        fprintf(outFile, "\%s\" DATE,\n", field->Name());
                         break;
                 }
         }
-        fprintf (outFile,"\n) WITH ( OIDS = FALSE )\n");
+        fprintf (outFile,"CONSTRAINT \"%s:pkey\" PRIMARY KEY (\"ID\")\n",dbTableName);
+        fprintf (outFile,") WITH ( OIDS = FALSE )\n");
         fprintf (outFile,"TABLESPACE pg_default;\n");
     }
 
