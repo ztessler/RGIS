@@ -1565,7 +1565,7 @@ class RGlibStreamAction {
 private:
     DBObjRecord     *HeadCellRec, *MouthCellRec;
     DBObjTableField *StreamIDFLD;
-    DBInt			 StreamID;
+    DBInt			 StreamID, LineID;
     DBInt            CellOrder;
     DBInt			 Vertex;
     DBInt			 MaxVertex;
@@ -1627,9 +1627,12 @@ public:
         return ((toCellRec != MouthCellRec));
     }
     DBInt CreateStream (DBObjRecord *cellRec, DBNetworkACTION upStreamAction, DBNetworkACTION downStreamAction) {
+        char objName [DBStringLength];
         DBObjRecord *toCellRec = NetIF->ToCell (cellRec), *lineRec;
 
-        lineRec = LineTable->Item(StreamID);
+        sprintf (objName,"Line: %5d", ++LineID);
+        if ((lineRec = LineIF->NewItem (objName)) == (DBObjRecord *) NULL)
+        { CMmsgPrint (CMmsgAppError, "Line Insertion Error in: %s %d",__FILE__,__LINE__); return (CMfailed); }
         BasinFLD->Int (lineRec,NetIF->CellBasinID (cellRec));
         OrderFLD->Int (lineRec,NetIF->CellOrder (cellRec));
 
@@ -1660,22 +1663,18 @@ public:
         return (CMsucceeded);
     }
     DBInt CreateStreams (DBInt minOrder, DBNetworkACTION upStreamAction, DBNetworkACTION downStreamAction) {
-        char objName [DBStringLength];
         DBInt cellID;
-        DBObjRecord *cellRec, *toCellRec;
+        DBObjRecord *cellRec, *toCellRec, *lineRec;
 
         if (LineIF->NewSymbol ("Default Symbol") == (DBObjRecord *) NULL)
         { CMmsgPrint (CMmsgAppError, "Symbol Creation Error in: %s %d",__FILE__,__LINE__); return (CMfailed); }
 
-        StreamID = 0;
+        StreamID = LineID = 0;
         for (cellID = NetIF->CellNum () - 1; cellID >= 0; --cellID)  {
             if (StreamIDFLD->Int (cellRec = NetIF->Cell (cellID)) != 0) continue;
             if ((CellOrder = NetIF->CellOrder (cellRec)) < minOrder)    continue;
             if ((toCellRec = NetIF->ToCell (cellRec)) == (DBObjRecord *) NULL) {
                 StreamIDFLD->Int(cellRec,++StreamID);
-                sprintf (objName,"Line: %5d",StreamID);
-                if (LineIF->NewItem (objName) == (DBObjRecord *) NULL)
-                { CMmsgPrint (CMmsgAppError, "Line Insertion Error in: %s %d",__FILE__,__LINE__); return (CMfailed); }
                 continue;
             }
             if ((CellOrder != NetIF->CellOrder (toCellRec))) {
@@ -1683,16 +1682,12 @@ public:
                 if (StreamIDFLD->Int (cellRec = NetIF->FromCell (toCellRec)) != 0) continue;
                 if ((CellOrder = NetIF->CellOrder (cellRec)) < minOrder) continue;
                 StreamIDFLD->Int(cellRec,++StreamID);
-                sprintf (objName,"Line: %5d",StreamID);
-                if (LineIF->NewItem (objName) == (DBObjRecord *) NULL)
-                { CMmsgPrint (CMmsgAppError, "Line Insertion Error in: %s %d",__FILE__,__LINE__); return (CMfailed); }
-           }
+            }
         }
         for (cellID = NetIF->CellNum () - 1; cellID >= 0; --cellID) {
             if ((StreamID = StreamIDFLD->Int (cellRec = NetIF->Cell (cellID))) == 0) continue;
             if (CreateStream(cellRec, upStreamAction, downStreamAction) == CMfailed) return (CMfailed);
             }
-        LineTable->ItemSort();
         return (CMsucceeded);
     }
 };
