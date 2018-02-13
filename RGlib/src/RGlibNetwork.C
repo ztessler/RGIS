@@ -1627,12 +1627,9 @@ public:
         return ((toCellRec != MouthCellRec));
     }
     DBInt CreateStream (DBObjRecord *cellRec, DBNetworkACTION upStreamAction, DBNetworkACTION downStreamAction) {
-        char objName [DBStringLength];
         DBObjRecord *toCellRec = NetIF->ToCell (cellRec), *lineRec;
 
-        sprintf (objName,"Line: %5d",StreamID);
-        if ((lineRec = LineIF->NewItem (objName)) == (DBObjRecord *) NULL)
-        { CMmsgPrint (CMmsgAppError, "Line Insertion Error in: %s %d",__FILE__,__LINE__); return (CMfailed); }
+        lineRec = LineTable->Item(StreamID);
         BasinFLD->Int (lineRec,NetIF->CellBasinID (cellRec));
         OrderFLD->Int (lineRec,NetIF->CellOrder (cellRec));
 
@@ -1663,8 +1660,9 @@ public:
         return (CMsucceeded);
     }
     DBInt CreateStreams (DBInt minOrder, DBNetworkACTION upStreamAction, DBNetworkACTION downStreamAction) {
+        char objName [DBStringLength];
         DBInt cellID;
-        DBObjRecord *cellRec, *toCellRec, *lineRec;
+        DBObjRecord *cellRec, *toCellRec;
 
         if (LineIF->NewSymbol ("Default Symbol") == (DBObjRecord *) NULL)
         { CMmsgPrint (CMmsgAppError, "Symbol Creation Error in: %s %d",__FILE__,__LINE__); return (CMfailed); }
@@ -1675,6 +1673,9 @@ public:
             if ((CellOrder = NetIF->CellOrder (cellRec)) < minOrder)    continue;
             if ((toCellRec = NetIF->ToCell (cellRec)) == (DBObjRecord *) NULL) {
                 StreamIDFLD->Int(cellRec,++StreamID);
+                sprintf (objName,"Line: %5d",StreamID);
+                if (LineIF->NewItem (objName) == (DBObjRecord *) NULL)
+                { CMmsgPrint (CMmsgAppError, "Line Insertion Error in: %s %d",__FILE__,__LINE__); return (CMfailed); }
                 continue;
             }
             if ((CellOrder != NetIF->CellOrder (toCellRec))) {
@@ -1682,12 +1683,16 @@ public:
                 if (StreamIDFLD->Int (cellRec = NetIF->FromCell (toCellRec)) != 0) continue;
                 if ((CellOrder = NetIF->CellOrder (cellRec)) < minOrder) continue;
                 StreamIDFLD->Int(cellRec,++StreamID);
-            }
+                sprintf (objName,"Line: %5d",StreamID);
+                if (LineIF->NewItem (objName) == (DBObjRecord *) NULL)
+                { CMmsgPrint (CMmsgAppError, "Line Insertion Error in: %s %d",__FILE__,__LINE__); return (CMfailed); }
+           }
         }
         for (cellID = NetIF->CellNum () - 1; cellID >= 0; --cellID) {
             if ((StreamID = StreamIDFLD->Int (cellRec = NetIF->Cell (cellID))) == 0) continue;
             if (CreateStream(cellRec, upStreamAction, downStreamAction) == CMfailed) return (CMfailed);
             }
+        LineTable->ItemSort();
         return (CMsucceeded);
     }
 };
