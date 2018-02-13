@@ -61,7 +61,7 @@ case "${EXTENSION}" in
          	FROM   \"${SCHEMA}\".\"${TBLNAME}_geom\"
         	WHERE  \"${SCHEMA}\".\"${TBLNAME}\".\"ID\" =  \"${SCHEMA}\".\"${TBLNAME}_geom\".\"ID\";
          	DROP TABLE \"${SCHEMA}\".\"${TBLNAME}_geom\";" | psql "${DBNAME}"
-         rm "${TEMPFILE}.*"
+         rm "${TEMPFILE}".*
 	;;
 	(gdbd|gdbd.gz)
 		rgis2ascii "${RGISFILE}" "${TEMPFILE}.grd"
