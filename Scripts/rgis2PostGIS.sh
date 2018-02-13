@@ -47,34 +47,34 @@ if [ "${SCHEMA}"  == "" ]; then  SCHEMA="public"; fi
 if [ "${TBLNAME}" == "" ]; then TBLNAME="${FILENAME}"; fi
 
 TEMPFILE="TEMP${FILENAME}"
-TEMPFILE="${TEMPFILE}.asc"
 
 case "${EXTENSION}" in
 	(gdbp|gdbp.gz|gdbl|gdbl.gz)
 		rgis2ascii "${RGISFILE}" "${TEMPFILE}.asc"
-		
+
 		rgis2sql -a "DBItems" "${RGISFILE}" -s "${SCHEMA}" -q "${TBLNAME}" | psql "${DBNAME}"
-		ogr2ogr -f PostgreSQL "PG: dbname=${DBNAME}" -a_srs EPSG:4326 -nln ${SCHEMA}.${TBLNAME}_geom "${TEMPFILE}.asc"
+		ogr2ogr -f "ESRI Shapefile" "${TEMPFILE}.shp" "${TEMPFILE}.asc"
+		shp2pgsql -k -s 4326 "${TEMPFILE}.shp" "${SCHEMA}"."${TBLNAME}_geom" | psql PostGIS_COMPASS
 		echo "ALTER TABLE \"${SCHEMA}\".\"${TBLNAME}\" ADD COLUMN \"geom\" geometry;
       		UPDATE \"${SCHEMA}\".\"${TBLNAME}\"
-        	SET \"geom\" = \"${SCHEMA}\".\"$(echo "${TBLNAME}" | tr "[A-Z]" "[a-z]")_geom\".\"wkb_geometry\"
-         	FROM   \"${SCHEMA}\".\"$(echo "${TBLNAME}" | tr "[A-Z]" "[a-z]")_geom\"
-        	WHERE  \"${SCHEMA}\".\"${TBLNAME}\".\"ID\" =  \"${SCHEMA}\".\"$(echo "${TBLNAME}" | tr "[A-Z]" "[a-z]")_geom\".\"ogc_fid\";
-         	DROP TABLE \"${SCHEMA}\".\"$(echo "${TBLNAME}" | tr "[A-Z]" "[a-z]")_geom\";" | psql "${DBNAME}"
-         rm "${TEMPFILE}.asc"
+        	SET \"geom\" = \"${SCHEMA}\".\"${TBLNAME}_geom\".\"geom\"
+         	FROM   \"${SCHEMA}\".\"${TBLNAME}_geom\"
+        	WHERE  \"${SCHEMA}\".\"${TBLNAME}\".\"ID\" =  \"${SCHEMA}\".\"${TBLNAME}_geom\".\"ID\";
+         	DROP TABLE \"${SCHEMA}\".\"${TBLNAME}_geom\";" | psql "${DBNAME}"
+         rm "${TEMPFILE}.*"
 	;;
 	(gdbd|gdbd.gz)
 		rgis2ascii "${RGISFILE}" "${TEMPFILE}.grd"
 		rgis2sql -a "DBItems" "${RGISFILE}" -s "${SCHEMA}" -q "${TBLNAME}" | psql "${DBNAME}"
 		gdal_translate -a_srs EPSG:4326 "${TEMPFILE}.grd" "${TEMPFILE}.tif"
 		gdal_polygonize.py -8  "${TEMPFILE}.tif" -f "ESRI Shapefile" "${TEMPFILE}.shp"
-		shp2pgsql -k -s 4326 "${TEMPFILE}.shp" "${SCHEMA}"."${TBLNAME}_poly" | psql PostGIS_COMPASS
+		shp2pgsql -k -s 4326 "${TEMPFILE}.shp" "${SCHEMA}"."${TBLNAME}_geom" | psql PostGIS_COMPASS
 		echo "ALTER TABLE \"${SCHEMA}\".\"${TBLNAME}\" ADD COLUMN \"geom\" geometry;
       		UPDATE \"${SCHEMA}\".\"${TBLNAME}\"
-        	SET \"geom\" = \"${SCHEMA}\".\"${TBLNAME}_poly\".\"geom\"
-         	FROM  \"${SCHEMA}\".\"${TBLNAME}_poly\"
-        	WHERE  \"${SCHEMA}\".\"${TBLNAME}\".\"ID\" = \"${SCHEMA}\".\"${TBLNAME}_poly\".\"DN\";
-         	DROP TABLE\"${SCHEMA}\".\"${TBLNAME}_poly\";" | psql "${DBNAME}"
+        	SET \"geom\" = \"${SCHEMA}\".\"${TBLNAME}_geom\".\"geom\"
+         	FROM  \"${SCHEMA}\".\"${TBLNAME}_geom\"
+        	WHERE  \"${SCHEMA}\".\"${TBLNAME}\".\"ID\" = \"${SCHEMA}\".\"${TBLNAME}_geom\".\"DN\";
+         	DROP TABLE\"${SCHEMA}\".\"${TBLNAME}_geom\";" | psql "${DBNAME}"
          rm "${TEMPFILE}".*
 	;;
 	(gdbc|gdbc.gz|nc)
@@ -82,5 +82,9 @@ case "${EXTENSION}" in
 #		sed "s:$(echo "${SCHEMA}"  | tr "[A-Z]" "[a-z]"):${SCHEMA}:g"  |\
 #		sed "s:$(echo "${TBLNAME}" | tr "[A-Z]" "[a-z]"):${TBLNAME}:g" |\
 #		psql "${DBNAME}"
+	;;
+	(*)
+		echo ${EXTENSION}
+		PrintUsage
 	;;
 esac
