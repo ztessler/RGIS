@@ -147,7 +147,7 @@ DBInt RGlibTableToSQL (DBObjTable *table, const char *dbSchemaName, const char *
                         case DBTableFieldString: fprintf(outFile,",$$%s$$", field->String(record));  break;
                         case DBTableFieldInt:    fprintf(outFile,",%d", field->Int (record));        break;
                         case DBTableFieldFloat:  fprintf(outFile,",%f", field->Float (record));      break;
-                        case DBTableFieldDate:   fprintf(outFile,",%s", field->String (record));     break;
+                        case DBTableFieldDate:   fprintf(outFile,",\"%s\"", field->String (record)); break;
                     }
             }
         }
