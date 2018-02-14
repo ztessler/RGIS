@@ -34,7 +34,7 @@ int DBExportARCGenLine (DBObjData *data, FILE *file) {
     DBVLineIF *lineIF = new DBVLineIF (data);
 
     for (lineRec = items->First(); lineRec != (DBObjRecord *) NULL; lineRec = items->Next()) {
-        fprintf (file,"%d\n",lineRec->RowID ());
+        fprintf (file,"%d\n",lineRec->RowID () + 1);
         nodeCoord = lineIF->FromCoord(lineRec);
         fprintf(file, "%f,%f\n", nodeCoord.X, nodeCoord.Y);
         vertexNum = lineIF->VertexNum(lineRec);
