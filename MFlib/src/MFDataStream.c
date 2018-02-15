@@ -246,7 +246,7 @@ CMreturn MFdsRecordRead (MFVariable_t *var) {
 					default: break;
 				}
 			if ((var->NStep = MFDateTimeStepLength(var->InDate, var->TStep)) == 0) {
-				CMmsgPrint(CMmsgUsrError, "Invalid data stream in: %s, %d", __FILE__, __LINE__);
+				CMmsgPrint(CMmsgUsrError, "Invalid data stream [%s %s] in: %s, %d",var->Name, var->InDate, __FILE__, __LINE__);
 				return (CMfailed);
 			}
 		}
