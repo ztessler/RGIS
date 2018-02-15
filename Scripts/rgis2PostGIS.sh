@@ -61,20 +61,21 @@ case "${EXTENSION}" in
          	FROM   \"${SCHEMA}\".\"${TBLNAME}_geom\"
         	WHERE  \"${SCHEMA}\".\"${TBLNAME}\".\"ID\" =  \"${SCHEMA}\".\"${TBLNAME}_geom\".\"ID\";
          	DROP TABLE \"${SCHEMA}\".\"${TBLNAME}_geom\";" | psql "${DBNAME}"
-         rm "${TEMPFILE}".*
+      rm "${TEMPFILE}".*
 	;;
 	(gdbd|gdbd.gz)
 		rgis2ascii "${RGISFILE}" "${TEMPFILE}.grd"
 		rgis2sql -a "DBItems" "${RGISFILE}" -s "${SCHEMA}" -q "${TBLNAME}" | psql "${DBNAME}"
 		gdal_translate -a_srs EPSG:4326 "${TEMPFILE}.grd" "${TEMPFILE}.tif"
 		gdal_polygonize.py -8  "${TEMPFILE}.tif" -f "ESRI Shapefile" "${TEMPFILE}.shp"
-		shp2pgsql -k -s 4326 "${TEMPFILE}.shp" "${SCHEMA}"."${TBLNAME}_geom" | psql PostGIS_COMPASS
+		shp2pgsql -k -s 4326 "${TEMPFILE}.shp" "${SCHEMA}"."${TBLNAME}_geom" | tee "${TEMPFILE}".sql | psql PostGIS_COMPASS
 		echo "ALTER TABLE \"${SCHEMA}\".\"${TBLNAME}\" ADD COLUMN \"geom\" geometry;
       		UPDATE \"${SCHEMA}\".\"${TBLNAME}\"
-        	SET \"geom\" = \"${SCHEMA}\".\"${TBLNAME}_geom\".\"geom\"
-         	FROM  \"${SCHEMA}\".\"${TBLNAME}_geom\"
-        	WHERE  \"${SCHEMA}\".\"${TBLNAME}\".\"ID\" = \"${SCHEMA}\".\"${TBLNAME}_geom\".\"DN\";
-         	DROP TABLE\"${SCHEMA}\".\"${TBLNAME}_geom\";" | psql "${DBNAME}"
+        	SET \"geom\" = \"${TBLNAME}_SELECTION\".\"geom\"
+         	FROM  (SELECT \"DN\", ST_BUFFER (ST_UNION (\"geom\"),0.0) AS \"geom\" FROM \"${SCHEMA}\".\"${TBLNAME}_geom\"
+         	       GROUP BY \"${SCHEMA}\".\"${TBLNAME}_geom\".\"DN\") AS \"${TBLNAME}_SELECTION\"
+        	WHERE  \"${SCHEMA}\".\"${TBLNAME}\".\"GridValue\" = \"${TBLNAME}_SELECTION\".\"DN\";
+	       	DROP TABLE\"${SCHEMA}\".\"${TBLNAME}_geom\";" | psql "${DBNAME}"
          rm "${TEMPFILE}".*
 	;;
 	(gdbc|gdbc.gz|nc)
