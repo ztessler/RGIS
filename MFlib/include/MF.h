@@ -159,6 +159,7 @@ typedef struct MFObject_s {
     float XCoord, YCoord, Lon, Lat;
     float Area, Length;
     size_t *DLinks, *ULinks;
+    float *DWeights, *UWeights;
 } MFObject_t;
 
 typedef struct MFDomain_s {

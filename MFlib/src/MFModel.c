@@ -130,7 +130,7 @@ static void _MFModelVarPrintOut (const char *label) {
                         CMyesNoString (var->Set),CMyesNoString (var->Flux),CMyesNoString (var->Initial), CMyesNoString (var->OutputPath != (char *) NULL));
 }
 
-static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc) (), char **domainFile, char **startDate, char **endDate, bool *testOnly) {
+static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc) (), char **domainFile, char **bifurFile, char **startDate, char **endDate, bool *testOnly) {
 	bool resolved = true;
 	int argPos, ret, help = false;
 	int i, varID;
@@ -155,9 +155,13 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 				return (CMfailed);
 			}
 			argv [argPos][i] = '\0';
-			inputVars = _MFModelVarEntryNew (inputVars, inputVarNum, argv [argPos],argv [argPos] + i + 1);
-			if (inputVars == (varEntry_t *) NULL) return (CMfailed); else inputVarNum++;
-			if ((argNum = CMargShiftLeft(argPos,argv,argNum)) <= argPos) break;
+            if (strcmp(argv[argPos], "bifurcations") == 0) {
+                *bifurFile = argv[argPos] + i + 1;
+            } else {
+                inputVars = _MFModelVarEntryNew (inputVars, inputVarNum, argv [argPos],argv [argPos] + i + 1);
+                if (inputVars == (varEntry_t *) NULL) return (CMfailed); else inputVarNum++;
+            }
+            if ((argNum = CMargShiftLeft(argPos,argv,argNum)) <= argPos) break;
 			continue;
 		}
 		if (CMargTest (argv [argPos],"-o","--output")) {
@@ -335,8 +339,7 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 		if (outputVars [i].InUse == false) CMmsgPrint(CMmsgInfo,"Unused output variable : %s", outputVars [i].Name);
 	for (i = 0; i < stateVarNum;  ++i)
 		if (stateVars [i].InUse  == false) CMmsgPrint(CMmsgInfo,"Unused state variable : %s",  stateVars [i].Name);
-
-	_MFModelVarEntriesFree(inputVars,  inputVarNum);
+_MFModelVarEntriesFree(inputVars,  inputVarNum);
 	_MFModelVarEntriesFree(outputVars, outputVarNum);
 	_MFModelVarEntriesFree(stateVars,  stateVarNum);
 
@@ -351,14 +354,17 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 static void _MFUserFunc (size_t threadId, size_t objectId, void *commonPtr) {
 	int iFunc, varID, link, uLink;
 	MFVariable_t *var;
-	double value;
+	float value, weight;
 
 	for (var = MFVarGetByID (varID = 1);var != (MFVariable_t *) NULL;var = MFVarGetByID (++varID))
 		if (var->Route) {
+// I -think- all WBM routed variables are considered to be extensive. Intensive variables are
+// computed within modules I THINK!. Weighing code here assumes this.
 			value = 0.0;
 			for (link = 0; link < _MFDomain->Objects [objectId].ULinkNum; ++link) {
 				uLink = _MFDomain->Objects [objectId].ULinks [link];
-				value += MFVarGetFloat (varID,uLink,0.0);
+                weight = _MFDomain->Objects [objectId].UWeights [link];
+				value += MFVarGetFloat (varID,uLink,0.0) * weight;
 			}
 			MFVarSetFloat (varID, objectId, value);
 		}
@@ -437,7 +443,7 @@ enum { MFparIOnone, MFparIOsingle, MFparIOmulti };
 int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
 	FILE *inFile;
 	int i, varID, dlink, taskId, ret = CMsucceeded, timeStep;
-	char *startDate = (char *) NULL, *endDate = (char *) NULL, *domainFileName = (char *) NULL;
+	char *startDate = (char *) NULL, *endDate = (char *) NULL, *domainFileName = (char *) NULL, *bifurFileName = (char *) NULL;
 	char dateCur [MFDateStringLength], dateNext [MFDateStringLength], *climatologyStr;
 	bool testOnly;
     void *buffer, *status;
@@ -469,7 +475,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
 		pthread_attr_setscope       (&thread_attr, PTHREAD_SCOPE_PROCESS);
 	}
 
-    if (_MFModelParse (argc,argv,argNum, mainDefFunc, &domainFileName, &startDate, &endDate, &testOnly) == CMfailed) return (CMfailed);
+    if (_MFModelParse (argc,argv,argNum, mainDefFunc, &domainFileName, &bifurFileName, &startDate, &endDate, &testOnly) == CMfailed) return (CMfailed);
  	if (testOnly) return (CMsucceeded);
 
     switch (strlen (startDate)) {
@@ -485,6 +491,8 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
 		return (CMfailed);
 	}
 	if ((_MFDomain = MFDomainRead (inFile)) == (MFDomain_t *) NULL)	return (CMfailed);
+    if (bifurFileName != (char *) NULL)
+        if (MFDomainSetBifurcations(_MFDomain, bifurFileName) == CMfailed) return (CMfailed);
 
 	for (var = MFVarGetByID (varID = 1);var != (MFVariable_t *) NULL;var = MFVarGetByID (++varID)) {
 		var->ItemNum = _MFDomain->ObjNum;
