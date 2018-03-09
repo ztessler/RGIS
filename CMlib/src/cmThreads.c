@@ -64,7 +64,7 @@ CMthreadJob_p CMthreadJobCreate (size_t taskNum, CMthreadUserExecFunc execFunc, 
 		job->Tasks [taskId].Id         = taskId;
 		job->Tasks [taskId].Dependent  = (CMthreadTask_p) NULL;
 		job->Tasks [taskId].Travel     = 0;
-        job->Tasks [taskId].Rank       = 0;
+        /*job->Tasks [taskId].Rank       = 0;*/
 	}
 	job->UserFunc = execFunc;
 	job->CommonData = (void *) commonData;
@@ -95,31 +95,40 @@ static int _CMthreadJobTaskCompare (const void *lPtr,const void *rPtr) {
 
 	if ((ret = (int) rTask->Travel - (int) lTask->Travel) != 0) return (ret);
 
-	while (((rTask = rTask->Dependent) != (CMthreadTask_p) NULL) &&
-           ((lTask = lTask->Dependent) != (CMthreadTask_p) NULL)) {
-		if ((ret = (int) rTask->Travel - (int) lTask->Travel) != 0) return (ret);
+    // if first condition does not return, doesn't this always mean it returns on rtask==ltask,
+    // since they both walk downstream and end up null at the same time??
+    // SO sorting should be ok as long as travel length is computed for the LONGEST downstream
+    // direction. DEPENDENT pointer doesn't matter other than for computing TRAVEL, i think
+
+    /*
+    // pull these statements outside while test condition to avoid short-circuit behavoir. rTask
+    // would update to null and lTask would remain at old position and non-null, though dep is
+    rTask = rTask->Dependent;
+    lTask = lTask->Dependent;
+	while ((rTask != (CMthreadTask_p) NULL) &&
+           (lTask != (CMthreadTask_p) NULL)) {
+		if ((ret = (int) rTask->Travel - (int) lTask->Travel) != 0) {CMmsgPrint (CMmsgDebug,"return 2");return (ret);}
+        rTask = rTask->Dependent;
+        lTask = lTask->Dependent;
 	}
 	if (rTask == lTask) return (0);
 	if (rTask != (CMthreadTask_p) NULL) return (1);
 	return (-1);
+    */
+    return 0;
 }
 
 CMreturn _CMthreadJobTaskSort (CMthreadJob_p job) {
 	size_t taskId, start;
-	size_t travel, maxTravel = 0, maxRank;
+	size_t travel;
 	CMthreadTask_p dependent;
 
 	for (taskId = 0;taskId < job->TaskNum; ++taskId) {
 		travel = 0;
         for (dependent = job->Tasks + taskId; dependent->Dependent != (CMthreadTask_p) NULL; dependent = dependent->Dependent) {
             travel += 1;
-            if (dependent->Rank < travel) {
-                dependent->Rank = travel;
-                if (maxRank < travel) maxRank = travel;
-            }
 		}
         job->Tasks [taskId].Travel = travel;
-        if (maxTravel < travel) maxTravel = travel;
 	}
 
     qsort (job->SortedTasks,job->TaskNum,sizeof (CMthreadTask_p),_CMthreadJobTaskCompare);
