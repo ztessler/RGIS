@@ -442,7 +442,7 @@ enum { MFparIOnone, MFparIOsingle, MFparIOmulti };
 
 int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
 	FILE *inFile;
-	int i, varID, dlink, taskId, ret = CMsucceeded, timeStep;
+	int i, varID, *dlinks, taskId, ret = CMsucceeded, timeStep;
 	char *startDate = (char *) NULL, *endDate = (char *) NULL, *domainFileName = (char *) NULL, *bifurFileName = (char *) NULL;
 	char dateCur [MFDateStringLength], dateNext [MFDateStringLength], *climatologyStr;
 	bool testOnly;
@@ -577,8 +577,11 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
         return (CMfailed);
     }
     for (taskId = 0; taskId < _MFDomain->ObjNum; ++taskId) {
-        dlink  = _MFDomain->Objects[taskId].DLinkNum > 0 ? _MFDomain->Objects[taskId].DLinks[0] : taskId;
-        CMthreadJobTaskDependent(job, taskId, dlink);
+        // loop here over all dlinks? but currently each task/node can have only one dependent.
+        // needs multiple.
+        // or send in pointer to DLinks, pointer to taskID
+        dlinks  = _MFDomain->Objects[taskId].DLinkNum > 0 ? _MFDomain->Objects[taskId].DLinks : &taskId;
+        CMthreadJobTaskDependent(job, taskId, dlinks, _MFDomain->Objects[taskId].DLinkNum);
     }
     time(&sec);
     strcpy (dateCur,  MFDateGetCurrent ());

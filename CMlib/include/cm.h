@@ -108,8 +108,9 @@ typedef void  (*CMthreadUserExecFunc)(size_t, size_t, void *);
 
 typedef struct CMthreadTask_s {
     size_t Id;
-    size_t Travel;
-    struct CMthreadTask_s *Dependent;
+    int Travel;
+    struct CMthreadTask_s *Dependents;
+    size_t NDependents;
 } CMthreadTask_t, *CMthreadTask_p;
 
 typedef struct CMthreadTaskGroup_s {
@@ -137,7 +138,7 @@ void CMthreadJobDestroy(CMthreadJob_p);
 
 CMreturn CMthreadJobExecute(CMthreadTeam_p, CMthreadJob_p);
 
-CMreturn CMthreadJobTaskDependent(CMthreadJob_p, size_t, size_t);
+CMreturn CMthreadJobTaskDependent(CMthreadJob_p, size_t, size_t *, int);
 
 #if defined(__cplusplus)
 }

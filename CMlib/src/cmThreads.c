@@ -60,28 +60,37 @@ CMthreadJob_p CMthreadJobCreate (size_t taskNum, CMthreadUserExecFunc execFunc, 
 	job->Sorted    = true;
 	job->TaskNum   = taskNum;
 	for (taskId = 0;taskId < job->TaskNum; ++taskId) {
-		job->SortedTasks [taskId]      = job->Tasks + taskId;
-		job->Tasks [taskId].Id         = taskId;
-		job->Tasks [taskId].Dependent  = (CMthreadTask_p) NULL;
-		job->Tasks [taskId].Travel     = 0;
-        /*job->Tasks [taskId].Rank       = 0;*/
+		job->SortedTasks [taskId]        = job->Tasks + taskId;
+		job->Tasks [taskId].Id           = taskId;
+		job->Tasks [taskId].Dependents   = (CMthreadTask_p) NULL;
+		job->Tasks [taskId].NDependents  = 0;
+		job->Tasks [taskId].Travel       = -1;
 	}
 	job->UserFunc = execFunc;
 	job->CommonData = (void *) commonData;
 	return (job);
 }
 
-CMreturn CMthreadJobTaskDependent (CMthreadJob_p job, size_t taskId, size_t dependent) {
+CMreturn CMthreadJobTaskDependent (CMthreadJob_p job, size_t taskId, size_t *dependents, int dlinknum) {
+    int dlink;
 	if (taskId    > job->TaskNum) {
 		CMmsgPrint (CMmsgAppError,"Invalid task in %s%d",__FILE__,__LINE__);
 		return (CMfailed);
 	}
-	if (dependent > job->TaskNum) {
-		CMmsgPrint (CMmsgAppError,"Invalid dependence in %s%d",__FILE__,__LINE__);
+    for (dlink = 0; dlink < dlinknum; dlink++)
+        if (dependents[dlink] > job->TaskNum) {
+            CMmsgPrint (CMmsgAppError,"Invalid dependence in %s%d",__FILE__,__LINE__);
+            return (CMfailed);
+        }
+	if (taskId == *dependents) return (CMsucceeded);
+	job->Tasks [taskId].Dependents = (CMthreadTask_p) malloc (dlinknum * sizeof(CMthreadTask_t));
+    if (job->Tasks [taskId].Dependents == (CMthreadTask_p) NULL) {
+		CMmsgPrint (CMmsgSysError, "Memory allocation error in %s:%d",__FILE__,__LINE__);
 		return (CMfailed);
-	}
-	if (taskId == dependent) return (CMsucceeded);
-	job->Tasks [taskId].Dependent = job->Tasks + dependent;
+    }
+    for (dlink = 0; dlink < dlinknum; dlink++)
+        job->Tasks [taskId].Dependents[dlink] = job->Tasks[dependents[dlink]];
+    job->Tasks [taskId].NDependents = dlinknum;
     job->Sorted = false;
 	return (CMsucceeded);
 }
@@ -100,35 +109,47 @@ static int _CMthreadJobTaskCompare (const void *lPtr,const void *rPtr) {
     // SO sorting should be ok as long as travel length is computed for the LONGEST downstream
     // direction. DEPENDENT pointer doesn't matter other than for computing TRAVEL, i think
 
-    /*
-    // pull these statements outside while test condition to avoid short-circuit behavoir. rTask
-    // would update to null and lTask would remain at old position and non-null, though dep is
-    rTask = rTask->Dependent;
-    lTask = lTask->Dependent;
-	while ((rTask != (CMthreadTask_p) NULL) &&
-           (lTask != (CMthreadTask_p) NULL)) {
-		if ((ret = (int) rTask->Travel - (int) lTask->Travel) != 0) {CMmsgPrint (CMmsgDebug,"return 2");return (ret);}
-        rTask = rTask->Dependent;
-        lTask = lTask->Dependent;
-	}
-	if (rTask == lTask) return (0);
-	if (rTask != (CMthreadTask_p) NULL) return (1);
-	return (-1);
-    */
     return 0;
+}
+
+// TODO TEST!
+int _travel_dist(CMthreadTask_t *task) {
+    int depi, travel, maxtravel = -1;
+    if (task->Travel >= 0) // been set already
+        return task->Travel;
+    if (task->Dependents == (CMthreadTask_p) NULL)
+        maxtravel = 0;
+    else {
+        for (depi = 0; depi < task->NDependents; depi++) {
+            travel = _travel_dist(task->Dependents + depi) + 1;
+            if (travel > maxtravel) {
+                maxtravel = travel;
+            }
+        }
+    }
+    task->Travel = maxtravel;
+    return maxtravel;
 }
 
 CMreturn _CMthreadJobTaskSort (CMthreadJob_p job) {
 	size_t taskId, start;
 	size_t travel;
-	CMthreadTask_p dependent;
+	CMthreadTask_p *dependent;
 
 	for (taskId = 0;taskId < job->TaskNum; ++taskId) {
-		travel = 0;
-        for (dependent = job->Tasks + taskId; dependent->Dependent != (CMthreadTask_p) NULL; dependent = dependent->Dependent) {
-            travel += 1;
-		}
-        job->Tasks [taskId].Travel = travel;
+		/*travel = 0;*/
+        // this walks downstream along path computing travel (dist from node to mouth) and rank
+        // (max distance up to head)
+        // need to loop over all possible downstream paths, since can have multiple downstream
+        // dependents
+        /*for (dependent = job->Tasks + taskId; dependent->Dependents != (CMthreadTask_p) NULL; dependent = dependent->Dependent) {*/
+            /*travel += 1;*/
+		/*}*/
+        /*job->Tasks [taskId].Travel = travel;*/
+
+        // TODO TEST! correct?? who knows!
+        if (job->Tasks[taskId].Travel < 0) // unset
+            job->Tasks[taskId].Travel = _travel_dist(job->Tasks + taskId);
 	}
 
     qsort (job->SortedTasks,job->TaskNum,sizeof (CMthreadTask_p),_CMthreadJobTaskCompare);
