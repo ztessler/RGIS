@@ -155,6 +155,8 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 				return (CMfailed);
 			}
 			argv [argPos][i] = '\0';
+            CMmsgPrint  (CMmsgDebug,"Input variable [%s]: %s at: %s:%d",argv [argPos],argv[argPos]+i+1,__FILE__,__LINE__);
+            CMmsgPrint (CMmsgDebug, "bifur test: [%d]", strcmp(argv[argPos], "bifurcations"));
             if (strcmp(argv[argPos], "bifurcations") == 0) {
                 *bifurFile = argv[argPos] + i + 1;
             } else {
@@ -191,6 +193,7 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 				return (CMfailed);
 			}
 			argv [argPos][i] = '\0';
+            CMmsgPrint  (CMmsgDebug,"Output variable [%s]: %s at: %s:%d",argv [argPos],argv[argPos]+i+1,__FILE__,__LINE__);
 			stateVars = _MFModelVarEntryNew (stateVars, stateVarNum, argv [argPos],argv [argPos] + i + 1);
 			if (stateVars == (varEntry_t *) NULL) return (CMfailed); else stateVarNum++;
 			if ((argNum = CMargShiftLeft(argPos,argv,argNum)) <= argPos) break;
