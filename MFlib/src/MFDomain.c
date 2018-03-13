@@ -91,7 +91,7 @@ MFDomain_t *MFDomainRead (FILE *inFile) {
 				if (domain->Swap != 1)
 					for (i = 0;i < domain->Objects [objID].DLinkNum; ++i)
 						MFSwapWord (domain->Objects [objID].DLinks + i);
-                for (i = 0; i < domain->Objects [objID].DLinkNum; ++i)
+                for (i = 0; i < domain->Objects [objID].DLinkNum; ++i) {
                     if (i>1) CMmsgPrint(CMmsgSysError, "Bifurcation code assumption of single inital downlink WRONG at %s:%d",__FILE__,__LINE__);
                     // Set to equal weighting
                     /*domain->Objects[objID].DWeights[i] = 1./domain->Objects [objID].DLinkNum;*/
@@ -99,6 +99,7 @@ MFDomain_t *MFDomainRead (FILE *inFile) {
                     // correct, since otherwise all this code is wasted since the model already
                     // does it
                     domain->Objects[objID].DWeights[i] = 1.0;
+                }
 			}
 			else {
 				CMmsgPrint (CMmsgSysError,"File Reading Error in: %s:%d",__FILE__,__LINE__);
