@@ -136,6 +136,7 @@ void   MFOptionPrintList();
 void   MFOptionMessage(const char *, const char *, const char *[]);
 
 
+int MFDomainSetBifurcations(MFDomain_t *, const char *);
 int MFModelRun(int, char *[], int, int (*)());
 int MFModelAddFunction(MFFunction);
 float MFModelGetXCoord(int);
