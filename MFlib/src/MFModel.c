@@ -445,8 +445,8 @@ enum { MFparIOnone, MFparIOsingle, MFparIOmulti };
 
 int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
 	FILE *inFile;
-	int i, varID, taskId, ret = CMsucceeded, timeStep;
-    size_t *dlinks;
+	int i, varID, ret = CMsucceeded, timeStep;
+    size_t *dlinks, taskId;
 	char *startDate = (char *) NULL, *endDate = (char *) NULL, *domainFileName = (char *) NULL, *bifurFileName = (char *) NULL;
 	char dateCur [MFDateStringLength], dateNext [MFDateStringLength], *climatologyStr;
 	bool testOnly;

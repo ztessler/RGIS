@@ -62,9 +62,11 @@ CMthreadJob_p CMthreadJobCreate (size_t taskNum, CMthreadUserExecFunc execFunc, 
 	for (taskId = 0;taskId < job->TaskNum; ++taskId) {
 		job->SortedTasks [taskId]        = job->Tasks + taskId;
 		job->Tasks [taskId].Id           = taskId;
-		job->Tasks [taskId].Dependents   = (CMthreadTask_p) NULL;
+		job->Tasks [taskId].Dependents   = (CMthreadTask_p *) NULL;
 		job->Tasks [taskId].NDependents  = 0;
-		job->Tasks [taskId].Travel       = -1;
+		job->Tasks [taskId].Travel       = 0;
+		job->Tasks [taskId].isTravelSet  = 0;
+
 	}
 	job->UserFunc = execFunc;
 	job->CommonData = (void *) commonData;
@@ -83,13 +85,13 @@ CMreturn CMthreadJobTaskDependent (CMthreadJob_p job, size_t taskId, size_t *dep
             return (CMfailed);
         }
 	if (taskId == *dependents) return (CMsucceeded);
-	job->Tasks [taskId].Dependents = (CMthreadTask_p) malloc (dlinknum * sizeof(CMthreadTask_t));
-    if (job->Tasks [taskId].Dependents == (CMthreadTask_p) NULL) {
+	job->Tasks [taskId].Dependents = (CMthreadTask_p *) malloc (dlinknum * sizeof(CMthreadTask_p));
+    if (job->Tasks [taskId].Dependents == (CMthreadTask_p *) NULL) {
 		CMmsgPrint (CMmsgSysError, "Memory allocation error in %s:%d",__FILE__,__LINE__);
 		return (CMfailed);
     }
     for (dlink = 0; dlink < dlinknum; dlink++)
-        job->Tasks [taskId].Dependents[dlink] = job->Tasks[dependents[dlink]];
+        job->Tasks [taskId].Dependents[dlink] = job->Tasks + dependents[dlink]; // array of pointers to tasks
     job->Tasks [taskId].NDependents = dlinknum;
     job->Sorted = false;
 	return (CMsucceeded);
@@ -113,21 +115,21 @@ static int _CMthreadJobTaskCompare (const void *lPtr,const void *rPtr) {
 }
 
 // TODO TEST!
-int _travel_dist(CMthreadTask_t *task) {
-    int depi, travel, maxtravel = -1;
-    if (task->Travel >= 0) // been set already
+size_t _travel_dist(CMthreadTask_t *task) {
+    int depi;
+    size_t travel, maxtravel = 0;
+    if (task->isTravelSet) // been set already
         return task->Travel;
-    if (task->Dependents == (CMthreadTask_p) NULL)
-        maxtravel = 0;
-    else {
+    if (task->Dependents != (CMthreadTask_p *) NULL) {
         for (depi = 0; depi < task->NDependents; depi++) {
-            travel = _travel_dist(task->Dependents + depi) + 1;
+            travel = _travel_dist(task->Dependents[depi]) + 1;
             if (travel > maxtravel) {
                 maxtravel = travel;
             }
         }
     }
     task->Travel = maxtravel;
+    task->isTravelSet = 1;
     return maxtravel;
 }
 
@@ -148,7 +150,7 @@ CMreturn _CMthreadJobTaskSort (CMthreadJob_p job) {
         /*job->Tasks [taskId].Travel = travel;*/
 
         // TODO TEST! correct?? who knows!
-        if (job->Tasks[taskId].Travel < 0) // unset
+        if (job->Tasks[taskId].isTravelSet == 0) // unset
             job->Tasks[taskId].Travel = _travel_dist(job->Tasks + taskId);
 	}
 
