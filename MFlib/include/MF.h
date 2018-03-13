@@ -136,7 +136,6 @@ void   MFOptionPrintList();
 void   MFOptionMessage(const char *, const char *, const char *[]);
 
 
-int MFDomainSetBifurcations(MFDomain_t *, const char *);
 int MFModelRun(int, char *[], int, int (*)());
 int MFModelAddFunction(MFFunction);
 float MFModelGetXCoord(int);
@@ -171,6 +170,7 @@ typedef struct MFDomain_s {
 
 MFDomain_t *MFDomainRead (FILE *);
 int  MFDomainWrite(MFDomain_t *, FILE *);
+int  MFDomainSetBifurcations(MFDomain_t *, const char *);
 void MFDomainFree(MFDomain_t *);
 
 int  MFDateCompare (const char *, const char *);
