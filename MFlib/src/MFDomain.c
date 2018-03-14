@@ -143,7 +143,7 @@ MFDomain_t *MFDomainRead (FILE *inFile) {
 
 int MFDomainSetBifurcations(MFDomain_t *domain, const char *path) {
     char line[1024];
-    int fromID, toID, dlink, objID;
+    int fromID, toID, dlink, dlink0, ulink, objID;
     float weight, sum;
 
     FILE *inFile;
@@ -154,19 +154,19 @@ int MFDomainSetBifurcations(MFDomain_t *domain, const char *path) {
     }
 
     while (fscanf(inFile, "%d,%d,%f", &fromID, &toID, &weight) == 3) {
+        CMmsgPrint(CMmsgDebug, "Read BIFURCATION: fromID: %d, toID: %d, weight: %f", fromID, toID, weight);
         fromID--; // RGIS GUI uses 1-based indexing for cell numbers, we need 0-based
         toID--;
-        CMmsgPrint(CMmsgDebug, "BIFUR: fromID: %d, toID: %d, weight: %f", fromID, toID, weight);
 
         domain->Objects[fromID].DLinkNum++;
-        domain->Objects[fromID].DLinks = (size_t *) calloc (domain->Objects [fromID].DLinkNum,sizeof (size_t *));
+        domain->Objects[fromID].DLinks = (size_t *) realloc (domain->Objects[fromID].DLinks, domain->Objects [fromID].DLinkNum * sizeof (size_t));
         if (domain->Objects[fromID].DLinks == (size_t *) NULL) {
             CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d",__FILE__,__LINE__);
             fclose(inFile);
             return (CMfailed);
         }
         domain->Objects[fromID].DLinks[domain->Objects[fromID].DLinkNum-1] = (size_t) toID;
-        domain->Objects[fromID].DWeights = (float *) calloc (domain->Objects [fromID].DLinkNum,sizeof (float *));
+        domain->Objects[fromID].DWeights = (float *) realloc (domain->Objects[fromID].DWeights, domain->Objects [fromID].DLinkNum * sizeof (float));
         if (domain->Objects[fromID].DWeights == (float *) NULL) {
             CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d",__FILE__,__LINE__);
             fclose(inFile);
@@ -174,16 +174,22 @@ int MFDomainSetBifurcations(MFDomain_t *domain, const char *path) {
         }
         domain->Objects[fromID].DWeights[domain->Objects[fromID].DLinkNum-1] = weight;
         domain->Objects[fromID].DWeights[0] -= weight; // always remove weight from original link
+        // adjust downstream ulink for this reduced branch
+        dlink0 = domain->Objects[fromID].DLinks[0];
+        for (ulink=0; ulink < domain->Objects[dlink0].ULinkNum; ulink++) {
+            if (domain->Objects[dlink0].ULinks[ulink] == (size_t) fromID)
+                domain->Objects[dlink0].UWeights[ulink] -= weight;
+        }
 
         domain->Objects[toID].ULinkNum++;
-        domain->Objects[toID].ULinks = (size_t *) calloc (domain->Objects [toID].ULinkNum,sizeof (size_t *));
+        domain->Objects[toID].ULinks = (size_t *) realloc (domain->Objects[toID].ULinks, domain->Objects [toID].ULinkNum * sizeof (size_t));
         if (domain->Objects[toID].ULinks == (size_t *) NULL) {
             CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d",__FILE__,__LINE__);
             fclose(inFile);
             return (CMfailed);
         }
         domain->Objects[toID].ULinks[domain->Objects[toID].ULinkNum-1] = (size_t) fromID;
-        domain->Objects[toID].UWeights = (float *) calloc (domain->Objects [toID].ULinkNum,sizeof (float *));
+        domain->Objects[toID].UWeights = (float *) realloc (domain->Objects[toID].UWeights, domain->Objects [toID].ULinkNum * sizeof (float));
         if (domain->Objects[toID].UWeights == (float *) NULL) {
             CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d",__FILE__,__LINE__);
             fclose(inFile);
@@ -195,13 +201,15 @@ int MFDomainSetBifurcations(MFDomain_t *domain, const char *path) {
 
     // check resulting domain, confirm all downlinks sum to 1 for each cell. if not then
     // bifurcation input or code assumptions are wrong
-    // Check cell 0
+    // Check cell 0 (though other basin outlets will have 0 downlinks)
     if (domain->Objects[0].DLinkNum > 0) {
         CMmsgPrint (CMmsgSysError,"There should be no downlinks for cell 0, in: %s:%d",objID,__FILE__,__LINE__);
         return (CMfailed);
     }
-    // Check all others
-	for (objID = 1; objID < domain->ObjNum; objID++) {
+    // Check weights
+	for (objID = 0; objID < domain->ObjNum; objID++) {
+        if (domain->Objects[objID].DLinkNum == 0)
+            continue;
         sum = 0.0;
         for (dlink=0; dlink < domain->Objects[objID].DLinkNum; dlink++) {
             sum += domain->Objects[objID].DWeights[dlink];
