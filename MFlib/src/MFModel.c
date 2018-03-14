@@ -155,9 +155,9 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 				return (CMfailed);
 			}
 			argv [argPos][i] = '\0';
-			inputVars = _MFModelVarEntryNew (inputVars, inputVarNum, argv [argPos],argv [argPos] + i + 1);
-			if (inputVars == (varEntry_t *) NULL) return (CMfailed); else inputVarNum++;
-			if ((argNum = CMargShiftLeft(argPos,argv,argNum)) <= argPos) break;
+            inputVars = _MFModelVarEntryNew (inputVars, inputVarNum, argv [argPos],argv [argPos] + i + 1);
+            if (inputVars == (varEntry_t *) NULL) return (CMfailed); else inputVarNum++;
+            if ((argNum = CMargShiftLeft(argPos,argv,argNum)) <= argPos) break;
 			continue;
 		}
 		if (CMargTest (argv [argPos],"-o","--output")) {
@@ -187,6 +187,7 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 				return (CMfailed);
 			}
 			argv [argPos][i] = '\0';
+            CMmsgPrint  (CMmsgDebug,"Output variable [%s]: %s at: %s:%d",argv [argPos],argv[argPos]+i+1,__FILE__,__LINE__);
 			stateVars = _MFModelVarEntryNew (stateVars, stateVarNum, argv [argPos],argv [argPos] + i + 1);
 			if (stateVars == (varEntry_t *) NULL) return (CMfailed); else stateVarNum++;
 			if ((argNum = CMargShiftLeft(argPos,argv,argNum)) <= argPos) break;
@@ -335,8 +336,7 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 		if (outputVars [i].InUse == false) CMmsgPrint(CMmsgInfo,"Unused output variable : %s", outputVars [i].Name);
 	for (i = 0; i < stateVarNum;  ++i)
 		if (stateVars [i].InUse  == false) CMmsgPrint(CMmsgInfo,"Unused state variable : %s",  stateVars [i].Name);
-
-	_MFModelVarEntriesFree(inputVars,  inputVarNum);
+_MFModelVarEntriesFree(inputVars,  inputVarNum);
 	_MFModelVarEntriesFree(outputVars, outputVarNum);
 	_MFModelVarEntriesFree(stateVars,  stateVarNum);
 
@@ -351,14 +351,17 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 static void _MFUserFunc (size_t threadId, size_t objectId, void *commonPtr) {
 	int iFunc, varID, link, uLink;
 	MFVariable_t *var;
-	double value;
+	float value, weight;
 
 	for (var = MFVarGetByID (varID = 1);var != (MFVariable_t *) NULL;var = MFVarGetByID (++varID))
 		if (var->Route) {
+// I -think- all WBM routed variables are considered to be extensive. Intensive variables are
+// computed within modules I THINK!. Weighing code here assumes this.
 			value = 0.0;
 			for (link = 0; link < _MFDomain->Objects [objectId].ULinkNum; ++link) {
 				uLink = _MFDomain->Objects [objectId].ULinks [link];
-				value += MFVarGetFloat (varID,uLink,0.0);
+                weight = _MFDomain->Objects [objectId].UWeights [link];
+				value += MFVarGetFloat (varID,uLink,0.0) * weight;
 			}
 			MFVarSetFloat (varID, objectId, value);
 		}
@@ -436,8 +439,10 @@ enum { MFparIOnone, MFparIOsingle, MFparIOmulti };
 
 int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
 	FILE *inFile;
-	int i, varID, dlink, taskId, ret = CMsucceeded, timeStep;
+	int i, varID, ret = CMsucceeded, timeStep;
+    size_t *dlinks, taskId;
 	char *startDate = (char *) NULL, *endDate = (char *) NULL, *domainFileName = (char *) NULL;
+    const char *bifurFileName = (char *) NULL;
 	char dateCur [MFDateStringLength], dateNext [MFDateStringLength], *climatologyStr;
 	bool testOnly;
     void *buffer, *status;
@@ -485,6 +490,9 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
 		return (CMfailed);
 	}
 	if ((_MFDomain = MFDomainRead (inFile)) == (MFDomain_t *) NULL)	return (CMfailed);
+    if ((bifurFileName = MFOptionGet(MFBifurcationOpt)) != (char *) NULL) {
+        if (MFDomainSetBifurcations(_MFDomain, bifurFileName) == CMfailed) return (CMfailed);
+    }
 
 	for (var = MFVarGetByID (varID = 1);var != (MFVariable_t *) NULL;var = MFVarGetByID (++varID)) {
 		var->ItemNum = _MFDomain->ObjNum;
@@ -569,8 +577,8 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
         return (CMfailed);
     }
     for (taskId = 0; taskId < _MFDomain->ObjNum; ++taskId) {
-        dlink  = _MFDomain->Objects[taskId].DLinkNum > 0 ? _MFDomain->Objects[taskId].DLinks[0] : taskId;
-        CMthreadJobTaskDependent(job, taskId, dlink);
+        dlinks  = _MFDomain->Objects[taskId].DLinkNum > 0 ? _MFDomain->Objects[taskId].DLinks : (size_t *) &taskId;
+        CMthreadJobTaskDependent(job, taskId, dlinks, _MFDomain->Objects[taskId].DLinkNum);
     }
     time(&sec);
     strcpy (dateCur,  MFDateGetCurrent ());

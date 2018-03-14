@@ -60,28 +60,39 @@ CMthreadJob_p CMthreadJobCreate (size_t taskNum, CMthreadUserExecFunc execFunc, 
 	job->Sorted    = true;
 	job->TaskNum   = taskNum;
 	for (taskId = 0;taskId < job->TaskNum; ++taskId) {
-		job->SortedTasks [taskId]      = job->Tasks + taskId;
-		job->Tasks [taskId].Id         = taskId;
-		job->Tasks [taskId].Dependent  = (CMthreadTask_p) NULL;
-		job->Tasks [taskId].Travel     = 0;
-        job->Tasks [taskId].Rank       = 0;
+		job->SortedTasks [taskId]        = job->Tasks + taskId;
+		job->Tasks [taskId].Id           = taskId;
+		job->Tasks [taskId].Dependents   = (CMthreadTask_p *) NULL;
+		job->Tasks [taskId].NDependents  = 0;
+		job->Tasks [taskId].Travel       = 0;
+		job->Tasks [taskId].isTravelSet  = 0;
+
 	}
 	job->UserFunc = execFunc;
 	job->CommonData = (void *) commonData;
 	return (job);
 }
 
-CMreturn CMthreadJobTaskDependent (CMthreadJob_p job, size_t taskId, size_t dependent) {
+CMreturn CMthreadJobTaskDependent (CMthreadJob_p job, size_t taskId, size_t *dependents, int dlinknum) {
+    int dlink;
 	if (taskId    > job->TaskNum) {
 		CMmsgPrint (CMmsgAppError,"Invalid task in %s%d",__FILE__,__LINE__);
 		return (CMfailed);
 	}
-	if (dependent > job->TaskNum) {
-		CMmsgPrint (CMmsgAppError,"Invalid dependence in %s%d",__FILE__,__LINE__);
+    for (dlink = 0; dlink < dlinknum; dlink++)
+        if (dependents[dlink] > job->TaskNum) {
+            CMmsgPrint (CMmsgAppError,"Invalid dependence in %s%d",__FILE__,__LINE__);
+            return (CMfailed);
+        }
+	if (taskId == *dependents) return (CMsucceeded);
+	job->Tasks [taskId].Dependents = (CMthreadTask_p *) malloc (dlinknum * sizeof(CMthreadTask_p));
+    if (job->Tasks [taskId].Dependents == (CMthreadTask_p *) NULL) {
+		CMmsgPrint (CMmsgSysError, "Memory allocation error in %s:%d",__FILE__,__LINE__);
 		return (CMfailed);
-	}
-	if (taskId == dependent) return (CMsucceeded);
-	job->Tasks [taskId].Dependent = job->Tasks + dependent;
+    }
+    for (dlink = 0; dlink < dlinknum; dlink++)
+        job->Tasks [taskId].Dependents[dlink] = job->Tasks + dependents[dlink]; // array of pointers to tasks
+    job->Tasks [taskId].NDependents = dlinknum;
     job->Sorted = false;
 	return (CMsucceeded);
 }
@@ -95,31 +106,38 @@ static int _CMthreadJobTaskCompare (const void *lPtr,const void *rPtr) {
 
 	if ((ret = (int) rTask->Travel - (int) lTask->Travel) != 0) return (ret);
 
-	while (((rTask = rTask->Dependent) != (CMthreadTask_p) NULL) &&
-           ((lTask = lTask->Dependent) != (CMthreadTask_p) NULL)) {
-		if ((ret = (int) rTask->Travel - (int) lTask->Travel) != 0) return (ret);
-	}
-	if (rTask == lTask) return (0);
-	if (rTask != (CMthreadTask_p) NULL) return (1);
-	return (-1);
+    return 0;
+}
+
+size_t _travel_dist(CMthreadTask_t *task) { // RECURSIVE
+    int depi;
+    size_t travel, maxtravel = 0;
+    if (task->isTravelSet) // been set already, quit early
+        return task->Travel;
+    if (task->Dependents != (CMthreadTask_p *) NULL) {
+        for (depi = 0; depi < task->NDependents; depi++) {
+            travel = _travel_dist(task->Dependents[depi]) + 1;
+            if (travel > maxtravel) {
+                maxtravel = travel;
+            }
+        }
+    }
+    task->Travel = maxtravel;
+    task->isTravelSet = 1;
+    return maxtravel;
 }
 
 CMreturn _CMthreadJobTaskSort (CMthreadJob_p job) {
 	size_t taskId, start;
-	size_t travel, maxTravel = 0, maxRank;
-	CMthreadTask_p dependent;
+	size_t travel;
+	CMthreadTask_p *dependent;
 
 	for (taskId = 0;taskId < job->TaskNum; ++taskId) {
-		travel = 0;
-        for (dependent = job->Tasks + taskId; dependent->Dependent != (CMthreadTask_p) NULL; dependent = dependent->Dependent) {
-            travel += 1;
-            if (dependent->Rank < travel) {
-                dependent->Rank = travel;
-                if (maxRank < travel) maxRank = travel;
-            }
-		}
-        job->Tasks [taskId].Travel = travel;
-        if (maxTravel < travel) maxTravel = travel;
+        // walks downstream along path computing travel (dist from node to mouth)
+        // fills in travel dist for each node on path. start from each node to ensure
+        // visiting all nodes. skip if cell has already been reached
+        if (job->Tasks[taskId].isTravelSet == 0) // unset
+            job->Tasks[taskId].Travel = _travel_dist(job->Tasks + taskId);
 	}
 
     qsort (job->SortedTasks,job->TaskNum,sizeof (CMthreadTask_p),_CMthreadJobTaskCompare);
