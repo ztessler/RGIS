@@ -153,10 +153,10 @@ int MFDomainSetBifurcations(MFDomain_t *domain, const char *path) {
 		return (CMfailed);
     }
 
-    while (fgets(line, 1024, inFile)) {
-        fromID = strtol(strtok(line, ","), NULL, 10);
-        toID = strtol(strtok(NULL, ","), NULL, 10);
-        weight = strtof(strtok(NULL, "\n"), NULL);
+    while (fscanf(inFile, "%d,%d,%f", &fromID, &toID, &weight) == 3) {
+        fromID--; // RGIS GUI uses 1-based indexing for cell numbers, we need 0-based
+        toID--;
+        CMmsgPrint(CMmsgDebug, "BIFUR: fromID: %d, toID: %d, weight: %f", fromID, toID, weight);
 
         domain->Objects[fromID].DLinkNum++;
         domain->Objects[fromID].DLinks = (size_t *) calloc (domain->Objects [fromID].DLinkNum,sizeof (size_t *));
@@ -165,7 +165,7 @@ int MFDomainSetBifurcations(MFDomain_t *domain, const char *path) {
             fclose(inFile);
             return (CMfailed);
         }
-        domain->Objects[fromID].DLinks[domain->Objects[fromID].DLinkNum-1] = toID;
+        domain->Objects[fromID].DLinks[domain->Objects[fromID].DLinkNum-1] = (size_t) toID;
         domain->Objects[fromID].DWeights = (float *) calloc (domain->Objects [fromID].DLinkNum,sizeof (float *));
         if (domain->Objects[fromID].DWeights == (float *) NULL) {
             CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d",__FILE__,__LINE__);
@@ -182,7 +182,7 @@ int MFDomainSetBifurcations(MFDomain_t *domain, const char *path) {
             fclose(inFile);
             return (CMfailed);
         }
-        domain->Objects[toID].ULinks[domain->Objects[toID].ULinkNum-1] = fromID;
+        domain->Objects[toID].ULinks[domain->Objects[toID].ULinkNum-1] = (size_t) fromID;
         domain->Objects[toID].UWeights = (float *) calloc (domain->Objects [toID].ULinkNum,sizeof (float *));
         if (domain->Objects[toID].UWeights == (float *) NULL) {
             CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d",__FILE__,__LINE__);
@@ -195,13 +195,19 @@ int MFDomainSetBifurcations(MFDomain_t *domain, const char *path) {
 
     // check resulting domain, confirm all downlinks sum to 1 for each cell. if not then
     // bifurcation input or code assumptions are wrong
-	for (objID = 0; objID < domain->ObjNum; objID++) {
+    // Check cell 0
+    if (domain->Objects[0].DLinkNum > 0) {
+        CMmsgPrint (CMmsgSysError,"There should be no downlinks for cell 0, in: %s:%d",objID,__FILE__,__LINE__);
+        return (CMfailed);
+    }
+    // Check all others
+	for (objID = 1; objID < domain->ObjNum; objID++) {
         sum = 0.0;
         for (dlink=0; dlink < domain->Objects[objID].DLinkNum; dlink++) {
             sum += domain->Objects[objID].DWeights[dlink];
         }
         if (sum != 1.0) {
-            CMmsgPrint (CMmsgSysError,"Downlink weights do not sum to 1 for cell %d in: %s:%d",objID,__FILE__,__LINE__);
+            CMmsgPrint (CMmsgSysError,"Downlink weights sum to %f (should be 1) for cell %d in: %s:%d",sum, objID,__FILE__,__LINE__);
             return (CMfailed);
         }
     }
