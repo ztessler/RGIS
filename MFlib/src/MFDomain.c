@@ -92,12 +92,8 @@ MFDomain_t *MFDomainRead (FILE *inFile) {
 					for (i = 0;i < domain->Objects [objID].DLinkNum; ++i)
 						MFSwapWord (domain->Objects [objID].DLinks + i);
                 for (i = 0; i < domain->Objects [objID].DLinkNum; ++i) {
+                    // assume network originates with single downlink.
                     if (i>1) CMmsgPrint(CMmsgSysError, "Bifurcation code assumption of single inital downlink WRONG at %s:%d",__FILE__,__LINE__);
-                    // Set to equal weighting
-                    /*domain->Objects[objID].DWeights[i] = 1./domain->Objects [objID].DLinkNum;*/
-                    // Actually, just assume network originates with single downlink. Must be
-                    // correct, since otherwise all this code is wasted since the model already
-                    // does it
                     domain->Objects[objID].DWeights[i] = 1.0;
                 }
 			}
@@ -125,7 +121,7 @@ MFDomain_t *MFDomainRead (FILE *inFile) {
 					for (i = 0;i < domain->Objects [objID].ULinkNum; ++i)
 						MFSwapWord (domain->Objects [objID].ULinks + i);
                 for (i = 0; i < domain->Objects [objID].ULinkNum; ++i) {
-                    // Weights refer to weight of the link from UPSTREAM CELL perspective. So all the UWeights could be more or less than 1, but all the DWeights for a cell sum to 1.
+                    // Weights refer to fraction of UPSTREAM CELL outflow. So all the UWeights could be more or less than 1, but all the DWeights for a cell sum to 1.
                     // again, assuming single downlinks, so initial weight of each downlink is 1
                     domain->Objects[objID].UWeights[i] = 1.0;
                 }

@@ -106,19 +106,13 @@ static int _CMthreadJobTaskCompare (const void *lPtr,const void *rPtr) {
 
 	if ((ret = (int) rTask->Travel - (int) lTask->Travel) != 0) return (ret);
 
-    // if first condition does not return, doesn't this always mean it returns on rtask==ltask,
-    // since they both walk downstream and end up null at the same time??
-    // SO sorting should be ok as long as travel length is computed for the LONGEST downstream
-    // direction. DEPENDENT pointer doesn't matter other than for computing TRAVEL, i think
-
     return 0;
 }
 
-// TODO TEST!
-size_t _travel_dist(CMthreadTask_t *task) {
+size_t _travel_dist(CMthreadTask_t *task) { // RECURSIVE
     int depi;
     size_t travel, maxtravel = 0;
-    if (task->isTravelSet) // been set already
+    if (task->isTravelSet) // been set already, quit early
         return task->Travel;
     if (task->Dependents != (CMthreadTask_p *) NULL) {
         for (depi = 0; depi < task->NDependents; depi++) {
@@ -139,17 +133,9 @@ CMreturn _CMthreadJobTaskSort (CMthreadJob_p job) {
 	CMthreadTask_p *dependent;
 
 	for (taskId = 0;taskId < job->TaskNum; ++taskId) {
-		/*travel = 0;*/
-        // this walks downstream along path computing travel (dist from node to mouth) and rank
-        // (max distance up to head)
-        // need to loop over all possible downstream paths, since can have multiple downstream
-        // dependents
-        /*for (dependent = job->Tasks + taskId; dependent->Dependents != (CMthreadTask_p) NULL; dependent = dependent->Dependent) {*/
-            /*travel += 1;*/
-		/*}*/
-        /*job->Tasks [taskId].Travel = travel;*/
-
-        // TODO TEST! correct?? who knows!
+        // walks downstream along path computing travel (dist from node to mouth)
+        // fills in travel dist for each node on path. start from each node to ensure
+        // visiting all nodes. skip if cell has already been reached
         if (job->Tasks[taskId].isTravelSet == 0) // unset
             job->Tasks[taskId].Travel = _travel_dist(job->Tasks + taskId);
 	}

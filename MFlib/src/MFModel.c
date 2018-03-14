@@ -491,7 +491,6 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
 	}
 	if ((_MFDomain = MFDomainRead (inFile)) == (MFDomain_t *) NULL)	return (CMfailed);
     if ((bifurFileName = MFOptionGet(MFBifurcationOpt)) != (char *) NULL) {
-        CMmsgPrint(CMmsgDebug, "bifur file: %s", bifurFileName);
         if (MFDomainSetBifurcations(_MFDomain, bifurFileName) == CMfailed) return (CMfailed);
     }
 
@@ -578,9 +577,6 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
         return (CMfailed);
     }
     for (taskId = 0; taskId < _MFDomain->ObjNum; ++taskId) {
-        // loop here over all dlinks? but currently each task/node can have only one dependent.
-        // needs multiple.
-        // or send in pointer to DLinks, pointer to taskID
         dlinks  = _MFDomain->Objects[taskId].DLinkNum > 0 ? _MFDomain->Objects[taskId].DLinks : (size_t *) &taskId;
         CMthreadJobTaskDependent(job, taskId, dlinks, _MFDomain->Objects[taskId].DLinkNum);
     }
