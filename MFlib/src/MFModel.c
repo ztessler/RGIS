@@ -155,14 +155,8 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 				return (CMfailed);
 			}
 			argv [argPos][i] = '\0';
-            CMmsgPrint  (CMmsgDebug,"Input variable [%s]: %s at: %s:%d",argv [argPos],argv[argPos]+i+1,__FILE__,__LINE__);
-            CMmsgPrint (CMmsgDebug, "bifur test: [%d]", strcmp(argv[argPos], "bifurcations"));
-            if (strcmp(argv[argPos], "bifurcations") == 0) {
-                *bifurFile = argv[argPos] + i + 1;
-            } else {
-                inputVars = _MFModelVarEntryNew (inputVars, inputVarNum, argv [argPos],argv [argPos] + i + 1);
-                if (inputVars == (varEntry_t *) NULL) return (CMfailed); else inputVarNum++;
-            }
+            inputVars = _MFModelVarEntryNew (inputVars, inputVarNum, argv [argPos],argv [argPos] + i + 1);
+            if (inputVars == (varEntry_t *) NULL) return (CMfailed); else inputVarNum++;
             if ((argNum = CMargShiftLeft(argPos,argv,argNum)) <= argPos) break;
 			continue;
 		}
@@ -495,8 +489,10 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
 		return (CMfailed);
 	}
 	if ((_MFDomain = MFDomainRead (inFile)) == (MFDomain_t *) NULL)	return (CMfailed);
-    if (bifurFileName != (char *) NULL)
+    if ((bifurFileName = MFOptionGet(MFBifurcationOpt)) != (char *) NULL) {
+        CMmsgPrint(CMmsgDebug, "bifur file: %s", bifurFileName);
         if (MFDomainSetBifurcations(_MFDomain, bifurFileName) == CMfailed) return (CMfailed);
+    }
 
 	for (var = MFVarGetByID (varID = 1);var != (MFVariable_t *) NULL;var = MFVarGetByID (++varID)) {
 		var->ItemNum = _MFDomain->ObjNum;

@@ -171,6 +171,7 @@ typedef struct MFDomain_s {
 MFDomain_t *MFDomainRead (FILE *);
 int  MFDomainWrite(MFDomain_t *, FILE *);
 int  MFDomainSetBifurcations(MFDomain_t *, const char *);
+#define MFBifurcationOpt "bifurcations"
 void MFDomainFree(MFDomain_t *);
 
 int  MFDateCompare (const char *, const char *);
