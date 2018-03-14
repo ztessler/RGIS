@@ -31,7 +31,7 @@ void MFDomainFree (MFDomain_t *domain) {
 }
 
 MFDomain_t *MFDomainRead (FILE *inFile) {
-	int objID, i, j, uItemID, ui;
+	int objID, i;
 	MFDomain_t *domain;
 
 	if ((domain = (MFDomain_t *) calloc (1,sizeof (MFDomain_t))) == (MFDomain_t *) NULL) return ((MFDomain_t *) NULL);
