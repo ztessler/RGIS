@@ -130,7 +130,7 @@ static void _MFModelVarPrintOut (const char *label) {
                         CMyesNoString (var->Set),CMyesNoString (var->Flux),CMyesNoString (var->Initial), CMyesNoString (var->OutputPath != (char *) NULL));
 }
 
-static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc) (), char **domainFile, char **bifurFile, char **startDate, char **endDate, bool *testOnly) {
+static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc) (), char **domainFile, char **startDate, char **endDate, bool *testOnly) {
 	bool resolved = true;
 	int argPos, ret, help = false;
 	int i, varID;
@@ -441,7 +441,8 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
 	FILE *inFile;
 	int i, varID, ret = CMsucceeded, timeStep;
     size_t *dlinks, taskId;
-	char *startDate = (char *) NULL, *endDate = (char *) NULL, *domainFileName = (char *) NULL, *bifurFileName = (char *) NULL;
+	char *startDate = (char *) NULL, *endDate = (char *) NULL, *domainFileName = (char *) NULL;
+    const char *bifurFileName = (char *) NULL;
 	char dateCur [MFDateStringLength], dateNext [MFDateStringLength], *climatologyStr;
 	bool testOnly;
     void *buffer, *status;
@@ -473,7 +474,7 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
 		pthread_attr_setscope       (&thread_attr, PTHREAD_SCOPE_PROCESS);
 	}
 
-    if (_MFModelParse (argc,argv,argNum, mainDefFunc, &domainFileName, &bifurFileName, &startDate, &endDate, &testOnly) == CMfailed) return (CMfailed);
+    if (_MFModelParse (argc,argv,argNum, mainDefFunc, &domainFileName, &startDate, &endDate, &testOnly) == CMfailed) return (CMfailed);
  	if (testOnly) return (CMsucceeded);
 
     switch (strlen (startDate)) {
