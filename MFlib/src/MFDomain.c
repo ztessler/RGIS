@@ -215,6 +215,7 @@ int MFDomainSetBifurcations(MFDomain_t *domain, const char *path) {
             return (CMfailed);
         }
     }
+    return (CMsucceeded);
 }
 
 int MFDomainWrite (MFDomain_t *domain,FILE *outFile) {
