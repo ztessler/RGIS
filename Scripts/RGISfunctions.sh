@@ -1612,7 +1612,7 @@ function RGISfile ()
 	then
 		 ncPattern="${rgisDirectory}/${fileName}_${tStepStr}${tStepType}????.nc"
 		gdbPattern="${rgisDirectory}/${fileName}_${tStepStr}${tStepType}????.${extension}"
-		 gzPottern="${rgisDirectory}/${fileName}_${tStepStr}${tStepType}????.${extension}.gz"
+		 gzPattern="${rgisDirectory}/${fileName}_${tStepStr}${tStepType}????.${extension}.gz"
 
 		[ "$(ls -1  ${ncPattern} 2> /dev/null)" != "" ] && { echo  "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}xxxx.nc";              return 0; }
 		[ "$(ls -1 ${gdbPattern} 2> /dev/null)" != "" ] && { echo  "${rgisDirectory}/${fileName}_${tStepStr}${tStepType}xxxx.${extension}";    return 0; }
