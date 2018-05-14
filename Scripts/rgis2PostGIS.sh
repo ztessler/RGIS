@@ -54,7 +54,7 @@ case "${EXTENSION}" in
 
 		rgis2sql -a "DBItems" "${RGISFILE}" -s "${SCHEMA}" -q "${TBLNAME}" | psql "${DBNAME}"
 		ogr2ogr -f "ESRI Shapefile" "${TEMPFILE}.shp" "${TEMPFILE}.asc"
-		shp2pgsql -k -s 4326 "${TEMPFILE}.shp" "${SCHEMA}"."${TBLNAME}_geom" | psql PostGIS_COMPASS
+		shp2pgsql -k -s 4326 "${TEMPFILE}.shp" "${SCHEMA}"."${TBLNAME}_geom" | psql "${DBNAME}"
 		echo "ALTER TABLE \"${SCHEMA}\".\"${TBLNAME}\" ADD COLUMN \"geom\" geometry;
       		UPDATE \"${SCHEMA}\".\"${TBLNAME}\"
         	SET \"geom\" = \"${SCHEMA}\".\"${TBLNAME}_geom\".\"geom\"
@@ -68,7 +68,7 @@ case "${EXTENSION}" in
 		rgis2sql -a "DBItems" "${RGISFILE}" -s "${SCHEMA}" -q "${TBLNAME}" | psql "${DBNAME}"
 		gdal_translate -a_srs EPSG:4326 "${TEMPFILE}.grd" "${TEMPFILE}.tif"
 		gdal_polygonize.py -8  "${TEMPFILE}.tif" -f "ESRI Shapefile" "${TEMPFILE}.shp"
-		shp2pgsql -k -s 4326 "${TEMPFILE}.shp" "${SCHEMA}"."${TBLNAME}_geom" | tee "${TEMPFILE}".sql | psql PostGIS_COMPASS
+		shp2pgsql -k -s 4326 "${TEMPFILE}.shp" "${SCHEMA}"."${TBLNAME}_geom" | tee "${TEMPFILE}".sql | psql "${DBNAME}"
 		echo "ALTER TABLE \"${SCHEMA}\".\"${TBLNAME}\" ADD COLUMN \"geom\" geometry;
       		UPDATE \"${SCHEMA}\".\"${TBLNAME}\"
         	SET \"geom\" = \"${TBLNAME}_SELECTION\".\"geom\"
