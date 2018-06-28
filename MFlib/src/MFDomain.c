@@ -12,6 +12,7 @@ bfekete@ccny.cuny.edu
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <cm.h>
 #include <MF.h>
 
@@ -125,7 +126,6 @@ MFDomain_t *MFDomainRead (FILE *inFile) {
                     // again, assuming single downlinks, so initial weight of each downlink is 1
                     domain->Objects[objID].UWeights[i] = 1.0;
                 }
-
 			}
 			else {
 				CMmsgPrint (CMmsgSysError,"File Reading Error in: %s:%d",__FILE__,__LINE__);
@@ -154,44 +154,133 @@ int MFDomainSetBifurcations(MFDomain_t *domain, const char *path) {
         fromID--; // RGIS GUI uses 1-based indexing for cell numbers, we need 0-based
         toID--;
 
-        domain->Objects[fromID].DLinkNum++;
-        domain->Objects[fromID].DLinks = (size_t *) realloc (domain->Objects[fromID].DLinks, domain->Objects [fromID].DLinkNum * sizeof (size_t));
-        if (domain->Objects[fromID].DLinks == (size_t *) NULL) {
-            CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d",__FILE__,__LINE__);
-            fclose(inFile);
-            return (CMfailed);
-        }
-        domain->Objects[fromID].DLinks[domain->Objects[fromID].DLinkNum-1] = (size_t) toID;
-        domain->Objects[fromID].DWeights = (float *) realloc (domain->Objects[fromID].DWeights, domain->Objects [fromID].DLinkNum * sizeof (float));
-        if (domain->Objects[fromID].DWeights == (float *) NULL) {
-            CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d",__FILE__,__LINE__);
-            fclose(inFile);
-            return (CMfailed);
-        }
-        domain->Objects[fromID].DWeights[domain->Objects[fromID].DLinkNum-1] = weight;
-        domain->Objects[fromID].DWeights[0] -= weight; // always remove weight from original link
-        // adjust downstream ulink for this reduced branch
-        dlink0 = domain->Objects[fromID].DLinks[0];
-        for (ulink=0; ulink < domain->Objects[dlink0].ULinkNum; ulink++) {
-            if (domain->Objects[dlink0].ULinks[ulink] == (size_t) fromID)
-                domain->Objects[dlink0].UWeights[ulink] -= weight;
-        }
+        if (weight == 0.0) { // remove dlink, dweight from fromID. remove ulink, uweight from toID
+            domain->Objects[fromID].DLinkNum--;
+            if (domain->Objects[fromID].DLinkNum == 0) {
+                free(domain->Objects[fromID].DLinks);
+                domain->Objects[fromID].DLinks = (size_t *) NULL;
+                free(domain->Objects[fromID].DWeights);
+                domain->Objects[fromID].DWeights = (float *) NULL;
+            } else {
+                for (dlink=0; dlink < domain->Objects[fromID].DLinkNum+1; dlink++)
+                    if (domain->Objects[fromID].DLinks[dlink] == (size_t) toID)
+                        break;
+                if (domain->Objects[fromID].DLinks[dlink] != (size_t) toID) {
+                    CMmsgPrint (CMmsgSysError,"Bifur input data bad. fromID: %d, toID: %d, not initially downlinked, in: %s:%d", toID+1, fromID+1, __FILE__,__LINE__);
+                    fclose(inFile);
+                    return (CMfailed);
+                }
+                // remove dlink by moving rest of array up, realloc to smaller size
+                for (int _dlink = dlink; _dlink < domain->Objects[fromID].DLinkNum+1; _dlink++) {
+                    domain->Objects[fromID].DLinks[_dlink] = domain->Objects[fromID].DLinks[_dlink+1];
+                }
+                domain->Objects[fromID].DLinks = (size_t *) realloc (domain->Objects[fromID].DLinks, domain->Objects [fromID].DLinkNum * sizeof (size_t));
+                if (domain->Objects[fromID].DLinks == (size_t *) NULL) {
+                    CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d",__FILE__,__LINE__);
+                    fclose(inFile);
+                    return (CMfailed);
+                }
+                // remove dweight by moving rest of array up, realloc to smaller size
+                for (int _dlink = dlink; _dlink < domain->Objects[fromID].DLinkNum+1; _dlink++) {
+                    domain->Objects[fromID].DWeights[_dlink] = domain->Objects[fromID].DWeights[_dlink+1];
+                }
+                domain->Objects[fromID].DWeights = (float *) realloc (domain->Objects[fromID].DWeights, domain->Objects [fromID].DLinkNum * sizeof (float));
+                if (domain->Objects[fromID].DWeights == (float *) NULL) {
+                    CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d",__FILE__,__LINE__);
+                    fclose(inFile);
+                    return (CMfailed);
+                }
+            }
 
-        domain->Objects[toID].ULinkNum++;
-        domain->Objects[toID].ULinks = (size_t *) realloc (domain->Objects[toID].ULinks, domain->Objects [toID].ULinkNum * sizeof (size_t));
-        if (domain->Objects[toID].ULinks == (size_t *) NULL) {
-            CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d",__FILE__,__LINE__);
-            fclose(inFile);
-            return (CMfailed);
+            domain->Objects[toID].ULinkNum--;
+            if (domain->Objects[toID].ULinkNum == 0) {
+                free(domain->Objects[toID].ULinks);
+                domain->Objects[toID].ULinks = (size_t *) NULL;
+                free(domain->Objects[toID].UWeights);
+                domain->Objects[toID].UWeights = (float *) NULL;
+            } else {
+                for (ulink=0; ulink < domain->Objects[toID].ULinkNum+1; ulink++) {
+                    if (domain->Objects[toID].ULinks[ulink] == (size_t) fromID) {
+                        break;
+                    }
+                }
+                if (domain->Objects[toID].ULinks[ulink] != (size_t) fromID) {
+                    CMmsgPrint (CMmsgSysError,"Bifur input data bad. toID: %d, fromID: %d, not initially uplinked, in: %s:%d", toID+1, fromID+1, __FILE__,__LINE__);
+                    fclose(inFile);
+                    return (CMfailed);
+                }
+                // remove ulink by moving rest of array up, realloc to smaller size
+                for (int _ulink = ulink; _ulink < domain->Objects[toID].ULinkNum+1; _ulink++) {
+                    domain->Objects[toID].ULinks[_ulink] = domain->Objects[toID].ULinks[_ulink+1];
+                }
+                domain->Objects[toID].ULinks = (size_t *) realloc (domain->Objects[toID].ULinks, domain->Objects [toID].ULinkNum * sizeof (size_t));
+                if (domain->Objects[toID].ULinks == (size_t *) NULL) {
+                    CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d",__FILE__,__LINE__);
+                    fclose(inFile);
+                    return (CMfailed);
+                }
+                // remove uweight by moving rest of array up, realloc to smaller size
+                for (int _ulink = ulink; _ulink < domain->Objects[toID].ULinkNum+1; _ulink++) {
+                    domain->Objects[toID].UWeights[_ulink] = domain->Objects[toID].UWeights[_ulink+1];
+                }
+                domain->Objects[toID].UWeights = (float *) realloc (domain->Objects[toID].UWeights, domain->Objects [toID].ULinkNum * sizeof (float));
+                if (domain->Objects[toID].UWeights == (float *) NULL) {
+                    CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d",__FILE__,__LINE__);
+                    fclose(inFile);
+                    return (CMfailed);
+                }
+            }
+        } else { // weight > 0, add link
+            domain->Objects[fromID].DLinkNum++;
+            if (domain->Objects[fromID].DLinks == (size_t *) NULL) {
+                domain->Objects [fromID].DLinks = (size_t *) calloc (domain->Objects [fromID].DLinkNum, sizeof (size_t *));
+            } else {
+                domain->Objects[fromID].DLinks = (size_t *) realloc (domain->Objects[fromID].DLinks, domain->Objects [fromID].DLinkNum * sizeof (size_t));
+            }
+            if (domain->Objects[fromID].DLinks == (size_t *) NULL) {
+                CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d",__FILE__,__LINE__);
+                fclose(inFile);
+                return (CMfailed);
+            }
+            domain->Objects[fromID].DLinks[domain->Objects[fromID].DLinkNum-1] = (size_t) toID;
+
+            if (domain->Objects[fromID].DWeights == (float *) NULL) {
+                domain->Objects [fromID].DWeights = (float *) calloc (domain->Objects [fromID].DLinkNum, sizeof (float));
+            } else {
+                domain->Objects[fromID].DWeights = (float *) realloc (domain->Objects[fromID].DWeights, domain->Objects [fromID].DLinkNum * sizeof (float));
+            }
+            if (domain->Objects[fromID].DWeights == (float *) NULL) {
+                CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d",__FILE__,__LINE__);
+                fclose(inFile);
+                return (CMfailed);
+            }
+            domain->Objects[fromID].DWeights[domain->Objects[fromID].DLinkNum-1] = weight;
+
+            domain->Objects[toID].ULinkNum++;
+            if (domain->Objects[toID].ULinks == (size_t *) NULL) {
+                domain->Objects [toID].ULinks = (size_t *) calloc (domain->Objects [toID].ULinkNum, sizeof (size_t));
+            } else {
+                domain->Objects[toID].ULinks = (size_t *) realloc (domain->Objects[toID].ULinks, domain->Objects [toID].ULinkNum * sizeof (size_t));
+            }
+            if (domain->Objects[toID].ULinks == (size_t *) NULL) {
+                CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d",__FILE__,__LINE__);
+                fclose(inFile);
+                return (CMfailed);
+            }
+            domain->Objects[toID].ULinks[domain->Objects[toID].ULinkNum-1] = (size_t) fromID;
+
+            if (domain->Objects[toID].UWeights == (float *) NULL) {
+                domain->Objects [toID].UWeights = (float *) calloc (domain->Objects [toID].ULinkNum, sizeof (float));
+            } else {
+                domain->Objects[toID].UWeights = (float *) realloc (domain->Objects[toID].UWeights, domain->Objects [toID].ULinkNum * sizeof (float));
+            }
+            if (domain->Objects[toID].UWeights == (float *) NULL) {
+                CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d",__FILE__,__LINE__);
+                fclose(inFile);
+                return (CMfailed);
+            }
+            domain->Objects[toID].UWeights[domain->Objects[toID].ULinkNum-1] = weight;
         }
-        domain->Objects[toID].ULinks[domain->Objects[toID].ULinkNum-1] = (size_t) fromID;
-        domain->Objects[toID].UWeights = (float *) realloc (domain->Objects[toID].UWeights, domain->Objects [toID].ULinkNum * sizeof (float));
-        if (domain->Objects[toID].UWeights == (float *) NULL) {
-            CMmsgPrint (CMmsgSysError,"Memory Allocation Error in: %s:%d",__FILE__,__LINE__);
-            fclose(inFile);
-            return (CMfailed);
-        }
-        domain->Objects[toID].UWeights[domain->Objects[toID].ULinkNum-1] = weight;
     }
     fclose(inFile);
 
@@ -204,8 +293,9 @@ int MFDomainSetBifurcations(MFDomain_t *domain, const char *path) {
     }
     // Check weights
 	for (objID = 0; objID < domain->ObjNum; objID++) {
-        if (domain->Objects[objID].DLinkNum == 0)
+        if (domain->Objects[objID].DLinkNum == 0) {
             continue;
+        }
         sum = 0.0;
         for (dlink=0; dlink < domain->Objects[objID].DLinkNum; dlink++) {
             sum += domain->Objects[objID].DWeights[dlink];
