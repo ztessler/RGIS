@@ -18,7 +18,7 @@ bfekete@ccny.cuny.edu
 
 int main(int argc, char *argv[]) {
     int argPos, argNum = argc, ret, verbose = false;
-    DBInt type = DBTableFieldInt, length = 2, dWidth = 8, recID;
+    DBInt recID;
     DBObjData *data;
     char *tableName = (char *) NULL;
     char *fieldIDName = (char *) NULL;
@@ -55,10 +55,10 @@ int main(int argc, char *argv[]) {
     }
     if (verbose) RGlibPauseOpen(argv[0]);
 
-    tableName = "DBCells";
-    fieldIDName = "CellID";
-    fieldXName = "CellXCoord";
-    fieldYName = "CellYCoord";
+    tableName = (char *) "DBCells";
+    fieldIDName = (char *) "CellID";
+    fieldXName = (char *) "CellXCoord";
+    fieldYName = (char *) "CellYCoord";
 
     data = new DBObjData();
     if (((argNum > 1) && (strcmp(argv[1], "-") != 0) ? data->Read(argv[1]) : data->Read(stdin)) == DBFault) {
@@ -74,8 +74,9 @@ int main(int argc, char *argv[]) {
 
     netIF = new DBNetworkIF(data);
 
-    fieldID = new DBObjTableField(fieldIDName, 2);
+    fieldID = new DBObjTableField(fieldIDName, 4);
     fieldID->Type(DBTableFieldInt);
+    fieldID->Length(4);
     fieldID->FormatWidth(8);
 
     fieldX = new DBObjTableField (fieldXName, DBTableFieldFloat, (char *) "%10.3f", sizeof (DBFloat4));
