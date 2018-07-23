@@ -213,6 +213,7 @@ int main(int argc, char *argv[]) {
     field = new DBObjTableField(fieldName, length);
     field->Type(type);
     field->FormatWidth(dWidth);
+    field->Length(length);
     if (type == DBTableFieldFloat) field->FormatDecimals(dDecimals);
     table->AddField(field);
 
