@@ -74,13 +74,9 @@ int main(int argc, char *argv[]) {
 
     netIF = new DBNetworkIF(data);
 
-    fieldID = new DBObjTableField(fieldIDName, 4);
-    fieldID->Type(DBTableFieldInt);
-    fieldID->Length(4);
-    fieldID->FormatWidth(8);
-
-    fieldX = new DBObjTableField (fieldXName, DBTableFieldFloat, (char *) "%10.3f", sizeof (DBFloat4));
-    fieldY = new DBObjTableField (fieldYName, DBTableFieldFloat, (char *) "%10.3f", sizeof (DBFloat4));
+    fieldID = new DBObjTableField(fieldIDName, DBTableFieldInt,   (char *) "%8d",    sizeof (DBInt));
+    fieldX  = new DBObjTableField (fieldXName, DBTableFieldFloat, (char *) "%10.3f", sizeof (DBFloat4));
+    fieldY  = new DBObjTableField (fieldYName, DBTableFieldFloat, (char *) "%10.3f", sizeof (DBFloat4));
 
     table->AddField(fieldID);
     table->AddField(fieldX);
