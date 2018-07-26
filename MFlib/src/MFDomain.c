@@ -12,7 +12,6 @@ bfekete@ccny.cuny.edu
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <cm.h>
 #include <MF.h>
 
