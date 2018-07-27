@@ -79,10 +79,12 @@ case "${EXTENSION}" in
          rm "${TEMPFILE}".*
 	;;
 	(gdbc|gdbc.gz|nc)
-#		raster2pgsql "${TEMPFILE}" "${SCHEMA}"."${TBLNAME}_Raster" |\
-#		sed "s:$(echo "${SCHEMA}"  | tr "[A-Z]" "[a-z]"):${SCHEMA}:g"  |\
-#		sed "s:$(echo "${TBLNAME}" | tr "[A-Z]" "[a-z]"):${TBLNAME}:g" |\
-#		psql "${DBNAME}"
+	    rgis2ascii "${RGISFILE}" "${TEMPFILE}.grd"
+		raster2pgsql "${TEMPFILE}.grd" "${SCHEMA}"."${TBLNAME}_Raster" |\
+		sed "s:$(echo "${SCHEMA}"  | tr "[A-Z]" "[a-z]"):${SCHEMA}:g"  |\
+		sed "s:$(echo "${TBLNAME}" | tr "[A-Z]" "[a-z]"):${TBLNAME}:g" |\
+		psql "${DBNAME}"
+		rm "${TEMPFILE}.grd"
 	;;
 	(*)
 		echo ${EXTENSION}
