@@ -413,7 +413,7 @@ static DBInt _DBExportNetCDFGridDefine(DBObjData *dbData, int ncid, int dimids[]
         return (DBFault);
     }
     str = (char *) "longitude_bnds";
-    if ((status = nc_put_att_text(ncid, latid, "bounds", strlen(str), str)) != NC_NOERR) {
+    if ((status = nc_put_att_text(ncid, lonid, "bounds", strlen(str), str)) != NC_NOERR) {
         CMmsgPrint(CMmsgAppError, "NC Error '%s' in: %s %d", nc_strerror(status), __FILE__, __LINE__);
         nc_close(ncid);
         return (DBFault);
