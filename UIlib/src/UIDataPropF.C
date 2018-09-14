@@ -864,7 +864,7 @@ public:
         XmStringFree(string);
 
         string = XmStringCreate((char *) " ", UICharSetNormal);
-        RowNumLabelWGT = XtVaCreateManagedWidget("UIDataPropNetworkColNumLabel", xmLabelGadgetClass, Form(),
+        ColNumLabelWGT = XtVaCreateManagedWidget("UIDataPropNetworkColNumLabel", xmLabelGadgetClass, Form(),
                                                  XmNtopAttachment, XmATTACH_WIDGET,
                                                  XmNtopWidget, label,
                                                  XmNtopOffset, 2,
@@ -875,7 +875,7 @@ public:
                                                  XmNrightOffset, 5,
                                                  XmNlabelString, string,
                                                  NULL);
-        ColNumLabelWGT = XtVaCreateManagedWidget("UIDataPropNetworkRowNumLabel", xmLabelGadgetClass, Form(),
+        RowNumLabelWGT = XtVaCreateManagedWidget("UIDataPropNetworkRowNumLabel", xmLabelGadgetClass, Form(),
                                                  XmNtopAttachment, XmATTACH_WIDGET,
                                                  XmNtopWidget, label,
                                                  XmNtopOffset, 2,
