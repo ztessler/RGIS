@@ -2034,26 +2034,6 @@ public:
     DBFloat Float(DBObjRecord *rec);
 };
 
-DBInt DBSocketConnectServer(char *, DBInt);
-
-DBInt DBSocketClientInitMsg(DBInt, char *);
-
-void DBSocketClose(DBInt);
-
-DBInt DBSocketStartServer(DBInt, char *);
-
-DBInt DBSocketGetPort(DBInt);
-
-char *DBSocketGetHostName(DBInt);
-
-DBInt DBSocketAcceptClient(DBInt);
-
-DBInt DBSocketServerInitMsg(DBInt, char **);
-
-DBInt DBSocketRead(DBInt, void *, DBInt);
-
-DBInt DBSocketWrite(DBInt, void *, DBInt);
-
 void DBPauseSetFunction(int (*)(int));
 
 int DBPause(int);

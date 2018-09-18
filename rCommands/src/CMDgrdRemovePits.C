@@ -140,7 +140,7 @@ int main(int argc, char *argv[]) {
     }
 
     if ((ret = RGlibGridRemovePits (netData, grdData)) == CMsucceeded) {
-        ret = (argNum > 2) && (strcmp(argv[2], "-") != 0) ? grdData->Read(argv[2]) : grdData->Write(stdout);
+        ret = (argNum > 2) && (strcmp(argv[2], "-") != 0) ? grdData->Write(argv[2]) : grdData->Write(stdout);
     }
 
     delete grdData;

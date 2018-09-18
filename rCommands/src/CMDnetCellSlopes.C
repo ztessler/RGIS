@@ -20,6 +20,7 @@ int main(int argc, char *argv[]) {
     char *title = (char *) NULL, *subject = (char *) NULL;
     char *domain = (char *) NULL, *version = (char *) NULL;
     char *networkName = (char *) NULL;
+    DBInt shadeSet = DBDataFlagDispModeContGreyScale;
     DBObjData *data, *netData, *grdData;
 
     for (argPos = 1; argPos < argNum;) {
@@ -68,6 +69,26 @@ int main(int argc, char *argv[]) {
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
             continue;
         }
+        if (CMargTest (argv[argPos], "-s", "--shadeset")) {
+            int codes[] = {DBDataFlagDispModeContStandard,
+                           DBDataFlagDispModeContGreyScale,
+                           DBDataFlagDispModeContBlueScale,
+                           DBDataFlagDispModeContBlueRed,
+                           DBDataFlagDispModeContElevation};
+            const char *options[] = {"standard", "grey", "blue", "blue-to-red", "elevation", (char *) NULL};
+
+            if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) {
+                CMmsgPrint(CMmsgUsrError, "Missing shadeset!");
+                return (CMfailed);
+            }
+            if ((shadeSet = CMoptLookup(options, argv[argPos], true)) == DBFault) {
+                CMmsgPrint(CMmsgUsrError, "Invalid shadeset!");
+                return (CMfailed);
+            }
+            shadeSet = codes[shadeSet];
+            if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
+            continue;
+        }
         if (CMargTest (argv[argPos], "-V", "--verbose")) {
             verbose = true;
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
@@ -79,6 +100,7 @@ int main(int argc, char *argv[]) {
             CMmsgPrint(CMmsgInfo, "     -t,--title     [dataset title]");
             CMmsgPrint(CMmsgInfo, "     -u,--subject   [subject]");
             CMmsgPrint(CMmsgInfo, "     -d,--domain    [domain]");
+            CMmsgPrint(CMmsgInfo, "     -s,--shadeset    [standard|grey|blue|blue-to-red|elevation]");
             CMmsgPrint(CMmsgInfo, "     -v,--version   [version]");
             CMmsgPrint(CMmsgInfo, "     -V,--verbose");
             CMmsgPrint(CMmsgInfo, "     -h,--help");
@@ -126,6 +148,8 @@ int main(int argc, char *argv[]) {
     data->Document(DBDocSubject, subject);
     data->Document(DBDocGeoDomain, domain);
     data->Document(DBDocVersion, version);
+    grdData->Flags(DBDataFlagDispModeContShadeSets, DBClear);
+    grdData->Flags(shadeSet, DBSet);
 
     if ((ret = RGlibNetworkCellSlopes(netData, grdData, data)) == DBSuccess)
         ret = (argNum > 2) && (strcmp(argv[2], "-") != 0) ? data->Write(argv[2]) : data->Write(stdout);

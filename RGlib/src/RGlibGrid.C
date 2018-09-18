@@ -99,14 +99,14 @@ DBInt RGlibGridRemovePits(DBObjData *netData, DBObjData *grdData) {
                 if (gridIF->Value(layerRec, coord0, &elev0) == false) continue;
                 if (gridIF->Value(layerRec, coord1, &elev1) == false) continue;
 
-                minDrop = 0.0;
+                minDrop = RGlibMinSLOPE * netIF->CellLength(cellRec);
                 if (((fromCell = netIF->FromCell(cellRec)) != (DBObjRecord *) NULL) &&
                     (gridIF->Value(layerRec, netIF->Center(fromCell), &elev) == true))
-                    minDrop = 0.02 * (elev - elev1);
-                if (minDrop < RGlibMinSLOPE * netIF->CellLength(cellRec))
-                    minDrop = RGlibMinSLOPE * netIF->CellLength(cellRec);
-                elev0 = elev0 - minDrop;
-                if (elev0 < elev1) gridIF->Value(layerRec, coord1, elev0);
+                    minDrop = 0.02 * (elev - elev0) > minDrop ? 0.02 * (elev - elev0) : minDrop;
+
+                elev = elev0 - minDrop;
+                if (elev < elev1)
+                    gridIF->Value(layerRec, coord1, elev);
             }
         }
         gridIF->RecalcStats(layerRec);

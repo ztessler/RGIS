@@ -826,11 +826,10 @@ DBInt RGlibNetworkCellSlopes(DBObjData *netData, DBObjData *inGridData, DBObjDat
     DBFloat value, slope;
     DBPosition pos;
     DBCoordinate coord0, coord1;
-    DBObjRecord *outLayerRec, *cellRec, *toCellRec, *layerRec;
+    DBObjRecord *outLayerRec, *cellRec, *layerRec;
     DBGridIF *inGridIF, *outGridIF;
     DBNetworkIF *netIF;
-    DBMathDistanceFunction distFunc = DBMathGetDistanceFunction(netData);
-
+ 
     inGridIF = new DBGridIF(inGridData);
     for (layerID = 0; layerID < inGridIF->LayerNum(); ++layerID) {
         layerRec = inGridIF->Layer(layerID);
@@ -863,17 +862,12 @@ DBInt RGlibNetworkCellSlopes(DBObjData *netData, DBObjData *inGridData, DBObjDat
                 else {
                     coord0 = netIF->Center(cellRec);
                     if (inGridIF->Value(layerRec, coord0, &slope)) {
-                        if ((toCellRec = netIF->ToCell(cellRec)) == (DBObjRecord *) NULL) {
-                            outGridIF->Value(outLayerRec, pos, (DBFloat) RGlibMinSLOPE);
+                        coord1 = coord0 + netIF->Delta(cellRec);
+                        if ((netIF->CellLength(cellRec) > 0.0) && (inGridIF->Value(layerRec, coord1, &value))) {
+                            slope = (slope - value) / netIF->CellLength(cellRec);
+                            outGridIF->Value(outLayerRec, pos, slope);
                         }
-                        else {
-                            coord1 = netIF->Center(toCellRec);
-                            if (inGridIF->Value(layerRec, coord1, &value)) {
-                                slope = (slope - value) / DBMathCoordinateDistance(distFunc, coord0, coord1);
-                                outGridIF->Value(outLayerRec, pos, slope);
-                            }
-                            else outGridIF->Value(outLayerRec, pos, (DBFloat) RGlibMinSLOPE);
-                        }
+                        else outGridIF->Value(outLayerRec, pos, (DBFloat) RGlibMinSLOPE);
                     }
                     else outGridIF->Value(outLayerRec, pos, DBDefaultMissingFloatVal);
                 }
