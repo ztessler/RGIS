@@ -1360,6 +1360,7 @@ function _RGISresolutionDir ()
 					local geogNum=0
 					local geogRes[${geogNum}]="15sec";  (( ++geogNum ))
 					local geogRes[${geogNum}]="30sec";  (( ++geogNum ))
+					local geogRes[${geogNum}]="45sec";  (( ++geogNum ))
 					local geogRes[${geogNum}]="01min";  (( ++geogNum ))
 					local geogRes[${geogNum}]="1m30s";  (( ++geogNum ))
 					local geogRes[${geogNum}]="03min";  (( ++geogNum ))
