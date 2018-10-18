@@ -3,6 +3,7 @@
 function PrintUsage ()
 {
 	echo "Usage ${0##*/} [options] <rgisfile>"
+	echo "      -c, --case [sensitive|lower|upper]"
 	echo "      -d, --dbname  <dbnam>"
 	echo "      -s, --schema  <schema>"
 	echo "      -t, --tblname <tblname>"
@@ -13,10 +14,24 @@ RGISFILE=""
   DBNAME=""
   SCHEMA=""
  TBLNAME=""
+    CASE="sensitive"
 
 while [ "${1}" != "" ]
 do
 	case "${1}" in
+	(-c|--case)
+	    shift; if [ "${1}" == "" ]; then PrintUsage; fi
+	    case "${1}" in
+	    (senistive|lower|upper)
+	        CASE="${1}"
+	        ;;
+	    (*)
+	        CASE="sensitive"
+	        PrintUsage
+	        ;;
+	    esac
+	    shift;
+	    ;;
 	(-d|--dbname)
 		shift; if [ "${1}" == "" ]; then PrintUsage; fi
 		DBNAME="${1}"
@@ -46,13 +61,24 @@ EXTENSION="${RGISFILE#*.}"
 if [ "${SCHEMA}"  == "" ]; then  SCHEMA="public"; fi
 if [ "${TBLNAME}" == "" ]; then TBLNAME="${FILENAME}"; fi
 
+case "${CASE}" in
+(lower)
+	 SCHEMA="$(echo "${SCHEMA}"  | tr "[A-Z]" "[a-z]")"
+	TBLNAME="$(echo "${TBLNAME}" | tr "[A-Z]" "[a-z]")"
+;;
+(upper)
+	 SCHEMA="$(echo "${SCHEMA}"  | tr "[a-z]" "[A-Z]")"
+	TBLNAME="$(echo "${TBLNAME}" | tr "[a-z]" "[A-Z]")"
+;;
+esac
+
 TEMPFILE="TEMP${FILENAME}"
 
 case "${EXTENSION}" in
 	(gdbp|gdbp.gz|gdbl|gdbl.gz)
 		rgis2ascii "${RGISFILE}" "${TEMPFILE}.asc"
 
-		rgis2sql -a "DBItems" "${RGISFILE}" -s "${SCHEMA}" -q "${TBLNAME}" | psql "${DBNAME}"
+		rgis2sql -c "${CASE}" -a "DBItems" "${RGISFILE}" -s "${SCHEMA}" -q "${TBLNAME}" | psql "${DBNAME}"
 		ogr2ogr -f "ESRI Shapefile" "${TEMPFILE}.shp" "${TEMPFILE}.asc"
 		shp2pgsql -k -s 4326 "${TEMPFILE}.shp" "${SCHEMA}"."${TBLNAME}_geom" | psql "${DBNAME}"
 		echo "ALTER TABLE \"${SCHEMA}\".\"${TBLNAME}\" ADD COLUMN \"geom\" geometry;
@@ -65,7 +91,7 @@ case "${EXTENSION}" in
 	;;
 	(gdbd|gdbd.gz)
 		rgis2ascii "${RGISFILE}" "${TEMPFILE}.grd"
-		rgis2sql -a "DBItems" "${RGISFILE}" -s "${SCHEMA}" -q "${TBLNAME}" | psql "${DBNAME}"
+		rgis2sql -c "${CASE}" -a "DBItems" "${RGISFILE}" -s "${SCHEMA}" -q "${TBLNAME}" | psql "${DBNAME}"
 		gdal_translate -a_srs EPSG:4326 "${TEMPFILE}.grd" "${TEMPFILE}.tif"
 		gdal_polygonize.py -8  "${TEMPFILE}.tif" -f "ESRI Shapefile" "${TEMPFILE}.shp"
 		shp2pgsql -k -s 4326 "${TEMPFILE}.shp" "${SCHEMA}"."${TBLNAME}_geom" | tee "${TEMPFILE}".sql | psql "${DBNAME}"
