@@ -28,6 +28,11 @@ bfekete@ccny.cuny.edu
 
 #define RGlibMinSLOPE 0.01
 
+typedef enum {
+    RGlibSQLCaseSensitive = 0, RGlibSQLCaseLower = 1, RGlibSQLCaseUpper = 2
+} RGlibSQLCase;
+
+
 DBInt RGlibGenFuncFieldCompare(DBObjTable *, char *, char *, char *, DBInt);
 
 DBInt RGlibGenFuncFieldCalculate(DBObjTable *, char *, char *, char *, DBInt);
@@ -138,7 +143,7 @@ DBInt RGLibTableJoin(DBObjTable *, DBObjTableField *, DBObjTable *, DBObjTableFi
 
 enum {RGlibTableCopy, RGlibTableAppend, RGlibTableBlank };
 
-DBInt RGlibTableToSQL (DBObjTable *, const char *, const char *, DBInt, FILE *);
+DBInt RGlibTableToSQL (DBObjTable *, const char *, const char *, DBInt, DBInt, FILE *);
 
 DBInt RGlibRGIS2DataStream(DBObjData *, DBObjData *, char *, FILE *);
 

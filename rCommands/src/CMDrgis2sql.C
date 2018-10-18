@@ -16,7 +16,7 @@ bfekete@ccny.cuny.edu
 
 int main(int argc, char *argv[]) {
     FILE *outFile;
-    DBInt argPos, argNum = argc, ret, mode = RGlibTableCopy;
+    DBInt argPos, argNum = argc, ret, mode = RGlibTableCopy, sqlCase = RGlibSQLCaseSensitive;
     char *rgisTableName = (char *) "DBItems";
     char *dbSchemaName  = (char *) NULL;
     char *sqlTableName   = (char *) NULL;
@@ -30,6 +30,23 @@ int main(int argc, char *argv[]) {
                 return (CMfailed);
             }
             sqlTableName = argv[argPos];
+            if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
+            continue;
+        }
+        if (CMargTest (argv[argPos], "-c", "--case")) {
+            int codes[] = {RGlibSQLCaseSensitive,
+                           RGlibSQLCaseLower,
+                           RGlibSQLCaseUpper};
+            const char *options[] = {"sensitive", "lower", "upper", (char *) NULL};
+            if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) {
+                CMmsgPrint(CMmsgUsrError, "option!");
+                return (CMfailed);
+            }
+            if ((sqlCase = CMoptLookup(options, argv[argPos], true)) == DBFault) {
+                CMmsgPrint(CMmsgUsrError, "Invalid shadeset!");
+                return (CMfailed);
+            }
+            sqlCase = codes[sqlCase];
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
             continue;
         }
@@ -65,6 +82,7 @@ int main(int argc, char *argv[]) {
         if (CMargTest (argv[argPos], "-h", "--help")) {
             CMmsgPrint(CMmsgInfo, "%s [options] <rgis file> <sqlfile>", CMfileName(argv[0]));
             CMmsgPrint(CMmsgInfo, "     -a,--rgistable [rgis table]");
+            CMmsgPrint(CMmsgInfo, "     -c,--case      [sensitive|lower|upper");
             CMmsgPrint(CMmsgInfo, "     -s,--schema    [sql schema]");
             CMmsgPrint(CMmsgInfo, "     -q,--sqltable  [sql table]");
             CMmsgPrint(CMmsgInfo, "     -m,--mode      [copy|append|blank]");
@@ -93,7 +111,7 @@ int main(int argc, char *argv[]) {
         return (CMfailed);
     }
 
-    ret = RGlibTableToSQL (table, dbSchemaName, sqlTableName, mode, outFile);
+    ret = RGlibTableToSQL (table, dbSchemaName, sqlTableName, mode, sqlCase, outFile);
 
     delete data;
     if (outFile != stdout) {
