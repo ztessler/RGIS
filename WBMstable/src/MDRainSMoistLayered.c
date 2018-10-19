@@ -440,7 +440,7 @@ int MDRainSMoistChgLayeredSoilDef () {
 	int ret = 0;
 	float par;
 	int i;
-	char soilLiquidName [12];
+	char soilLiquidName [16];
 	char soilSiltFractionName[22];
 	char soilClayFractionName[22];
 	char soilSandFractionName[22];
@@ -495,7 +495,7 @@ int MDRainSMoistChgLayeredSoilDef () {
 							
 		//	printf ("Reading Layer  = %i of %i\n",i, _MDNumberOfSoilMoistureLayers);
 			
-			sprintf (soilDepthName, "SoilDepth_%02d", i + 1); //  
+			sprintf (soilDepthName,  "SoilDepth_%02d",  i + 1); //
 			sprintf (soilLiquidName, "SoilLiquid_%02d", i + 1); //  
 			sprintf (soilIceName, "SoilIce_%02d", i + 1); //  
 			sprintf (soilSiltFractionName, "SoilSiltPercentage_%02d", i + 1); //  	
