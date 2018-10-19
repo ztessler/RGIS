@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
                 return (CMfailed);
             }
             if ((sqlCase = CMoptLookup(options, argv[argPos], true)) == DBFault) {
-                CMmsgPrint(CMmsgUsrError, "Invalid shadeset!");
+                CMmsgPrint(CMmsgUsrError, "Invalid option!");
                 return (CMfailed);
             }
             sqlCase = codes[sqlCase];
