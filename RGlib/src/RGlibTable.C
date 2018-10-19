@@ -121,21 +121,8 @@ DBInt RGlibTableToSQL (DBObjTable *table, const char *dbSchemaName, const char *
         }
 
         fprintf (outFile,"(\n");
-        switch (sqlCase)
-        {
-            case RGlibSQLCaseLower:
-                fprintf (outFile,"\"id\" SERIAL,\n");
-                fprintf (outFile,"\"recordname\" CHARACTER VARYING(%d) COLLATE pg_catalog.\"default\",\n",DBStringLength);
-                break;
-            case RGlibSQLCaseUpper:
-                fprintf (outFile,"\"ID\" SERIAL,\n");
-                fprintf (outFile,"\"RECORDNAME\" CHARACTER VARYING(%d) COLLATE pg_catalog.\"default\",\n",DBStringLength);
-                break;
-            default:
-                fprintf (outFile,"\"ID\" SERIAL,\n");
-                fprintf (outFile,"\"RecordName\" CHARACTER VARYING(%d) COLLATE pg_catalog.\"default\",\n",DBStringLength);
-                break;
-        }
+        fprintf (outFile,"\"%s\" SERIAL,\n",_RGlibSQLCaseChange (sqlCase, "ID", bufferPtr, bufferLen));
+        fprintf (outFile,"\"%s\" CHARACTER VARYING(%d) COLLATE pg_catalog.\"default\",\n",_RGlibSQLCaseChange (sqlCase, "RecordName", bufferPtr, bufferLen),DBStringLength);
         for (field = fields->First(); field != (DBObjTableField *) NULL; field = fields->Next()) {
             if (DBTableFieldIsVisible (field))
                 switch (field->Type()) {
@@ -155,18 +142,7 @@ DBInt RGlibTableToSQL (DBObjTable *table, const char *dbSchemaName, const char *
                         break;
                 }
         }
-        switch (sqlCase)
-        {
-            case RGlibSQLCaseLower:
-                fprintf (outFile,"CONSTRAINT \"%s:pkey\" PRIMARY KEY (\"id\")\n", _RGlibSQLCaseChange (sqlCase, dbTableName, bufferPtr, bufferLen));
-                break;
-            case RGlibSQLCaseUpper:
-                fprintf (outFile,"CONSTRAINT \"%s:pkey\" PRIMARY KEY (\"ID\")\n", _RGlibSQLCaseChange (sqlCase, dbTableName, bufferPtr, bufferLen));
-                break;
-            default:
-                fprintf (outFile,"CONSTRAINT \"%s:pkey\" PRIMARY KEY (\"ID\")\n", _RGlibSQLCaseChange (sqlCase, dbTableName, bufferPtr, bufferLen));
-                break;
-        }
+        fprintf (outFile,"CONSTRAINT \"%s:pkey\" PRIMARY KEY (\"%s\")\n", _RGlibSQLCaseChange (sqlCase, dbTableName, bufferPtr, bufferLen),_RGlibSQLCaseChange (sqlCase, "ID", bufferPtr, bufferLen));
         fprintf (outFile,") WITH ( OIDS = FALSE )\n");
         fprintf (outFile,"TABLESPACE pg_default;\n");
     }
@@ -174,7 +150,7 @@ DBInt RGlibTableToSQL (DBObjTable *table, const char *dbSchemaName, const char *
     if ((RGlibTableCopy == mode) || (RGlibTableAppend == mode)) {
         if (dbSchemaName == (char *) NULL) fprintf (outFile,"INSERT INTO  \"%s\" (",  _RGlibSQLCaseChange (sqlCase, dbTableName, bufferPtr, bufferLen));
         else fprintf (outFile,"\nINSERT INTO  \"%s\".\"%s\" (", _RGlibSQLCaseChange (sqlCase, dbSchemaName, bufferPtr, bufferLen),  _RGlibSQLCaseChange (sqlCase, dbTableName, bufferPtr + 1, bufferLen + 1));
-        fprintf (outFile,"\"RecordName\"");
+        fprintf (outFile,"\"%s\"",_RGlibSQLCaseChange (sqlCase, "RecordName", bufferPtr, bufferLen));
         for (field = fields->First(); field != (DBObjTableField *) NULL; field = fields->Next()) {
             if (DBTableFieldIsVisible (field)) fprintf (outFile,",\"%s\"",_RGlibSQLCaseChange (sqlCase, field->Name(), bufferPtr, bufferLen));
         }
