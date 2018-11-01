@@ -26,11 +26,47 @@ int main(int argc, char *argv[]) {
     char *fieldYName = (char *) NULL;
     DBObjTable *table;
     DBObjTableField *fieldID, *fieldX, *fieldY;
-    DBObjRecord *record, *cellRec;
+    DBObjRecord *record;
     DBNetworkIF *netIF;
 	DBCoordinate coord;
 
     for (argPos = 1; argPos < argNum;) {
+        if (CMargTest (argv[argPos], "-a", "--table")) {
+            if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) {
+                CMmsgPrint(CMmsgUsrError, "Missing table name!");
+                return (CMfailed);
+            }
+            tableName = argv[argPos];
+            if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
+            continue;
+        }
+        if (CMargTest (argv[argPos], "-f", "--IDfield")) {
+            if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) {
+                CMmsgPrint(CMmsgUsrError, "Missing field name!");
+                return (CMfailed);
+            }
+            fieldIDName = argv[argPos];
+            if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
+            continue;
+        }
+        if (CMargTest (argv[argPos], "-x", "--Xfield")) {
+            if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) {
+                CMmsgPrint(CMmsgUsrError, "Missing field name!");
+                return (CMfailed);
+            }
+            fieldXName = argv[argPos];
+            if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
+            continue;
+        }
+        if (CMargTest (argv[argPos], "-y", "--Yfield")) {
+            if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) {
+                CMmsgPrint(CMmsgUsrError, "Missing field name!");
+                return (CMfailed);
+            }
+            fieldYName = argv[argPos];
+            if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
+            continue;
+        }
         if (CMargTest (argv[argPos], "-V", "--verbose")) {
             verbose = true;
             if ((argNum = CMargShiftLeft(argPos, argv, argNum)) <= argPos) break;
@@ -38,8 +74,12 @@ int main(int argc, char *argv[]) {
         }
         if (CMargTest (argv[argPos], "-h", "--help")) {
             CMmsgPrint(CMmsgInfo, "%s [options] <input file> <output file>", CMfileName(argv[0]));
-            CMmsgPrint(CMmsgInfo, "     -V,--verbose");
-            CMmsgPrint(CMmsgInfo, "     -h,--help");
+            CMmsgPrint(CMmsgInfo, "     -a, --table   [ [DBCells] | DBItems ]");
+            CMmsgPrint(CMmsgInfo, "     -f, --IDfield [ [CellID]  | BasinID ]");
+            CMmsgPrint(CMmsgInfo, "     -x, --Xfield  [ [CellXCoord] | MouthXCoord ]");
+            CMmsgPrint(CMmsgInfo, "     -y, --Yfield  [ [CellYCoord] | MouthYCoord ]");
+            CMmsgPrint(CMmsgInfo, "     -V, --verbose");
+            CMmsgPrint(CMmsgInfo, "     -h, --help");
             return (DBSuccess);
         }
         if ((argv[argPos][0] == '-') && (strlen(argv[argPos]) > 1)) {
@@ -55,10 +95,10 @@ int main(int argc, char *argv[]) {
     }
     if (verbose) RGlibPauseOpen(argv[0]);
 
-    tableName = (char *) "DBCells";
-    fieldIDName = (char *) "CellID";
-    fieldXName = (char *) "CellXCoord";
-    fieldYName = (char *) "CellYCoord";
+    if (tableName == (char *) NULL)   tableName = (char *) "DBCells";
+    if (fieldIDName == (char *) NULL) fieldIDName = (char *) "CellID";
+    if (fieldXName == (char *) NULL)  fieldXName = (char *) "CellXCoord";
+    if (fieldYName == (char *) NULL)  fieldYName = (char *) "CellYCoord";
 
     data = new DBObjData();
     if (((argNum > 1) && (strcmp(argv[1], "-") != 0) ? data->Read(argv[1]) : data->Read(stdin)) == DBFault) {
@@ -82,14 +122,26 @@ int main(int argc, char *argv[]) {
     table->AddField(fieldX);
     table->AddField(fieldY);
 
-    for (recID = 0; recID < table->ItemNum(); ++recID) {
-        record = table->Item(recID); // record and cellRec seem to point to the same data, but I'm not sure this is always true
-		cellRec = netIF->Cell(recID);
-		coord = netIF->Center(cellRec);
-
-        fieldID->Int(record, recID+1);
-		fieldX->Float(cellRec, coord.X);
-		fieldY->Float(cellRec, coord.Y);
+    if (strcmp(fieldIDName, "CellID") == 0) {
+        for (recID = 0; recID < table->ItemNum(); ++recID) {
+            record = netIF->Cell(recID);
+            coord = netIF->Center(record);
+            fieldID->Int(record, recID+1);
+            fieldX->Float(record, coord.X);
+            fieldY->Float(record, coord.Y);
+        }
+    } else if (strcmp(fieldIDName, "BasinID") == 0) {
+        for (recID = 0; recID < netIF->BasinNum(); ++recID) {
+            record = netIF->Basin(recID);
+            coord = netIF->Center(netIF->MouthCell(record));
+            fieldID->Int(record, recID+1);
+            fieldX->Float(record,coord.X);
+            fieldY->Float(record,coord.Y);
+        }
+    } else {
+        CMmsgPrint(CMmsgUsrError, "Invalid field name: %s!", fieldIDName);
+        delete data;
+        return (CMfailed);
     }
 
     ret = (argNum > 2) && (strcmp(argv[2], "-") != 0) ? data->Write(argv[2]) : data->Write(stdout);
