@@ -27,7 +27,7 @@ fi
 # echo ${build_dir}
 # echo ${install_dir}
 
-mkdir ${build_dir}
+mkdir -p ${build_dir}
 cd    ${build_dir}
 cmake -DCMAKE_INSTALL_PREFIX="${install_dir}" "${source_dir}"
 make install
@@ -42,4 +42,3 @@ if ! [ -e  ${install_dir}/ghaas/bin/rgis2PostGIS ]
 then
     ln -s ${install_dir}/ghaas/Scripts/rgis2PostGIS.sh ${install_dir}/ghaas/bin/rgis2PostGIS
 fi
-rm -rf "${build_dir}"
