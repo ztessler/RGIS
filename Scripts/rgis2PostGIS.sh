@@ -65,10 +65,18 @@ case "${CASE}" in
 (lower)
 	 SCHEMA=$(echo "${SCHEMA}"  | tr "[A-Z]" "[a-z]")
 	TBLNAME=$(echo "${TBLNAME}" | tr "[A-Z]" "[a-z]")
+	     ID="id"
+  GRIDVALUE="gridvalue"
 ;;
 (upper)
 	 SCHEMA=$(echo "${SCHEMA}"  | tr "[a-z]" "[A-Z]")
 	TBLNAME=$(echo "${TBLNAME}" | tr "[a-z]" "[A-Z]")
+	     ID="ID"
+  GRIDVALUE="GRIDVALUE"
+;;
+(*)
+           ID="ID"
+    GRIDVALUE="GridValue"
 ;;
 esac
 
@@ -86,7 +94,7 @@ case "${EXTENSION}" in
       		UPDATE \"${SCHEMA}\".\"${TBLNAME}\"
         	SET \"geom\" = \"${SCHEMA}\".\"${TBLNAME}_geom\".\"geom\"
          	FROM   \"${SCHEMA}\".\"${TBLNAME}_geom\"
-        	WHERE  \"${SCHEMA}\".\"${TBLNAME}\".\"ID\" =  \"${SCHEMA}\".\"${TBLNAME}_geom\".\"ID\";
+        	WHERE  \"${SCHEMA}\".\"${TBLNAME}\".\"${ID}\" =  \"${SCHEMA}\".\"${TBLNAME}_geom\".\"${ID}\";
          	DROP TABLE \"${SCHEMA}\".\"${TBLNAME}_geom\";" | psql "${DBNAME}"
       rm "${TEMPFILE}".*
 	;;
@@ -101,7 +109,7 @@ case "${EXTENSION}" in
         	SET \"geom\" = \"${TBLNAME}_SELECTION\".\"geom\"
          	FROM  (SELECT \"DN\", ST_BUFFER (ST_UNION (\"geom\"),0.0) AS \"geom\" FROM \"${SCHEMA}\".\"${TBLNAME}_geom\"
          	       GROUP BY \"${SCHEMA}\".\"${TBLNAME}_geom\".\"DN\") AS \"${TBLNAME}_SELECTION\"
-        	WHERE  \"${SCHEMA}\".\"${TBLNAME}\".\"GridValue\" = \"${TBLNAME}_SELECTION\".\"DN\";
+        	WHERE  \"${SCHEMA}\".\"${TBLNAME}\".\"${GRIDVALLUE}\" = \"${TBLNAME}_SELECTION\".\"DN\";
 	       	DROP TABLE\"${SCHEMA}\".\"${TBLNAME}_geom\";" | psql "${DBNAME}"
          rm "${TEMPFILE}".*
 	;;
