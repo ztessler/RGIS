@@ -142,7 +142,7 @@ DBInt RGlibTableToSQL (DBObjTable *table, const char *dbSchemaName, const char *
                         break;
                 }
         }
-        fprintf (outFile,"CONSTRAINT \"%s:pkey\" PRIMARY KEY (\"%s\")\n", _RGlibSQLCaseChange (sqlCase, dbTableName, bufferPtr, bufferLen),_RGlibSQLCaseChange (sqlCase, "ID", bufferPtr, bufferLen));
+        fprintf (outFile,"CONSTRAINT \"%s:pkey\" PRIMARY KEY (\"%s\")\n", _RGlibSQLCaseChange (sqlCase, dbTableName, bufferPtr, bufferLen),_RGlibSQLCaseChange (sqlCase, "ID", bufferPtr + 1, bufferLen + 1));
         fprintf (outFile,") WITH ( OIDS = FALSE )\n");
         fprintf (outFile,"TABLESPACE pg_default;\n");
     }

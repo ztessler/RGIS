@@ -78,7 +78,7 @@ case "${EXTENSION}" in
 	(gdbp|gdbp.gz|gdbl|gdbl.gz)
 		rgis2ascii "${RGISFILE}" "${TEMPFILE}.asc"
 
-        rgis2sql -c "${CASE}" -a "DBItems" -s "${SCHEMA}" -q "${TBLNAME}" "${RGISFILE}" | tee DEBUG.sql | psql "${DBNAME}"
+        rgis2sql -c "${CASE}" -a "DBItems" -s "${SCHEMA}" -q "${TBLNAME}" "${RGISFILE}" | psql "${DBNAME}"
         exit 1
 		ogr2ogr -f "ESRI Shapefile" "${TEMPFILE}.shp" "${TEMPFILE}.asc"
 		shp2pgsql -k -s 4326 "${TEMPFILE}.shp" "${SCHEMA}"."${TBLNAME}_geom" | psql "${DBNAME}"
