@@ -109,7 +109,7 @@ case "${EXTENSION}" in
         	SET \"geom\" = \"${TBLNAME}_SELECTION\".\"geom\"
          	FROM  (SELECT \"DN\", ST_BUFFER (ST_UNION (\"geom\"),0.0) AS \"geom\" FROM \"${SCHEMA}\".\"${TBLNAME}_geom\"
          	       GROUP BY \"${SCHEMA}\".\"${TBLNAME}_geom\".\"DN\") AS \"${TBLNAME}_SELECTION\"
-        	WHERE  \"${SCHEMA}\".\"${TBLNAME}\".\"${GRIDVALLUE}\" = \"${TBLNAME}_SELECTION\".\"DN\";
+        	WHERE  \"${SCHEMA}\".\"${TBLNAME}\".\"${GRIDVALUE}\" = \"${TBLNAME}_SELECTION\".\"DN\";
 	       	DROP TABLE\"${SCHEMA}\".\"${TBLNAME}_geom\";" | psql "${DBNAME}"
          rm "${TEMPFILE}".*
 	;;
