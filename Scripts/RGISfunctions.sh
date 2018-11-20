@@ -52,6 +52,24 @@ function RGISarchiveFormat ()
    esac
 }
 
+function RGIScase ()
+{
+    local caseVal="${1}"
+    local  string="${2}"
+
+    case "${caseVal}"
+        ("lower")
+            echo "$(echo "${string}"  | tr "[A-Z]" "[a-z]")"
+        ;;
+        ("upper")
+            echo "$(echo "${string}"  | tr "[a-z]" "[A-Z]")"
+        ;;
+        ("*")
+            echo "${string}"
+        ;;
+    esac
+}
+
 function RGISlookupSubject ()
 {
 	local variable=$(echo "${1}" | tr "[A-Z]" "[a-z]")

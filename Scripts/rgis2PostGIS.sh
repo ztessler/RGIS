@@ -10,6 +10,24 @@ function PrintUsage ()
 	exit 1
 }
 
+function caseFunc ()
+{
+    local caseVal="${1}"
+    local  string="${2}"
+
+    case "${caseVal}"
+        ("lower")
+            echo "$(echo "${string}"  | tr "[A-Z]" "[a-z]")"
+        ;;
+        ("upper")
+            echo "$(echo "${string}"  | tr "[a-z]" "[A-Z]")"
+        ;;
+        ("*")
+            echo "${string}"
+        ;;
+    esac
+}
+
 RGISFILE=""
   DBNAME=""
   SCHEMA=""
@@ -61,24 +79,10 @@ EXTENSION="${RGISFILE#*.}"
 if [ "${SCHEMA}"  == "" ]; then  SCHEMA="public"; fi
 if [ "${TBLNAME}" == "" ]; then TBLNAME="${FILENAME}"; fi
 
-case "${CASE}" in
-(lower)
-	 SCHEMA=$(echo "${SCHEMA}"  | tr "[A-Z]" "[a-z]")
-	TBLNAME=$(echo "${TBLNAME}" | tr "[A-Z]" "[a-z]")
-	     ID="id"
-  GRIDVALUE="gridvalue"
-;;
-(upper)
-	 SCHEMA=$(echo "${SCHEMA}"  | tr "[a-z]" "[A-Z]")
-	TBLNAME=$(echo "${TBLNAME}" | tr "[a-z]" "[A-Z]")
-	     ID="ID"
-  GRIDVALUE="GRIDVALUE"
-;;
-(*)
-           ID="ID"
-    GRIDVALUE="GridValue"
-;;
-esac
+   SCHEMA=$(caseFunc "${CASE}" "${SCHEMA}")
+  TBLNAME=$(caseFunc "${CASE}" "${TBLNAME}")
+       ID=$(caseFunc "${CASE}" "ID")
+GRIDVALUE=$(caseFunc "${CASE}" "GridValue")
 
 TEMPFILE="TEMP${FILENAME}"
 
