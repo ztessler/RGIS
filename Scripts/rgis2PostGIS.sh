@@ -16,13 +16,13 @@ function caseFunc ()
     local  string="${2}"
 
     case "${caseVal}" in
-        ("lower")
+        (lower)
             echo "$(echo "${string}"  | tr "[A-Z]" "[a-z]")"
         ;;
-        ("upper")
+        (upper)
             echo "$(echo "${string}"  | tr "[a-z]" "[A-Z]")"
         ;;
-        ("*")
+        (*)
             echo "${string}"
         ;;
     esac
