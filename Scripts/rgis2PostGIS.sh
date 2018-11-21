@@ -15,7 +15,7 @@ function caseFunc ()
     local caseVal="${1}"
     local  string="${2}"
 
-    case "${caseVal}"
+    case "${caseVal}" in
         ("lower")
             echo "$(echo "${string}"  | tr "[A-Z]" "[a-z]")"
         ;;
