@@ -79,6 +79,7 @@ EXTENSION="${RGISFILE#*.}"
 if [ "${SCHEMA}"  == "" ]; then  SCHEMA="public"; fi
 if [ "${TBLNAME}" == "" ]; then TBLNAME="${FILENAME}"; fi
 
+   DBNAME=$(caseFunc "${CASE}" "${DBNAME}")
    SCHEMA=$(caseFunc "${CASE}" "${SCHEMA}")
   TBLNAME=$(caseFunc "${CASE}" "${TBLNAME}")
        ID=$(caseFunc "${CASE}" "ID")
