@@ -97,7 +97,7 @@ case "${EXTENSION}" in
       		UPDATE \"${SCHEMA}\".\"${TBLNAME}\"
         	SET \"geom\" = \"${SCHEMA}\".\"${TBLNAME}_geom\".\"geom\"
          	FROM   \"${SCHEMA}\".\"${TBLNAME}_geom\"
-        	WHERE  \"${SCHEMA}\".\"${TBLNAME}\".\"${ID}\" =  \"${SCHEMA}\".\"${TBLNAME}_geom\".\"${ID}\";
+        	WHERE  \"${SCHEMA}\".\"${TBLNAME}\".\"${ID}\" =  \"${SCHEMA}\".\"${TBLNAME}_geom\".\"gid\";
          	DROP TABLE \"${SCHEMA}\".\"${TBLNAME}_geom\";" | psql "${DBNAME}"
       rm "${TEMPFILE}".*
 	;;
