@@ -309,7 +309,7 @@ DBObjData *DBGridMerge(DBObjData *grd0Data, DBObjData *grd1Data) {
          (grd0Data->Type() != DBTypeNetwork)) ||
         ((grd1Data->Type() != DBTypeGridDiscrete) && (grd1Data->Type() != DBTypeGridContinuous) &&
          (grd1Data->Type() != DBTypeNetwork)) ||
-        (grd0Data->Type() != grd1Data->Type()))
+         (grd0Data->Type() != grd1Data->Type()))
         return ((DBObjData *) NULL);
 
     grd0ItemTable = grd0Data->Table(DBrNItems);
@@ -570,8 +570,8 @@ DBObjData *DBGridMerge(DBObjData *grd0Data, DBObjData *grd1Data) {
     }
 
     Stop:
-    if (grd0IF != (DBGridIF *) NULL) delete grd0IF;
-    if (grd1IF != (DBGridIF *) NULL) delete grd1IF;
+    if (grd0IF != (DBGridIF *)    NULL) delete grd0IF;
+    if (grd1IF != (DBGridIF *)    NULL) delete grd1IF;
     if (net0IF != (DBNetworkIF *) NULL) delete net0IF;
     if (net1IF != (DBNetworkIF *) NULL) delete net1IF;
     return (retData);
