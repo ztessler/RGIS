@@ -16,13 +16,13 @@ function caseFunc ()
     local  string="${2}"
 
     case "${caseVal}" in
-        ("lower")
+        (lower)
             echo "$(echo "${string}"  | tr "[A-Z]" "[a-z]")"
         ;;
-        ("upper")
+        (upper)
             echo "$(echo "${string}"  | tr "[a-z]" "[A-Z]")"
         ;;
-        ("*")
+        (*)
             echo "${string}"
         ;;
     esac
@@ -79,6 +79,7 @@ EXTENSION="${RGISFILE#*.}"
 if [ "${SCHEMA}"  == "" ]; then  SCHEMA="public"; fi
 if [ "${TBLNAME}" == "" ]; then TBLNAME="${FILENAME}"; fi
 
+   DBNAME=$(caseFunc "${CASE}" "${DBNAME}")
    SCHEMA=$(caseFunc "${CASE}" "${SCHEMA}")
   TBLNAME=$(caseFunc "${CASE}" "${TBLNAME}")
        ID=$(caseFunc "${CASE}" "ID")
@@ -96,7 +97,7 @@ case "${EXTENSION}" in
       		UPDATE \"${SCHEMA}\".\"${TBLNAME}\"
         	SET \"geom\" = \"${SCHEMA}\".\"${TBLNAME}_geom\".\"geom\"
          	FROM   \"${SCHEMA}\".\"${TBLNAME}_geom\"
-        	WHERE  \"${SCHEMA}\".\"${TBLNAME}\".\"${ID}\" =  \"${SCHEMA}\".\"${TBLNAME}_geom\".\"${ID}\";
+        	WHERE  \"${SCHEMA}\".\"${TBLNAME}\".\"${ID}\" =  \"${SCHEMA}\".\"${TBLNAME}_geom\".\"gid\";
          	DROP TABLE \"${SCHEMA}\".\"${TBLNAME}_geom\";" | psql "${DBNAME}"
       rm "${TEMPFILE}".*
 	;;
