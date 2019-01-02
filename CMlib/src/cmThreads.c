@@ -300,7 +300,7 @@ CMthreadTeam_p CMthreadTeamInitialize (CMthreadTeam_p team, size_t threadNum) {
             pthread_cond_init  (&(team->Group [group].MCond),  NULL);
             pthread_mutex_init (&(team->Group [group].SMutex), NULL);
             pthread_cond_init  (&(team->Group [group].SCond),  NULL);
-            team->Group [group].ThreadNum = group < team->GroupNum ? 0x01 < group : team->ThreadNum;
+            team->Group [group].ThreadNum = group < team->GroupNum ? 0x01 << group : team->ThreadNum;
             for (threadId = 0; threadId < team->Group [group].ThreadNum; ++threadId) {
                 team->Group [group].Threads[threadId].Id      = threadId;
                 team->Group [group].Threads[threadId].TeamPtr = (void *) team;
@@ -308,7 +308,8 @@ CMthreadTeam_p CMthreadTeamInitialize (CMthreadTeam_p team, size_t threadNum) {
                 if ((ret = pthread_create(&(team->Group [group].Threads[threadId].Thread), &thread_attr, _CMthreadWork,
                                           (void *) (team->Group [group].Threads + threadId))) != 0) {
                     CMmsgPrint(CMmsgSysError, "Thread creation returned with error [%d] in %s:%d", ret, __FILE__, __LINE__);
-                    free(team->Group [group].Threads);
+                    for ( ; group >= 0; --group) free(team->Group [group].Threads);
+                    free (team->Group);
                     free(team);
                     return ((CMthreadTeam_p) NULL);
                 }
