@@ -89,18 +89,11 @@ typedef struct CMthreadData_s {
     clock_t Time;
 } CMthreadData_t, *CMthreadData_p;
 
-typedef struct CMthreadGroup_s {
-    CMthreadData_p  Threads;
-    size_t          ThreadNum;
+typedef struct CMthreadTeam_s {
+    CMthreadData_p Threads;
+    size_t ThreadNum;
     pthread_mutex_t SMutex, MMutex;
     pthread_cond_t  SCond,  MCond;
-} CMthreadGroup_t, *CMthreadGroup_p;
-
-typedef struct CMthreadTeam_s {
-    CMthreadGroup_p ThreadGroups;
-    size_t  ThreadNum;
-    size_t  ThreadGroupNum;
-    size_t  ThreadGroup;
     void *JobPtr;
     long long TotTime, ExecTime, ThreadTime, Time;
 } CMthreadTeam_t, *CMthreadTeam_p;
