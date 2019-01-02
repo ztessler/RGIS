@@ -97,9 +97,9 @@ typedef struct CMthreadGroup_s {
 } CMthreadGroup_t, *CMthreadGroup_p;
 
 typedef struct CMthreadTeam_s {
-    CMthreadGroup_p Groups;
+    CMthreadGroup_p ThreadGroups;
     size_t  ThreadNum;
-    size_t  GroupNum;
+    size_t  ThreadGroupNum;
     size_t  ThreadGroup;
     void *JobPtr;
     long long TotTime, ExecTime, ThreadTime, Time;
