@@ -197,7 +197,7 @@ static void *_CMthreadWork (void *dataPtr) {
             data->Time += (tbs.time * 1000 + tbs.millitm - startTime);
             pthread_mutex_lock (&(team->Groups[group].SMutex));
             job->Completed++;
-            if (job->Completed == team->ThreadNum) {
+            if (job->Completed == team->Groups[group].ThreadNum) {
                 pthread_mutex_lock   (&(team->Groups[group].MMutex));
                 pthread_cond_signal  (&(team->Groups[group].MCond));
                 pthread_mutex_unlock (&(team->Groups[group].MMutex));
