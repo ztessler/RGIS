@@ -54,12 +54,11 @@ CMthreadJob_p CMthreadJobCreate (size_t taskNum, CMthreadUserExecFunc execFunc, 
     job->Groups [0].Start = 0;
     job->Groups [0].End   = taskNum;
 
-	job->GroupNum    = 1;
-	job->Group       = 0;
-	job->Completed   = 0;
-	job->Sorted      = true;
-	job->TaskNum     = taskNum;
-	job->ThreadGroup = 0;
+	job->GroupNum  = 1;
+	job->Group     = 0;
+	job->Completed = 0;
+	job->Sorted    = true;
+	job->TaskNum   = taskNum;
 	for (taskId = 0;taskId < job->TaskNum; ++taskId) {
 		job->SortedTasks [taskId]        = job->Tasks + taskId;
 		job->Tasks [taskId].Id           = taskId;
@@ -175,36 +174,37 @@ void CMthreadJobDestroy (CMthreadJob_p job) {
 
 static void *_CMthreadWork (void *dataPtr) {
 	CMthreadData_p data = (CMthreadData_p) dataPtr;
-	size_t taskId, start, end;
+	size_t group, taskId, start, end;
 	CMthreadTeam_p team = (CMthreadTeam_p) data->TeamPtr;
 	CMthreadJob_p  job;
     struct timeb tbs;
     long long startTime;
 
-    pthread_mutex_lock (&(team->Group[job->ThreadGroup].SMutex));
+    group = team->Group;
+    pthread_mutex_lock (&(team->Groups[group].SMutex));
     do {
-        pthread_cond_wait (&(team->Group[job->ThreadGroup].SCond), &(team->Group[job->ThreadGroup].SMutex));
+        pthread_cond_wait (&(team->Groups[group].SCond), &(team->Groups[group].SMutex));
         job = team->JobPtr;
         if (job != (CMthreadJob_p) NULL) {
-            start = job->Groups[job->Group].Start;
-            end   = job->Groups[job->Group].End;
-            pthread_mutex_unlock(&(team->Group[job->ThreadGroup].SMutex));
+            start = job->Groups[group].Start;
+            end   = job->Groups[group].End;
+            pthread_mutex_unlock(&(team->Groups[group].SMutex));
             ftime (&tbs);
             startTime = tbs.time * 1000 + tbs.millitm;
             for (taskId = start + data->Id; taskId < end; taskId += team->ThreadNum)
                 job->UserFunc(data->Id, job->SortedTasks[taskId]->Id, job->CommonData);
             ftime (&tbs);
             data->Time += (tbs.time * 1000 + tbs.millitm - startTime);
-            pthread_mutex_lock (&(team->Group[job->ThreadGroup].SMutex));
+            pthread_mutex_lock (&(team->Groups[group].SMutex));
             job->Completed++;
             if (job->Completed == team->ThreadNum) {
-                pthread_mutex_lock   (&(team->Group[job->ThreadGroup].MMutex));
-                pthread_cond_signal  (&(team->Group[job->ThreadGroup].MCond));
-                pthread_mutex_unlock (&(team->Group[job->ThreadGroup].MMutex));
+                pthread_mutex_lock   (&(team->Groups[group].MMutex));
+                pthread_cond_signal  (&(team->Groups[group].MCond));
+                pthread_mutex_unlock (&(team->Groups[group].MMutex));
             }
         }
     } while (job != (CMthreadJob_p) NULL);
-    pthread_mutex_unlock (&(team->Group[job->ThreadGroup].SMutex));
+    pthread_mutex_unlock (&(team->Groups[group].SMutex));
     pthread_exit ((void *) NULL);
 }
 
@@ -237,14 +237,13 @@ CMreturn CMthreadJobExecute (CMthreadTeam_p team, CMthreadJob_p job) {
     else {
         for (job->Group = 0; job->Group < job->GroupNum; job->Group++) {
             for (group = team->GroupNum; group >= 0; --group) {
-                if (job->Groups[job->Group].End - job->Groups[job->Group].Start > team->Group [group].ThreadNum * 0x40) {
-                    pthread_mutex_lock     (&(team->Group [group].SMutex));
+                if (job->Groups[job->Group].End - job->Groups[job->Group].Start > team->Groups [group].ThreadNum * 0x40) {
+                    pthread_mutex_lock     (&(team->Groups [group].SMutex));
                     job->Completed = 0;
-                    job->ThreadGroup = group;
                     team->JobPtr = (void *) job;
-                    pthread_cond_broadcast (&(team->Group [group].SCond));
-                    pthread_mutex_unlock   (&(team->Group [group].SMutex));
-                    pthread_cond_wait (&(team->Group [group].MCond), &(team->Group [group].MMutex));
+                    pthread_cond_broadcast (&(team->Groups [group].SCond));
+                    pthread_mutex_unlock   (&(team->Groups [group].SMutex));
+                    pthread_cond_wait (&(team->Groups [group].MCond), &(team->Groups [group].MMutex));
                     break;
                 }
             }
@@ -280,14 +279,14 @@ CMthreadTeam_p CMthreadTeamInitialize (CMthreadTeam_p team, size_t threadNum) {
     if (team->ThreadNum > 0) {
         for (group = 0; (0x01 << group) < threadNum; ++group);
         team->GroupNum = group;
-        if ((team->Group = (CMthreadGroup_p) calloc (team->GroupNum, sizeof(CMthreadGroup_t))) == (CMthreadGroup_p) NULL) {
+        if ((team->Groups = (CMthreadGroup_p) calloc (team->GroupNum, sizeof(CMthreadGroup_t))) == (CMthreadGroup_p) NULL) {
             CMmsgPrint (CMmsgSysError,"Memory Allocation error in %s:%d",__FILE__,__LINE__);
             free (team);
             return ((CMthreadTeam_p) NULL);
         }
         for (group = 0; group <= team->GroupNum; ++group) {
-            team->Group [group].Id = group;
-            if ((team->Group [group].Threads = (CMthreadData_p) calloc (team->GroupNum + 1, sizeof(CMthreadData_t))) == (CMthreadData_p) NULL) {
+            team->Group = team->Groups [group].Id = group;
+            if ((team->Groups [group].Threads = (CMthreadData_p) calloc (team->GroupNum + 1, sizeof(CMthreadData_t))) == (CMthreadData_p) NULL) {
                 CMmsgPrint (CMmsgSysError,"Memory Allocation error in %s:%d",__FILE__,__LINE__);
                 free (team);
                 return ((CMthreadTeam_p) NULL);
@@ -295,28 +294,27 @@ CMthreadTeam_p CMthreadTeamInitialize (CMthreadTeam_p team, size_t threadNum) {
             pthread_attr_init (&thread_attr);
             pthread_attr_setdetachstate (&thread_attr, PTHREAD_CREATE_JOINABLE);
             pthread_attr_setscope       (&thread_attr, PTHREAD_SCOPE_SYSTEM);
-
-            pthread_mutex_init (&(team->Group [group].MMutex), NULL);
-            pthread_cond_init  (&(team->Group [group].MCond),  NULL);
-            pthread_mutex_init (&(team->Group [group].SMutex), NULL);
-            pthread_cond_init  (&(team->Group [group].SCond),  NULL);
-            team->Group [group].ThreadNum = group < team->GroupNum ? 0x01 << group : team->ThreadNum;
-            for (threadId = 0; threadId < team->Group [group].ThreadNum; ++threadId) {
-                team->Group [group].Threads[threadId].Id      = threadId;
-                team->Group [group].Threads[threadId].TeamPtr = (void *) team;
-                team->Group [group].Threads[threadId].Time    = 0;
-                if ((ret = pthread_create(&(team->Group [group].Threads[threadId].Thread), &thread_attr, _CMthreadWork,
-                                          (void *) (team->Group [group].Threads + threadId))) != 0) {
+            pthread_mutex_init (&(team->Groups [group].MMutex), NULL);
+            pthread_cond_init  (&(team->Groups [group].MCond),  NULL);
+            pthread_mutex_init (&(team->Groups [group].SMutex), NULL);
+            pthread_cond_init  (&(team->Groups [group].SCond),  NULL);
+            team->Groups [group].ThreadNum = group < team->GroupNum ? 0x01 << group : team->ThreadNum;
+            for (threadId = 0; threadId < team->Groups [group].ThreadNum; ++threadId) {
+                team->Groups [group].Threads[threadId].Id      = threadId;
+                team->Groups [group].Threads[threadId].TeamPtr = (void *) team;
+                team->Groups [group].Threads[threadId].Time    = 0;
+                if ((ret = pthread_create(&(team->Groups [group].Threads[threadId].Thread), &thread_attr, _CMthreadWork,
+                                          (void *) (team->Groups [group].Threads + threadId))) != 0) {
                     CMmsgPrint(CMmsgSysError, "Thread creation returned with error [%d] in %s:%d", ret, __FILE__, __LINE__);
-                    for ( ; group >= 0; --group) free(team->Group [group].Threads);
-                    free (team->Group);
+                    for ( ; group >= 0; --group) free(team->Groups [group].Threads);
+                    free (team->Groups);
                     free(team);
                     return ((CMthreadTeam_p) NULL);
                 }
-                while (pthread_kill (team->Group [group].Threads[threadId].Thread, 0) != 0); // TODO this might turn out to be sloppy
+                while (pthread_kill (team->Groups [group].Threads[threadId].Thread, 0) != 0); // TODO this might turn out to be sloppy
             }
             pthread_attr_destroy(&thread_attr);
-            pthread_mutex_lock (&(team->Group [group].MMutex));
+            pthread_mutex_lock (&(team->Groups [group].MMutex));
         }
     }
 	return (team);
@@ -331,20 +329,20 @@ void CMthreadTeamDestroy (CMthreadTeam_p team) { // Does not free the team point
     if (team->ThreadNum > 0) {
         for (group = 0; group < team->GroupNum; ++group) {
             team->JobPtr = (CMthreadJob_p) NULL;
-            pthread_mutex_lock     (&(team->Group[group].SMutex));
-            pthread_cond_broadcast (&(team->Group[group].SCond));
-            pthread_mutex_unlock   (&(team->Group[group].SMutex));
-            for (threadId = 0; threadId < team->Group [group].ThreadNum; ++threadId) {
-                pthread_join(team->Group [group].Threads[threadId].Thread, &status);
-                team->ThreadTime += team->Group [group].Threads[threadId].Time;
+            pthread_mutex_lock     (&(team->Groups[group].SMutex));
+            pthread_cond_broadcast (&(team->Groups[group].SCond));
+            pthread_mutex_unlock   (&(team->Groups[group].SMutex));
+            for (threadId = 0; threadId < team->Groups [group].ThreadNum; ++threadId) {
+                pthread_join(team->Groups [group].Threads[threadId].Thread, &status);
+                team->ThreadTime += team->Groups [group].Threads[threadId].Time;
             }
-            pthread_mutex_unlock (&(team->Group [group].MMutex));
-            pthread_mutex_destroy(&(team->Group [group].MMutex));
-            pthread_mutex_destroy(&(team->Group [group].SMutex));
-            pthread_cond_destroy (&(team->Group [group].SCond));
-            free(team->Group [group].Threads);
+            pthread_mutex_unlock (&(team->Groups [group].MMutex));
+            pthread_mutex_destroy(&(team->Groups [group].MMutex));
+            pthread_mutex_destroy(&(team->Groups [group].SMutex));
+            pthread_cond_destroy (&(team->Groups [group].SCond));
+            free(team->Groups [group].Threads);
         }
-        free (team->Group);
+        free (team->Groups);
     }
     ftime (&tbs);
     team->TotTime = tbs.time * 1000 + tbs.millitm - team->TotTime;

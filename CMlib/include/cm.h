@@ -90,7 +90,7 @@ typedef struct CMthreadData_s {
 } CMthreadData_t, *CMthreadData_p;
 
 typedef struct CMthreadGroup_s {
-    size_t          Id;
+    size_t Id;
     CMthreadData_p  Threads;
     size_t          ThreadNum;
     pthread_mutex_t SMutex, MMutex;
@@ -98,9 +98,10 @@ typedef struct CMthreadGroup_s {
 } CMthreadGroup_t, *CMthreadGroup_p;
 
 typedef struct CMthreadTeam_s {
-    CMthreadGroup_p Group;
+    CMthreadGroup_p Groups;
     size_t  ThreadNum;
     size_t  GroupNum;
+    size_t  Group;
     void *JobPtr;
     long long TotTime, ExecTime, ThreadTime, Time;
 } CMthreadTeam_t, *CMthreadTeam_p;
@@ -129,7 +130,6 @@ typedef struct CMthreadTaskGroup_s {
 
 typedef struct CMthreadJob_s {
     bool Sorted;
-    size_t ThreadGroup;
     CMthreadTask_p Tasks;
     CMthreadTask_p *SortedTasks;
     CMthreadTaskGroup_p Groups;
