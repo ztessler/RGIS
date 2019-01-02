@@ -643,6 +643,12 @@ function _fwSpinup()
 		if [ "${_fwOPTIONSPIPED}" == "on" ]
 		then
 			echo ${fwOptions} | xargs ${_fwModelBIN} &
+			if ((fwPASS < _fwPASSNUM))
+			then
+    			echo ${fwOptions} | xargs ${_fwModelBIN}
+    		else
+    		    echo ${fwOptions} | xargs ${_fwModelBIN} &
+			fi
 		else
             echo ${fwOptions} | xargs ${_fwModelBIN}
 		fi
