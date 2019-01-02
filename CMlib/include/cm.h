@@ -90,7 +90,6 @@ typedef struct CMthreadData_s {
 } CMthreadData_t, *CMthreadData_p;
 
 typedef struct CMthreadGroup_s {
-    size_t Id;
     CMthreadData_p  Threads;
     size_t          ThreadNum;
     pthread_mutex_t SMutex, MMutex;

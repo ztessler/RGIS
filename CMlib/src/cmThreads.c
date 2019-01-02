@@ -285,8 +285,9 @@ CMthreadTeam_p CMthreadTeamInitialize (CMthreadTeam_p team, size_t threadNum) {
             return ((CMthreadTeam_p) NULL);
         }
         for (group = 0; group <= team->GroupNum; ++group) {
-            team->ThreadGroup = team->Groups [group].Id = group;
-            if ((team->Groups [group].Threads = (CMthreadData_p) calloc (team->GroupNum + 1, sizeof(CMthreadData_t))) == (CMthreadData_p) NULL) {
+            team->ThreadGroup = group;
+            team->Groups [group].ThreadNum = group < team->GroupNum ? 0x01 << group : team->ThreadNum;
+            if ((team->Groups [group].Threads = (CMthreadData_p) calloc (team->Groups [group].ThreadNum, sizeof(CMthreadData_t))) == (CMthreadData_p) NULL) {
                 CMmsgPrint (CMmsgSysError,"Memory Allocation error in %s:%d",__FILE__,__LINE__);
                 free (team);
                 return ((CMthreadTeam_p) NULL);
@@ -298,7 +299,6 @@ CMthreadTeam_p CMthreadTeamInitialize (CMthreadTeam_p team, size_t threadNum) {
             pthread_cond_init  (&(team->Groups [group].MCond),  NULL);
             pthread_mutex_init (&(team->Groups [group].SMutex), NULL);
             pthread_cond_init  (&(team->Groups [group].SCond),  NULL);
-            team->Groups [group].ThreadNum = group < team->GroupNum ? 0x01 << group : team->ThreadNum;
             for (threadId = 0; threadId < team->Groups [group].ThreadNum; ++threadId) {
                 team->Groups [group].Threads[threadId].Id      = threadId;
                 team->Groups [group].Threads[threadId].TeamPtr = (void *) team;
