@@ -65,11 +65,10 @@ function FwArguments()
 	         FwWARNINGS="on"
 	        _fwTESTONLY="off"
 	    _fwOPTIONSPRINT="off"
-		    _fwOUTFORMAT="gdbc"
+		   _fwOUTFORMAT="gdbc"
 	     _fwDAILYOUTPUT="off"
 	          FwVERBOSE="off"
 	    _fwOPTIONSPIPED="off"
-                  FwGDB="off"
 
 	while [ "${1}" != "" ]
 	do
@@ -183,9 +182,6 @@ function FwArguments()
 			(-V|--verbose)
 				FwVERBOSE="on"
 			;;
-            (-g|--gdb)
-                FwGDB="on"
-            ;;
 			(-h|--help)
 				_fwPROGNAME="${0##*/}" # I don't know how this one works.
 				echo "${_fwPROGNAME} [-s on|off] [-f on|off] [-p on|off] -W on|off -T -V"
@@ -647,20 +643,8 @@ function _fwSpinup()
 		if [ "${_fwOPTIONSPIPED}" == "on" ]
 		then
 			echo ${fwOptions} | xargs ${_fwModelBIN} &
-			if ((fwPASS < _fwPASSNUM))
-			then
-				wait
-			fi
 		else
-            if [ "${FwGDB}" == "on" ]
-            then
-                _fwTmpOptionsFile="/tmp/wbm_options.txt"
-                echo ${fwOptions} > ${_fwTmpOptionsFile}
-                xargs --arg-file ${_fwTmpOptionsFile} gdb --args ${_fwModelBIN}
-                rm ${_fwTmpOptionsFile}
-            else
-                echo ${fwOptions} | xargs ${_fwModelBIN}
-            fi
+            echo ${fwOptions} | xargs ${_fwModelBIN}
 		fi
 		[ "${FwVERBOSE}" == "on" ] && echo "   Passnum [${fwPASS}] finished: $(date '+%Y-%m-%d %H:%M:%S')"
 	done
@@ -765,15 +749,7 @@ function _fwRun()
 		then
 			echo ${fwOptions} | xargs ${_fwModelBIN} &
 		else
-            if [ "${FwGDB}" == "on" ]
-            then
-                _fwTmpOptionsFile="/tmp/wbm_options.txt"
-                echo ${fwOptions} > ${_fwTmpOptionsFile}
-                xargs --arg-file ${_fwTmpOptionsFile} gdb --args ${_fwModelBIN}
-                rm ${_fwTmpOptionsFile}
-            else
-                echo ${fwOptions} | xargs ${_fwModelBIN}
-            fi
+            echo ${fwOptions} | xargs ${_fwModelBIN}
 		fi
 		_fwPostprocess "${fwVERSION}" "${fwYEAR}"
 		local fwInputList=$(echo "${fwOptions}" | grep -e "-i" | grep -e "file:"| grep -e "Input" | sed "s:.*file\:\(.*\):\1:")
