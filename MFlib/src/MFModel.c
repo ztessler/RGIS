@@ -336,7 +336,7 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 		if (outputVars [i].InUse == false) CMmsgPrint(CMmsgInfo,"Unused output variable : %s", outputVars [i].Name);
 	for (i = 0; i < stateVarNum;  ++i)
 		if (stateVars [i].InUse  == false) CMmsgPrint(CMmsgInfo,"Unused state variable : %s",  stateVars [i].Name);
-_MFModelVarEntriesFree(inputVars,  inputVarNum);
+    _MFModelVarEntriesFree(inputVars,  inputVarNum);
 	_MFModelVarEntriesFree(outputVars, outputVarNum);
 	_MFModelVarEntriesFree(stateVars,  stateVarNum);
 

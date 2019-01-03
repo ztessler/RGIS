@@ -224,7 +224,7 @@ CMreturn CMthreadJobExecute (CMthreadCohort_p cohort, CMthreadJob_p job) {
     ftime (&tbs);
     startTime = tbs.time * 1000 + tbs.millitm;
 
-    if (cohort->TeamNum < 1) {
+    if (cohort->ThreadNum < 1) {
         ftime (&tbs);
         localStart = tbs.time * 1000 + tbs.millitm;
         for (job->Group = 0; job->Group < job->GroupNum; job->Group++) {
@@ -299,7 +299,7 @@ CMthreadCohort_p CMthreadCohortInitialize (CMthreadCohort_p cohort, size_t threa
                 cohort->Teams [team].Threads[threadId].ThreadID  = threadId;
                 cohort->Teams [team].Threads[threadId].TeamID    = team;
                 cohort->Teams [team].Threads[threadId].CohortPtr = (void *) cohort;
-                cohort->Teams [team].Threads[threadId].Time    = 0;
+                cohort->Teams [team].Threads[threadId].Time      = 0;
                 if ((ret = pthread_create(&(cohort->Teams [team].Threads[threadId].Thread), &thread_attr, _CMthreadWork,
                                           (void *) (cohort->Teams [team].Threads + threadId))) != 0) {
                     CMmsgPrint(CMmsgSysError, "Thread creation returned with error [%d] in %s:%d", ret, __FILE__, __LINE__);
