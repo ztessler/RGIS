@@ -247,6 +247,9 @@ CMreturn CMthreadJobExecute (CMthreadCohort_p cohort, CMthreadJob_p job) {
                     break;
                 }
             }
+            if (team == cohort->TeamNum)
+                for (taskId = job->Groups[job->Group].Start; taskId < job->Groups[job->Group].End; ++taskId)
+                    job->UserFunc(0, job->SortedTasks[taskId]->Id, job->CommonData);
         }
     }
     ftime (&tbs);
