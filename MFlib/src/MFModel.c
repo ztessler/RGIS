@@ -449,13 +449,13 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
 	MFVariable_t *var;
 	time_t sec;
 	size_t threadsNum = CMthreadProcessorNum ();
-	CMthreadTeam_t team;
+	CMthreadCohort_t team;
  	CMthreadJob_p  job;
     int parallelIO;
     pthread_attr_t thread_attr;
     MFsingleIO_t inIO, outIO;
 
-    if (CMthreadTeamInitialize (&team,threadsNum) == (CMthreadTeam_p) NULL){
+    if (CMthreadCohortInitialize (&team,threadsNum) == (CMthreadCohort_p) NULL){
         CMmsgPrint (CMmsgUsrError,"Team initialization error %s, %d",__FILE__,__LINE__);
         return (CMfailed);
     }

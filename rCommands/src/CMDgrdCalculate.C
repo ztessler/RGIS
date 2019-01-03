@@ -296,10 +296,10 @@ public:
         DBObjData *data;
         DBObjRecord *record;
         size_t threadsNum = CMthreadProcessorNum();
-        CMthreadTeam_t team;
+        CMthreadCohort_t team;
         CMthreadJob_p job = (CMthreadJob_p) NULL;
 
-        if (CMthreadTeamInitialize(&team, threadsNum) == (CMthreadTeam_p) NULL) {
+        if (CMthreadCohortInitialize(&team, threadsNum) == (CMthreadCohort_p) NULL) {
             CMmsgPrint (CMmsgUsrError,"Team initialization error %s, %d",__FILE__,__LINE__);
             return ((DBObjData *) NULL);
         }

@@ -83,9 +83,10 @@ bool CMmathIsInteger(const char *);
 #define CMyesNoString(cond) (cond ? "yes" : "no")
 
 typedef struct CMthreadData_s {
-    size_t    Id;
+    size_t    ThreadID;
+    size_t    TeamID;
     pthread_t Thread;
-    void *TeamPtr;
+    void *CohortPtr;
     clock_t Time;
 } CMthreadData_t, *CMthreadData_p;
 
@@ -94,13 +95,18 @@ typedef struct CMthreadTeam_s {
     size_t ThreadNum;
     pthread_mutex_t SMutex, MMutex;
     pthread_cond_t  SCond,  MCond;
-    void *JobPtr;
-    long long TotTime, ExecTime, ThreadTime, Time;
 } CMthreadTeam_t, *CMthreadTeam_p;
 
-CMthreadTeam_p CMthreadTeamInitialize(CMthreadTeam_p, size_t threadNum);
+typedef struct CMthreadCohort_s {
+    size_t TeamNum, ThreadNum;
+    CMthreadTeam_t *Teams;
+    void *JobPtr;
+    long long TotTime, ExecTime, ThreadTime, Time;
+} CMthreadCohort_t, *CMthreadCohort_p;
 
-void CMthreadTeamDestroy(CMthreadTeam_p);
+CMthreadCohort_p CMthreadCohortInitialize(CMthreadCohort_p, size_t threadNum);
+
+void CMthreadTeamDestroy(CMthreadCohort_p);
 
 size_t CMthreadProcessorNum();
 
@@ -137,7 +143,7 @@ CMthreadJob_p CMthreadJobCreate(size_t, CMthreadUserExecFunc, void *);
 
 void CMthreadJobDestroy(CMthreadJob_p);
 
-CMreturn CMthreadJobExecute(CMthreadTeam_p, CMthreadJob_p);
+CMreturn CMthreadJobExecute(CMthreadCohort_p, CMthreadJob_p);
 
 CMreturn CMthreadJobTaskDependent(CMthreadJob_p, size_t, size_t *, int);
 
