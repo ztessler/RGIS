@@ -11,7 +11,7 @@ int main(int argv, char *argc[]) {
     int ret, threadNum = 1;
     size_t loopNum = 4, timeLoop, taskNum = 10000, taskId;
     size_t _taskId, _taskNum;
-    CMthreadCohort_t team;
+    CMthreadTeam_t team;
     CMthreadJob_p job;
 
     if ((argv > 1) && (sscanf(argc[1], "%d", &ret) == 1)) threadNum = (size_t) ret > 0 ? ret : 1;
@@ -20,7 +20,7 @@ int main(int argv, char *argc[]) {
     if ((argv > 4) && (sscanf(argc[4], "%d", &ret) == 1)) loopNum = (size_t) ret;
     printf("%d %d %d %d\n", (int) threadNum, (int) taskNum, (int) _Iteration, (int) loopNum);
 
-    if (CMthreadCohortInitialize(&team, threadNum) == (CMthreadCohort_p) NULL) {
+    if (CMthreadTeamInitialize(&team, threadNum) == (CMthreadTeam_p) NULL) {
         CMmsgPrint (CMmsgUsrError,"Team initialization error %s, %d",__FILE__,__LINE__);
         return (CMfailed);
     }
