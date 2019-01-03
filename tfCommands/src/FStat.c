@@ -2,7 +2,7 @@
 
 GHAAS F Utilities V1.0
 Global Hydrologic Archive and Analysis System
-Copyright 1994-2018, UNH - CCNY/CUNY
+Copyright 1994-2019, UNH - ASRC/CUNY
 
 FStat.c
 
