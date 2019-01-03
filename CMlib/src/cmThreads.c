@@ -285,7 +285,7 @@ CMthreadCohort_p CMthreadCohortInitialize (CMthreadCohort_p cohort, size_t threa
             return ((CMthreadCohort_p) NULL);
         }
         for (team = 0;team < cohort->TeamNum; ++team) {
-            cohort->Teams [team].ThreadNum = team > 0 ? 0x01 << (cohort->TeamNum - team - 1) : threadNum;
+            cohort->Teams [team].ThreadNum = team > 0 ? 0x01 << (cohort->TeamNum - team) : threadNum;
             if ((cohort->Teams [team].Threads = (CMthreadData_p) calloc (cohort->Teams[team].ThreadNum, sizeof(CMthreadData_t))) == (CMthreadData_p) NULL) {
                 CMmsgPrint (CMmsgSysError,"Memory Allocation error in %s:%d",__FILE__,__LINE__);
                 cohort->TeamNum = team;
