@@ -2,7 +2,7 @@
 
 GHAAS Command Line Library V1.0
 Global Hydrologic Archive and Analysis System
-Copyright 1994-2019, UNH - CUNY
+Copyright 1994-2018, UNH - CCNY/CUNY
 
 cmThreads.c
 
@@ -235,7 +235,7 @@ CMreturn CMthreadJobExecute (CMthreadTeam_p team, CMthreadJob_p job) {
     }
     else {
         for (job->Group = 0; job->Group < job->GroupNum; job->Group++) {
-            if (job->Groups[job->Group].End - job->Groups[job->Group].Start < team->ThreadNum * 0x40) {
+            if (job->Groups[job->Group].End - job->Groups[job->Group].Start < team->ThreadNum) {
                 ftime (&tbs);
                 localStart = tbs.time * 1000 + tbs.millitm;
                 for (taskId = job->Groups[job->Group].Start; taskId < job->Groups[job->Group].End; ++taskId)

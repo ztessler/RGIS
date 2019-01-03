@@ -2,7 +2,7 @@
 
 GHAAS Water Balance Model Library V1.0
 Global Hydrologic Archive and Analysis System
-Copyright 1994-2019, UNH - CUNY
+Copyright 1994-2018, UNH - CCNY/CUNY
 
 MFModel.c
 
@@ -187,7 +187,7 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 				return (CMfailed);
 			}
 			argv [argPos][i] = '\0';
-            CMmsgPrint  (CMmsgDebug,"State variable [%s]: %s",argv [argPos],argv[argPos]+i+1);
+            CMmsgPrint  (CMmsgDebug,"Output variable [%s]: %s at: %s:%d",argv [argPos],argv[argPos]+i+1,__FILE__,__LINE__);
 			stateVars = _MFModelVarEntryNew (stateVars, stateVarNum, argv [argPos],argv [argPos] + i + 1);
 			if (stateVars == (varEntry_t *) NULL) return (CMfailed); else stateVarNum++;
 			if ((argNum = CMargShiftLeft(argPos,argv,argNum)) <= argPos) break;
@@ -336,7 +336,7 @@ static int _MFModelParse (int argc, char *argv [],int argNum, int (*mainDefFunc)
 		if (outputVars [i].InUse == false) CMmsgPrint(CMmsgInfo,"Unused output variable : %s", outputVars [i].Name);
 	for (i = 0; i < stateVarNum;  ++i)
 		if (stateVars [i].InUse  == false) CMmsgPrint(CMmsgInfo,"Unused state variable : %s",  stateVars [i].Name);
-    _MFModelVarEntriesFree(inputVars,  inputVarNum);
+_MFModelVarEntriesFree(inputVars,  inputVarNum);
 	_MFModelVarEntriesFree(outputVars, outputVarNum);
 	_MFModelVarEntriesFree(stateVars,  stateVarNum);
 
@@ -449,13 +449,13 @@ int MFModelRun (int argc, char *argv [], int argNum, int (*mainDefFunc) ()) {
 	MFVariable_t *var;
 	time_t sec;
 	size_t threadsNum = CMthreadProcessorNum ();
-	CMthreadCohort_t team;
+	CMthreadTeam_t team;
  	CMthreadJob_p  job;
     int parallelIO;
     pthread_attr_t thread_attr;
     MFsingleIO_t inIO, outIO;
 
-    if (CMthreadCohortInitialize (&team,threadsNum) == (CMthreadCohort_p) NULL){
+    if (CMthreadTeamInitialize (&team,threadsNum) == (CMthreadTeam_p) NULL){
         CMmsgPrint (CMmsgUsrError,"Team initialization error %s, %d",__FILE__,__LINE__);
         return (CMfailed);
     }

@@ -2,7 +2,7 @@
 
 GHAAS Command Line Library V1.0
 Global Hydrologic Archive and Analysis System
-Copyright 1994-2019, UNH - CUNY
+Copyright 1994-2018, UNH - CCNY/CUNY
 
 cm.c
 
@@ -83,10 +83,9 @@ bool CMmathIsInteger(const char *);
 #define CMyesNoString(cond) (cond ? "yes" : "no")
 
 typedef struct CMthreadData_s {
-    size_t    ThreadID;
-    size_t    TeamID;
+    size_t    Id;
     pthread_t Thread;
-    void *CohortPtr;
+    void *TeamPtr;
     clock_t Time;
 } CMthreadData_t, *CMthreadData_p;
 
@@ -95,18 +94,13 @@ typedef struct CMthreadTeam_s {
     size_t ThreadNum;
     pthread_mutex_t SMutex, MMutex;
     pthread_cond_t  SCond,  MCond;
-} CMthreadTeam_t, *CMthreadTeam_p;
-
-typedef struct CMthreadCohort_s {
-    size_t TeamNum, ThreadNum;
-    CMthreadTeam_t *Teams;
     void *JobPtr;
     long long TotTime, ExecTime, ThreadTime, Time;
-} CMthreadCohort_t, *CMthreadCohort_p;
+} CMthreadTeam_t, *CMthreadTeam_p;
 
-CMthreadCohort_p CMthreadCohortInitialize(CMthreadCohort_p, size_t threadNum);
+CMthreadTeam_p CMthreadTeamInitialize(CMthreadTeam_p, size_t threadNum);
 
-void CMthreadTeamDestroy(CMthreadCohort_p);
+void CMthreadTeamDestroy(CMthreadTeam_p);
 
 size_t CMthreadProcessorNum();
 
@@ -143,7 +137,7 @@ CMthreadJob_p CMthreadJobCreate(size_t, CMthreadUserExecFunc, void *);
 
 void CMthreadJobDestroy(CMthreadJob_p);
 
-CMreturn CMthreadJobExecute(CMthreadCohort_p, CMthreadJob_p);
+CMreturn CMthreadJobExecute(CMthreadTeam_p, CMthreadJob_p);
 
 CMreturn CMthreadJobTaskDependent(CMthreadJob_p, size_t, size_t *, int);
 

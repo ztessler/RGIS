@@ -2,7 +2,7 @@
 
 GHAAS RiverGIS Plot Utility V1.0
 Global Hydrologic Archive and Analysis System
-Copyright 1994-2019, UNH - CUNY
+Copyright 1994-2018, UNH - CCNY/CUNY
 
 RGPDrawVecPoint.C
 
