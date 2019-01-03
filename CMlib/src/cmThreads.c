@@ -246,12 +246,6 @@ CMreturn CMthreadJobExecute (CMthreadCohort_p cohort, CMthreadJob_p job) {
                     pthread_cond_wait(&(cohort->Teams[team].MCond), &(cohort->Teams[team].MMutex));
                     break;
                 }
-                ftime(&tbs);
-                localStart = tbs.time * 1000 + tbs.millitm;
-                for (taskId = job->Groups[job->Group].Start; taskId < job->Groups[job->Group].End; ++taskId)
-                    job->UserFunc(0, job->SortedTasks[taskId]->Id, job->CommonData);
-                ftime(&tbs);
-                cohort->Time += (tbs.time * 1000 + tbs.millitm - localStart);
             }
         }
     }
