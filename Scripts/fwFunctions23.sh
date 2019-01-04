@@ -645,20 +645,14 @@ function _fwSpinup()
 			if ((fwPASS < _fwPASSNUM))
 			then
     			echo ${fwOptions} | xargs ${_fwModelBIN}
-        		[ "${FwVERBOSE}" == "on" ] && echo "   Passnum [${fwPASS}] finished: $(date '+%Y-%m-%d %H:%M:%S')"
     		else
     		    echo ${fwOptions} | xargs ${_fwModelBIN} &
 			fi
 		else
             echo ${fwOptions} | xargs ${_fwModelBIN}
-        	[ "${FwVERBOSE}" == "on" ] && echo "   Passnum [${fwPASS}] finished: $(date '+%Y-%m-%d %H:%M:%S')"
 		fi
 	done
 	_fwPostprocess "${fwVERSION}" ""
-	if [ "${_fwOPTIONSPIPED}" == "on" ]
-	then
-        [ "${FwVERBOSE}" == "on" ] && echo "   Passnum [${fwPASS}] finished: $(date '+%Y-%m-%d %H:%M:%S')"
-	fi
 	[ "${FwVERBOSE}"      == "on" ] && echo "Initialization finished: $(date '+%Y-%m-%d %H:%M:%S')"
 
 	local fwInputList=$(echo "${fwOptions}" | grep -e "-i" | grep -e "file:"| grep -e "Input" | sed "s:.*file\:\(.*\):\1:")
