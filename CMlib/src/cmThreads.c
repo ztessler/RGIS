@@ -268,7 +268,7 @@ CMthreadCohort_p CMthreadCohortInitialize (CMthreadCohort_p cohort, size_t threa
     for (team = 0;(0x01 << team) < threadNum; ++team);
 
     cohort->TotTime    = tbs.time * 1000 + tbs.millitm;
-    cohort->TeamNum    = team - 2;
+    cohort->TeamNum    = team;
     cohort->ThreadNum  = threadNum;
 	cohort->JobPtr     = (void *) NULL;
     cohort->ExecTime   = 0;
@@ -282,8 +282,7 @@ CMthreadCohort_p CMthreadCohortInitialize (CMthreadCohort_p cohort, size_t threa
             return ((CMthreadCohort_p) NULL);
         }
         for (team = 0;team < cohort->TeamNum; ++team) {
-            cohort->Teams [team].ThreadNum = team > 0 ? 0x01 << (cohort->TeamNum + 2 - team) : threadNum;
-            printf ("Threadnum: %d\n",(int) cohort->Teams[team].ThreadNum);
+            cohort->Teams [team].ThreadNum = team > 0 ? 0x01 << (cohort->TeamNum - team) : threadNum;
             if ((cohort->Teams [team].Threads = (CMthreadData_p) calloc (cohort->Teams[team].ThreadNum, sizeof(CMthreadData_t))) == (CMthreadData_p) NULL) {
                 CMmsgPrint (CMmsgSysError,"Memory Allocation error in %s:%d",__FILE__,__LINE__);
                 cohort->TeamNum = team;
