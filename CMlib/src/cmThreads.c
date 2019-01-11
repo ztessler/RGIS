@@ -209,7 +209,7 @@ static void *_CMthreadWork (void *dataPtr) {
 }
 
 CMreturn CMthreadJobExecute (CMthreadCohort_p cohort, CMthreadJob_p job) {
-    int taskId, team;
+    int taskId, team, chunkSize = 1024;
     struct timeb tbs;
     long long startTime, localStart;
 
@@ -237,7 +237,7 @@ CMreturn CMthreadJobExecute (CMthreadCohort_p cohort, CMthreadJob_p job) {
     else {
         for (job->Group = 0; job->Group < job->GroupNum; job->Group++) {
             for (team = 0; team < cohort->TeamNum; team++) {
-                if (job->Groups[job->Group].End - job->Groups[job->Group].Start >= cohort->Teams[team].ThreadNum) {
+                if (job->Groups[job->Group].End - job->Groups[job->Group].Start >= cohort->Teams[team].ThreadNum * chunkSize) {
                     pthread_mutex_lock(&(cohort->Teams[team].SMutex));
                     job->Completed = 0;
                     cohort->JobPtr = (void *) job;
@@ -268,7 +268,7 @@ CMthreadCohort_p CMthreadCohortInitialize (CMthreadCohort_p cohort, size_t threa
     for (team = 0;(0x01 << team) < threadNum; ++team);
 
     cohort->TotTime    = tbs.time * 1000 + tbs.millitm;
-    cohort->TeamNum    = team + 1;
+    cohort->TeamNum    = team;
     cohort->ThreadNum  = threadNum;
 	cohort->JobPtr     = (void *) NULL;
     cohort->ExecTime   = 0;
