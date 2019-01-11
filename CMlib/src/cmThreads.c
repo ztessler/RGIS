@@ -268,7 +268,7 @@ CMthreadCohort_p CMthreadCohortInitialize (CMthreadCohort_p cohort, size_t threa
     for (team = 0;(0x01 << team) < threadNum; ++team);
 
     cohort->TotTime    = tbs.time * 1000 + tbs.millitm;
-    cohort->TeamNum    = team;
+    cohort->TeamNum    = team + 1;
     cohort->ThreadNum  = threadNum;
 	cohort->JobPtr     = (void *) NULL;
     cohort->ExecTime   = 0;
